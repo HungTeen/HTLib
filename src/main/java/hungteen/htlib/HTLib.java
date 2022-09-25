@@ -16,7 +16,5 @@ public class HTLib {
     private static final Logger LOGGER = LogUtils.getLogger();
     // Mod ID.
     public static final String MOD_ID = "htlib";
-    // Mod Version.
-    public static final String MOD_VERSION = "0.1";
 
 }
