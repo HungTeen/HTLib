@@ -1,5 +1,8 @@
 package hungteen.htlib.util;
 
+import hungteen.htlib.HTLib;
+import hungteen.htlib.network.NetworkHandler;
+import hungteen.htlib.network.PlaySoundPacket;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -21,11 +24,15 @@ import java.util.Objects;
  **/
 public class PlayerUtil {
 
-//    public static void playClientSound(Player player, SoundEvent ev) {
-//        if(ev != null) {
-//            PVZPacketHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getRegistryName().toString()));
-//        }
-//    }
+    public static Player getClientPlayer() {
+        return HTLib.PROXY.getPlayer();
+    }
+
+    public static void playClientSound(Player player, SoundEvent ev) {
+        if(ev != null) {
+            NetworkHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getRegistryName().toString()));
+        }
+    }
 
     public static void sendTitleToPlayer(Player player, Component text) {
         if(player instanceof ServerPlayer) {

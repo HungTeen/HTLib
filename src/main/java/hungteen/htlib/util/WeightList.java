@@ -139,7 +139,7 @@ public class WeightList<T> {
     public static <W> WeightList<W> of(Pair<W, Integer>... pairs) {
         WeightList<W> list = new WeightList<>();
         for (Pair<W, Integer> p : pairs) {
-            list.addItem(p.first, p.second);
+            list.addItem(p.getFirst(), p.getSecond());
         }
         return list;
     }

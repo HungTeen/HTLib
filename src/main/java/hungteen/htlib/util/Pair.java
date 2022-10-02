@@ -5,14 +5,18 @@ package hungteen.htlib.util;
  * @author: HungTeen
  * @create: 2022-09-25 07:35
  **/
-public class Pair<T, K> {
+public record Pair<T, K>(T first, K second) {
 
-    public final T first;
-    public final K second;
+    public T getFirst() {
+        return first;
+    }
 
-    public Pair(T first, K second) {
-        this.first = first;
-        this.second = second;
+    public K getSecond() {
+        return second;
+    }
+
+    public static <T, K> Pair<T, K> of(T first, K second) {
+        return new Pair<>(first, second);
     }
 
 }
