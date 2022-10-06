@@ -24,8 +24,15 @@ public class HTLib {
     /**
      * get resource with mod prefix.
      */
+    public static ResourceLocation res(String modid, String name) {
+        return new ResourceLocation(modid, name);
+    }
+
+    /**
+     * get resource with mod prefix.
+     */
     public static ResourceLocation prefix(String name) {
-        return new ResourceLocation(MOD_ID, name);
+        return res(MOD_ID, name);
     }
 
 }
