@@ -20,7 +20,7 @@ import java.util.Set;
  **/
 public abstract class HTItemModelGen extends ItemModelProvider {
 
-    private Set<Item> addedItems = new HashSet<>();
+    protected final Set<Item> addedItems = new HashSet<>();
 
     public HTItemModelGen(DataGenerator generator, String modid, ExistingFileHelper helper) {
         super(generator, modid, helper);
@@ -29,7 +29,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     /**
      * for items with the same texture.
      */
-    private void genSameModelsWithAdd(Item... items) {
+    protected void genSameModelsWithAdd(Item... items) {
         final Item first = items[0];
         for (Item i : items) {
             genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "item/" + first.getRegistryName().getPath()));
@@ -37,19 +37,19 @@ public abstract class HTItemModelGen extends ItemModelProvider {
         }
     }
 
-    private void genNormalModel(Item i) {
+    protected void genNormalModel(Item i) {
         genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "item/" + i.getRegistryName().getPath()));
     }
 
-    private ItemModelBuilder genNormal(String name, ResourceLocation... layers) {
+    protected ItemModelBuilder genNormal(String name, ResourceLocation... layers) {
         return gen(name, "item/generated", layers);
     }
 
-    private ItemModelBuilder genHeld(String name, ResourceLocation... layers) {
+    protected ItemModelBuilder genHeld(String name, ResourceLocation... layers) {
         return gen(name, "item/handheld", layers);
     }
 
-    private ItemModelBuilder gen(String name, String parent, ResourceLocation... layers) {
+    protected ItemModelBuilder gen(String name, String parent, ResourceLocation... layers) {
         ItemModelBuilder builder = withExistingParent(name, parent);
         for (int i = 0; i < layers.length; i++) {
             builder = builder.texture("layer" + i, layers[i]);
@@ -57,16 +57,16 @@ public abstract class HTItemModelGen extends ItemModelProvider {
         return builder;
     }
 
-    private void genBlockModel(Block b) {
+    protected void genBlockModel(Block b) {
         genBlockModel(b, b.getRegistryName().getPath());
     }
 
-    private void genBlockModel(Block b, String path) {
+    protected void genBlockModel(Block b, String path) {
         withExistingParent(b.getRegistryName().getPath(), HTLib.res(this.modid, "block/" + path));
         this.addedItems.add(b.asItem());
     }
 
-    private void genItemModelWithBlock(Item i) {
+    protected void genItemModelWithBlock(Item i) {
         genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "block/" + i.getRegistryName().getPath()));
         this.addedItems.add(i);
     }

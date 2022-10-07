@@ -35,4 +35,8 @@ public class HTLib {
         return res(MOD_ID, name);
     }
 
+    public static Logger getLogger(){
+        return LOGGER;
+    }
+
 }
