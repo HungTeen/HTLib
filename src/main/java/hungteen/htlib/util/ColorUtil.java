@@ -7,18 +7,19 @@ package hungteen.htlib.util;
  **/
 public class ColorUtil {
 
-    //red
+    /* Red */
     public static final int RED = 16711680;
     public static final int RED_2 = 15007744;
     public static final int DARK_RED = 11013646;
     public static final int PINK = 16747452;
     public static final int PIG_PINK = 15771042;
-    //orange
+
+    /* Orange */
     public static final int ORANGE = 14653696;
     public static final int ORANGE_YELLOW = 16167425;
     public static final int NUT = 16762880;
 
-    //yellow
+    /* Yellow */
     public static final int HONNEY_YELLOW = 15582019;
     public static final int YELLOW = 16776960;
     public static final int POTATO = 16777119;
@@ -27,18 +28,18 @@ public class ColorUtil {
     public static final int YELLOW_GREEN = 14614272;
     public static final int GOLD_YELLOW = 16768768;
 
-    //green
+    /* Green */
     public static final int CREEPER_GREEN = 894731;
     public static final int GREEN = 65280;
     public static final int DARK_GREEN = 39168;
     public static final int PEA_GREEN = 10026878;
     public static final int SQUASH = 14286676;
 
-    //aqua
+    /* Aqua */
     public static final int LITTLE_AQUA = 9433559;
     public static final int DARK_AQUA = 28065;
 
-    //blue
+    /* Blue */
     public static final int BLUE = 255;
     public static final int ICE = 55551;
     public static final int BLUE_ICE = 47599;
@@ -46,15 +47,15 @@ public class ColorUtil {
     public static final int BLUE_WHITE = 15660031;
     public static final int DARK_BLUE = 96;
 
-    //purple
+    /* Purple */
     public static final int PURPLE = 12665047;
     public static final int LIGHT_PURPLE = 16711935;
 
-    //black
+    /* Black */
     public static final int BLACK = 0;
     public static final int BAT_BLACK = 4996656;
 
-    //other
+    /* Misc */
     public static final int ZOMBIE_SKIN = 5931634;
     public static final int STONE =10592673;
     public static final int LIT_PINK =16764917;
@@ -78,12 +79,23 @@ public class ColorUtil {
     public static final int MANGO_TANGO = 14509824;
     public static final int MISTY_ROSE = 16771304;
     public static final int OLIVE = 5924864;
-
     public static final int PIGMENT_GREEN = 37698;
     public static final int TANGERINE_YELLOW = 15257600;
     public static final int TOXIC_GREEN = 3368448;
     public static final int TYRIAN_PURPLE = 7012434;
     public static final int WHITE = 16777215;
     public static final int SILVER_FISH = 7237230;
+
+    public static int toRGB(int r, int g, int b){
+        return toRGB(Triple.of(r, g, b));
+    }
+
+    public static int toRGB(Triple<Integer, Integer, Integer> triple){
+        return triple.getLeft() * 255 * 255 + triple.getMid() * 255 + triple.getRight();
+    }
+
+    public static Triple<Integer, Integer, Integer> getRGB(int rgb){
+        return Triple.of(rgb / 255 / 255, rgb / 255 % 255, rgb % 255);
+    }
 
 }
