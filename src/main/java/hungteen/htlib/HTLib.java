@@ -25,6 +25,8 @@ public class HTLib {
     public static final String MOD_ID = "htlib";
     // Proxy of Server and Client.
     public static CommonProxy PROXY = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+    // WIDGETS.
+    public static final ResourceLocation WIDGETS = prefix("textures/gui/widgets.png");
 
     public HTLib(){
 //get mod event bus.

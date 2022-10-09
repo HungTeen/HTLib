@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import hungteen.htlib.ClientProxy;
+import hungteen.htlib.HTLib;
 import hungteen.htlib.util.MathUtil;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -92,17 +93,17 @@ public class RenderUtil {
         Lighting.setupFor3DItems();
     }
 
-//    public static void renderScrollBar(Screen screen, PoseStack stack, int leftPos, int topPos, int currentPos, int totalCount, int countPerPage, int barLen){
-//        RenderSystem.setShaderTexture(0, Util.WIDGETS);
-//        stack.pushPose();
-//        if(totalCount > countPerPage){
-//            final int len = MathUtil.getBarLen(currentPos, totalCount - countPerPage, barLen - 15);
-//            screen.blit(stack, leftPos, topPos + len, 15, 0, 12, 15);
-//        } else{
-//            screen.blit(stack, leftPos, topPos, 27, 0, 12, 15);
-//        }
-//        stack.popPose();
-//    }
+    public static void renderScrollBar(Screen screen, PoseStack stack, int leftPos, int topPos, int currentPos, int totalCount, int countPerPage, int barLen){
+        RenderSystem.setShaderTexture(0, HTLib.WIDGETS);
+        stack.pushPose();
+        if(totalCount > countPerPage){
+            final int len = MathUtil.getBarLen(currentPos, totalCount - countPerPage, barLen - 15);
+            screen.blit(stack, leftPos, topPos + len, 15, 0, 12, 15);
+        } else{
+            screen.blit(stack, leftPos, topPos, 27, 0, 12, 15);
+        }
+        stack.popPose();
+    }
 
     public static void setTexture(ResourceLocation texture){
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
