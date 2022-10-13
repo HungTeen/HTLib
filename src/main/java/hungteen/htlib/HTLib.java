@@ -1,6 +1,9 @@
 package hungteen.htlib;
 
 import com.mojang.logging.LogUtils;
+import hungteen.htlib.entity.HTBoat;
+import hungteen.htlib.entity.HTEntities;
+import hungteen.htlib.interfaces.IBoatType;
 import hungteen.htlib.network.NetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -32,6 +35,9 @@ public class HTLib {
 //get mod event bus.
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
+        HTEntities.ENTITY_TYPES.register(modBus);
+
+        HTBoat.register(IBoatType.DEFAULT);
     }
 
     public static void setUp(FMLCommonSetupEvent event) {
