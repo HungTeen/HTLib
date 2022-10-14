@@ -62,7 +62,7 @@ public class HTBoatItem extends Item {
 
             if (hitresult.getType() == HitResult.Type.BLOCK) {
                 HTBoat boat = new HTBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
-                boat.setType(this.type);
+                boat.setHTBoatType(this.type);
                 boat.setYRot(player.getYRot());
                 if (!level.noCollision(boat, boat.getBoundingBox())) {
                     return InteractionResultHolder.fail(itemstack);

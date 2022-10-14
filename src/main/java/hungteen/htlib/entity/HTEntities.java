@@ -18,9 +18,11 @@ public class HTEntities{
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =  DeferredRegister.create(ForgeRegistries.ENTITIES, HTLib.MOD_ID);
 
-    public static final RegistryObject<EntityType<HTBoat>> BOAT = registerEntityType(HTBoat::new, "boat", MobCategory.MISC);
+    public static final RegistryObject<EntityType<HTBoat>> BOAT = ENTITY_TYPES.register("boat", () -> {
+        return EntityType.Builder.<HTBoat>of(HTBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).build(HTLib.prefix("boat").toString());
+    });
 
-    private static <T extends Entity> RegistryObject<EntityType<T>> registerEntityType(EntityType.EntityFactory factory, String name, MobCategory classification){
-        return ENTITY_TYPES.register(name, () -> EntityType.Builder.of(factory, classification).build(HTLib.prefix(name).toString()));
-    }
+//    private static <T extends Entity> RegistryObject<EntityType<T>> registerEntityType(EntityType.EntityFactory factory, String name, MobCategory classification){
+//        return ENTITY_TYPES.register(name, () -> EntityType.Builder.of(factory, classification).build(HTLib.prefix(name).toString()));
+//    }
 }

@@ -4,6 +4,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.interfaces.IBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,11 +17,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @program: HTLib
@@ -43,7 +44,7 @@ public class HTBoat extends Boat {
         return Collections.unmodifiableCollection(BY_NAME.values());
     }
 
-    public HTBoat(EntityType<? extends Boat> entityType, Level level) {
+    public HTBoat(EntityType<? extends HTBoat> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -93,7 +94,12 @@ public class HTBoat extends Boat {
 
     @Override
     public Item getDropItem() {
-        return getHTBoatType().getDropItem();
+        return getHTBoatType().getBoatItem();
+    }
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

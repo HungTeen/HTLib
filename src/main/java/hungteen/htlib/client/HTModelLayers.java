@@ -13,7 +13,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 public class HTModelLayers {
 
     public static ModelLayerLocation createBoatModelName(IBoatType type) {
-        return createLocation(type.getModID(), "boat/" + type.getName(), "main");
+        return createLocation(type.getModID(), "boat/" + type.getName(), "boat");
     }
 
     public static ModelLayerLocation createLocation(String modId, String name, String part) {

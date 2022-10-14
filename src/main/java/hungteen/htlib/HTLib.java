@@ -4,8 +4,12 @@ import com.mojang.logging.LogUtils;
 import hungteen.htlib.entity.HTBoat;
 import hungteen.htlib.entity.HTEntities;
 import hungteen.htlib.interfaces.IBoatType;
+import hungteen.htlib.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.network.NetworkHandler;
+import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -42,6 +46,10 @@ public class HTLib {
 
     public static void setUp(FMLCommonSetupEvent event) {
         NetworkHandler.init();
+
+        HTBoat.getBoatTypes().forEach(type -> {
+            DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type));
+        });
     }
 
     /**

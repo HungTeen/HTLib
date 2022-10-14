@@ -2,6 +2,7 @@ package hungteen.htlib.interfaces;
 
 import hungteen.htlib.entity.HTBoat;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -29,6 +30,11 @@ public interface IBoatType extends INameEntry {
         public Block getPlanks() {
             return Blocks.OAK_PLANKS;
         }
+
+        @Override
+        public Item getBoatItem() {
+            return Items.OAK_BOAT;
+        }
     };
 
     Block getPlanks();
@@ -36,6 +42,6 @@ public interface IBoatType extends INameEntry {
     /**
      * {@link HTBoat#getDropItem()}
      */
-    Item getDropItem();
+    Item getBoatItem();
 
 }
