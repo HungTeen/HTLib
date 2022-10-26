@@ -1,6 +1,7 @@
 package hungteen.htlib.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -17,12 +18,12 @@ public class MathUtil {
      */
     public static int getBarLen(int num, int maxNum, int maxLen) {
         final int percent = num * maxLen / maxNum;
-        if(percent == 0 && num != 0) {
+        if(percent <= 0 && num != 0) {
             return 1;
-        } else if(percent == maxLen && num != maxNum) {
+        } else if(percent >= maxLen && num != maxNum) {
             return maxLen - 1;
         }
-        return percent;
+        return Mth.clamp(percent, 0, maxLen);
     }
 
     /**

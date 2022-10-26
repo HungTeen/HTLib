@@ -1,6 +1,7 @@
 package hungteen.htlib.interfaces;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 /**
  * 很多模组自定义的注册项是需要保存或显示的，故需要名字来区分显示。
@@ -10,5 +11,5 @@ public interface IComponentEntry extends INameEntry {
     /**
      * 获取文本显示。
      */
-    Component getComponent();
+    MutableComponent getComponent();
 }

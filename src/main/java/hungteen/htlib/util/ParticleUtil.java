@@ -4,6 +4,7 @@ import hungteen.htlib.network.NetworkHandler;
 import hungteen.htlib.network.SpawnParticlePacket;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -46,6 +47,29 @@ public class ParticleUtil {
         final float speedY = world.random.nextFloat() * verticalSpeed;
         final float speedZ = (world.random.nextFloat() - 0.5F) * horizontalSpeed * 2;
         spawnParticles(world, type, pos, speedX, speedY, speedZ);
+    }
+
+    public static void spawnLineMovingParticle(Level world, ParticleOptions type, Vec3 origin, Vec3 target, int particleCountEach, double offsetScale, double speedScale) {
+        spawnLineMovingParticle(world, type, origin, target, 1, particleCountEach, offsetScale, speedScale);
+    }
+
+    /**
+     * Spawn Line Moving Particle from origin to target.
+     * @param particleRatio How many spawn point for particle.
+     * @param particleCountEach How many particles to spawn at each point.
+     * @param offsetScale offset surround the spawn point.
+     * @param speedScale speed of particle.
+     */
+    public static void spawnLineMovingParticle(Level world, ParticleOptions type, Vec3 origin, Vec3 target, float particleRatio, int particleCountEach, double offsetScale, double speedScale) {
+        final double distance = origin.distanceTo(target);
+        final int particleNum = Mth.ceil(distance * particleRatio);
+        for(int i = 0; i < particleNum; ++ i){
+            for(int j = 0; j < particleCountEach; ++ j){
+                final Vec3 pos = origin.add(target.subtract(origin).normalize().scale(Math.max(1, distance - 2) / particleNum * (i + 1) / particleRatio)).add(MathUtil.getRandomVec3(world.getRandom(), offsetScale));
+                final Vec3 speed = target.subtract(origin).normalize().scale(speedScale);
+                spawnParticles(world, type, pos, speed.x, speed.y, speed.z);
+            }
+        }
     }
 
     /**

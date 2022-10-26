@@ -1,5 +1,6 @@
 package hungteen.htlib.util;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -23,6 +24,10 @@ public class EntityUtil {
                 .filter(predicate)
                 .sorted(Comparator.comparing(ForgeRegistries.ENTITIES::getKey))
                 .collect(Collectors.toList());
+    }
+
+    public static boolean isEntityValid(Entity entity) {
+        return entity != null && entity.isAlive();
     }
 
 }
