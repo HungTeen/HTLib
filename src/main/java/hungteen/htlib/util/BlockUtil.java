@@ -1,8 +1,10 @@
 package hungteen.htlib.util;
 
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.event.world.BlockEvent;
@@ -26,6 +28,14 @@ public class BlockUtil {
      * Axe Strip when {@link hungteen.htlib.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
      */
     public static final Map<Block, Block> STRIPPABLES = new HashMap<>();
+
+    public static boolean stillValid(Player player, BlockEntity entity) {
+        if (player.level.getBlockEntity(entity.getBlockPos()) != entity) {
+            return false;
+        } else {
+            return player.distanceToSqr(MathUtil.toVector(entity.getBlockPos())) <= 64;
+        }
+    }
 
     /**
      * remember to subscribe {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}.
