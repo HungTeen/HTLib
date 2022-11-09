@@ -66,6 +66,20 @@ public class BlockHelper extends RegistryHelper<Block>{
     }
 
     /**
+     * Can block be stripped by Axe.
+     */
+    public static boolean canBeStripped(Block block){
+        return STRIPPABLES.containsKey(block);
+    }
+
+    /**
+     * Get the stripped result block.
+     */
+    public static Block getStrippedBlock(Block block){
+        return STRIPPABLES.getOrDefault(block, block);
+    }
+
+    /**
      * Set property only when there is a property for state.
      */
     public static <T extends Comparable<T>> BlockState setProperty(BlockState state, Property<T> property, T value) {

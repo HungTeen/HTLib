@@ -21,8 +21,8 @@ public class HTBlockEvents {
     @SubscribeEvent
     public static void onToolModifyBlock(BlockEvent.BlockToolModificationEvent event){
         if(event.getToolAction() == ToolActions.AXE_STRIP){
-            if(! event.isSimulated() && BlockHelper.STRIPPABLES.containsKey(event.getFinalState().getBlock())){
-                final Block newBlock = BlockHelper.STRIPPABLES.get(event.getFinalState().getBlock());
+            if(! event.isSimulated() && BlockHelper.canBeStripped(event.getFinalState().getBlock())){
+                final Block newBlock = BlockHelper.getStrippedBlock(event.getFinalState().getBlock());
                 final BlockState newState = newBlock.defaultBlockState().setValue(RotatedPillarBlock.AXIS, event.getFinalState().getValue(RotatedPillarBlock.AXIS));
                 event.setFinalState(newState);
             }

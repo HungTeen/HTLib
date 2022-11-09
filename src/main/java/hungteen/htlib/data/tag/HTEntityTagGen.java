@@ -22,7 +22,7 @@ public class HTEntityTagGen extends EntityTypeTagsProvider {
     }
 
     protected List<EntityType<?>> getFilterTypes(Predicate<EntityType<?>> predicate) {
-        return EntityHelper.getFilterTypes(predicate);
+        return EntityHelper.getFilterEntityTypes(predicate);
     }
 
     @Override
