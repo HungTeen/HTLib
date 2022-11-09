@@ -1,4 +1,4 @@
-package hungteen.htlib.util;
+package hungteen.htlib.util.helper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -9,7 +9,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
  * @author: HungTeen
  * @create: 2022-10-07 22:55
  **/
-public class WorldUtil {
+public class WorldHelper {
 
     /**
      * @param pos center position.
@@ -18,7 +18,7 @@ public class WorldUtil {
      * @return result position.
      */
     public static BlockPos getSuitableHeightRandomPos(Level world, BlockPos pos, int minR, int maxR) {
-        BlockPos offset = MathUtil.getRandomRangePos(world.random, minR, maxR);
+        BlockPos offset = RandomHelper.blockPosRange(world.random, minR, maxR);
         return getSuitableHeightPos(world, pos.offset(offset.getX(), 0, offset.getZ()));
     }
 

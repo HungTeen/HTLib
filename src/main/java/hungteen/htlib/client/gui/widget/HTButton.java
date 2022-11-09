@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -21,7 +21,7 @@ public abstract class HTButton extends Button {
     }
 
     public HTButton(ResourceLocation location, int x, int y, int width, int height, String text, Button.OnPress onPress) {
-        super(x, y, width, height, new TextComponent(text), onPress);
+        super(x, y, width, height, Component.literal(text), onPress);
         this.widgets = location;
     }
 

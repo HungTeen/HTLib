@@ -35,6 +35,11 @@ public interface IBoatType extends INameEntry {
         public Item getBoatItem() {
             return Items.OAK_BOAT;
         }
+
+        @Override
+        public Item getChestBoatItem() {
+            return Items.OAK_CHEST_BOAT;
+        }
     };
 
     Block getPlanks();
@@ -43,5 +48,10 @@ public interface IBoatType extends INameEntry {
      * {@link HTBoat#getDropItem()}
      */
     Item getBoatItem();
+
+    /**
+     * {@link hungteen.htlib.entity.HTChestBoat#getDropItem()}
+     */
+    Item getChestBoatItem();
 
 }

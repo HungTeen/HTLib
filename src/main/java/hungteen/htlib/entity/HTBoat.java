@@ -49,7 +49,11 @@ public class HTBoat extends Boat {
     }
 
     public HTBoat(Level level, double x, double y, double z) {
-        super(level, x, y, z);
+        this(HTEntities.BOAT.get(), level);
+        this.setPos(x, y, z);
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
     }
 
     @Override

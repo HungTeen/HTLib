@@ -1,11 +1,9 @@
-package hungteen.htlib.util;
+package hungteen.htlib.util.helper;
 
 import hungteen.htlib.HTLib;
 import hungteen.htlib.network.NetworkHandler;
 import hungteen.htlib.network.PlaySoundPacket;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +20,7 @@ import java.util.Objects;
  * @author: HungTeen
  * @create: 2022-09-25 15:56
  **/
-public class PlayerUtil {
+public class PlayerHelper {
 
     public static Player getClientPlayer() {
         return HTLib.PROXY.getPlayer();
@@ -30,7 +28,7 @@ public class PlayerUtil {
 
     public static void playClientSound(Player player, SoundEvent ev) {
         if(ev != null) {
-            NetworkHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getRegistryName().toString()));
+            NetworkHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getLocation().toString()));
         }
     }
 
@@ -42,7 +40,7 @@ public class PlayerUtil {
 
     public static void sendSubTitleToPlayer(Player player, Component text) {
         if(player instanceof ServerPlayer) {
-            sendTitleToPlayer(player, new TextComponent(""));
+            sendTitleToPlayer(player, Component.empty());
             ((ServerPlayer) player).connection.send(new ClientboundSetSubtitleTextPacket(text));
         }
     }
@@ -57,7 +55,7 @@ public class PlayerUtil {
      * send a system chat message to player.
      */
     public static void sendMsgTo(Player player, Component text) {
-        player.sendMessage(text, Util.NIL_UUID);
+        player.sendSystemMessage(text);
     }
 
     /**

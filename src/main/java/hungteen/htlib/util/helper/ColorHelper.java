@@ -1,11 +1,13 @@
-package hungteen.htlib.util;
+package hungteen.htlib.util.helper;
+
+import hungteen.htlib.util.Triple;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 23:10
  **/
-public class ColorUtil {
+public class ColorHelper {
 
     /* Red */
     public static final int RED = 16711680;
@@ -76,16 +78,16 @@ public class ColorUtil {
     public static final int DRUG_ROOT = toRGB(158, 190, 58);
     public static final int ICE_ROOT = toRGB(69, 213, 228);
 
-    public static int toRGB(int r, int g, int b){
-        return toRGB(Triple.of(r, g, b));
+    public static int toRGB(int red, int green, int blue){
+        return toRGB(Triple.of(red, green, blue));
     }
 
     public static int toRGB(Triple<Integer, Integer, Integer> triple){
-        return triple.getLeft() * 255 * 255 + triple.getMid() * 255 + triple.getRight();
+        return (triple.getLeft() << 16) | (triple.getMid() << 8) | triple.getRight();
     }
 
     public static Triple<Integer, Integer, Integer> getRGB(int rgb){
-        return Triple.of(rgb / 255 / 255, rgb / 255 % 255, rgb % 255);
+        return Triple.of((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
     }
 
 }

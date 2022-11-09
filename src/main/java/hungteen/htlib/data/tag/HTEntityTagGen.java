@@ -1,14 +1,12 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.util.EntityUtil;
+import hungteen.htlib.util.helper.EntityHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -24,7 +22,7 @@ public class HTEntityTagGen extends EntityTypeTagsProvider {
     }
 
     protected List<EntityType<?>> getFilterTypes(Predicate<EntityType<?>> predicate) {
-        return EntityUtil.getFilterTypes(predicate);
+        return EntityHelper.getFilterTypes(predicate);
     }
 
     @Override

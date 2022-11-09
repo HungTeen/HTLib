@@ -1,10 +1,8 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.util.BlockUtil;
-import hungteen.htlib.util.ItemUtil;
+import hungteen.htlib.util.helper.BlockHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +22,7 @@ public class HTBlockTagGen extends BlockTagsProvider {
     }
 
     protected List<Block> getFilterItems(Predicate<Block> predicate) {
-        return BlockUtil.getFilterBlocks(predicate);
+        return BlockHelper.getFilterBlocks(predicate);
     }
 
     @Override

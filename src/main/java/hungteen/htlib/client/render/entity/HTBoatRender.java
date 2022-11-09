@@ -10,7 +10,6 @@ import hungteen.htlib.entity.HTBoat;
 import hungteen.htlib.interfaces.IBoatType;
 import hungteen.htlib.util.Pair;
 import net.minecraft.client.model.BoatModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.BoatRenderer;
@@ -21,9 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.Boat;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * @program: HTLib
@@ -34,14 +31,18 @@ public class HTBoatRender extends EntityRenderer<HTBoat> {
 
     private final Map<IBoatType, Pair<ResourceLocation, BoatModel>> boatResources;
 
-    public HTBoatRender(EntityRendererProvider.Context context) {
+    public HTBoatRender(EntityRendererProvider.Context context, boolean hasChest) {
         super(context);
         this.shadowRadius = 0.8F;
         this.boatResources = HTBoat.getBoatTypes().stream().collect(ImmutableMap.toImmutableMap((type) -> {
             return type;
         }, (type) -> {
-            return Pair.of(new ResourceLocation(type.getModID(), "textures/entity/boat/" + type.getName() + ".png"), new BoatModel(context.bakeLayer(HTModelLayers.createBoatModelName(type))));
+            return Pair.of(new ResourceLocation(type.getModID(), getTextureLocation(type, hasChest)), new BoatModel(context.bakeLayer(HTModelLayers.createBoatModelName(type)), hasChest));
         }));
+    }
+
+    private static String getTextureLocation(IBoatType type, boolean hasChest) {
+        return "textures/entity/" + (hasChest ? "chest_" : "") + "boat/" + type.getName() + ".png";
     }
 
     /**

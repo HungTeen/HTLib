@@ -1,6 +1,6 @@
 package hungteen.htlib.client.gui.widget;
 
-import hungteen.htlib.util.MathUtil;
+import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class DisplayField {
     }
 
     public boolean isInField(int posX, int posY) {
-        return MathUtil.isInArea(posX, posY, this.x, this.y, this.width, this.height);
+        return MathHelper.isInArea(posX, posY, this.x, this.y, this.width, this.height);
     }
 
     public List<Component> getTexts() {

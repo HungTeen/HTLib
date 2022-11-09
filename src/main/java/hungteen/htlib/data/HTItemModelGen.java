@@ -1,7 +1,6 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
-import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -9,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +22,24 @@ public abstract class HTItemModelGen extends ItemModelProvider {
 
     protected final Set<Item> addedItems = new HashSet<>();
 
-    public HTItemModelGen(DataGenerator generator, String modid, ExistingFileHelper helper) {
-        super(generator, modid, helper);
+    public HTItemModelGen(DataGenerator generator, String modId, ExistingFileHelper helper) {
+        super(generator, modId, helper);
+    }
+
+    protected ResourceLocation key(Item item) {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
+
+    protected String name(Item item) {
+        return key(item).getPath();
+    }
+
+    protected ResourceLocation key(Block block) {
+        return ForgeRegistries.BLOCKS.getKey(block);
+    }
+
+    protected String name(Block block) {
+        return key(block).getPath();
     }
 
     /**
@@ -31,14 +47,14 @@ public abstract class HTItemModelGen extends ItemModelProvider {
      */
     protected void genSameModelsWithAdd(Item... items) {
         final Item first = items[0];
-        for (Item i : items) {
-            genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "item/" + first.getRegistryName().getPath()));
-            this.addedItems.add(i);
+        for (Item item : items) {
+            genNormal(name(item), HTLib.res(this.modid, "item/" + name(first)));
+            this.addedItems.add(item);
         }
     }
 
-    protected void genNormalModel(Item i) {
-        genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "item/" + i.getRegistryName().getPath()));
+    protected void genNormalModel(Item item) {
+        genNormal(name(item), HTLib.res(this.modid, "item/" + name(item)));
     }
 
     protected ItemModelBuilder genNormal(String name, ResourceLocation... layers) {
@@ -57,18 +73,18 @@ public abstract class HTItemModelGen extends ItemModelProvider {
         return builder;
     }
 
-    protected void genBlockModel(Block b) {
-        genBlockModel(b, b.getRegistryName().getPath());
+    protected void genBlockModel(Block block) {
+        genBlockModel(block, name(block));
     }
 
-    protected void genBlockModel(Block b, String path) {
-        withExistingParent(b.getRegistryName().getPath(), HTLib.res(this.modid, "block/" + path));
-        this.addedItems.add(b.asItem());
+    protected void genBlockModel(Block block, String path) {
+        withExistingParent(name(block), HTLib.res(this.modid, "block/" + path));
+        this.addedItems.add(block.asItem());
     }
 
-    protected void genItemModelWithBlock(Item i) {
-        genNormal(i.getRegistryName().getPath(), HTLib.res(this.modid, "block/" + i.getRegistryName().getPath()));
-        this.addedItems.add(i);
+    protected void genItemModelWithBlock(Item item) {
+        genNormal(name(item), HTLib.res(this.modid, "block/" + name(item)));
+        this.addedItems.add(item);
     }
 
     @Override

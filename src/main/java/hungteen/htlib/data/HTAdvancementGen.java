@@ -4,7 +4,8 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.advancements.AdvancementProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -47,11 +48,11 @@ public abstract class HTAdvancementGen extends AdvancementProvider {
         return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, true, displayChat, false);
     }
 
-    protected TranslatableComponent title(String name) {
-        return new TranslatableComponent("advancements." + this.modId + "." + name + ".title");
+    protected MutableComponent title(String name) {
+        return Component.translatable("advancements." + this.modId + "." + name + ".title");
     }
 
-    protected TranslatableComponent desc(String name) {
-        return new TranslatableComponent("advancements." + this.modId + "." + name + ".desc");
+    protected MutableComponent desc(String name) {
+        return Component.translatable("advancements." + this.modId + "." + name + ".desc");
     }
 }

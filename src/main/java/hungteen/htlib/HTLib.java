@@ -6,9 +6,7 @@ import hungteen.htlib.entity.HTEntities;
 import hungteen.htlib.interfaces.IBoatType;
 import hungteen.htlib.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.network.NetworkHandler;
-import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -35,8 +33,8 @@ public class HTLib {
     // WIDGETS.
     public static final ResourceLocation WIDGETS = prefix("textures/gui/widgets.png");
 
-    public HTLib(){
-//get mod event bus.
+    public HTLib() {
+        //get mod event bus.
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
         HTEntities.ENTITY_TYPES.register(modBus);
@@ -48,15 +46,16 @@ public class HTLib {
         NetworkHandler.init();
 
         HTBoat.getBoatTypes().forEach(type -> {
-            DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type));
+            DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
+            DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
         });
     }
 
     /**
      * get resource with mod prefix.
      */
-    public static ResourceLocation res(String modid, String name) {
-        return new ResourceLocation(modid, name);
+    public static ResourceLocation res(String modId, String name) {
+        return new ResourceLocation(modId, name);
     }
 
     /**
@@ -66,7 +65,15 @@ public class HTLib {
         return res(MOD_ID, name);
     }
 
-    public static Logger getLogger(){
+    public static boolean in(ResourceLocation resourceLocation){
+        return in(resourceLocation, MOD_ID);
+    }
+
+    public static boolean in(ResourceLocation resourceLocation, String modId){
+        return resourceLocation.getNamespace().equals(modId);
+    }
+
+    public static Logger getLogger() {
         return LOGGER;
     }
 

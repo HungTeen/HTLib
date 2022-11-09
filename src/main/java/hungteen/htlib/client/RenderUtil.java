@@ -7,8 +7,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import hungteen.htlib.ClientProxy;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.util.MathUtil;
-import net.minecraft.Util;
+import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -97,7 +96,7 @@ public class RenderUtil {
         RenderSystem.setShaderTexture(0, HTLib.WIDGETS);
         stack.pushPose();
         if(totalCount > countPerPage){
-            final int len = MathUtil.getBarLen(currentPos, totalCount - countPerPage, barLen - 15);
+            final int len = MathHelper.getBarLen(currentPos, totalCount - countPerPage, barLen - 15);
             screen.blit(stack, leftPos, topPos + len, 15, 0, 12, 15);
         } else{
             screen.blit(stack, leftPos, topPos, 27, 0, 12, 15);

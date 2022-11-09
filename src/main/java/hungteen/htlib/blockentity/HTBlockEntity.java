@@ -1,11 +1,10 @@
 package hungteen.htlib.blockentity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.Random;
 
 /**
  * @program: HTLib
@@ -18,7 +17,7 @@ public class HTBlockEntity extends BlockEntity {
         super(blockEntityType, blockPos, state);
     }
 
-    public Random getRandom(){
+    public RandomSource getRandom(){
         return this.level.getRandom();
     }
 

@@ -1,18 +1,14 @@
-package hungteen.htlib.util;
-
-import com.ibm.icu.util.ChineseCalendar;
+package hungteen.htlib.util.helper;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 23:08
  **/
-public class DateUtil {
+public class DateHelper {
 
     public static boolean isHalloween(){
         return getMonth() == 10 && getDay() == 31;

@@ -1,20 +1,30 @@
-package hungteen.htlib.util;
+package hungteen.htlib.util.helper;
 
 import hungteen.htlib.network.NetworkHandler;
 import hungteen.htlib.network.SpawnParticlePacket;
+import hungteen.htlib.util.Pair;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-09-29 22:33
  **/
-public class ParticleUtil {
+public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
 
+    private static final ParticleHelper HELPER = new ParticleHelper();
     /**
      * Spawn Particle at pos. <br>
      */
@@ -65,7 +75,7 @@ public class ParticleUtil {
         final int particleNum = Mth.ceil(distance * particleRatio);
         for(int i = 0; i < particleNum; ++ i){
             for(int j = 0; j < particleCountEach; ++ j){
-                final Vec3 pos = origin.add(target.subtract(origin).normalize().scale(Math.max(1, distance - 2) / particleNum * (i + 1) / particleRatio)).add(MathUtil.getRandomVec3(world.getRandom(), offsetScale));
+                final Vec3 pos = origin.add(target.subtract(origin).normalize().scale(Math.max(1, distance - 2) / particleNum * (i + 1) / particleRatio)).add(RandomHelper.vec3Range(world.getRandom(), offsetScale));
                 final Vec3 speed = target.subtract(origin).normalize().scale(speedScale);
                 spawnParticles(world, type, pos, speed.x, speed.y, speed.z);
             }
@@ -97,8 +107,34 @@ public class ParticleUtil {
         if(level.isClientSide){
             level.addParticle(particleType, x, y, z, speedX, speedY, speedZ);
         } else {
-            NetworkHandler.sendToNearByClient(level, new Vec3(x, y, z), 50, new SpawnParticlePacket(particleType.getType().getRegistryName().toString(), x, y, z, speedX, speedY, speedZ));
+            NetworkHandler.sendToNearByClient(level, new Vec3(x, y, z), 50, new SpawnParticlePacket(getKey(particleType.getType()).toString(), x, y, z, speedX, speedY, speedZ));
         }
+    }
+
+    /**
+     * Get predicate registry objects.
+     */
+    public static List<ParticleType<?>> getFilterParticleTypes(Predicate<ParticleType<?>> predicate) {
+        return HELPER.getFilterObjects(predicate);
+    }
+
+    /**
+     * Get all registered objects with keys.
+     */
+    public static Collection<Pair<ResourceKey<ParticleType<?>>, ParticleType<?>>> getParticleTypeWithKeys() {
+        return HELPER.getObjectWithKeys();
+    }
+
+    /**
+     * Get key of specific object.
+     */
+    public static ResourceLocation getKey(ParticleType<?> object) {
+        return HELPER.getResourceLocation(object);
+    }
+
+    @Override
+    public IForgeRegistry<ParticleType<?>> getForgeRegistry() {
+        return ForgeRegistries.PARTICLE_TYPES;
     }
 
 }

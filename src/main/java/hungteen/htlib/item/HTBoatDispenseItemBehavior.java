@@ -1,13 +1,13 @@
 package hungteen.htlib.item;
 
 import hungteen.htlib.entity.HTBoat;
+import hungteen.htlib.entity.HTChestBoat;
 import hungteen.htlib.interfaces.IBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -23,9 +23,11 @@ public class HTBoatDispenseItemBehavior extends DefaultDispenseItemBehavior {
 
     private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
     private final IBoatType type;
+    private final boolean hasChest;
 
-    public HTBoatDispenseItemBehavior(IBoatType type) {
+    public HTBoatDispenseItemBehavior(IBoatType type, boolean hasChest) {
         this.type = type;
+        this.hasChest = hasChest;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class HTBoatDispenseItemBehavior extends DefaultDispenseItemBehavior {
             d3 = 0.0D;
         }
 
-        HTBoat boat = new HTBoat(level, d0, d1 + d3, d2);
+        HTBoat boat = hasChest ? new HTChestBoat(level, d0, d1 + d3, d2) : new HTBoat(level, d0, d1 + d3, d2);
         boat.setHTBoatType(this.type);
         boat.setYRot(direction.toYRot());
         level.addFreshEntity(boat);

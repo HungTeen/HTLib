@@ -3,7 +3,6 @@ package hungteen.htlib.blockentity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -63,6 +62,6 @@ public abstract class ItemHandlerBlockEntity extends HTNameableBlockEntity {
 
     @Override
     protected Component getDefaultName() {
-        return new TextComponent("GrassCarp");
+        return Component.literal("GrassCarp");
     }
 }

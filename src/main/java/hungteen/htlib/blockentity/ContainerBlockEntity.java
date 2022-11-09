@@ -1,12 +1,11 @@
 package hungteen.htlib.blockentity;
 
-import hungteen.htlib.util.BlockUtil;
+import hungteen.htlib.util.helper.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
@@ -90,7 +89,7 @@ public abstract class ContainerBlockEntity extends HTNameableBlockEntity impleme
 
     @Override
     public boolean stillValid(Player player) {
-        return BlockUtil.stillValid(player, this);
+        return BlockHelper.stillValid(player, this);
     }
 
     @Override
@@ -100,7 +99,7 @@ public abstract class ContainerBlockEntity extends HTNameableBlockEntity impleme
 
     @Override
     protected Component getDefaultName() {
-        return TextComponent.EMPTY;
+        return Component.empty();
     }
 
     @Override

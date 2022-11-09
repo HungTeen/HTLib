@@ -10,10 +10,7 @@ import com.mojang.serialization.JsonOps;
 import hungteen.htlib.HTLib;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
+import net.minecraft.data.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -45,15 +42,15 @@ public abstract class HTCodecGen implements DataProvider {
     }
 
     @Override
-    public void run(HashCache cache){
+    public void run(CachedOutput cache){
 
     }
 
-    protected  <T> void registerCap(HashCache cache, RegistryAccess.RegistryData<T> data) {
+    protected  <T> void registerCap(CachedOutput cache, RegistryAccess.RegistryData<T> data) {
         register(cache, data.key(), access().ownedRegistryOrThrow(data.key()), data.codec());
     }
 
-    protected <E, T extends Registry<E>> void register(HashCache cache, ResourceKey<? extends T> key, T registry, Encoder<E> encoder) {
+    protected <E, T extends Registry<E>> void register(CachedOutput cache, ResourceKey<? extends T> key, T registry, Encoder<E> encoder) {
         registry.entrySet().forEach(entry -> {
             final ResourceLocation location = entry.getKey().location();
             if (location.getNamespace().equals(this.modId)) {
@@ -64,7 +61,7 @@ public abstract class HTCodecGen implements DataProvider {
         });
     }
 
-    protected <E> void register(Path location, HashCache cache, Encoder<E> encoder, E entry) {
+    protected <E> void register(Path location, CachedOutput cache, Encoder<E> encoder, E entry) {
         try {
             Optional<JsonElement> opt = encoder.encodeStart(ops, entry).resultOrPartial((s) -> {
                 HTLib.getLogger().error("Couldn't serialize element {}: {}", location, s);
@@ -86,7 +83,7 @@ public abstract class HTCodecGen implements DataProvider {
                         }
                     }
                 }
-                DataProvider.save(GSON, cache, opt.get(), location);
+                DataProvider.saveStable(cache, opt.get(), location);
             }
         } catch (IOException ioexception) {
             HTLib.getLogger().error("Couldn't save element {}", location, ioexception);

@@ -1,7 +1,7 @@
 package hungteen.htlib.client.gui.screen;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * @program: HTLib
@@ -16,7 +16,7 @@ public class HTScreen extends Screen {
     protected int imageHeight = 166;
 
     public HTScreen() {
-        super(new TextComponent(""));
+        super(Component.empty());
     }
 
     @Override
