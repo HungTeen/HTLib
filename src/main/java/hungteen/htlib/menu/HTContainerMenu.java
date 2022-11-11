@@ -1,11 +1,11 @@
 package hungteen.htlib.menu;
 
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -36,10 +36,24 @@ public abstract class HTContainerMenu extends AbstractContainerMenu {
     }
 
     public void addInventories(Container inventory, int leftX, int leftY, int rows, int columns, int startId){
+        addInventories(leftX, leftY, rows, columns, startId, (id, x, y) -> new Slot(inventory, id, x, y));
+    }
+
+    public void addInventories(int leftX, int leftY, int rows, int columns, int startId, ISlotSupplier supplier){
         for(int i = 0; i < rows; ++ i) {
             for(int j = 0; j < columns; ++ j) {
-                this.addSlot(new Slot(inventory, startId + j + i * columns, leftX + 18 * j, leftY + 18 * i));
+                this.addSlot(supplier.get(startId + j + i * columns, leftX + 18 * j, leftY + 18 * i));
             }
         }
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player player, int slotId) {
+        return ItemStack.EMPTY;
+    }
+    
+    public interface ISlotSupplier {
+
+        Slot get(int slotId, int posX, int posY);
     }
 }

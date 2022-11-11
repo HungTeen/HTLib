@@ -32,15 +32,19 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     }
 
     protected static String solid(){
-        return RenderType.solid().toString();
+        return RenderType.solid().name;
     }
 
     protected static String cutout(){
-        return RenderType.cutout().toString();
+        return RenderType.cutout().name;
+    }
+
+    protected static String cutoutMipped(){
+        return RenderType.cutoutMipped().name;
     }
 
     protected static String translucent(){
-        return RenderType.translucent().toString();
+        return RenderType.translucent().name;
     }
 
     protected ResourceLocation key(Block block) {
@@ -179,9 +183,9 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         this.addedBlocks.add(block);
     }
 
-    protected void slab(SlabBlock block, String renderType) {
+    protected void slab(SlabBlock block) {
         final ResourceLocation res = StringHelper.blockTexture(StringHelper.replace(key(block), "slab", "planks"));
-        slab(block, res, res, renderType);
+        slab(block, res, res, solid());
     }
 
     public void slab(SlabBlock block, ResourceLocation doubleSlab, ResourceLocation texture, String renderType) {
@@ -196,8 +200,8 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         this.addedBlocks.add(block);
     }
 
-    protected void pressPlate(PressurePlateBlock block, String renderType) {
-        pressPlate(block, StringHelper.blockTexture(StringHelper.replace(key(block), "pressure_plate", "planks")), renderType);
+    protected void pressPlate(PressurePlateBlock block) {
+        pressPlate(block, StringHelper.blockTexture(StringHelper.replace(key(block), "pressure_plate", "planks")), solid());
     }
 
     public void pressPlate(PressurePlateBlock block, ResourceLocation texture, String renderType) {

@@ -1,5 +1,7 @@
 package hungteen.htlib.util;
 
+import net.minecraft.util.RandomSource;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -101,7 +103,7 @@ public class WeightList<T> {
     /**
      * get the weight item randomly.
      */
-    public Optional<T> getRandomItem(Random rand) {
+    public Optional<T> getRandomItem(RandomSource rand) {
         if (this.totalWeight > 0) {
             final int pos = rand.nextInt(this.totalWeight);
             int now = 0;
@@ -118,7 +120,7 @@ public class WeightList<T> {
     /**
      * get the weight item randomly.
      */
-    public List<T> getRandomItems(Random rand, int itemCount, boolean different) {
+    public List<T> getRandomItems(RandomSource rand, int itemCount, boolean different) {
         final List<T> resultList = new ArrayList<>();
         final int len = getLen();
         while(Math.min(len, itemCount) > resultList.size()) {

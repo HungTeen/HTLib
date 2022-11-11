@@ -1,6 +1,7 @@
 package hungteen.htlib.item;
 
 import hungteen.htlib.entity.HTBoat;
+import hungteen.htlib.entity.HTChestBoat;
 import hungteen.htlib.interfaces.IBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.stats.Stats;
@@ -9,7 +10,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -33,10 +33,12 @@ public class HTBoatItem extends Item {
 
     private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
     private final IBoatType type;
+    private final boolean hasChest;
 
-    public HTBoatItem(Item.Properties properties, IBoatType type) {
+    public HTBoatItem(Item.Properties properties, IBoatType type, boolean hasChest) {
         super(properties);
         this.type = type;
+        this.hasChest = hasChest;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class HTBoatItem extends Item {
                 Vec3 vec31 = player.getEyePosition();
 
                 for (Entity entity : list) {
-                    AABB aabb = entity.getBoundingBox().inflate((double) entity.getPickRadius());
+                    AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
                     if (aabb.contains(vec31)) {
                         return InteractionResultHolder.pass(itemstack);
                     }
@@ -61,7 +63,7 @@ public class HTBoatItem extends Item {
             }
 
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                HTBoat boat = new HTBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
+                HTBoat boat = hasChest ? new HTChestBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z) : new HTBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
                 boat.setHTBoatType(this.type);
                 boat.setYRot(player.getYRot());
                 if (!level.noCollision(boat, boat.getBoundingBox())) {

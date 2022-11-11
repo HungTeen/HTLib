@@ -62,6 +62,10 @@ public class StringHelper {
         return new ResourceLocation(location.getNamespace(), location.getPath().replace(oldString, newString));
     }
 
+    public static ResourceLocation suffix(ResourceLocation location, String suffix){
+        return new ResourceLocation(location.getNamespace(), location.getPath() + suffix);
+    }
+
     /**
      * Get translated text.
      */

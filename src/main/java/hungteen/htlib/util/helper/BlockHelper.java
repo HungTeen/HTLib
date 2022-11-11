@@ -11,14 +11,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -32,6 +31,7 @@ public class BlockHelper extends RegistryHelper<Block>{
      * Axe Strip when {@link hungteen.htlib.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
      */
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
+    private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
     private static final BlockHelper HELPER = new BlockHelper();
     private static final BlockEntityHelper BLOCK_ENTITY_HELPER = new BlockEntityHelper();
 
@@ -63,6 +63,21 @@ public class BlockHelper extends RegistryHelper<Block>{
      */
     public static void registerAxeStrip(Block oldState, Block newState) {
         BlockHelper.STRIPPABLES.put(oldState, newState);
+    }
+
+    /**
+     * register wood type.
+     */
+    public static void registerWoodType(WoodType woodType){
+        WoodType.register(woodType);
+        WOOD_TYPES.add(woodType);
+    }
+
+    /**
+     * {@link hungteen.htlib.client.ClientRegister#clientSetUp(FMLClientSetupEvent)}
+     */
+    public static List<WoodType> getWoodTypes(){
+        return Collections.unmodifiableList(WOOD_TYPES);
     }
 
     /**
