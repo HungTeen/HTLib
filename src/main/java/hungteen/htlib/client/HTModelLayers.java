@@ -1,9 +1,8 @@
 package hungteen.htlib.client;
 
-import hungteen.htlib.interfaces.IBoatType;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.vehicle.Boat;
 
 /**
  * @program: HTLib

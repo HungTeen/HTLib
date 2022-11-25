@@ -1,6 +1,7 @@
 package hungteen.htlib.util.helper;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 
@@ -18,7 +19,7 @@ public class WorldHelper {
      * @return result position.
      */
     public static BlockPos getSuitableHeightRandomPos(Level world, BlockPos pos, int minR, int maxR) {
-        BlockPos offset = RandomHelper.blockPosRange(world.random, minR, maxR);
+        BlockPos offset = RandomHelper.squareArea(world.random, minR, maxR);
         return getSuitableHeightPos(world, pos.offset(offset.getX(), 0, offset.getZ()));
     }
 
@@ -29,5 +30,9 @@ public class WorldHelper {
     public static BlockPos getSuitableHeightPos(Level world, BlockPos pos) {
         int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
         return new BlockPos(pos.getX(), y, pos.getZ());
+    }
+
+    public static int getSurfaceHeight(Level world, double x, double z) {
+        return world.getHeight(Heightmap.Types.WORLD_SURFACE, Mth.floor(x), Mth.floor(z));
     }
 }

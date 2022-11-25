@@ -1,7 +1,7 @@
 package hungteen.htlib.util.helper;
 
-import hungteen.htlib.network.NetworkHandler;
-import hungteen.htlib.network.SpawnParticlePacket;
+import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.common.network.SpawnParticlePacket;
 import hungteen.htlib.util.Pair;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;

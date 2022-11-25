@@ -66,9 +66,9 @@ minecraft {
             workingDirectory project.file('run')
 
             property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', '${mod_id}'
+            property 'forge.logging.console.level', 'htlib'
 
-            args '--mod', 'examplemod', '--all',
+            args '--mod', 'htlib', '--all',
                     '--output', file('src/generated/resources/'),
                     '--existing', file('src/main/resources/'),
                     '--existing', file('src/generated/resources/')

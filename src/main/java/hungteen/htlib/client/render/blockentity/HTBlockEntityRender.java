@@ -1,7 +1,7 @@
 package hungteen.htlib.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import hungteen.htlib.blockentity.HTBlockEntity;
+import hungteen.htlib.common.blockentity.HTBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 

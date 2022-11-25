@@ -1,8 +1,8 @@
 package hungteen.htlib.client;
 
 import hungteen.htlib.client.render.entity.HTBoatRender;
-import hungteen.htlib.entity.HTBoat;
-import hungteen.htlib.entity.HTEntities;
+import hungteen.htlib.common.entity.HTBoat;
+import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.util.helper.BlockHelper;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.renderer.Sheets;

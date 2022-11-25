@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import hungteen.htlib.ClientProxy;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.client.Minecraft;

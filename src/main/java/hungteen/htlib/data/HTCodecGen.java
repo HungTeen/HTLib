@@ -54,8 +54,6 @@ public abstract class HTCodecGen implements DataProvider {
         registry.entrySet().forEach(entry -> {
             final ResourceLocation location = entry.getKey().location();
             if (location.getNamespace().equals(this.modId)) {
-                HTLib.getLogger().info(location.getPath());
-                Path otherPath = createPath(path, key.location(), location);
                 register(createPath(path, key.location(), location), cache, encoder, entry.getValue());
             }
         });

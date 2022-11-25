@@ -42,5 +42,9 @@ public class MathHelper {
         return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
+    public static BlockPos toBlockPos(Vec3 vec) {
+        return new BlockPos(vec);
+    }
+
 
 }

@@ -1,13 +1,17 @@
 package hungteen.htlib;
 
 import com.mojang.logging.LogUtils;
-import hungteen.htlib.entity.HTBoat;
-import hungteen.htlib.entity.HTEntities;
-import hungteen.htlib.interfaces.IBoatType;
-import hungteen.htlib.item.HTBoatDispenseItemBehavior;
-import hungteen.htlib.network.NetworkHandler;
+import hungteen.htlib.client.ClientProxy;
+import hungteen.htlib.common.entity.HTBoat;
+import hungteen.htlib.common.entity.HTEntities;
+import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
+import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.impl.placement.HTPlacements;
+import hungteen.htlib.test.TestCodecGen;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -37,7 +41,12 @@ public class HTLib {
         //get mod event bus.
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
+        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
+            event.getGenerator().addProvider(event.includeServer(), new TestCodecGen(event.getGenerator()));
+        });
         HTEntities.ENTITY_TYPES.register(modBus);
+        HTPlacements.register(modBus);
+        HTRegister.register(modBus);
 
         HTBoat.register(IBoatType.DEFAULT);
     }

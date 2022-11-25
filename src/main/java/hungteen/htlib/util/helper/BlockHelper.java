@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 public class BlockHelper extends RegistryHelper<Block>{
 
     /**
-     * Axe Strip when {@link hungteen.htlib.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
+     * Axe Strip when {@link hungteen.htlib.common.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
      */
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
     private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
