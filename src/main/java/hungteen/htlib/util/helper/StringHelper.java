@@ -19,6 +19,14 @@ public class StringHelper {
         return texture(modId, "gui/" + path);
     }
 
+    public static ResourceLocation containerTexture(String modId, String path){
+        return guiTexture(modId, "container/" + path);
+    }
+
+    public static ResourceLocation overlayTexture(String modId, String path){
+        return guiTexture(modId, "overlay/" + path);
+    }
+
     public static ResourceLocation entityTexture(String modId, String path){
         return texture(modId, "entity/" + path);
     }
@@ -63,7 +71,7 @@ public class StringHelper {
     }
 
     public static ResourceLocation suffix(ResourceLocation location, String suffix){
-        return new ResourceLocation(location.getNamespace(), location.getPath() + suffix);
+        return new ResourceLocation(location.getNamespace(), location.getPath() + "_" + suffix);
     }
 
     /**

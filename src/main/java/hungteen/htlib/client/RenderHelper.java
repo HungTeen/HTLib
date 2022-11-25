@@ -23,7 +23,9 @@ import net.minecraft.world.entity.LivingEntity;
  * @author: HungTeen
  * @create: 2022-10-06 23:16
  **/
-public class RenderUtil {
+public class RenderHelper {
+
+    public static final int ITEM_BAR_LEN = 13;
 
     /**
      * Render Entity on GUI.
