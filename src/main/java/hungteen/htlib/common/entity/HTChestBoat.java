@@ -61,6 +61,7 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         this.addChestVehicleSaveData(tag);
     }
 
+    @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.readChestVehicleSaveData(tag);
@@ -92,6 +93,7 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
 
     }
 
+    @Override
     public Item getDropItem() {
         return getHTBoatType().getChestBoatItem();
     }

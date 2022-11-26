@@ -13,52 +13,77 @@ import net.minecraft.world.phys.Vec3;
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/18 10:38
+ *
+ * centerOffset 中心点偏移，默认为不偏移。offset to the origin point, default to (0, 0, 0).
+ * excludeRadius 排除半径，此半径之内不考虑。points in the circle with this radius will be excluded to place.
+ * radius 放置半径。points in the circle with this radius but not in excludeRadius can be placed.
+ * onSurface 是否放置在地表。whether to place on the surface.
+ * heightOffset 不放置在地表，则使原坐标高度偏移。place at the specific height offset.
+ * isCircle 默认是圆心，否则是方形。default is circle, or it will be square.
  */
 public class CenterAreaPlacement extends SpawnPlacement {
 
-    public static final Codec<CenterAreaPlacement> CODEC = CenterAreaPlacementSetting.CODEC.xmap(CenterAreaPlacement::new, CenterAreaPlacement::getSetting);
-    private final CenterAreaPlacementSetting setting;
+    public static final Codec<CenterAreaPlacement> CODEC = RecordCodecBuilder.<CenterAreaPlacement>mapCodec(instance -> instance.group(
+            Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(CenterAreaPlacement::centerOffset),
+            Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(CenterAreaPlacement::excludeRadius),
+            Codec.DOUBLE.fieldOf("radius").forGetter(CenterAreaPlacement::radius),
+            Codec.BOOL.fieldOf("on_surface").forGetter(CenterAreaPlacement::onSurface),
+            Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(CenterAreaPlacement::heightOffset),
+            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(CenterAreaPlacement::isCircle)
+    ).apply(instance, CenterAreaPlacement::new)).codec();
+    private final Vec3 centerOffset;
+    private final double excludeRadius;
+    private final double radius;
+    private final boolean onSurface;
+    private final double heightOffset;
+    private final boolean isCircle;
 
-    public CenterAreaPlacement(CenterAreaPlacementSetting setting){
-        this.setting = setting;
-    }
-
-    public CenterAreaPlacementSetting getSetting() {
-        return setting;
+    public CenterAreaPlacement(Vec3 centerOffset, double excludeRadius, double radius, boolean onSurface, double heightOffset, boolean isCircle){
+        this.centerOffset = centerOffset;
+        this.excludeRadius = excludeRadius;
+        this.radius = radius;
+        this.onSurface = onSurface;
+        this.heightOffset = heightOffset;
+        this.isCircle = isCircle;
     }
 
     @Override
     public Vec3 getPlacePosition(ServerLevel world, Vec3 origin) {
-        final Vec3 offset = this.getSetting().isCircle() ?
-                RandomHelper.circleAreaVec(world.getRandom(), this.getSetting().excludeRadius(), this.getSetting().radius()) :
-                RandomHelper.squareAreaVec(world.getRandom(), this.getSetting().excludeRadius(), this.getSetting().radius());
-        final double placeHeight = this.getSetting().onSurface() ?
+        final Vec3 offset = this.isCircle() ?
+                RandomHelper.circleAreaVec(world.getRandom(), this.excludeRadius(), this.radius()) :
+                RandomHelper.squareAreaVec(world.getRandom(), this.excludeRadius(), this.radius());
+        final double placeHeight = this.onSurface() ?
                 WorldHelper.getSurfaceHeight(world, origin.x() + offset.x(), origin.z() + offset.z()) :
-                origin.y + this.getSetting().heightOffset();
+                origin.y + this.heightOffset();
         return new Vec3(origin.x() + offset.x(), placeHeight, origin.z() + offset.z());
     }
 
     @Override
     public ISpawnPlacementType<?> getType() {
-        return HTPlacements.CENTER_AREA_TYPE.get();
+        return HTPlacements.CENTER_AREA_TYPE;
     }
 
-    /**
-     * @param centerOffset 中心点偏移，默认为不偏移。offset to the origin point, default to (0, 0, 0).
-     * @param excludeRadius 排除半径，此半径之内不考虑。points in the circle with this radius will be excluded to place.
-     * @param radius 放置半径。points in the circle with this radius but not in excludeRadius can be placed.
-     * @param onSurface 是否放置在地表。whether to place on the surface.
-     * @param heightOffset 不放置在地表，则使原坐标高度偏移。place at the specific height offset.
-     * @param isCircle 默认是圆心，否则是方形。default is circle, or it will be square.
-     */
-    public record CenterAreaPlacementSetting(Vec3 centerOffset, double excludeRadius, double radius, boolean onSurface, double heightOffset, boolean isCircle){
-        public static final Codec<CenterAreaPlacementSetting> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(CenterAreaPlacementSetting::centerOffset),
-                Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(CenterAreaPlacementSetting::excludeRadius),
-                Codec.DOUBLE.fieldOf("radius").forGetter(CenterAreaPlacementSetting::radius),
-                Codec.BOOL.fieldOf("on_surface").forGetter(CenterAreaPlacementSetting::onSurface),
-                Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(CenterAreaPlacementSetting::heightOffset),
-                Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(CenterAreaPlacementSetting::isCircle)
-        ).apply(instance, CenterAreaPlacementSetting::new));
+    public Vec3 centerOffset() {
+        return centerOffset;
+    }
+
+    public double excludeRadius() {
+        return excludeRadius;
+    }
+
+    public double radius() {
+        return radius;
+    }
+
+    public boolean onSurface() {
+        return onSurface;
+    }
+
+    public double heightOffset() {
+        return heightOffset;
+    }
+
+    public boolean isCircle() {
+        return isCircle;
     }
 }

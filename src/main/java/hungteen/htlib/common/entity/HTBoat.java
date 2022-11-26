@@ -78,7 +78,7 @@ public class HTBoat extends Boat {
                         this.kill();
                         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                             for(int i = 0; i < 3; ++i) {
-                                this.spawnAtLocation(this.getBoatType().getPlanks());
+                                this.spawnAtLocation(this.getHTBoatType().getPlanks());
                             }
 
                             for(int j = 0; j < 2; ++j) {

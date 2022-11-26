@@ -1,4 +1,4 @@
-package hungteen.htlib.util.interfaces;
+package hungteen.htlib.api.interfaces;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -28,13 +28,6 @@ public interface ISimpleRegistry {
      */
     default MutableComponent getComponent(){
         return Component.empty();
-    }
-
-    /**
-     * 需要排序时的优先级，越大越靠前。
-     */
-    default int getSortPriority(){
-        return 100;
     }
 
     /**

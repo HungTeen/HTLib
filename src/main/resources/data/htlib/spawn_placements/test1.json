@@ -1,0 +1,6 @@
+{
+  "type": "htlib:absolute_area",
+  "position": [1, 1, 1],
+  "radius": 10,
+  "is_circle": true
+}

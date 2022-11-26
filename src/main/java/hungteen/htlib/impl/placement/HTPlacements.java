@@ -5,14 +5,10 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.SpawnPlacement;
 import hungteen.htlib.api.interfaces.ISpawnPlacementType;
 import hungteen.htlib.common.registry.HTCodecRegistry;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import hungteen.htlib.common.registry.HTRegistryManager;
+import hungteen.htlib.common.registry.HTSimpleRegistry;
 
-import java.util.function.Supplier;
+import java.util.List;
 
 /**
  * @author PangTeen
@@ -21,41 +17,52 @@ import java.util.function.Supplier;
  */
 public class HTPlacements {
 
-    public static final HTCodecRegistry<SpawnPlacement, ISpawnPlacementType<SpawnPlacement>>
-    public static final DeferredRegister<ISpawnPlacementType<?>> PLACEMENT_TYPES = DeferredRegister.create(HTLib.prefix("placement_type"), HTLib.MOD_ID);
-    public static final DeferredRegister<SpawnPlacement> PLACEMENTS = DeferredRegister.create(HTLib.prefix("spawn_placement"), HTLib.MOD_ID);
-    public static final Supplier<IForgeRegistry<ISpawnPlacementType<?>>> PLACEMENT_TYPE_REGISTRY = PLACEMENT_TYPES.makeRegistry(RegistryBuilder::new);
-    public static final Supplier<IForgeRegistry<SpawnPlacement>> PLACEMENT_REGISTRY = HTPlacements.PLACEMENTS.makeRegistry(() -> {
-        RegistryBuilder<SpawnPlacement> registryBuilder = new RegistryBuilder<>();
-        return registryBuilder.dataPackRegistry(HTPlacements.getCodec(), HTPlacements.getCodec());
+    public static final HTSimpleRegistry<ISpawnPlacementType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
+    public static final HTCodecRegistry<SpawnPlacement> PLACEMENTS = HTRegistryManager.create(SpawnPlacement.class, "spawn_placements", () -> {
+        return PLACEMENT_TYPES.byNameCodec().dispatch(SpawnPlacement::getType, ISpawnPlacementType::codec);
     });
 
     /* Placement types */
 
-    public static final RegistryObject<ISpawnPlacementType<CenterAreaPlacement>> CENTER_AREA_TYPE = PLACEMENT_TYPES.register("center_area", () -> () -> CenterAreaPlacement.CODEC);
-    public static final RegistryObject<ISpawnPlacementType<AbsoluteAreaPlacement>> ABSOLUTE_AREA_TYPE = PLACEMENT_TYPES.register("absolute_area", () -> () -> AbsoluteAreaPlacement.CODEC);
+    public static final ISpawnPlacementType<CenterAreaPlacement> CENTER_AREA_TYPE = new DefaultSpawnPlacement<>("center_area",  CenterAreaPlacement.CODEC);
+    public static final ISpawnPlacementType<AbsoluteAreaPlacement> ABSOLUTE_AREA_TYPE = new DefaultSpawnPlacement<>("absolute_area",  AbsoluteAreaPlacement.CODEC);
 
     /* Placements */
 
-    public static final RegistryObject<SpawnPlacement> TEST1 = PLACEMENTS.register("test1", () -> new CenterAreaPlacement(
-       new CenterAreaPlacement.CenterAreaPlacementSetting(
-               Vec3.ZERO, 10, 20.5, true, 0, true
-       )
-    ));
+//    public static final HTRegistryHolder<SpawnPlacement> TEST1 = PLACEMENTS.innerRegister(
+//            HTLib.prefix("test1"), new CenterAreaPlacement(
+//                    Vec3.ZERO, 10, 20.5, true, 0, true
+//            )
+//    );
+//
+//    public static final HTRegistryHolder<SpawnPlacement> TEST2 = PLACEMENTS.innerRegister(
+//            HTLib.prefix("test2"), new AbsoluteAreaPlacement(
+//                    Vec3.ZERO, 10, 20.5, true
+//            )
+//    );
 
-    public static final RegistryObject<SpawnPlacement> TEST2 = PLACEMENTS.register("test2", () -> new AbsoluteAreaPlacement(
-            new AbsoluteAreaPlacement.AbsoluteAreaPlacementSetting(
-                    Vec3.ZERO, 10, 20.5, true
-            )
-    ));
-
-    public static Codec<SpawnPlacement> getCodec() {
-        return HTPlacements.PLACEMENT_TYPE_REGISTRY.get().getCodec().dispatch(SpawnPlacement::getType, ISpawnPlacementType::codec);
+    /**
+     * {@link HTLib#HTLib()}
+     */
+    public static void registerStuffs(){
+        List.of(CENTER_AREA_TYPE, ABSOLUTE_AREA_TYPE).forEach(HTPlacements::registerPlacementType);
     }
 
-    public static void register(IEventBus bus){
-        PLACEMENTS.register(bus);
-        PLACEMENT_TYPES.register(bus);
+    public static void registerPlacementType(ISpawnPlacementType<?> type){
+        PLACEMENT_TYPES.register(type);
+    }
+
+    protected record DefaultSpawnPlacement<P extends SpawnPlacement>(String name, Codec<P> codec) implements ISpawnPlacementType<P> {
+
+        @Override
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public String getModID() {
+            return HTLib.MOD_ID;
+        }
     }
 
 }

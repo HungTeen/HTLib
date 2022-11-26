@@ -1,7 +1,6 @@
 package hungteen.htlib.api;
 
 import hungteen.htlib.api.interfaces.ISpawnPlacementType;
-import hungteen.htlib.common.registry.ICodecRegistry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
@@ -10,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:02
  */
-public abstract class SpawnPlacement implements ICodecRegistry {
+public abstract class SpawnPlacement {
 
     /**
      * Calculate the spawn point of entity.

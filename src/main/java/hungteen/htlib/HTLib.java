@@ -2,6 +2,7 @@ package hungteen.htlib;
 
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
+import hungteen.htlib.common.datapack.HTCodecLoader;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
@@ -11,7 +12,9 @@ import hungteen.htlib.test.TestCodecGen;
 import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -38,16 +41,22 @@ public class HTLib {
     public static final ResourceLocation WIDGETS = prefix("textures/gui/widgets.png");
 
     public HTLib() {
-        //get mod event bus.
+        /* Mod Bus Events */
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
         modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
             event.getGenerator().addProvider(event.includeServer(), new TestCodecGen(event.getGenerator()));
         });
         HTEntities.ENTITY_TYPES.register(modBus);
-        HTPlacements.register(modBus);
         HTRegister.register(modBus);
 
+        /* Forge Bus Events */
+        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        forgeBus.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, (event) -> {
+            event.addListener(new HTCodecLoader());
+        });
+
+        HTPlacements.registerStuffs();
         HTBoat.register(IBoatType.DEFAULT);
     }
 

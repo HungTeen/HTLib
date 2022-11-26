@@ -1,5 +1,6 @@
 package hungteen.htlib.util.interfaces;
 
+import hungteen.htlib.api.interfaces.ISimpleRegistry;
 import hungteen.htlib.common.entity.HTBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;

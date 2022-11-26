@@ -12,54 +12,65 @@ import net.minecraft.world.phys.Vec3;
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/18 10:38
+ *
+ * position: 绝对坐标。absolute coordinates.
+ * excludeRadius: 排除半径，此半径之内不考虑。points in the circle with this radius will be excluded to place.
+ * radius: 放置半径。points in the circle with this radius but not in excludeRadius can be placed.
+ * isCircle: 默认是圆心，否则是方形。default is circle, or it will be square.
  */
-public final class AbsoluteAreaPlacement extends SpawnPlacement {
+public class AbsoluteAreaPlacement extends SpawnPlacement {
 
-    public static final Codec<AbsoluteAreaPlacement> CODEC = AbsoluteAreaPlacementSetting.CODEC.xmap(AbsoluteAreaPlacement::new, AbsoluteAreaPlacement::getSetting);
-    private final AbsoluteAreaPlacementSetting setting;
+    public static final Codec<AbsoluteAreaPlacement> CODEC = RecordCodecBuilder.<AbsoluteAreaPlacement>mapCodec(instance -> instance.group(
+            Vec3.CODEC.fieldOf("position").forGetter(AbsoluteAreaPlacement::position),
+            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("exclude_radius", 0D).forGetter(AbsoluteAreaPlacement::excludeRadius),
+            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("radius", 0D).forGetter(AbsoluteAreaPlacement::radius),
+            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(AbsoluteAreaPlacement::isCircle)
+    ).apply(instance, AbsoluteAreaPlacement::new)).codec();
+    private final Vec3 position;
+    private final double excludeRadius;
+    private final double radius;
+    private final boolean isCircle;
 
-    public AbsoluteAreaPlacement(AbsoluteAreaPlacementSetting setting){
-        this.setting = setting;
-    }
-
-    public AbsoluteAreaPlacementSetting getSetting() {
-        return setting;
+    public AbsoluteAreaPlacement(Vec3 position, double excludeRadius, double radius, boolean isCircle){
+        this.position = position;
+        this.excludeRadius = excludeRadius;
+        this.radius = radius;
+        this.isCircle = isCircle;
     }
 
     @Override
     public Vec3 getPlacePosition(ServerLevel world, Vec3 origin) {
         if(canSpawn()){
-            final Vec3 offset = this.getSetting().isCircle() ?
-                    RandomHelper.circleAreaVec(world.getRandom(), this.getSetting().excludeRadius(), this.getSetting().radius()) :
-                    RandomHelper.squareAreaVec(world.getRandom(), this.getSetting().excludeRadius(), this.getSetting().radius());
-            return this.getSetting().position().add(offset);
+            final Vec3 offset = this.isCircle() ?
+                    RandomHelper.circleAreaVec(world.getRandom(), this.excludeRadius(), this.radius()) :
+                    RandomHelper.squareAreaVec(world.getRandom(), this.excludeRadius(), this.radius());
+            return this.position().add(offset);
         }
         return origin;
     }
 
     public boolean canSpawn(){
-        return this.getSetting().radius() >= this.getSetting().excludeRadius();
+        return this.radius() >= this.excludeRadius();
     }
 
     @Override
     public ISpawnPlacementType<?> getType() {
-        return HTPlacements.ABSOLUTE_AREA_TYPE.get();
+        return HTPlacements.ABSOLUTE_AREA_TYPE;
     }
 
-    /**
-     * @param position 绝对坐标。absolute coordinates.
-     * @param excludeRadius 排除半径，此半径之内不考虑。points in the circle with this radius will be excluded to place.
-     * @param radius 放置半径。points in the circle with this radius but not in excludeRadius can be placed.
-     * @param isCircle 默认是圆心，否则是方形。default is circle, or it will be square.
-     */
-    public record AbsoluteAreaPlacementSetting(Vec3 position, double excludeRadius, double radius, boolean isCircle){
+    public Vec3 position() {
+        return position;
+    }
 
-        public static final Codec<AbsoluteAreaPlacementSetting> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Vec3.CODEC.fieldOf("position").forGetter(AbsoluteAreaPlacementSetting::position),
-                Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("exclude_radius", 0D).forGetter(AbsoluteAreaPlacementSetting::excludeRadius),
-                Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("radius", 0D).forGetter(AbsoluteAreaPlacementSetting::radius),
-                Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(AbsoluteAreaPlacementSetting::isCircle)
-        ).apply(instance, AbsoluteAreaPlacementSetting::new));
+    public double excludeRadius() {
+        return excludeRadius;
+    }
 
+    public double radius() {
+        return radius;
+    }
+
+    public boolean isCircle() {
+        return isCircle;
     }
 }

@@ -1,5 +1,7 @@
 package hungteen.htlib.util.interfaces;
 
+import hungteen.htlib.api.interfaces.ISimpleRegistry;
+
 /**
  * @program: HTLib
  * @author: HungTeen
@@ -8,7 +10,7 @@ package hungteen.htlib.util.interfaces;
  * define range data type. <br>
  * use HashMap to store range data later.
  **/
-public interface IRangeData<T extends Number> extends IComponentEntry {
+public interface IRangeData<T extends Number> extends ISimpleRegistry {
 
     T defaultData();
 
