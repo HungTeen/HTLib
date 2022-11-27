@@ -8,6 +8,7 @@ import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.impl.placement.HTPlacements;
+import hungteen.htlib.impl.spawn.HTWaveSpawns;
 import hungteen.htlib.test.TestCodecGen;
 import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.resources.ResourceLocation;
@@ -57,6 +58,7 @@ public class HTLib {
         });
 
         HTPlacements.registerStuffs();
+        HTWaveSpawns.registerStuffs();
         HTBoat.register(IBoatType.DEFAULT);
     }
 

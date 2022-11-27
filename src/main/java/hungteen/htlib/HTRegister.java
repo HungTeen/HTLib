@@ -1,8 +1,8 @@
 package hungteen.htlib;
 
-import hungteen.htlib.api.CustomRaid;
-import hungteen.htlib.api.RaidWave;
-import hungteen.htlib.api.WaveSpawn;
+import hungteen.htlib.common.world.raid.RaidComponent;
+import hungteen.htlib.common.world.raid.WaveComponent;
+import hungteen.htlib.common.world.raid.SpawnComponent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -17,12 +17,12 @@ import java.util.function.Supplier;
  */
 public class HTRegister {
 
-    public static final DeferredRegister<CustomRaid> RAIDS = DeferredRegister.create(HTLib.prefix("custom_raid"), HTLib.MOD_ID);
-    public static final Supplier<IForgeRegistry<CustomRaid>> RAID_REGISTRY = RAIDS.makeRegistry(RegistryBuilder::new);
-    public static final DeferredRegister<RaidWave> WAVES = DeferredRegister.create(HTLib.prefix("raid_wave"), HTLib.MOD_ID);
-    public static final Supplier<IForgeRegistry<RaidWave>> WAVE_REGISTRY = WAVES.makeRegistry(RegistryBuilder::new);
-    public static final DeferredRegister<WaveSpawn> SPAWNS = DeferredRegister.create(HTLib.prefix("wave_spawn"), HTLib.MOD_ID);
-    public static final Supplier<IForgeRegistry<WaveSpawn>> SPAWN_REGISTRY = SPAWNS.makeRegistry(RegistryBuilder::new);
+    public static final DeferredRegister<RaidComponent> RAIDS = DeferredRegister.create(HTLib.prefix("custom_raid"), HTLib.MOD_ID);
+    public static final Supplier<IForgeRegistry<RaidComponent>> RAID_REGISTRY = RAIDS.makeRegistry(RegistryBuilder::new);
+    public static final DeferredRegister<WaveComponent> WAVES = DeferredRegister.create(HTLib.prefix("raid_wave"), HTLib.MOD_ID);
+    public static final Supplier<IForgeRegistry<WaveComponent>> WAVE_REGISTRY = WAVES.makeRegistry(RegistryBuilder::new);
+    public static final DeferredRegister<SpawnComponent> SPAWNS = DeferredRegister.create(HTLib.prefix("wave_spawn"), HTLib.MOD_ID);
+    public static final Supplier<IForgeRegistry<SpawnComponent>> SPAWN_REGISTRY = SPAWNS.makeRegistry(RegistryBuilder::new);
 
     public static void register(IEventBus bus){
         RAIDS.register(bus);

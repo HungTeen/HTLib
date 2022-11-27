@@ -2,11 +2,13 @@ package hungteen.htlib.impl.placement;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.SpawnPlacement;
-import hungteen.htlib.api.interfaces.ISpawnPlacementType;
+import hungteen.htlib.common.world.raid.PlaceComponent;
+import hungteen.htlib.util.interfaces.IPlaceComponentType;
 import hungteen.htlib.common.registry.HTCodecRegistry;
+import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -17,29 +19,21 @@ import java.util.List;
  */
 public class HTPlacements {
 
-    public static final HTSimpleRegistry<ISpawnPlacementType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
-    public static final HTCodecRegistry<SpawnPlacement> PLACEMENTS = HTRegistryManager.create(SpawnPlacement.class, "spawn_placements", () -> {
-        return PLACEMENT_TYPES.byNameCodec().dispatch(SpawnPlacement::getType, ISpawnPlacementType::codec);
-    });
+    public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
+    public static final HTCodecRegistry<PlaceComponent> PLACEMENTS = HTRegistryManager.create(PlaceComponent.class, "spawn_placements", HTPlacements::getCodec);
 
     /* Placement types */
 
-    public static final ISpawnPlacementType<CenterAreaPlacement> CENTER_AREA_TYPE = new DefaultSpawnPlacement<>("center_area",  CenterAreaPlacement.CODEC);
-    public static final ISpawnPlacementType<AbsoluteAreaPlacement> ABSOLUTE_AREA_TYPE = new DefaultSpawnPlacement<>("absolute_area",  AbsoluteAreaPlacement.CODEC);
+    public static final IPlaceComponentType<CenterAreaPlacement> CENTER_AREA_TYPE = new DefaultSpawnPlacement<>("center_area",  CenterAreaPlacement.CODEC);
+    public static final IPlaceComponentType<AbsoluteAreaPlacement> ABSOLUTE_AREA_TYPE = new DefaultSpawnPlacement<>("absolute_area",  AbsoluteAreaPlacement.CODEC);
 
     /* Placements */
 
-//    public static final HTRegistryHolder<SpawnPlacement> TEST1 = PLACEMENTS.innerRegister(
-//            HTLib.prefix("test1"), new CenterAreaPlacement(
-//                    Vec3.ZERO, 10, 20.5, true, 0, true
-//            )
-//    );
-//
-//    public static final HTRegistryHolder<SpawnPlacement> TEST2 = PLACEMENTS.innerRegister(
-//            HTLib.prefix("test2"), new AbsoluteAreaPlacement(
-//                    Vec3.ZERO, 10, 20.5, true
-//            )
-//    );
+    public static final HTRegistryHolder<PlaceComponent> DEFAULT = PLACEMENTS.innerRegister(
+            HTLib.prefix("default"), new CenterAreaPlacement(
+                    Vec3.ZERO, 0, 1, true, 0, true
+            )
+    );
 
     /**
      * {@link HTLib#HTLib()}
@@ -48,11 +42,15 @@ public class HTPlacements {
         List.of(CENTER_AREA_TYPE, ABSOLUTE_AREA_TYPE).forEach(HTPlacements::registerPlacementType);
     }
 
-    public static void registerPlacementType(ISpawnPlacementType<?> type){
+    public static void registerPlacementType(IPlaceComponentType<?> type){
         PLACEMENT_TYPES.register(type);
     }
 
-    protected record DefaultSpawnPlacement<P extends SpawnPlacement>(String name, Codec<P> codec) implements ISpawnPlacementType<P> {
+    public static Codec<PlaceComponent> getCodec(){
+        return PLACEMENT_TYPES.byNameCodec().dispatch(PlaceComponent::getType, IPlaceComponentType::codec);
+    }
+
+    protected record DefaultSpawnPlacement<P extends PlaceComponent>(String name, Codec<P> codec) implements IPlaceComponentType<P> {
 
         @Override
         public String getName() {

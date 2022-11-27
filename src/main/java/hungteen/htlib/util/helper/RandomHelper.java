@@ -82,21 +82,21 @@ public class RandomHelper {
     }
 
     /**
-     * square range area, it ignores y position.
+     * square range area, it ignores y getPosition.
      */
     public static BlockPos squareArea(RandomSource rand, double range) {
         return squareArea(rand, 0, range);
     }
 
     /**
-     * square range area, it ignores y position.
+     * square range area, it ignores y getPosition.
      */
     public static BlockPos squareArea(RandomSource rand, double minRadius, double maxRadius) {
         return MathHelper.toBlockPos(squareAreaVec(rand, minRadius, maxRadius));
     }
 
     /**
-     * square range area, it ignores y position.
+     * square range area, it ignores y getPosition.
      */
     public static Vec3 squareAreaVec(RandomSource rand, double minRadius, double maxRadius) {
         final double x = getSide(rand) * getMinMax(rand, minRadius, maxRadius);
@@ -105,21 +105,21 @@ public class RandomHelper {
     }
 
     /**
-     * circle range area, it ignores y position.
+     * circle range area, it ignores y getPosition.
      */
     public static BlockPos circleArea(RandomSource rand, double range) {
         return circleArea(rand, 0, range);
     }
 
     /**
-     * circle range area, it ignores y position.
+     * circle range area, it ignores y getPosition.
      */
     public static BlockPos circleArea(RandomSource rand, double minRadius, double maxRadius) {
         return MathHelper.toBlockPos(circleAreaVec(rand, minRadius, maxRadius));
     }
 
     /**
-     * circle range area, it ignores y position.
+     * circle range area, it ignores y getPosition.
      */
     public static Vec3 circleAreaVec(RandomSource rand, double minRadius, double maxRadius) {
         final double radius = getMinMax(rand, minRadius, maxRadius);

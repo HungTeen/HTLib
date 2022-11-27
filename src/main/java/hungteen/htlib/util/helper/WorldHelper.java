@@ -13,10 +13,10 @@ import net.minecraft.world.level.levelgen.Heightmap;
 public class WorldHelper {
 
     /**
-     * @param pos center position.
+     * @param pos center getPosition.
      * @param minR minimum distance.
      * @param maxR maximum distance.
-     * @return result position.
+     * @return result getPosition.
      */
     public static BlockPos getSuitableHeightRandomPos(Level world, BlockPos pos, int minR, int maxR) {
         BlockPos offset = RandomHelper.squareArea(world.random, minR, maxR);

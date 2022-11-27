@@ -1,6 +1,6 @@
-package hungteen.htlib.api;
+package hungteen.htlib.common.world.raid;
 
-import hungteen.htlib.api.interfaces.ISpawnPlacementType;
+import hungteen.htlib.util.interfaces.IPlaceComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
@@ -8,8 +8,10 @@ import net.minecraft.world.phys.Vec3;
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/18 10:02
+ *
+ * 决定了在哪里生成生物。
  */
-public abstract class SpawnPlacement {
+public abstract class PlaceComponent {
 
     /**
      * Calculate the spawn point of entity.
@@ -23,6 +25,6 @@ public abstract class SpawnPlacement {
      * Get the type of placement.
      * @return wave type.
      */
-    public abstract ISpawnPlacementType<?> getType();
+    public abstract IPlaceComponentType<?> getType();
 
 }
