@@ -2,6 +2,9 @@ package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.common.network.SpawnDummyEntityPacket;
+import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
@@ -9,6 +12,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @program: HTLib
@@ -21,48 +25,49 @@ public class DummyEntityManager extends SavedData {
     private final ServerLevel level;
     private final Map<Integer, DummyEntity> entityMap = Maps.newHashMap();
     private int currentEntityID = 1;
-    private int tick = 0;
 
     public DummyEntityManager(ServerLevel level) {
         this.level = level;
         this.setDirty();
     }
 
-//    /**
-//     * tick all raid in running.
-//     * {@link ChallengeManager#tickChallenges(World)}
-//     */
-//    public void tick() {
-//        Iterator<Challenge> iterator = this.challengeMap.values().iterator();
-//        while (iterator.hasNext()) {
-//            Challenge raid = iterator.next();
-//            if (! ConfigUtil.isRaidEnable()) {
-//                raid.remove();
-//            }
-//            if (raid.isRemoving()) {
-//                iterator.remove();
-//                this.setDirty();
-//            } else {
-//                this.world.getProfiler().push("Challenge Tick");
-//                raid.tick();
-//                this.world.getProfiler().pop();
-//            }
-//        }
-//
-//        if (++ this.tick % 200 == 0) {
-//            this.setDirty();
-//        }
-//    }
+    /**
+     * tick all raid in running.
+     * {@link HTLib#HTLib()}
+     */
+    public void tick() {
+        for (DummyEntity entity : this.entityMap.values()) {
+            this.level.getProfiler().push("Dummy Entity Tick");
+            entity.tick();
+            this.level.getProfiler().pop();
+        }
+
+        if (this.level.getGameTime() % 200 == 0) {
+            this.setDirty();
+        }
+    }
+
+    public void sync(boolean add, DummyEntity dummyEntity){
+        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
+            NetworkHandler.sendToClient(player, new SpawnDummyEntityPacket(add, dummyEntity));
+        });
+    }
 
     public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
         return get(serverLevel).entityMap.values().stream().toList();
     }
 
-//    public void sync(boolean add, int id){
-//        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-//            NetworkHandler.sendToClient(player, new FormationPacket(this.level.dimension(), add, this.level.getEntity(id).getId()));
-//        });
-//    }
+    public static <T extends DummyEntity> T createEntity(ServerLevel level, Function<Integer, T> function){
+        DummyEntityManager manager = get(level);
+        final int entityID = manager.getUniqueId();
+        T entity = function.apply(entityID);
+        manager.add(entity);
+        return entity;
+    }
+
+    public static void removeEntity(ServerLevel level, DummyEntity dummyEntity){
+        get(level).remove(dummyEntity);
+    }
 
     /**
      * 最初用实体实现踩的坑 ：<br>
@@ -74,35 +79,14 @@ public class DummyEntityManager extends SavedData {
     }
 
     private void remove(DummyEntity dummyEntity){
-        add(dummyEntity, true);
+        remove(dummyEntity, true);
     }
-
-//    /**
-//     * Only run when server started {@link hungteen.immortal.ImmortalMod#serverStarted(ServerStartedEvent)}.
-//     */
-//    public void update(){
-//        // remove formation that does not exist.
-//        this.dummyEntities.removeIf(id -> {
-//            if(! EntityHelper.isEntityValid(this.level.getEntity(id))){
-//                this.sync(false, id);
-//                return true;
-//            }
-//            return false;
-//        });
-//        // add existed formation that out of the set.
-//        this.level.getEntities().getAll().forEach(entity -> {
-//            if(entity instanceof Formation && ! this.dummyEntities.contains(entity.getUUID())){
-//                this.add((Formation) entity);
-//            }
-//        });
-//        this.setDirty();
-//    }
 
     private void add(DummyEntity entity, boolean sync){
         this.entityMap.put(entity.getEntityID(), entity);
         this.setDirty();
         if(sync) {
-            this.sync(true, id);
+            this.sync(true, entity);
         }
     }
 
@@ -110,7 +94,7 @@ public class DummyEntityManager extends SavedData {
         this.entityMap.remove(entity.getEntityID());
         this.setDirty();
         if(sync){
-            this.sync(false, id);
+            this.sync(false, entity);
         }
     }
 

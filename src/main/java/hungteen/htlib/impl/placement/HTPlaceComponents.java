@@ -17,10 +17,10 @@ import java.util.List;
  * @program HTLib
  * @data 2022/11/18 10:37
  */
-public class HTPlacements {
+public class HTPlaceComponents {
 
     public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
-    public static final HTCodecRegistry<PlaceComponent> PLACEMENTS = HTRegistryManager.create(PlaceComponent.class, "spawn_placements", HTPlacements::getCodec);
+    public static final HTCodecRegistry<PlaceComponent> PLACEMENTS = HTRegistryManager.create(PlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec);
 
     /* Placement types */
 
@@ -39,7 +39,7 @@ public class HTPlacements {
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-        List.of(CENTER_AREA_TYPE, ABSOLUTE_AREA_TYPE).forEach(HTPlacements::registerPlacementType);
+        List.of(CENTER_AREA_TYPE, ABSOLUTE_AREA_TYPE).forEach(HTPlaceComponents::registerPlacementType);
     }
 
     public static void registerPlacementType(IPlaceComponentType<?> type){

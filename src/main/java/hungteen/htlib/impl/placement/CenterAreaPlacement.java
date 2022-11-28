@@ -55,7 +55,7 @@ public class CenterAreaPlacement extends BaseAreaPlacement {
 
     @Override
     public IPlaceComponentType<?> getType() {
-        return HTPlacements.CENTER_AREA_TYPE;
+        return HTPlaceComponents.CENTER_AREA_TYPE;
     }
 
     public Vec3 getCenterOffset() {

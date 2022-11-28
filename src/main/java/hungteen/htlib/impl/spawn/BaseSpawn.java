@@ -3,7 +3,7 @@ package hungteen.htlib.impl.spawn;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
-import hungteen.htlib.impl.placement.HTPlacements;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -19,13 +19,13 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 18:14
  **/
-public abstract class BaseWaveSpawn extends SpawnComponent {
+public abstract class BaseSpawn extends SpawnComponent {
 
     private final EntityType<?> entityType;
     private final CompoundTag entityNBT;
     private final Optional<PlaceComponent> spawnPlacement;
 
-    protected BaseWaveSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement) {
+    protected BaseSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement) {
         this.entityType = entityType;
         this.entityNBT = entityNBT;
         this.spawnPlacement = spawnPlacement;
@@ -61,7 +61,7 @@ public abstract class BaseWaveSpawn extends SpawnComponent {
     }
 
     public PlaceComponent getSpawnPlacement(ServerLevel level){
-        return this.getSpawnPlacement().orElse(HTPlacements.DEFAULT.getValue());
+        return this.getSpawnPlacement().orElse(HTPlaceComponents.DEFAULT.getValue());
     }
 
     public EntityType<?> getEntityType() {

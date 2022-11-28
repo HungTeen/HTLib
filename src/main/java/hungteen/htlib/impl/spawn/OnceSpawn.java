@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
-import hungteen.htlib.impl.placement.HTPlacements;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 17:56
  **/
-public class OnceWaveSpawn extends BaseWaveSpawn {
+public class OnceSpawn extends BaseSpawn {
 
     /**
      * entityType : 生物的类型，The spawn type of the entity.
@@ -27,17 +27,17 @@ public class OnceWaveSpawn extends BaseWaveSpawn {
      * spawnTick : 生成的时间，When to spawn the entity.
      * spawnCount : 生成数量，How many entities to spawn.
      */
-    public static final Codec<OnceWaveSpawn> CODEC = RecordCodecBuilder.<OnceWaveSpawn>mapCodec(instance -> instance.group(
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(OnceWaveSpawn::getEntityType),
-            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(OnceWaveSpawn::getEntityNBT),
-            Codec.optionalField("placement_type", HTPlacements.getCodec()).forGetter(OnceWaveSpawn::getSpawnPlacement),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_tick").forGetter(OnceWaveSpawn::getSpawnTick),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceWaveSpawn::getSpawnCount)
-    ).apply(instance, OnceWaveSpawn::new)).codec();
+    public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
+            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(OnceSpawn::getEntityType),
+            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(OnceSpawn::getEntityNBT),
+            Codec.optionalField("placement_type", HTPlaceComponents.getCodec()).forGetter(OnceSpawn::getSpawnPlacement),
+            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_tick").forGetter(OnceSpawn::getSpawnTick),
+            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
+    ).apply(instance, OnceSpawn::new)).codec();
     private final int spawnTick;
     private final int spawnCount;
 
-    public OnceWaveSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement, int spawnTick, int spawnCount){
+    public OnceSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement, int spawnTick, int spawnCount){
         super(entityType, entityNBT, spawnPlacement);
         this.spawnTick = spawnTick;
         this.spawnCount = spawnCount;
@@ -62,7 +62,7 @@ public class OnceWaveSpawn extends BaseWaveSpawn {
 
     @Override
     public ISpawnComponentType<?> getType() {
-        return HTWaveSpawns.ONCE_SPAWN_TYPE;
+        return HTSpawnComponents.ONCE_SPAWN_TYPE;
     }
 
     public int getSpawnTick() {

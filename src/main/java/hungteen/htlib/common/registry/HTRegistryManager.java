@@ -39,8 +39,12 @@ public class HTRegistryManager {
         return registry;
     }
 
-    public static List<String> getRegistries(){
+    public static List<String> getRegistryNames(){
         return CODEC_REGISTRIES.keySet().stream().toList();
+    }
+
+    public static List<HTCodecRegistry<?>> getRegistries(){
+        return CODEC_REGISTRIES.values().stream().toList();
     }
 
 }

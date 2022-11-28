@@ -39,7 +39,7 @@ public class HTCodecLoader extends SimpleJsonResourceReloadListener {
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager manager, ProfilerFiller filler) {
         Map<ResourceLocation, JsonElement> map = Maps.newHashMap();
-        HTRegistryManager.getRegistries().forEach(res -> {
+        HTRegistryManager.getRegistryNames().forEach(res -> {
             map.putAll(prepare(manager, filler, res));
         });
         return map;
@@ -91,19 +91,16 @@ public class HTCodecLoader extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> elementMap, ResourceManager manager, ProfilerFiller filler) {
-        HTRegistryManager.getRegistries().forEach(res -> {
+        HTRegistryManager.getRegistryNames().forEach(res -> {
             final Optional<HTCodecRegistry<?>> registryOpt = HTRegistryManager.get(res);
             if(registryOpt.isPresent()){
                 registryOpt.get().clearOutRegistries(); // 先清除再加入新的。
                 elementMap.entrySet().stream().filter(entry -> entry.getKey().getPath().startsWith(res)).forEach(entry -> {
-                    if(entry.getValue().isJsonObject()){
-
-                    }
-                    registryOpt.get().getCodec().parse(JsonOps.INSTANCE, entry.getValue())
+                    registryOpt.ifPresent(registry -> registry.getCodec().parse(JsonOps.INSTANCE, entry.getValue())
                             .resultOrPartial(msg -> HTLib.getLogger().error(msg))
                             .ifPresent(obj -> {
-                                registryOpt.get().outerRegister(entry.getKey(), obj);
-                            });
+                                registry.outerRegister(entry.getKey(), obj);
+                            }));
                 });
                 HTLib.getLogger().info("HTCodecRegistry {} registered {} entries in data pack", res, registryOpt.get().getOuterCount());
             } else{

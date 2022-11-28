@@ -1,7 +1,9 @@
 package hungteen.htlib.common.world.raid;
 
 import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.util.interfaces.IDummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityManager;
+import hungteen.htlib.common.world.entity.DummyEntityType;
+import hungteen.htlib.common.world.entity.HTDummyEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -10,9 +12,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;
@@ -23,16 +28,13 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-11-27 21:02
  **/
-public class CustomRaid implements DummyEntity {
+public class CustomRaid extends DummyEntity {
 
     private static final MutableComponent CHALLENGE_NAME_COMPONENT = Component.translatable("raid.htlib.name");
     private static final MutableComponent CHALLENGE_WARN = Component.translatable("raid.htlib.too_far_away").withStyle(ChatFormatting.RED);
     private final ServerBossEvent challengeBar = new ServerBossEvent(CHALLENGE_NAME_COMPONENT, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
-    private final int id;
-    public final ServerLevel serverLevel;
     public final ResourceLocation raidLocation;
     protected RaidComponent raidComponent;
-    protected BlockPos center;
     protected Status status = Status.PREPARE;
     protected int tick = 0;
     protected int stopTick = 0;
@@ -40,83 +42,86 @@ public class CustomRaid implements DummyEntity {
     protected int currentSpawn = 0;
     protected Set<Entity> raiders = new HashSet<>();
     protected Set<UUID> heroes = new HashSet<>();
-    private boolean firstTick = false;
     private int currentMaxLevel = 0;
 
-    public CustomRaid(int id, ServerLevel serverLevel, ResourceLocation res, BlockPos pos) {
-        this.id = id;
-        this.serverLevel = serverLevel;
-        this.raidLocation = res;
-        this.center = pos;
+    public static CustomRaid createRaid(ServerLevel level, ResourceLocation location, Vec3 position){
+        return DummyEntityManager.createEntity(level, (id) -> new CustomRaid(level, id, location, position));
     }
 
-    public CustomRaid(ServerLevel serverLevel, CompoundTag nbt) {
-        this.serverLevel = serverLevel;
-        this.id = nbt.getInt("challenge_id");
-        this.status = Status.values()[nbt.getInt("challenge_status")];
-        this.raidLocation = new ResourceLocation(nbt.getString("challenge_resource"));
-        this.tick = nbt.getInt("challenge_tick");
-        this.stopTick = nbt.getInt("stop_tick");
-        this.currentWave = nbt.getInt("current_wave");
-        this.currentSpawn = nbt.getInt("current_spawn");
-        this.firstTick = nbt.getBoolean("first_tick");
-        {// for raid center position.
-            CompoundNBT tmp = nbt.getCompound("center_pos");
-            this.center = new BlockPos(tmp.getInt("pos_x"), tmp.getInt("pos_y"), tmp.getInt("pos_z"));
-        }
-        {// for raiders entity id.
-            ListNBT list = nbt.getList("raiders", 11);
-            for(int i = 0; i < list.size(); ++ i) {
-                final Entity entity = world.getEntity(NBTUtil.loadUUID(list.get(i)));
-                if(entity != null) {
-                    this.raiders.add(entity);
-                }
-            }
-        }
-        {// for heroes uuid.
-            ListNBT list = nbt.getList("heroes", 11);
-            for(int i = 0; i < list.size(); ++ i) {
-                this.heroes.add(NBTUtil.loadUUID(list.get(i)));
-            }
-        }
+    public CustomRaid(ServerLevel serverLevel, int id, ResourceLocation location, Vec3 position) {
+        super(HTDummyEntities.CUSTOM_RAID, serverLevel, id, position);
+        this.raidLocation = location;
+    }
+
+    public CustomRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag nbt) {
+        super(dummyEntityType, level, nbt);
+        this.raidLocation = new ResourceLocation(nbt.getString("RaidLocation"));
+//        this.status = Status.values()[nbt.getInt("challenge_status")];
+
+//        this.tick = nbt.getInt("challenge_tick");
+//        this.stopTick = nbt.getInt("stop_tick");
+//        this.currentWave = nbt.getInt("current_wave");
+//        this.currentSpawn = nbt.getInt("current_spawn");
+//        this.firstTick = nbt.getBoolean("first_tick");
+//        {// for raid center position.
+//            CompoundNBT tmp = nbt.getCompound("center_pos");
+//            this.position = new BlockPos(tmp.getInt("pos_x"), tmp.getInt("pos_y"), tmp.getInt("pos_z"));
+//        }
+//        {// for raiders entity id.
+//            ListNBT list = nbt.getList("raiders", 11);
+//            for(int i = 0; i < list.size(); ++ i) {
+//                final Entity entity = world.getEntity(NBTUtil.loadUUID(list.get(i)));
+//                if(entity != null) {
+//                    this.raiders.add(entity);
+//                }
+//            }
+//        }
+//        {// for heroes uuid.
+//            ListNBT list = nbt.getList("heroes", 11);
+//            for(int i = 0; i < list.size(); ++ i) {
+//                this.heroes.add(NBTUtil.loadUUID(list.get(i)));
+//            }
+//        }
     }
 
     @Override
-    public void save(CompoundTag nbt) {
-        nbt.putInt("challenge_id", this.id);
-        nbt.putInt("challenge_status", this.status.ordinal());
-        nbt.putString("challenge_resource", this.raidLocation.toString());
-        nbt.putInt("challenge_tick", this.tick);
-        nbt.putInt("stop_tick", this.stopTick);
-        nbt.putInt("current_wave", this.currentWave);
-        nbt.putInt("current_spawn", this.currentSpawn);
-        nbt.putBoolean("first_tick", this.firstTick);
-        {// for raid center position.
-            CompoundNBT tmp = new CompoundNBT();
-            tmp.putInt("pos_x", this.center.getX());
-            tmp.putInt("pos_y", this.center.getY());
-            tmp.putInt("pos_z", this.center.getZ());
-            nbt.put("center_pos", tmp);
-        }
-        {// for raiders entity id.
-            ListNBT list = new ListNBT();
-            for(Entity entity : this.raiders) {
-                list.add(NBTUtil.createUUID(entity.getUUID()));
-            }
-            nbt.put("raiders", list);
-        }
-        {// for heroes uuid.
-            ListNBT list = new ListNBT();
-            for(UUID uuid : this.heroes) {
-                list.add(NBTUtil.createUUID(uuid));
-            }
-            nbt.put("heroes", list);
-        }
+    public CompoundTag save(CompoundTag tag) {
+        super.save(tag);
+        tag.putString("RaidLocation", this.raidLocation.toString());
+//        nbt.putInt("challenge_status", this.status.ordinal());
+//        nbt.putInt("challenge_tick", this.tick);
+//        nbt.putInt("stop_tick", this.stopTick);
+//        nbt.putInt("current_wave", this.currentWave);
+//        nbt.putInt("current_spawn", this.currentSpawn);
+//        nbt.putBoolean("first_tick", this.firstTick);
+//        {// for raid center position.
+//            CompoundNBT tmp = new CompoundNBT();
+//            tmp.putInt("pos_x", this.position.getX());
+//            tmp.putInt("pos_y", this.position.getY());
+//            tmp.putInt("pos_z", this.position.getZ());
+//            nbt.put("center_pos", tmp);
+//        }
+//        {// for raiders entity id.
+//            ListNBT list = new ListNBT();
+//            for(Entity entity : this.raiders) {
+//                list.add(NBTUtil.createUUID(entity.getUUID()));
+//            }
+//            nbt.put("raiders", list);
+//        }
+//        {// for heroes uuid.
+//            ListNBT list = new ListNBT();
+//            for(UUID uuid : this.heroes) {
+//                list.add(NBTUtil.createUUID(uuid));
+//            }
+//            nbt.put("heroes", list);
+//        }
+        return tag;
     }
 
     /**
-     * {@link PVZChallengeData#tick()}
+     * {@link DummyEntityManager#tick()}
      */
+    @Override
     public void tick() {
         /* skip tick */
         if(this.isRemoving() || this.serverLevel.players().isEmpty()) {
@@ -237,7 +242,7 @@ public class CustomRaid implements DummyEntity {
      */
     private Entity createEntity(ISpawnComponent spawn) {
         final IPlacementComponent placement = spawn.getPlacement() != null ? spawn.getPlacement() : this.raidComponent.getPlacement(this.currentWave);
-        final BlockPos pos = placement.getPlacePosition(this.serverLevel, this.center);
+        final BlockPos pos = placement.getPlacePosition(this.serverLevel, this.position);
         return EntityUtil.createWithNBT(this.serverLevel, spawn.getSpawnType(), spawn.getNBT(), pos);
     }
 
@@ -270,9 +275,9 @@ public class CustomRaid implements DummyEntity {
     private Predicate<ServerPlayerEntity> validPlayer() {
         return (player) -> {
             final int range = ConfigUtil.getRaidRange();
-            return player.isAlive() && Math.abs(player.getX() - this.center.getX()) < range
-                    && Math.abs(player.getY() - this.center.getY()) < range
-                    && Math.abs(player.getZ() - this.center.getZ()) < range;
+            return player.isAlive() && Math.abs(player.getX() - this.position.getX()) < range
+                    && Math.abs(player.getY() - this.position.getY()) < range
+                    && Math.abs(player.getZ() - this.position.getZ()) < range;
         };
     }
 
@@ -390,12 +395,9 @@ public class CustomRaid implements DummyEntity {
         this.raiders.forEach(e -> e.remove());
     }
 
-    public int getId() {
-        return this.id;
-    }
-
-    public BlockPos getCenter() {
-        return this.center;
+    @Override
+    public int getEntityID() {
+        return this.entityID;
     }
 
     public boolean isRaider(Entity raider) {
@@ -414,6 +416,7 @@ public class CustomRaid implements DummyEntity {
         return this.status == Status.RUNNING;
     }
 
+    @Override
     public boolean isRemoving() {
         return this.status == Status.REMOVING;
     }
@@ -433,31 +436,19 @@ public class CustomRaid implements DummyEntity {
     /**
      * get raid component by resource.
      */
-    public IChallengeComponent getRaidComponent() {
-        return this.raidComponent != null ? this.raidComponent : (this.raidComponent = ChallengeManager.getChallengeByResource(this.raidLocation));
+    public RaidComponent getRaidComponent() {
+        return this.raidComponent != null ? this.raidComponent : (this.raidComponent = HTRa.getChallengeByResource(this.raidLocation));
     }
 
     /**
      * get tracked players by raid bar.
      */
-    public List<ServerPlayerEntity> getPlayers(){
-        return this.challengeBar.getPlayers().stream().collect(Collectors.toList());
-    }
-
-    public boolean hasTag(String tag) {
-        return this.raidComponent.hasTag(tag);
-    }
-
-    public List<String> getAuthors(){
-        return this.raidComponent.getAuthors();
+    public List<ServerPlayer> getPlayers(){
+        return this.challengeBar.getPlayers().stream().toList();
     }
 
     public Set<Entity> getRaiders(){
         return this.raiders;
-    }
-
-    public ServerWorld getServerLevel() {
-        return serverLevel;
     }
 
     public enum Status {

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
-import hungteen.htlib.impl.placement.HTPlacements;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 17:56
  **/
-public class DurationWaveSpawn extends BaseWaveSpawn {
+public class DurationSpawn extends BaseSpawn {
 
     /**
      * entityType : 生物的类型，The spawn type of the entity.
@@ -27,23 +27,23 @@ public class DurationWaveSpawn extends BaseWaveSpawn {
      * spawnTick : 生成的时间，When to spawn the entity.
      * spawnCount : 生成数量，How many entities to spawn.
      */
-    public static final Codec<DurationWaveSpawn> CODEC = RecordCodecBuilder.<DurationWaveSpawn>mapCodec(instance -> instance.group(
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(DurationWaveSpawn::getEntityType),
-            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(DurationWaveSpawn::getEntityNBT),
-            Codec.optionalField("placement_type", HTPlacements.getCodec()).forGetter(DurationWaveSpawn::getSpawnPlacement),
-            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0).forGetter(DurationWaveSpawn::getStartSpawnTick),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationWaveSpawn::getSpawnDuration),
-            Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationWaveSpawn::getSpawnInterval),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("each_spawn_count").forGetter(DurationWaveSpawn::getEachSpawnCount),
-            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("spawn_offset", 0).forGetter(DurationWaveSpawn::getSpawnOffset)
-    ).apply(instance, DurationWaveSpawn::new)).codec();
+    public static final Codec<DurationSpawn> CODEC = RecordCodecBuilder.<DurationSpawn>mapCodec(instance -> instance.group(
+            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(DurationSpawn::getEntityType),
+            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(DurationSpawn::getEntityNBT),
+            Codec.optionalField("placement_type", HTPlaceComponents.getCodec()).forGetter(DurationSpawn::getSpawnPlacement),
+            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0).forGetter(DurationSpawn::getStartSpawnTick),
+            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationSpawn::getSpawnDuration),
+            Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationSpawn::getSpawnInterval),
+            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("each_spawn_count").forGetter(DurationSpawn::getEachSpawnCount),
+            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("spawn_offset", 0).forGetter(DurationSpawn::getSpawnOffset)
+    ).apply(instance, DurationSpawn::new)).codec();
     private final int startSpawnTick;
     private final int spawnDuration;
     private final int spawnInterval;
     private final int eachSpawnCount;
     private final int spawnOffset;
 
-    public DurationWaveSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
+    public DurationSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
         super(entityType, entityNBT, spawnPlacement);
         this.startSpawnTick = startSpawnTick;
         this.spawnDuration = spawnDuration;
@@ -71,7 +71,7 @@ public class DurationWaveSpawn extends BaseWaveSpawn {
 
     @Override
     public ISpawnComponentType<?> getType() {
-        return HTWaveSpawns.DURATION_SPAWN_TYPE;
+        return HTSpawnComponents.DURATION_SPAWN_TYPE;
     }
 
     public int getStartSpawnTick() {

@@ -1,6 +1,7 @@
 package hungteen.htlib.util.interfaces;
 
 import com.mojang.serialization.Codec;
+import hungteen.htlib.api.interfaces.ISimpleRegistry;
 import hungteen.htlib.common.world.raid.RaidComponent;
 
 /**
@@ -8,7 +9,7 @@ import hungteen.htlib.common.world.raid.RaidComponent;
  * @author: HungTeen
  * @create: 2022-11-27 20:48
  **/
-public interface IRaidComponentType<P extends RaidComponent> {
+public interface IRaidComponentType<P extends RaidComponent> extends ISimpleRegistry {
 
     /**
      * Get the method to codec raid.

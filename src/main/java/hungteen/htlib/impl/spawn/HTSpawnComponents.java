@@ -15,15 +15,15 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-27 18:57
  **/
-public class HTWaveSpawns {
+public class HTSpawnComponents {
 
     public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(HTLib.prefix("spawn_type"));
-    public static final HTCodecRegistry<SpawnComponent> SPAWNS = HTRegistryManager.create(SpawnComponent.class, "wave_spawns", HTWaveSpawns::getCodec);
+    public static final HTCodecRegistry<SpawnComponent> SPAWNS = HTRegistryManager.create(SpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec);
 
     /* Spawn types */
 
-    public static final ISpawnComponentType<OnceWaveSpawn> ONCE_SPAWN_TYPE = new DefaultWaveSpawn<>("once_spawn",  OnceWaveSpawn.CODEC);
-    public static final ISpawnComponentType<DurationWaveSpawn> DURATION_SPAWN_TYPE = new DefaultWaveSpawn<>("duration_spawn",  DurationWaveSpawn.CODEC);
+    public static final ISpawnComponentType<OnceSpawn> ONCE_SPAWN_TYPE = new DefaultWaveSpawn<>("once_spawn",  OnceSpawn.CODEC);
+    public static final ISpawnComponentType<DurationSpawn> DURATION_SPAWN_TYPE = new DefaultWaveSpawn<>("duration_spawn",  DurationSpawn.CODEC);
 
     /* Spawns */
 
@@ -37,7 +37,7 @@ public class HTWaveSpawns {
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTWaveSpawns::registerSpawnType);
+        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTSpawnComponents::registerSpawnType);
     }
 
     public static void registerSpawnType(ISpawnComponentType<?> type){
