@@ -7,6 +7,7 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.util.interfaces.IRaidComponentType;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author PangTeen
@@ -15,8 +16,8 @@ import hungteen.htlib.util.interfaces.IRaidComponentType;
  */
 public class HTRaidComponents {
 
-    public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
-    public static final HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.create(RaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
+    private static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
+    private static final HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.create(RaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
 
     /* Spawn types */
 
@@ -35,6 +36,14 @@ public class HTRaidComponents {
      */
     public static void registerStuffs(){
 //        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTSpawnComponents::registerSpawnType);
+    }
+
+    public static IRaidComponentType<?> getRaidType(ResourceLocation location){
+        return RAID_TYPES.getValue(location).orElse(null);
+    }
+
+    public static RaidComponent getRaidComponent(ResourceLocation location){
+        return RAIDS.getValue(location).orElse(null);
     }
 
     public static void registerSpawnType(IRaidComponentType<?> type){

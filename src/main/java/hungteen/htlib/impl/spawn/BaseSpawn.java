@@ -3,7 +3,6 @@ package hungteen.htlib.impl.spawn;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -23,9 +22,9 @@ public abstract class BaseSpawn extends SpawnComponent {
 
     private final EntityType<?> entityType;
     private final CompoundTag entityNBT;
-    private final Optional<PlaceComponent> spawnPlacement;
+    private PlaceComponent spawnPlacement;
 
-    protected BaseSpawn(EntityType<?> entityType, CompoundTag entityNBT, Optional<PlaceComponent> spawnPlacement) {
+    public BaseSpawn(EntityType<?> entityType, CompoundTag entityNBT, PlaceComponent spawnPlacement) {
         this.entityType = entityType;
         this.entityNBT = entityNBT;
         this.spawnPlacement = spawnPlacement;
@@ -34,7 +33,7 @@ public abstract class BaseSpawn extends SpawnComponent {
     /**
      * Copy from {@link net.minecraft.server.commands.SummonCommand}
      */
-    public void spawnEntity(ServerLevel level, Vec3 origin){
+    public Optional<Entity> spawnEntity(ServerLevel level, Vec3 origin){
         final Vec3 spawnPosition = this.getSpawnPlacement(level).getPlacePosition(level, origin);
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
@@ -53,15 +52,18 @@ public abstract class BaseSpawn extends SpawnComponent {
 
                 if (!level.tryAddFreshEntityWithPassengers(entity)) {
                     HTLib.getLogger().warn("Error duplicate UUID");
+                } else {
+                    return Optional.of(entity);
                 }
             }
         } else{
             HTLib.getLogger().warn("Can not spawn entity at position {}", spawnPosition);
         }
+        return Optional.empty();
     }
 
     public PlaceComponent getSpawnPlacement(ServerLevel level){
-        return this.getSpawnPlacement().orElse(HTPlaceComponents.DEFAULT.getValue());
+        return this.getSpawnPlacement();//.orElse(HTPlaceComponents.DEFAULT.getValue());
     }
 
     public EntityType<?> getEntityType() {
@@ -72,7 +74,7 @@ public abstract class BaseSpawn extends SpawnComponent {
         return entityNBT;
     }
 
-    public Optional<PlaceComponent> getSpawnPlacement(){
+    public PlaceComponent getSpawnPlacement(){
         return spawnPlacement;
     }
 

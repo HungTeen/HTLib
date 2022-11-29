@@ -63,6 +63,11 @@ public abstract class DummyEntity implements IDummyEntity {
         return level;
     }
 
+    @Override
+    public int getEntityID() {
+        return entityID;
+    }
+
     public DummyEntityType<?> getEntityType() {
         return entityType;
     }

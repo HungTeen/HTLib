@@ -3,7 +3,7 @@ package hungteen.htlib.common.world.entity;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.common.world.raid.CustomRaid;
+import hungteen.htlib.common.world.raid.DefaultRaid;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class HTDummyEntities {
 
     public static final HTSimpleRegistry<DummyEntityType<?>> DUMMY_ENTITY_TYPES = HTRegistryManager.create(HTLib.prefix("dummy_entities"));
 
-    public static final DummyEntityType<CustomRaid> CUSTOM_RAID = new DummyEntityType<>(HTLib.prefix("custom_raid"), CustomRaid::new);
+    public static final DummyEntityType<DefaultRaid> CUSTOM_RAID = new DummyEntityType<>(HTLib.prefix("custom_raid"), DefaultRaid::new);
 
     /**
      * {@link HTLib#HTLib()}

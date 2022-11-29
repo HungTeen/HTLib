@@ -8,6 +8,8 @@ import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.WaveComponent;
 import hungteen.htlib.util.interfaces.IWaveComponentType;
 
+import java.util.List;
+
 /**
  * @program: HTLib
  * @author: HungTeen
@@ -20,7 +22,7 @@ public class HTWaveComponents {
 
     /* Spawn types */
 
-//    public static final IRaidComponentType<OnceSpawn> COMMON_RAID_TYPE = new HTRaidComponents.DefaultRaidType<>();
+    public static final IWaveComponentType<CommonWave> COMMON_WAVE_TYPE = new DefaultWaveType<>("common_wave", CommonWave.CODEC);
 
     /* Spawns */
 
@@ -34,7 +36,7 @@ public class HTWaveComponents {
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-//        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTWaveComponents::registerWaveType);
+        List.of(COMMON_WAVE_TYPE).forEach(HTWaveComponents::registerWaveType);
     }
 
     public static void registerWaveType(IWaveComponentType<?> type){

@@ -9,5 +9,6 @@ import hungteen.htlib.common.world.raid.RaidComponent;
  **/
 public abstract class BaseRaid extends RaidComponent {
 
-
+    private final int winTick;
+    private final int lossTick;
 }
