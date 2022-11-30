@@ -10,7 +10,10 @@ import com.mojang.serialization.JsonOps;
 import hungteen.htlib.HTLib;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.*;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -92,7 +95,11 @@ public abstract class HTCodecGen implements DataProvider {
      * create data gen path for specific entry.
      */
     protected Path createPath(Path path, ResourceLocation registry, ResourceLocation entry) {
-        return path.resolve("data").resolve(entry.getNamespace()).resolve(registry.getPath()).resolve(entry.getPath() + ".json");
+        return createPath(path, registry.getPath(), entry);
+    }
+
+    protected Path createPath(Path path, String registryPath, ResourceLocation entry) {
+        return path.resolve("data").resolve(entry.getNamespace()).resolve(registryPath).resolve(entry.getPath() + ".json");
     }
 
     public RegistryAccess access(){

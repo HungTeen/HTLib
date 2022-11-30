@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -70,6 +71,10 @@ public final class HTCodecRegistry<V> {
 
     public List<V> getAll() {
         return Stream.concat(this.innerMap.values().stream(), this.outerMap.values().stream()).toList();
+    }
+
+    public List<Map.Entry<ResourceLocation, V>> getAllWithLocation() {
+        return Stream.concat(this.innerMap.entrySet().stream(), this.outerMap.entrySet().stream()).toList();
     }
 
     public void syncToClient(ServerPlayer player) {

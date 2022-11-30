@@ -4,12 +4,14 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
 import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.interfaces.IRaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -33,8 +35,8 @@ public abstract class BaseSpawn extends SpawnComponent {
     /**
      * Copy from {@link net.minecraft.server.commands.SummonCommand}
      */
-    public Optional<Entity> spawnEntity(ServerLevel level, Vec3 origin){
-        final Vec3 spawnPosition = this.getSpawnPlacement(level).getPlacePosition(level, origin);
+    public Optional<Entity> spawnEntity(ServerLevel level, IRaid raid){
+        final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(level, raid.getPosition());
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
             compoundtag.putString("id", this.getEntityType().toString());
@@ -62,8 +64,9 @@ public abstract class BaseSpawn extends SpawnComponent {
         return Optional.empty();
     }
 
-    public PlaceComponent getSpawnPlacement(ServerLevel level){
-        return this.getSpawnPlacement();//.orElse(HTPlaceComponents.DEFAULT.getValue());
+    @Override
+    public @Nullable PlaceComponent getSpawnPlacement() {
+        return this.spawnPlacement;
     }
 
     public EntityType<?> getEntityType() {
@@ -72,10 +75,6 @@ public abstract class BaseSpawn extends SpawnComponent {
 
     public CompoundTag getEntityNBT(){
         return entityNBT;
-    }
-
-    public PlaceComponent getSpawnPlacement(){
-        return spawnPlacement;
     }
 
 }

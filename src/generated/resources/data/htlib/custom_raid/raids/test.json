@@ -1,0 +1,25 @@
+{
+  "type": "htlib:common_raid",
+  "settings": {},
+  "waves": [
+    {
+      "type": "htlib:common_wave",
+      "can_skip_wave": false,
+      "prepare_duration": 100,
+      "spawns": [
+        {
+          "type": "htlib:once_spawn",
+          "entity_type": "minecraft:creeper",
+          "placement_type": {
+            "type": "htlib:center_area",
+            "on_surface": true,
+            "radius": 1.0
+          },
+          "spawn_count": 10,
+          "spawn_tick": 10
+        }
+      ],
+      "wave_duration": 1000
+    }
+  ]
+}

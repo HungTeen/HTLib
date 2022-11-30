@@ -10,6 +10,7 @@ import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
+import hungteen.htlib.data.HTTestGen;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.impl.raid.HTRaidComponents;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
@@ -19,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.TickEvent;
@@ -51,9 +53,9 @@ public class HTLib {
         /* Mod Bus Events */
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
-//        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
-//            event.getGenerator().addProvider(event.includeServer(), new TestCodecGen(event.getGenerator()));
-//        });
+        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
+            event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator()));
+        });
         HTEntities.ENTITY_TYPES.register(modBus);
         HTRegister.register(modBus);
 

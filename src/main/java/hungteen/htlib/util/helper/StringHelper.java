@@ -1,7 +1,9 @@
 package hungteen.htlib.util.helper;
 
+import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -11,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
  **/
 public class StringHelper {
 
+    public static final Codec<MutableComponent> CODEC = Codec.STRING.xmap(Component.Serializer::fromJson, Component.Serializer::toJson);
     public static final String EMPTY_STRING = "";
     public static final ResourceLocation EMPTY_LOCATION = HTLib.prefix("empty");
 //    private static final List<String> ROMAN_NUMBERS = Arrays.asList("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X");

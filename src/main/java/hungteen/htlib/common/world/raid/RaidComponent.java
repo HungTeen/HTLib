@@ -7,8 +7,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.BossEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 /**
  * @author PangTeen
  * @program HTLib
@@ -48,7 +46,7 @@ public abstract class RaidComponent {
      * Determines the wave spawn placement type.
      * @return the least high priority spawn placement.
      */
-    public abstract Optional<PlaceComponent> getSpawnPlacement();
+    public abstract PlaceComponent getSpawnPlacement();
 
     /**
      * Get the raid bar title.
@@ -90,9 +88,9 @@ public abstract class RaidComponent {
 
     public abstract boolean showRoundTitle();
 
-    public abstract Optional<SoundEvent> getRaidStartSound();
+    public abstract SoundEvent getRaidStartSound();
 
-    public abstract Optional<SoundEvent> getWaveStartSound();
+    public abstract SoundEvent getWaveStartSound();
 
     /**
      * Get the type of raid.

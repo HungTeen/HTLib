@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -195,7 +196,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
         if(! this.firstTick){
             this.firstTick = true;
-            this.getPlayers().forEach(p -> this.getRaidComponent().getRaidStartSound().ifPresent(s -> PlayerHelper.playClientSound(p, s)));
+            this.getPlayers().forEach(p -> PlayerHelper.playClientSound(p, this.getRaidComponent().getRaidStartSound()));
         }
     }
 
@@ -205,7 +206,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected void tickWave() {
         if(this.getLevel() instanceof ServerLevel){
             this.getSpawnComponents().forEach(spawnComponent -> {
-                raiders.addAll(spawnComponent.spawn((ServerLevel) this.getLevel(), this.position, tick));
+                raiders.addAll(spawnComponent.spawn((ServerLevel) this.getLevel(), this, tick));
             });
         }
 
@@ -321,7 +322,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             if(Objects.requireNonNull(this.getRaidComponent()).showRoundTitle()){
                 PlayerHelper.sendTitleToPlayer(p, Component.translatable("challenge.pvz.round", this.currentWave + 1).withStyle(ChatFormatting.DARK_RED));
             }
-            this.getRaidComponent().getWaveStartSound().ifPresent(s -> PlayerHelper.playClientSound(p, s));
+            PlayerHelper.playClientSound(p, this.getRaidComponent().getWaveStartSound());
         });
     }
 
@@ -428,6 +429,15 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     @NotNull
     public List<SpawnComponent> getSpawnComponents(){
         return this.spawnComponents != null ? this.spawnComponents : (this.spawnComponents = this.getCurrentWave().getWaveSpawns(this, this.currentWave));
+    }
+
+    @Override
+    public Function<SpawnComponent, PlaceComponent> getPlaceComponent(){
+        return spawnComponent -> {
+            return spawnComponent.getSpawnPlacement() != null ? spawnComponent.getSpawnPlacement() :
+                    getCurrentWave().getSpawnPlacement() != null ? getCurrentWave().getSpawnPlacement() :
+                            Objects.requireNonNull(getRaidComponent()).getSpawnPlacement();
+        };
     }
 
     /**

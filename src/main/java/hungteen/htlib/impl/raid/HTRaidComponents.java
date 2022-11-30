@@ -3,11 +3,20 @@ package hungteen.htlib.impl.raid;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTCodecRegistry;
+import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.RaidComponent;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.impl.spawn.OnceSpawn;
+import hungteen.htlib.impl.wave.CommonWave;
 import hungteen.htlib.util.interfaces.IRaidComponentType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author PangTeen
@@ -16,26 +25,43 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class HTRaidComponents {
 
-    private static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
-    private static final HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.create(RaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
+    public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
+    public static final HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.create(RaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
 
-    /* Spawn types */
+    /* Raid types */
 
-//    public static final IRaidComponentType<OnceSpawn> COMMON_RAID_TYPE = new DefaultRaidType<>();
+    public static final IRaidComponentType<CommonRaid> COMMON_RAID_TYPE = new DefaultRaidType<>("common_raid", CommonRaid.CODEC);
 
-    /* Spawns */
+    /* Raids */
 
-//    public static final HTRegistryHolder<SpawnPlacement> DEFAULT = SPAWNS.innerRegister(
-//            HTLib.prefix("default"), new CenterAreaPlacement(
-//                    Vec3.ZERO, 0, 1, true, 0, true
-//            )
-//    );
+    public static final HTRegistryHolder<RaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
+            new CommonRaid(
+                    BaseRaid.builder().build(),
+                    Arrays.asList(
+                            new CommonWave(
+                                    null,
+                                    100,
+                                    1000,
+                                    false,
+                                    Arrays.asList(
+                                            new OnceSpawn(
+                                                    EntityType.CREEPER,
+                                                    new CompoundTag(),
+                                                    HTPlaceComponents.DEFAULT.getValue(),
+                                                    10,
+                                                    10
+                                            )
+                                    )
+                            )
+                    )
+            )
+    );
 
     /**
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-//        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTSpawnComponents::registerSpawnType);
+        List.of(COMMON_RAID_TYPE).forEach(HTRaidComponents::registerRaidType);
     }
 
     public static IRaidComponentType<?> getRaidType(ResourceLocation location){
@@ -46,7 +72,7 @@ public class HTRaidComponents {
         return RAIDS.getValue(location).orElse(null);
     }
 
-    public static void registerSpawnType(IRaidComponentType<?> type){
+    public static void registerRaidType(IRaidComponentType<?> type){
         RAID_TYPES.register(type);
     }
 

@@ -4,12 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -50,11 +50,11 @@ public class OnceSpawn extends BaseSpawn {
     }
 
     @Override
-    public List<Entity> spawn(ServerLevel level, Vec3 origin, int tick) {
+    public List<Entity> spawn(ServerLevel level, IRaid raid, int tick) {
         List<Entity> entities = new ArrayList<>();
         if(canSpawn(tick)){
             for(int i = 0; i < this.getSpawnCount(); ++ i){
-                this.spawnEntity(level, origin).ifPresent(entities::add);
+                this.spawnEntity(level, raid).ifPresent(entities::add);
             }
         }
         return entities;
