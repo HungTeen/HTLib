@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 public abstract class PlaceComponent {
 
     /**
-     * Calculate the spawn point of entity.
+     * Calculate the getSpawnEntities point of entity.
      * @param world current level of its raid.
      * @param origin current center of its raid.
      * @return calculate result.

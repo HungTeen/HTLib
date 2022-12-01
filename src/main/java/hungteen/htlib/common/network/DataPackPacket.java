@@ -2,12 +2,13 @@ package hungteen.htlib.common.network;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
-import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
+import org.slf4j.Logger;
 
 import java.util.function.Supplier;
 
@@ -18,6 +19,7 @@ import java.util.function.Supplier;
  **/
 public class DataPackPacket {
 
+    private static final Logger LOGGER = LogUtils.getLogger();
     private String type;
     private ResourceLocation location;
     private JsonElement data;
@@ -45,7 +47,7 @@ public class DataPackPacket {
             ctx.get().enqueueWork(() -> {
                 HTRegistryManager.get(message.type).ifPresent(registry -> {
                     registry.getCodec().parse(JsonOps.INSTANCE, message.data)
-                            .resultOrPartial(msg -> HTLib.getLogger().error(msg))
+                            .resultOrPartial(LOGGER::error)
                             .ifPresent(value -> {
                                 registry.outerRegister(message.location, value);
                             });

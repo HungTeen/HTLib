@@ -15,20 +15,6 @@ import org.jetbrains.annotations.NotNull;
 public abstract class RaidComponent {
 
     /**
-     * Check if the specified raid can continue ticking.
-     * @param raid Specific raid.
-     * @return true if the raid can tick.
-     */
-    public abstract boolean canTick(IRaid raid);
-
-    /**
-     * Check if the specified raid can continue to exist.
-     * @param raid Specific raid.
-     * @return true if the raid can exist.
-     */
-    public abstract boolean canExist(IRaid raid);
-
-    /**
      * TODO change by difficulty ?
      * @param raid
      * @return
@@ -43,8 +29,8 @@ public abstract class RaidComponent {
     public abstract WaveComponent getCurrentWave(IRaid raid, int currentWave);
 
     /**
-     * Determines the wave spawn placement type.
-     * @return the least high priority spawn placement.
+     * Determines the wave getSpawnEntities placement type.
+     * @return the least high priority getSpawnEntities placement.
      */
     public abstract PlaceComponent getSpawnPlacement();
 

@@ -8,7 +8,9 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.impl.spawn.BaseSpawn;
 import hungteen.htlib.impl.spawn.OnceSpawn;
+import hungteen.htlib.impl.wave.BaseWave;
 import hungteen.htlib.impl.wave.CommonWave;
 import hungteen.htlib.util.interfaces.IRaidComponentType;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +19,9 @@ import net.minecraft.world.entity.EntityType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author PangTeen
@@ -39,15 +44,20 @@ public class HTRaidComponents {
                     BaseRaid.builder().build(),
                     Arrays.asList(
                             new CommonWave(
-                                    null,
-                                    100,
-                                    1000,
-                                    false,
+                                    new BaseWave.WaveSettings(
+                                            Optional.empty(),
+                                            100,
+                                            1000,
+                                            false
+                                    ),
                                     Arrays.asList(
                                             new OnceSpawn(
-                                                    EntityType.CREEPER,
-                                                    new CompoundTag(),
-                                                    HTPlaceComponents.DEFAULT.getValue(),
+                                                    new BaseSpawn.SpawnSettings(
+                                                            EntityType.CREEPER,
+                                                            new CompoundTag(),
+                                                            true,
+                                                            Optional.ofNullable(HTPlaceComponents.DEFAULT.getValue())
+                                                    ),
                                                     10,
                                                     10
                                             )
@@ -70,6 +80,10 @@ public class HTRaidComponents {
 
     public static RaidComponent getRaidComponent(ResourceLocation location){
         return RAIDS.getValue(location).orElse(null);
+    }
+
+    public static Stream<ResourceLocation> getIds(){
+        return RAIDS.getAllWithLocation().stream().map(Map.Entry::getKey);
     }
 
     public static void registerRaidType(IRaidComponentType<?> type){

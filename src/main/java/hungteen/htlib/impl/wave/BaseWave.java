@@ -1,7 +1,12 @@
 package hungteen.htlib.impl.wave;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.WaveComponent;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
+
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -10,35 +15,50 @@ import hungteen.htlib.common.world.raid.WaveComponent;
  **/
 public abstract class BaseWave extends WaveComponent {
 
-    private PlaceComponent spawnPlacement;
-    private final int prepareDuration;
-    private final int waveDuration;
-    private final boolean canSkip;
+    private final WaveSettings waveSettings;
 
-    public BaseWave(PlaceComponent spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip) {
-        this.spawnPlacement = spawnPlacement;
-        this.prepareDuration = prepareDuration;
-        this.waveDuration = waveDuration;
-        this.canSkip = canSkip;
+    public BaseWave(WaveSettings waveSettings) {
+        this.waveSettings = waveSettings;
     }
 
     @Override
-    public PlaceComponent getSpawnPlacement() {
-        return spawnPlacement;
+    public Optional<PlaceComponent> getSpawnPlacement() {
+        return getWaveSettings().spawnPlacement();
     }
 
     @Override
     public int getPrepareDuration() {
-        return prepareDuration;
+        return getWaveSettings().prepareDuration();
     }
 
     @Override
     public int getWaveDuration() {
-        return waveDuration;
+        return getWaveSettings().waveDuration();
     }
 
     @Override
     public boolean canSkip() {
-        return canSkip;
+        return getWaveSettings().canSkip();
+    }
+
+    public WaveSettings getWaveSettings() {
+        return waveSettings;
+    }
+
+    public record WaveSettings(Optional<PlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip){
+
+        /**
+         * entityType : 生物的类型，The getSpawnEntities type of the entity.
+         * nbt : 附加数据，CompoundTag of the entity.
+         * placementType : 放置类型，决定放在什么地方，
+         * spawnTick : 生成的时间，When to getSpawnEntities the entity.
+         * spawnCount : 生成数量，How many entities to getSpawnEntities.
+         */
+        public static final Codec<WaveSettings> CODEC = RecordCodecBuilder.<WaveSettings>mapCodec(instance -> instance.group(
+                Codec.optionalField("spawn_placement", HTPlaceComponents.getCodec()).forGetter(WaveSettings::spawnPlacement),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 80).forGetter(WaveSettings::prepareDuration),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(WaveSettings::waveDuration),
+                Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSettings::canSkip)
+        ).apply(instance, WaveSettings::new)).codec();
     }
 }

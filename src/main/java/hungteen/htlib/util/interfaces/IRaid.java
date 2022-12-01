@@ -2,6 +2,7 @@ package hungteen.htlib.util.interfaces;
 
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
+import net.minecraft.world.entity.Entity;
 
 import java.util.function.Function;
 
@@ -12,8 +13,10 @@ import java.util.function.Function;
  **/
 public interface IRaid extends IDummyEntity{
 
+    boolean addRaider(Entity raider);
+
     /**
-     * Get spawn placement by priority.
+     * Get getSpawnEntities placement by priority.
      * @return Function (Spawn -> Placement).
      */
     Function<SpawnComponent, PlaceComponent> getPlaceComponent();

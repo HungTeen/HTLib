@@ -65,9 +65,9 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
 
     /**
      * Spawn Line Moving Particle from origin to target.
-     * @param particleRatio How many spawn point for particle.
-     * @param particleCountEach How many particles to spawn at each point.
-     * @param offsetScale offset surround the spawn point.
+     * @param particleRatio How many getSpawnEntities point for particle.
+     * @param particleCountEach How many particles to getSpawnEntities at each point.
+     * @param offsetScale offset surround the getSpawnEntities point.
      * @param speedScale speed of particle.
      */
     public static void spawnLineMovingParticle(Level world, ParticleOptions type, Vec3 origin, Vec3 target, float particleRatio, int particleCountEach, double offsetScale, double speedScale) {

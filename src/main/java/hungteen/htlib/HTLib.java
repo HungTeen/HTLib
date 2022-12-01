@@ -2,6 +2,9 @@ package hungteen.htlib;
 
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
+import hungteen.htlib.common.capability.raid.RaidCapProvider;
+import hungteen.htlib.common.command.HTCommand;
+import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.datapack.HTCodecLoader;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTEntities;
@@ -18,12 +21,12 @@ import hungteen.htlib.impl.wave.HTWaveComponents;
 import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.*;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -56,8 +59,8 @@ public class HTLib {
         modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
             event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator()));
         });
-        HTEntities.ENTITY_TYPES.register(modBus);
-        HTRegister.register(modBus);
+        HTEntities.register(modBus);
+        HTCommandArgumentInfos.register(modBus);
 
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
@@ -74,6 +77,10 @@ public class HTLib {
                 DummyEntityManager.get((ServerLevel) event.level).tick();
             }
         });
+        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, (event) -> {
+            HTCommand.register(event.getDispatcher());
+        });
+        forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
 
         HTPlaceComponents.registerStuffs();
         HTSpawnComponents.registerStuffs();
@@ -90,6 +97,14 @@ public class HTLib {
             DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
             DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
         });
+    }
+
+    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event){
+        if(event.getObject() instanceof Player){
+
+        } else {
+            event.addCapability(prefix("raid"), new RaidCapProvider(event.getObject()));
+        }
     }
 
     /**

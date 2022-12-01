@@ -1,4 +1,4 @@
-package hungteen.htlib.common.capability;
+package hungteen.htlib.common.capability.player;
 
 import hungteen.htlib.util.interfaces.IPlayerDataManager;
 

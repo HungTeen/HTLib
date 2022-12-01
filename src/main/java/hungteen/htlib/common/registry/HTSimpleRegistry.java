@@ -46,6 +46,10 @@ public final class HTSimpleRegistry<T extends ISimpleRegistry> {
         return registryMap.values().stream().filter(Optional::isPresent).map(Optional::get).toList();
     }
 
+    public List<ResourceLocation> getIds() {
+        return registryMap.keySet().stream().toList();
+    }
+
     public Optional<? extends T> getValue(ResourceLocation type) {
         return registryMap.getOrDefault(type, Optional.empty());
     }

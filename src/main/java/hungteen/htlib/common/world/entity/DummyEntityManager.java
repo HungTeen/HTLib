@@ -1,6 +1,8 @@
 package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SpawnDummyEntityPacket;
@@ -9,9 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -21,6 +26,7 @@ import java.util.function.Function;
  **/
 public class DummyEntityManager extends SavedData {
 
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String FORMATION_FILE_ID = "dummy_entities";
     private final ServerLevel level;
     private final Map<Integer, DummyEntity> entityMap = Maps.newHashMap();
@@ -36,11 +42,18 @@ public class DummyEntityManager extends SavedData {
      * {@link HTLib#HTLib()}
      */
     public void tick() {
+        final Set<Integer> removedEnttiy = Sets.newHashSet();
         for (DummyEntity entity : this.entityMap.values()) {
-            this.level.getProfiler().push("Dummy Entity Tick");
-            entity.tick();
-            this.level.getProfiler().pop();
+            if(entity.isRemoved()){
+                removedEnttiy.add(entity.getEntityID());
+            } else{
+                this.level.getProfiler().push("Dummy Entity Tick");
+                entity.tick();
+                this.level.getProfiler().pop();
+            }
         }
+
+        removedEnttiy.forEach(entityMap::remove);
 
         if (this.level.getGameTime() % 200 == 0) {
             this.setDirty();
@@ -51,6 +64,14 @@ public class DummyEntityManager extends SavedData {
         PlayerHelper.getServerPlayers(this.level).forEach(player -> {
             NetworkHandler.sendToClient(player, new SpawnDummyEntityPacket(add, dummyEntity));
         });
+    }
+
+    public static void setDirty(ServerLevel level){
+        get(level).setDirty();
+    }
+
+    public static Optional<DummyEntity> getDummyEntity(ServerLevel level, int id){
+        return Optional.ofNullable(get(level).entityMap.getOrDefault(id, null));
     }
 
     public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
@@ -74,7 +95,7 @@ public class DummyEntityManager extends SavedData {
      * Note : Can not use isAlive to check, because EntityJoinLevelEvent is before that. <br>
      * Note : entityId is not sync to the Level currently, thats why ignore checking. <br>
      */
-    private void add(DummyEntity dummyEntity){
+    public void add(DummyEntity dummyEntity){
         add(dummyEntity, true);
     }
 
@@ -117,9 +138,9 @@ public class DummyEntityManager extends SavedData {
             for(int i = 0; i < count; ++i) {
                 final int num = i;
                 if(tag.contains("DummyEntityType_" + num)){
-                    HTDummyEntities.DUMMY_ENTITY_TYPES.byNameCodec()
-                            .parse(NbtOps.INSTANCE, tag.getCompound("DummyEntityType_" + num))
-                            .resultOrPartial(msg -> HTLib.getLogger().error(msg))
+                    HTDummyEntities.getCodec()
+                            .parse(NbtOps.INSTANCE, tag.get("DummyEntityType_" + num))
+                            .resultOrPartial(LOGGER::error)
                             .ifPresent(entityType -> {
                                 final CompoundTag nbt = tag.getCompound("DummyEntityTag_" + num);
                                 final DummyEntity dummyEntity = entityType.create(level, nbt);
@@ -139,9 +160,9 @@ public class DummyEntityManager extends SavedData {
         for(int i = 0; i < list.size(); ++ i){
             final DummyEntity entity = list.get(i);
             final int num = i;
-            HTDummyEntities.DUMMY_ENTITY_TYPES.byNameCodec()
+            HTDummyEntities.getCodec()
                     .encodeStart(NbtOps.INSTANCE, entity.getEntityType())
-                    .resultOrPartial(msg -> HTLib.getLogger().error(msg))
+                    .resultOrPartial(LOGGER::error)
                     .ifPresent(nbt -> {
                         tag.put("DummyEntityType_" + num, nbt);
                     });

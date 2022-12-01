@@ -1,17 +1,20 @@
 package hungteen.htlib.impl.spawn;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.util.helper.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.interfaces.IRaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Optional;
 
@@ -22,14 +25,10 @@ import java.util.Optional;
  **/
 public abstract class BaseSpawn extends SpawnComponent {
 
-    private final EntityType<?> entityType;
-    private final CompoundTag entityNBT;
-    private PlaceComponent spawnPlacement;
+    private final SpawnSettings spawnSettings;
 
-    public BaseSpawn(EntityType<?> entityType, CompoundTag entityNBT, PlaceComponent spawnPlacement) {
-        this.entityType = entityType;
-        this.entityNBT = entityNBT;
-        this.spawnPlacement = spawnPlacement;
+    public BaseSpawn(SpawnSettings spawnSettings) {
+        this.spawnSettings = spawnSettings;
     }
 
     /**
@@ -39,7 +38,7 @@ public abstract class BaseSpawn extends SpawnComponent {
         final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(level, raid.getPosition());
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
-            compoundtag.putString("id", this.getEntityType().toString());
+            compoundtag.putString("id", EntityHelper.getKey(this.getEntityType()).toString());
             Entity entity = EntityType.loadEntityRecursive(compoundtag, level, (e) -> {
                 e.moveTo(spawnPosition.x, spawnPosition.y, spawnPosition.z, e.getYRot(), e.getXRot());
                 return e;
@@ -47,10 +46,9 @@ public abstract class BaseSpawn extends SpawnComponent {
             if (entity == null) {
                 HTLib.getLogger().error("Fail to create entity {}", this.getEntityType().toString());
             } else {
-                // No need ?
-//                if (p_138825_ && entity instanceof Mob) {
-//                    ((Mob)entity).finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, (SpawnGroupData)null, (CompoundTag)null);
-//                }
+                if (this.enableDefaultSpawn() && entity instanceof Mob) {
+                    ((Mob)entity).finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, (SpawnGroupData)null, (CompoundTag)null);
+                }
 
                 if (!level.tryAddFreshEntityWithPassengers(entity)) {
                     HTLib.getLogger().warn("Error duplicate UUID");
@@ -59,22 +57,47 @@ public abstract class BaseSpawn extends SpawnComponent {
                 }
             }
         } else{
-            HTLib.getLogger().warn("Can not spawn entity at position {}", spawnPosition);
+            HTLib.getLogger().warn("Can not getSpawnEntities entity at position {}", spawnPosition);
         }
         return Optional.empty();
     }
 
     @Override
-    public @Nullable PlaceComponent getSpawnPlacement() {
-        return this.spawnPlacement;
+    public Optional<PlaceComponent> getSpawnPlacement() {
+        return this.getSpawnSettings().placeComponent();
     }
 
     public EntityType<?> getEntityType() {
-        return entityType;
+        return getSpawnSettings().entityType();
     }
 
     public CompoundTag getEntityNBT(){
-        return entityNBT;
+        return getSpawnSettings().nbt();
+    }
+
+    public boolean enableDefaultSpawn(){
+        return getSpawnSettings().enableDefaultSpawn();
+    }
+
+    public SpawnSettings getSpawnSettings() {
+        return spawnSettings;
+    }
+
+    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<PlaceComponent> placeComponent){
+
+        /**
+         * entityType : 生物的类型，The getSpawnEntities type of the entity.
+         * nbt : 附加数据，CompoundTag of the entity.
+         * placementType : 放置类型，决定放在什么地方，
+         * spawnTick : 生成的时间，When to getSpawnEntities the entity.
+         * spawnCount : 生成数量，How many entities to getSpawnEntities.
+         */
+        public static final Codec<SpawnSettings> CODEC = RecordCodecBuilder.<SpawnSettings>mapCodec(instance -> instance.group(
+                ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSettings::entityType),
+                CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSettings::nbt),
+                Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSettings::enableDefaultSpawn),
+                Codec.optionalField("spawn_placement", HTPlaceComponents.getCodec()).forGetter(SpawnSettings::placeComponent)
+                ).apply(instance, SpawnSettings::new)).codec();
     }
 
 }

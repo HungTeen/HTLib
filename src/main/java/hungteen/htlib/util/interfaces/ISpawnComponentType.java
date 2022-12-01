@@ -12,7 +12,7 @@ import hungteen.htlib.common.world.raid.SpawnComponent;
 public interface ISpawnComponentType<P extends SpawnComponent> extends ISimpleRegistry {
 
     /**
-     * Get the method to codec spawn.
+     * Get the method to codec getSpawnEntities.
      * @return codec method.
      */
     Codec<P> codec();

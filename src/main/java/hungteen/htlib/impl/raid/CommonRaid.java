@@ -29,16 +29,6 @@ public class CommonRaid extends BaseRaid {
     }
 
     @Override
-    public boolean canTick(IRaid raid) {
-        return true;
-    }
-
-    @Override
-    public boolean canExist(IRaid raid) {
-        return true;
-    }
-
-    @Override
     public int getWaveCount(IRaid raid) {
         return this.waveComponents.size();
     }

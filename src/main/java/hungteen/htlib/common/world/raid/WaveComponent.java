@@ -4,6 +4,7 @@ import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.IWaveComponentType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author PangTeen
@@ -13,8 +14,8 @@ import java.util.List;
 public abstract class WaveComponent {
 
     /**
-     * Get the wave spawn list.
-     * @return list of wave spawn.
+     * Get the wave getSpawnEntities list.
+     * @return list of wave getSpawnEntities.
      */
     public abstract List<SpawnComponent> getWaveSpawns(IRaid raid, int tick);
 
@@ -31,10 +32,10 @@ public abstract class WaveComponent {
     public abstract int getWaveDuration();
 
     /**
-     * Determines the wave spawn placement type.
-     * @return the less high priority spawn placement.
+     * Determines the wave getSpawnEntities placement type.
+     * @return the less high priority getSpawnEntities placement.
      */
-    public abstract PlaceComponent getSpawnPlacement();
+    public abstract Optional<PlaceComponent> getSpawnPlacement();
 
     /**
      * Can skip wave duration when finished.

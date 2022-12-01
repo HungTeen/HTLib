@@ -4,9 +4,9 @@ import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author PangTeen
@@ -18,10 +18,10 @@ import java.util.List;
 public abstract class SpawnComponent {
 
     /**
-     * spawn entities.
+     * getSpawnEntities entities.
      * @param tick current tick.
      */
-    public abstract List<Entity> spawn(ServerLevel level, IRaid raid, int tick);
+    public abstract List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick);
 
     /**
      * Check for skipping this wave.
@@ -31,14 +31,13 @@ public abstract class SpawnComponent {
     public abstract boolean finishedSpawn(int tick);
 
     /**
-     * Get the method to place the upcoming spawn entity.
+     * Get the method to place the upcoming getSpawnEntities entity.
      * @return placement method.
      */
-    @Nullable
-    public abstract PlaceComponent getSpawnPlacement();
+    public abstract Optional<PlaceComponent> getSpawnPlacement();
 
     /**
-     * Get the type of spawn.
+     * Get the type of getSpawnEntities.
      * @return wave type.
      */
     public abstract ISpawnComponentType<?> getType();

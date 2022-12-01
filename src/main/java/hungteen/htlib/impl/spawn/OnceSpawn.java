@@ -2,15 +2,10 @@ package hungteen.htlib.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +18,22 @@ import java.util.List;
 public class OnceSpawn extends BaseSpawn {
 
     /**
-     * entityType : 生物的类型，The spawn type of the entity.
+     * entityType : 生物的类型，The getSpawnEntities type of the entity.
      * nbt : 附加数据，CompoundTag of the entity.
      * placementType : 放置类型，决定放在什么地方，
-     * spawnTick : 生成的时间，When to spawn the entity.
-     * spawnCount : 生成数量，How many entities to spawn.
+     * spawnTick : 生成的时间，When to getSpawnEntities the entity.
+     * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
     public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(OnceSpawn::getEntityType),
-            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(OnceSpawn::getEntityNBT),
-            HTPlaceComponents.getCodec().optionalFieldOf("placement_type", null).forGetter(OnceSpawn::getSpawnPlacement),
+            SpawnSettings.CODEC.fieldOf("spawn_settings").forGetter(OnceSpawn::getSpawnSettings),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_tick").forGetter(OnceSpawn::getSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
     ).apply(instance, OnceSpawn::new)).codec();
     private final int spawnTick;
     private final int spawnCount;
 
-    public OnceSpawn(EntityType<?> entityType, CompoundTag entityNBT, PlaceComponent spawnPlacement, int spawnTick, int spawnCount){
-        super(entityType, entityNBT, spawnPlacement);
+    public OnceSpawn(SpawnSettings spawnSettings, int spawnTick, int spawnCount){
+        super(spawnSettings);
         this.spawnTick = spawnTick;
         this.spawnCount = spawnCount;
     }
@@ -50,7 +43,7 @@ public class OnceSpawn extends BaseSpawn {
     }
 
     @Override
-    public List<Entity> spawn(ServerLevel level, IRaid raid, int tick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick) {
         List<Entity> entities = new ArrayList<>();
         if(canSpawn(tick)){
             for(int i = 0; i < this.getSpawnCount(); ++ i){

@@ -57,7 +57,7 @@ public class SpawnDummyEntityPacket {
         public static void onMessage(SpawnDummyEntityPacket message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(()->{
                 if(message.add){
-                    HTDummyEntities.DUMMY_ENTITY_TYPES.getValue(message.entityType).ifPresent(type -> {
+                    HTDummyEntities.getEntityType(message.entityType).ifPresent(type -> {
                         Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
                         DummyEntity dummyEntity = world.map(w -> type.create(w, message.entityNBT)).orElse(null);
                         if (dummyEntity != null) {

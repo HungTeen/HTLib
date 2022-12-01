@@ -9,6 +9,7 @@ import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.BossEvent;
 
@@ -100,8 +101,8 @@ public abstract class BaseRaid extends RaidComponent {
                 BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(RaidSettings::raidColor),
                 StringHelper.CODEC.optionalFieldOf("victory_title", Component.empty()).forGetter(RaidSettings::victoryTitle),
                 StringHelper.CODEC.optionalFieldOf("loss_title", Component.empty()).forGetter(RaidSettings::lossTitle),
-                SoundEvent.CODEC.optionalFieldOf("raid_start_sound", null).forGetter(RaidSettings::raidStartSound),
-                SoundEvent.CODEC.optionalFieldOf("wave_start_sound", null).forGetter(RaidSettings::waveStartSound)
+                SoundEvent.CODEC.optionalFieldOf("raid_start_sound", SoundEvents.RAID_HORN).forGetter(RaidSettings::raidStartSound),
+                SoundEvent.CODEC.optionalFieldOf("wave_start_sound", SoundEvents.RAID_HORN).forGetter(RaidSettings::waveStartSound)
         ).apply(instance, RaidSettings::new)).codec();
     }
 

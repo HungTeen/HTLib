@@ -10,6 +10,10 @@ import net.minecraft.world.phys.Vec3;
  **/
 public interface IDummyEntity {
 
+    boolean isRemoved();
+
+    void setDirty();
+
     /**
      * Get specify ID.
      * @return ID.

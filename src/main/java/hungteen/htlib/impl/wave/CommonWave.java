@@ -2,9 +2,7 @@ package hungteen.htlib.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.SpawnComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.IWaveComponentType;
@@ -26,16 +24,13 @@ public class CommonWave extends BaseWave{
      * spawnComponents : 生成部件
      */
     public static final Codec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
-            HTPlaceComponents.getCodec().optionalFieldOf("placement_type", null).forGetter(CommonWave::getSpawnPlacement),
-            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 80).forGetter(CommonWave::getPrepareDuration),
-            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(CommonWave::getWaveDuration),
-            Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(CommonWave::canSkip),
+            WaveSettings.CODEC.fieldOf("wave_settings").forGetter(CommonWave::getWaveSettings),
             HTSpawnComponents.getCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
     ).apply(instance, CommonWave::new)).codec();
     private final List<SpawnComponent> spawnComponents;
 
-    public CommonWave(PlaceComponent spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, List<SpawnComponent> spawnComponents) {
-        super(spawnPlacement, prepareDuration, waveDuration, canSkip);
+    public CommonWave(WaveSettings waveSettings, List<SpawnComponent> spawnComponents) {
+        super(waveSettings);
         this.spawnComponents = spawnComponents;
     }
 

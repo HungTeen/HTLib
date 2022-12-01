@@ -2,15 +2,10 @@ package hungteen.htlib.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +18,14 @@ import java.util.List;
 public class DurationSpawn extends BaseSpawn {
 
     /**
-     * entityType : 生物的类型，The spawn type of the entity.
+     * entityType : 生物的类型，The getSpawnEntities type of the entity.
      * nbt : 附加数据，CompoundTag of the entity.
      * placementType : 放置类型，决定放在什么地方，
-     * spawnTick : 生成的时间，When to spawn the entity.
-     * spawnCount : 生成数量，How many entities to spawn.
+     * spawnTick : 生成的时间，When to getSpawnEntities the entity.
+     * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
     public static final Codec<DurationSpawn> CODEC = RecordCodecBuilder.<DurationSpawn>mapCodec(instance -> instance.group(
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(DurationSpawn::getEntityType),
-            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(DurationSpawn::getEntityNBT),
-            HTPlaceComponents.getCodec().optionalFieldOf("placement_type", null).forGetter(DurationSpawn::getSpawnPlacement),
+            SpawnSettings.CODEC.fieldOf("spawn_settings").forGetter(DurationSpawn::getSpawnSettings),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0).forGetter(DurationSpawn::getStartSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationSpawn::getSpawnDuration),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationSpawn::getSpawnInterval),
@@ -45,8 +38,8 @@ public class DurationSpawn extends BaseSpawn {
     private final int eachSpawnCount;
     private final int spawnOffset;
 
-    public DurationSpawn(EntityType<?> entityType, CompoundTag entityNBT, PlaceComponent spawnPlacement, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
-        super(entityType, entityNBT, spawnPlacement);
+    public DurationSpawn(SpawnSettings spawnSettings, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
+        super(spawnSettings);
         this.startSpawnTick = startSpawnTick;
         this.spawnDuration = spawnDuration;
         this.spawnInterval = spawnInterval;
@@ -59,7 +52,7 @@ public class DurationSpawn extends BaseSpawn {
     }
 
     @Override
-    public List<Entity> spawn(ServerLevel level, IRaid raid, int tick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick) {
         List<Entity> entities = new ArrayList<>();
         if(canSpawn(tick)){
             for(int i = 0; i < this.getEachSpawnCount(); ++ i){

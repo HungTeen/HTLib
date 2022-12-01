@@ -2,6 +2,7 @@ package hungteen.htlib.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import hungteen.htlib.HTLib;
@@ -9,6 +10,7 @@ import hungteen.htlib.common.network.DataPackPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
  */
 public final class HTCodecRegistry<V> {
 
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * Register by code.
      */
@@ -81,7 +84,7 @@ public final class HTCodecRegistry<V> {
         this.outerMap.forEach((res, data) -> {
             this.getCodec()
                     .encodeStart(JsonOps.INSTANCE, data)
-                    .resultOrPartial(msg -> HTLib.getLogger().error(msg))
+                    .resultOrPartial(LOGGER::error)
                     .ifPresent(json -> {
                         NetworkHandler.sendToClient(player, new DataPackPacket(this.getRegistryName(), res, json));
                     });
