@@ -2,19 +2,25 @@ package hungteen.htlib.impl.raid;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.common.world.raid.AbstractRaid;
+import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
-import hungteen.htlib.impl.spawn.BaseSpawn;
+import hungteen.htlib.impl.spawn.DurationSpawn;
+import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.impl.spawn.OnceSpawn;
-import hungteen.htlib.impl.wave.BaseWave;
 import hungteen.htlib.impl.wave.CommonWave;
+import hungteen.htlib.impl.wave.HTWaveComponents;
 import hungteen.htlib.util.interfaces.IRaidComponentType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Arrays;
@@ -41,25 +47,33 @@ public class HTRaidComponents {
 
     public static final HTRegistryHolder<RaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
             new CommonRaid(
-                    BaseRaid.builder().build(),
+                    HTRaidComponents.builder().build(),
                     Arrays.asList(
                             new CommonWave(
-                                    new BaseWave.WaveSettings(
-                                            Optional.empty(),
-                                            100,
-                                            1000,
-                                            false
-                                    ),
+                                    HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
                                     Arrays.asList(
                                             new OnceSpawn(
-                                                    new BaseSpawn.SpawnSettings(
-                                                            EntityType.CREEPER,
-                                                            new CompoundTag(),
-                                                            true,
-                                                            Optional.ofNullable(HTPlaceComponents.DEFAULT.getValue())
-                                                    ),
+                                                    HTSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
                                                     10,
                                                     10
+                                            )
+                                    )
+                            ),
+                            new CommonWave(
+                                    HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
+                                    Arrays.asList(
+                                            new OnceSpawn(
+                                                    HTSpawnComponents.builder().entityType(EntityType.SPIDER).build(),
+                                                    10,
+                                                    5
+                                            ),
+                                            new DurationSpawn(
+                                                    HTSpawnComponents.builder().entityType(EntityType.SKELETON).build(),
+                                                    100,
+                                                    400,
+                                                    100,
+                                                    1,
+                                                    0
                                             )
                                     )
                             )
@@ -94,6 +108,10 @@ public class HTRaidComponents {
         return RAID_TYPES.byNameCodec().dispatch(RaidComponent::getType, IRaidComponentType::codec);
     }
 
+    public static RaidSettingBuilder builder(){
+        return new RaidSettingBuilder();
+    }
+
     protected record DefaultRaidType<P extends RaidComponent>(String name, Codec<P> codec) implements IRaidComponentType<P> {
 
         @Override
@@ -105,6 +123,92 @@ public class HTRaidComponents {
         public String getModID() {
             return HTLib.MOD_ID;
         }
+    }
+
+    public static class RaidSettingBuilder {
+        private PlaceComponent placeComponent = HTPlaceComponents.DEFAULT.getValue();
+        private int victoryDuration = 100;
+        private int lossDuration = 100;
+        private double raidRange = 40;
+        private boolean showRoundTitle = true;
+        private MutableComponent raidTitle = AbstractRaid.RAID_TITLE;
+        private BossEvent.BossBarColor raidColor = BossEvent.BossBarColor.RED;
+        private MutableComponent victoryTitle = AbstractRaid.RAID_VICTORY_TITLE;
+        private MutableComponent lossTitle = AbstractRaid.RAID_LOSS_TITLE;
+        private SoundEvent raidStartSound = HTSounds.PREPARE.get();
+        private SoundEvent waveStartSound = HTSounds.HUGE_WAVE.get();
+        private SoundEvent victorySound = HTSounds.VICTORY.get();
+        private SoundEvent lossSound = HTSounds.LOSS.get();
+
+        public RaidSettingBuilder place(PlaceComponent placeComponent){
+            this.placeComponent = placeComponent;
+            return this;
+        }
+
+        public RaidSettingBuilder victoryDuration(int victoryDuration){
+            this.victoryDuration = victoryDuration;
+            return this;
+        }
+
+        public RaidSettingBuilder lossDuration(int lossDuration){
+            this.lossDuration = lossDuration;
+            return this;
+        }
+
+        public RaidSettingBuilder range(int raidRange){
+            this.raidRange = raidRange;
+            return this;
+        }
+
+        public RaidSettingBuilder showRoundTitle(boolean showRoundTitle){
+            this.showRoundTitle = showRoundTitle;
+            return this;
+        }
+
+        public RaidSettingBuilder color(BossEvent.BossBarColor color){
+            this.raidColor = raidColor;
+            return this;
+        }
+
+        public RaidSettingBuilder title(MutableComponent title){
+            this.raidTitle = title;
+            return this;
+        }
+
+        public RaidSettingBuilder victoryTitle(MutableComponent title){
+            this.victoryTitle = title;
+            return this;
+        }
+
+        public RaidSettingBuilder lossTitle(MutableComponent title){
+            this.lossTitle = title;
+            return this;
+        }
+
+        public RaidSettingBuilder raidSound(SoundEvent soundEvent){
+            this.raidStartSound = soundEvent;
+            return this;
+        }
+
+        public RaidSettingBuilder waveSound(SoundEvent soundEvent){
+            this.waveStartSound = soundEvent;
+            return this;
+        }
+
+        public RaidSettingBuilder victorySound(SoundEvent soundEvent){
+            this.victorySound = soundEvent;
+            return this;
+        }
+
+        public RaidSettingBuilder lossSound(SoundEvent soundEvent){
+            this.lossSound = soundEvent;
+            return this;
+        }
+
+        public BaseRaid.RaidSettings build(){
+            return new BaseRaid.RaidSettings(placeComponent, victoryDuration, lossDuration, raidRange, showRoundTitle, raidTitle, raidColor, victoryTitle, lossTitle, Optional.ofNullable(raidStartSound), Optional.ofNullable(waveStartSound), Optional.ofNullable(victorySound), Optional.ofNullable(lossSound));
+        }
+
     }
 
 }

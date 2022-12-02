@@ -20,7 +20,7 @@ public class HTRegistryManager {
     private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = HashBiMap.create();
 
     /**
-     * do not create more than one registry for specific registry type.
+     * do not create more than one registry for specific registry entityType.
      */
     public static <T extends ISimpleRegistry> HTSimpleRegistry<T> create(ResourceLocation registryName){
         return new HTSimpleRegistry<>(registryName);

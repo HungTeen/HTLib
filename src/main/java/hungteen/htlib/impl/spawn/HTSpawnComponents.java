@@ -2,13 +2,18 @@ package hungteen.htlib.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.world.raid.SpawnComponent;
-import hungteen.htlib.util.interfaces.ISpawnComponentType;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.common.world.raid.PlaceComponent;
+import hungteen.htlib.common.world.raid.SpawnComponent;
+import hungteen.htlib.util.interfaces.ISpawnComponentType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EntityType;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -34,7 +39,7 @@ public class HTSpawnComponents {
 //    );
 
     /**
-     * {@link HTLib#HTLib()}
+     * {@link HTLib#setUp(FMLCommonSetupEvent)}
      */
     public static void registerStuffs(){
         List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTSpawnComponents::registerSpawnType);
@@ -48,6 +53,10 @@ public class HTSpawnComponents {
         return SPAWN_TYPES.byNameCodec().dispatch(SpawnComponent::getType, ISpawnComponentType::codec);
     }
 
+    public static SpawnSettingBuilder builder(){
+        return new SpawnSettingBuilder();
+    }
+
     protected record DefaultWaveSpawn<P extends SpawnComponent>(String name, Codec<P> codec) implements ISpawnComponentType<P> {
 
         @Override
@@ -58,6 +67,38 @@ public class HTSpawnComponents {
         @Override
         public String getModID() {
             return HTLib.MOD_ID;
+        }
+    }
+
+    public static class SpawnSettingBuilder {
+
+        private EntityType<?> entityType = EntityType.PIG;
+        private CompoundTag nbt = new CompoundTag();
+        private boolean enableDefaultSpawn = true;
+        private PlaceComponent placeComponent = null;
+
+        public BaseSpawn.SpawnSettings build() {
+            return new BaseSpawn.SpawnSettings(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
+        }
+
+        public SpawnSettingBuilder entityType(EntityType<?> type) {
+            this.entityType = type;
+            return this;
+        }
+
+        public SpawnSettingBuilder nbt(CompoundTag tag){
+            this.nbt = tag;
+            return this;
+        }
+
+        public SpawnSettingBuilder enableDefaultSpawn(boolean flag){
+            this.enableDefaultSpawn = flag;
+            return this;
+        }
+
+        public SpawnSettingBuilder placement(PlaceComponent placeComponent){
+            this.placeComponent = placeComponent;
+            return this;
         }
     }
 }

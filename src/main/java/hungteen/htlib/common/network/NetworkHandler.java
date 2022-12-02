@@ -30,7 +30,7 @@ public class NetworkHandler {
 
         CHANNEL.registerMessage(getId(), PlaySoundPacket.class, PlaySoundPacket::encode, PlaySoundPacket::new, PlaySoundPacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), SpawnParticlePacket.class, SpawnParticlePacket::encode, SpawnParticlePacket::new, SpawnParticlePacket.Handler::onMessage);
-        CHANNEL.registerMessage(getId(), SpawnDummyEntityPacket.class, SpawnDummyEntityPacket::encode, SpawnDummyEntityPacket::new, SpawnDummyEntityPacket.Handler::onMessage);
+        CHANNEL.registerMessage(getId(), DummyEntityPacket.class, DummyEntityPacket::encode, DummyEntityPacket::new, DummyEntityPacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), DataPackPacket.class, DataPackPacket::encode, DataPackPacket::new, DataPackPacket.Handler::onMessage);
 
     }

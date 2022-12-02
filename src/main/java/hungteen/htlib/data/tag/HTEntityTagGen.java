@@ -27,7 +27,7 @@ public class HTEntityTagGen extends EntityTypeTagsProvider {
 
     @Override
     public String getName() {
-        return this.modId + " entity type tags";
+        return this.modId + " entity entityType tags";
     }
 
 }

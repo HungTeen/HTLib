@@ -4,9 +4,11 @@ import hungteen.htlib.CommonProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -31,6 +33,16 @@ public class ClientProxy extends CommonProxy {
     @Override
     public List<DummyEntity> getDummyEntities() {
         return DUMMY_ENTITY_MAP.values().stream().toList();
+    }
+
+    @Override
+    public List<DummyEntity> getDummyEntities(Level level) {
+        return getDummyEntities();
+    }
+
+    @Override
+    public Optional<DummyEntity> getDummyEntity(int id) {
+        return Optional.ofNullable(DUMMY_ENTITY_MAP.getOrDefault(id, null));
     }
 
     @Override

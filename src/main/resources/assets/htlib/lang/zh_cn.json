@@ -1,4 +1,18 @@
 {
   "entity.htlib.boat": "船",
-  "entity.htlib.chest_boat": "箱船"
+  "entity.htlib.chest_boat": "箱船",
+
+  "raid.htlib.title": "袭击",
+  "raid.htlib.victory_title": "胜利",
+  "raid.htlib.loss_title": "失败",
+  "raid.htlib.too_far_away": "请返回袭击点，否则袭击会消失",
+  "raid.htlib.round": "第 %d 波",
+
+  "sound.htlib.prepare": "袭击即将开始",
+  "sound.htlib.huge_wave": "一大波",
+  "sound.htlib.final_wave": "最后一波",
+  "sound.htlib.victory": "胜利",
+  "sound.htlib.loss": "失败",
+  "sound.htlib.reward": "奖励",
+  "sound.htlib.final_victory": "重大胜利"
 }

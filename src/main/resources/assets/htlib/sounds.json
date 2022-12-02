@@ -1,0 +1,30 @@
+{
+  "prepare": {
+    "subtitle": "sound.htlib.prepare",
+    "sounds": [{"name": "htlib:prepare"}]
+  },
+  "huge_wave": {
+    "subtitle": "sound.htlib.huge_wave",
+    "sounds": [{"name": "htlib:huge_wave"}]
+  },
+  "final_wave": {
+    "subtitle": "sound.htlib.final_wave",
+    "sounds": [{"name": "htlib:final_wave"}]
+  },
+  "victory": {
+    "subtitle": "sound.htlib.victory",
+    "sounds": [{"name": "htlib:victory"}]
+  },
+  "loss": {
+    "subtitle": "sound.htlib.loss",
+    "sounds": [{"name": "htlib:loss"}]
+  },
+  "reward": {
+    "subtitle": "sound.htlib.reward",
+    "sounds": [{"name": "htlib:reward"}]
+  },
+  "final_victory": {
+    "subtitle": "sound.htlib.final_victory",
+    "sounds": [{"name": "htlib:final_victory"}]
+  }
+}

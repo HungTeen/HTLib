@@ -86,7 +86,7 @@ public abstract class BaseSpawn extends SpawnComponent {
     public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<PlaceComponent> placeComponent){
 
         /**
-         * entityType : 生物的类型，The getSpawnEntities type of the entity.
+         * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
          * nbt : 附加数据，CompoundTag of the entity.
          * placementType : 放置类型，决定放在什么地方，
          * spawnTick : 生成的时间，When to getSpawnEntities the entity.

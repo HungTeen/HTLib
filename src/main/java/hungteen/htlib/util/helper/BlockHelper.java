@@ -66,7 +66,7 @@ public class BlockHelper extends RegistryHelper<Block>{
     }
 
     /**
-     * register wood type.
+     * register wood entityType.
      */
     public static void registerWoodType(WoodType woodType){
         WoodType.register(woodType);

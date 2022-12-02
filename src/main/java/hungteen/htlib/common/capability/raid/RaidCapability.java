@@ -23,7 +23,6 @@ public class RaidCapability implements IRaidCapability {
     private IRaid raid = null;
     private int wave = 0;
 
-
     public static Optional<IRaidCapability> getRaid(Entity entity){
         return entity.getCapability(RAID_CAP).resolve();
     }

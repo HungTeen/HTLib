@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.WaveComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import net.minecraft.sounds.SoundEvent;
 
 import java.util.Optional;
 
@@ -41,14 +42,19 @@ public abstract class BaseWave extends WaveComponent {
         return getWaveSettings().canSkip();
     }
 
+    @Override
+    public Optional<SoundEvent> getWaveStartSound() {
+        return getWaveSettings().waveStartSound();
+    }
+
     public WaveSettings getWaveSettings() {
         return waveSettings;
     }
 
-    public record WaveSettings(Optional<PlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip){
+    public record WaveSettings(Optional<PlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<SoundEvent> waveStartSound){
 
         /**
-         * entityType : 生物的类型，The getSpawnEntities type of the entity.
+         * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
          * nbt : 附加数据，CompoundTag of the entity.
          * placementType : 放置类型，决定放在什么地方，
          * spawnTick : 生成的时间，When to getSpawnEntities the entity.
@@ -56,9 +62,10 @@ public abstract class BaseWave extends WaveComponent {
          */
         public static final Codec<WaveSettings> CODEC = RecordCodecBuilder.<WaveSettings>mapCodec(instance -> instance.group(
                 Codec.optionalField("spawn_placement", HTPlaceComponents.getCodec()).forGetter(WaveSettings::spawnPlacement),
-                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 80).forGetter(WaveSettings::prepareDuration),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 100).forGetter(WaveSettings::prepareDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(WaveSettings::waveDuration),
-                Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSettings::canSkip)
+                Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSettings::canSkip),
+                Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(WaveSettings::waveStartSound)
         ).apply(instance, WaveSettings::new)).codec();
     }
 }

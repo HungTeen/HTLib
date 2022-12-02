@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * @program HTLib
  * @data 2022/11/24 16:25
  * <p>
- * It seems that forge can not support {type -> value} kind codec registry.
+ * It seems that forge can not support {entityType -> value} kind codec registry.
  */
 public final class HTCodecRegistry<V> {
 
@@ -59,7 +59,7 @@ public final class HTCodecRegistry<V> {
         if (containKey(name)) {
             HTLib.getLogger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), name);
         } else if (!this.getRegistryClass().isInstance(value)) {
-            HTLib.getLogger().warn("HTCodecRegistry {} can not cast {} to correct type", this.getRegistryName(), name);
+            HTLib.getLogger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
         }
         this.outerMap.put(name, this.getRegistryClass().cast(value));
     }

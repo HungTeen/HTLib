@@ -37,8 +37,8 @@ public abstract class SpawnComponent {
     public abstract Optional<PlaceComponent> getSpawnPlacement();
 
     /**
-     * Get the type of getSpawnEntities.
-     * @return wave type.
+     * Get the entityType of getSpawnEntities.
+     * @return wave entityType.
      */
     public abstract ISpawnComponentType<?> getType();
 

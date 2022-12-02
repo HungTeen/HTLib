@@ -2,6 +2,7 @@ package hungteen.htlib.common.world.raid;
 
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.IWaveComponentType;
+import net.minecraft.sounds.SoundEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,10 +33,12 @@ public abstract class WaveComponent {
     public abstract int getWaveDuration();
 
     /**
-     * Determines the wave getSpawnEntities placement type.
+     * Determines the wave getSpawnEntities placement entityType.
      * @return the less high priority getSpawnEntities placement.
      */
     public abstract Optional<PlaceComponent> getSpawnPlacement();
+
+    public abstract Optional<SoundEvent> getWaveStartSound();
 
     /**
      * Can skip wave duration when finished.
@@ -44,8 +47,8 @@ public abstract class WaveComponent {
     public abstract boolean canSkip();
 
     /**
-     * Get the type of wave.
-     * @return wave type.
+     * Get the entityType of wave.
+     * @return wave entityType.
      */
     public abstract IWaveComponentType<?> getType();
 

@@ -7,7 +7,7 @@ import hungteen.htlib.api.interfaces.ISimpleRegistry;
  * @author: HungTeen
  * @create: 2022-10-13 15:20
  *
- * define range data type. <br>
+ * define range data entityType. <br>
  * use HashMap to store range data later.
  **/
 public interface IRangeData<T extends Number> extends ISimpleRegistry {

@@ -1,11 +1,10 @@
 package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
-import hungteen.htlib.common.network.SpawnDummyEntityPacket;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -13,10 +12,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -42,10 +41,10 @@ public class DummyEntityManager extends SavedData {
      * {@link HTLib#HTLib()}
      */
     public void tick() {
-        final Set<Integer> removedEnttiy = Sets.newHashSet();
+        final List<DummyEntity> removedEntity = new ArrayList<>();
         for (DummyEntity entity : this.entityMap.values()) {
             if(entity.isRemoved()){
-                removedEnttiy.add(entity.getEntityID());
+                removedEntity.add(entity);
             } else{
                 this.level.getProfiler().push("Dummy Entity Tick");
                 entity.tick();
@@ -53,7 +52,7 @@ public class DummyEntityManager extends SavedData {
             }
         }
 
-        removedEnttiy.forEach(entityMap::remove);
+        removedEntity.forEach(this::remove);
 
         if (this.level.getGameTime() % 200 == 0) {
             this.setDirty();
@@ -62,7 +61,7 @@ public class DummyEntityManager extends SavedData {
 
     public void sync(boolean add, DummyEntity dummyEntity){
         PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-            NetworkHandler.sendToClient(player, new SpawnDummyEntityPacket(add, dummyEntity));
+            NetworkHandler.sendToClient(player, new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
         });
     }
 
@@ -99,7 +98,7 @@ public class DummyEntityManager extends SavedData {
         add(dummyEntity, true);
     }
 
-    private void remove(DummyEntity dummyEntity){
+    public void remove(DummyEntity dummyEntity){
         remove(dummyEntity, true);
     }
 
@@ -144,7 +143,7 @@ public class DummyEntityManager extends SavedData {
                             .ifPresent(entityType -> {
                                 final CompoundTag nbt = tag.getCompound("DummyEntityTag_" + num);
                                 final DummyEntity dummyEntity = entityType.create(level, nbt);
-                                manager.add(dummyEntity, false);
+                                manager.add(dummyEntity, true);
                             });
                 }
             }

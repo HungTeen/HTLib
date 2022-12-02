@@ -22,8 +22,8 @@ public abstract class PlaceComponent {
     public abstract Vec3 getPlacePosition(ServerLevel world, Vec3 origin);
 
     /**
-     * Get the type of placement.
-     * @return wave type.
+     * Get the entityType of placement.
+     * @return wave entityType.
      */
     public abstract IPlaceComponentType<?> getType();
 

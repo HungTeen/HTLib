@@ -7,6 +7,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.BossEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 /**
  * @author PangTeen
  * @program HTLib
@@ -29,7 +31,7 @@ public abstract class RaidComponent {
     public abstract WaveComponent getCurrentWave(IRaid raid, int currentWave);
 
     /**
-     * Determines the wave getSpawnEntities placement type.
+     * Determines the wave getSpawnEntities placement entityType.
      * @return the least high priority getSpawnEntities placement.
      */
     public abstract PlaceComponent getSpawnPlacement();
@@ -74,14 +76,17 @@ public abstract class RaidComponent {
 
     public abstract boolean showRoundTitle();
 
-    public abstract SoundEvent getRaidStartSound();
+    public abstract Optional<SoundEvent> getRaidStartSound();
 
-    public abstract SoundEvent getWaveStartSound();
+    public abstract Optional<SoundEvent> getWaveStartSound();
 
     /**
-     * Get the type of raid.
-     * @return raid type.
+     * Get the entityType of raid.
+     * @return raid entityType.
      */
     public abstract IRaidComponentType<?> getType();
 
+    public abstract Optional<SoundEvent> getVictorySound();
+
+    public abstract Optional<SoundEvent> getLossSound();
 }
