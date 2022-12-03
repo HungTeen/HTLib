@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.SpawnComponent;
+import hungteen.htlib.common.world.raid.ISpawnComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.helper.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
@@ -23,7 +23,7 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 18:14
  **/
-public abstract class BaseSpawn extends SpawnComponent {
+public abstract class BaseSpawn implements ISpawnComponent {
 
     private final SpawnSettings spawnSettings;
 

@@ -20,7 +20,7 @@ import java.util.Collection;
  **/
 public class DummyEntityArgument implements ArgumentType<ResourceLocation> {
 
-    private static final Collection<String> EXAMPLES = Arrays.asList(HTDummyEntities.CUSTOM_RAID.getRegistryName());
+    private static final Collection<String> EXAMPLES = Arrays.asList(HTDummyEntities.DEFAULT_RAID.getRegistryName());
     public static final DynamicCommandExceptionType ERROR_UNKNOWN_ENTITY = new DynamicCommandExceptionType((p_93342_) -> {
         return Component.translatable("entity.notFound", p_93342_);
     });

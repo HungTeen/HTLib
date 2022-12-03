@@ -2,6 +2,7 @@ package hungteen.htlib.common.world.entity;
 
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import hungteen.htlib.util.interfaces.IDummyEntity;
@@ -16,8 +17,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.List;
 
 /**
  * @program: HTLib
@@ -81,13 +80,95 @@ public abstract class DummyEntity implements IDummyEntity {
     /**
      * {@link hungteen.htlib.mixin.MixinEntity}
      */
+    public boolean collideWith(Entity entity){
+        return true;
+    }
+
+    /**
+     * {@link hungteen.htlib.mixin.MixinEntity}
+     */
     public boolean hasCollision(){
         return true;
     }
 
-
+    /**
+     * 是否渲染边界。
+     */
     public boolean renderBorder(){
         return true;
+    }
+
+    public int getBorderColor(){
+        return ColorHelper.RED;
+    }
+
+    /**
+     * 阻挡外面向里面的事。
+     * @return
+     */
+    public boolean blockOutsideStuffs(){
+        return true;
+    }
+
+    /**
+     * 阻挡里面向外的事。
+     * @return
+     */
+    public boolean blockInsideStuffs(){
+        return true;
+    }
+
+    /**
+     * 不考虑此类实体的碰撞。
+     */
+    public boolean ignoreEntity(Entity entity){
+        return false;
+    }
+
+    public boolean requireBlock(Entity entity, AABB aabb){
+        if(! this.ignoreEntity(entity)){
+            if(this.blockInsideStuffs()){
+                if(this.isWithinBounds(entity.position(), 0) && ! isWithinBounds(aabb)){
+                    return true;
+                }
+            }
+            if(this.blockOutsideStuffs()){
+                if(this.isOutOfBounds(entity.position(), 0) && isWithinBounds(aabb)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean requireBlock(BlockPos blockPos, AABB aabb){
+        if(this.blockInsideStuffs()){
+            if(this.isWithinBounds(MathHelper.toVec3(blockPos), 0) && ! isWithinBounds(aabb)){
+                return true;
+            }
+        }
+        if(this.blockOutsideStuffs()){
+            if(this.isOutOfBounds(MathHelper.toVec3(blockPos), 0) && isWithinBounds(aabb)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean requireBlock(Entity entity, BlockPos blockPos){
+        if(! this.ignoreEntity(entity)){
+            if(this.blockInsideStuffs()){
+                if(this.isWithinBounds(entity.position(), 0) && this.isOutOfBounds(MathHelper.toVec3(blockPos), 0)){
+                    return true;
+                }
+            }
+            if(this.blockOutsideStuffs()){
+                if(this.isOutOfBounds(entity.position(), 0) && this.isWithinBounds(MathHelper.toVec3(blockPos), 0)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -102,28 +183,40 @@ public abstract class DummyEntity implements IDummyEntity {
     /**
      * 计算碰撞体。{@link hungteen.htlib.mixin.MixinEntity}
      */
-    public List<VoxelShape> getCollisionShapes(Entity entity) {
-        return List.of(getEntityShape());
+    public VoxelShape getCollisionShapes(Entity entity) {
+        return getEntityShape();
     }
 
     protected double leastDistance(AABB aabb) {
         return Math.max(Mth.absMax(aabb.getXsize(), aabb.getZsize()), 1.0D);
     }
 
-    /**
-     * @param enoughDistance 给予更多的距离，使得更容易满足条件。
-     */
+    public boolean isWithinBounds(AABB aabb) {
+        return aabb.maxX > this.getMinX() && aabb.minX < this.getMaxX() && aabb.maxZ > this.getMinZ() && aabb.minZ < this.getMaxZ();
+    }
+
     protected boolean isWithinBounds(Vec3 position, double enoughDistance) {
-        return position.x >= this.getMinX() - enoughDistance && position.x <= this.getMaxX() + enoughDistance &&
-                position.z >= this.getMinZ() - enoughDistance && position.z <= this.getMaxZ() + enoughDistance;
+        return isWithinBounds(position.x(), position.y(), position.z(), enoughDistance);
+    }
+
+    protected boolean isOutOfBounds(Vec3 position, double enoughDistance) {
+        return isOutOfBounds(position.x(), position.y(), position.z(), enoughDistance);
     }
 
     /**
      * @param enoughDistance 给予更多的距离，使得更容易满足条件。
      */
-    protected boolean isOutOfBounds(Vec3 position, double enoughDistance) {
-        return position.x < this.getMinX() + enoughDistance || position.x > this.getMaxX() - enoughDistance ||
-                position.z < this.getMinZ() + enoughDistance || position.z > this.getMaxZ() - enoughDistance;
+    protected boolean isWithinBounds(double x, double y, double z, double enoughDistance) {
+        return x >= this.getMinX() - enoughDistance && x <= this.getMaxX() + enoughDistance &&
+                z >= this.getMinZ() - enoughDistance && z <= this.getMaxZ() + enoughDistance;
+    }
+
+    /**
+     * @param enoughDistance 给予更多的距离，使得更容易满足条件。
+     */
+    protected boolean isOutOfBounds(double x, double y, double z, double enoughDistance) {
+        return x < this.getMinX() + enoughDistance || x > this.getMaxX() - enoughDistance ||
+                z < this.getMinZ() + enoughDistance || z > this.getMaxZ() - enoughDistance;
     }
 
     /**

@@ -68,6 +68,9 @@ public class ColorHelper {
     /* Misc */
     public static final int ZOMBIE_SKIN = 5931634;
     public static final int SILVER_FISH = 7237230;
+    public static final int BORDER_GROWING = 4259712;
+    public static final int BORDER_SHRINKING = 16724016;
+    public static final int BORDER_AQUA = 2138367;
     public static final int METAL_ROOT = toRGB(242, 215, 149);
     public static final int WOOD_ROOT = toRGB(21, 112, 39);
     public static final int WATER_ROOT = toRGB(51, 71, 117);

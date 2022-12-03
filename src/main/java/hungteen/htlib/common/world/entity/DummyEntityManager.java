@@ -9,6 +9,7 @@ import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.slf4j.Logger;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * @program: HTLib
@@ -75,6 +77,10 @@ public class DummyEntityManager extends SavedData {
 
     public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
         return get(serverLevel).entityMap.values().stream().toList();
+    }
+
+    public static Stream<DummyEntity> getCollisionEntities(Level level){
+        return HTLib.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
     }
 
     public static <T extends DummyEntity> T createEntity(ServerLevel level, Function<Integer, T> function){

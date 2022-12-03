@@ -33,8 +33,11 @@ public abstract class MixinEntity {
     private static void collideBoundingBox(@Nullable Entity entity, Vec3 vec3, AABB aabb, Level level, List<VoxelShape> voxelShapes, CallbackInfoReturnable<Vec3> result, ImmutableList.Builder<VoxelShape> builder) {
         if(entity != null){
             HTLib.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
-                if(dummyEntity.isCloseToBorder(entity, aabb.expandTowards(vec3))){
-                    builder.addAll(dummyEntity.getCollisionShapes(entity));
+                if(! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb.expandTowards(vec3))){
+                    if(! level.isClientSide){
+                        dummyEntity.collideWith(entity);
+                    }
+                    builder.add(dummyEntity.getCollisionShapes(entity));
                 }
             });
             result.setReturnValue(Entity.collideWithShapes(vec3, aabb, builder.build()));

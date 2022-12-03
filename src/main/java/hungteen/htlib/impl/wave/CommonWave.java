@@ -2,7 +2,7 @@ package hungteen.htlib.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.SpawnComponent;
+import hungteen.htlib.common.world.raid.ISpawnComponent;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.IWaveComponentType;
@@ -27,19 +27,19 @@ public class CommonWave extends BaseWave{
             WaveSettings.CODEC.fieldOf("wave_settings").forGetter(CommonWave::getWaveSettings),
             HTSpawnComponents.getCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
     ).apply(instance, CommonWave::new)).codec();
-    private final List<SpawnComponent> spawnComponents;
+    private final List<ISpawnComponent> spawnComponents;
 
-    public CommonWave(WaveSettings waveSettings, List<SpawnComponent> spawnComponents) {
+    public CommonWave(WaveSettings waveSettings, List<ISpawnComponent> spawnComponents) {
         super(waveSettings);
         this.spawnComponents = spawnComponents;
     }
 
-    public List<SpawnComponent> getSpawnComponents() {
+    public List<ISpawnComponent> getSpawnComponents() {
         return spawnComponents;
     }
 
     @Override
-    public List<SpawnComponent> getWaveSpawns(IRaid raid, int tick) {
+    public List<ISpawnComponent> getWaveSpawns(IRaid raid, int tick) {
         return spawnComponents;
     }
 

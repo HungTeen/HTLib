@@ -16,6 +16,7 @@ import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.impl.spawn.OnceSpawn;
 import hungteen.htlib.impl.wave.CommonWave;
 import hungteen.htlib.impl.wave.HTWaveComponents;
+import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.interfaces.IRaidComponentType;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -127,9 +128,13 @@ public class HTRaidComponents {
 
     public static class RaidSettingBuilder {
         private PlaceComponent placeComponent = HTPlaceComponents.DEFAULT.getValue();
+        private double raidRange = 40;
+        private boolean blockInside = false;
+        private boolean blockOutside = false;
+        private boolean renderBorder = false;
+        private int borderColor = ColorHelper.BORDER_AQUA;
         private int victoryDuration = 100;
         private int lossDuration = 100;
-        private double raidRange = 40;
         private boolean showRoundTitle = true;
         private MutableComponent raidTitle = AbstractRaid.RAID_TITLE;
         private BossEvent.BossBarColor raidColor = BossEvent.BossBarColor.RED;
@@ -145,6 +150,31 @@ public class HTRaidComponents {
             return this;
         }
 
+        public RaidSettingBuilder range(int raidRange){
+            this.raidRange = raidRange;
+            return this;
+        }
+
+        public RaidSettingBuilder blockInside(boolean block){
+            this.blockInside = block;
+            return this;
+        }
+
+        public RaidSettingBuilder blockOutside(boolean block) {
+            this.blockOutside = block;
+            return this;
+        }
+
+        public RaidSettingBuilder renderBorder(boolean render){
+            this.renderBorder = renderBorder;
+            return this;
+        }
+
+        public RaidSettingBuilder borderColor(int color){
+            this.borderColor = color;
+            return this;
+        }
+
         public RaidSettingBuilder victoryDuration(int victoryDuration){
             this.victoryDuration = victoryDuration;
             return this;
@@ -152,11 +182,6 @@ public class HTRaidComponents {
 
         public RaidSettingBuilder lossDuration(int lossDuration){
             this.lossDuration = lossDuration;
-            return this;
-        }
-
-        public RaidSettingBuilder range(int raidRange){
-            this.raidRange = raidRange;
             return this;
         }
 
@@ -206,7 +231,26 @@ public class HTRaidComponents {
         }
 
         public BaseRaid.RaidSettings build(){
-            return new BaseRaid.RaidSettings(placeComponent, victoryDuration, lossDuration, raidRange, showRoundTitle, raidTitle, raidColor, victoryTitle, lossTitle, Optional.ofNullable(raidStartSound), Optional.ofNullable(waveStartSound), Optional.ofNullable(victorySound), Optional.ofNullable(lossSound));
+            return new BaseRaid.RaidSettings(
+                    placeComponent,
+                    new BaseRaid.BorderSettings(
+                            this.raidRange,
+                            this.blockInside,
+                            this.blockOutside,
+                            this.renderBorder,
+                            this.borderColor
+                    ),
+                    victoryDuration,
+                    lossDuration,
+                    showRoundTitle,
+                    raidTitle,
+                    raidColor,
+                    victoryTitle,
+                    lossTitle,
+                    Optional.ofNullable(raidStartSound),
+                    Optional.ofNullable(waveStartSound),
+                    Optional.ofNullable(victorySound),
+                    Optional.ofNullable(lossSound));
         }
 
     }

@@ -6,6 +6,7 @@ import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
@@ -49,7 +50,27 @@ public abstract class BaseRaid extends RaidComponent {
 
     @Override
     public double getRaidRange() {
-        return getRaidSettings().raidRange();
+        return getRaidSettings().borderSettings().raidRange();
+    }
+
+    @Override
+    public boolean blockInside() {
+        return getRaidSettings().borderSettings().blockInside();
+    }
+
+    @Override
+    public boolean blockOutside() {
+        return getRaidSettings().borderSettings().blockOutside();
+    }
+
+    @Override
+    public boolean renderBorder() {
+        return getRaidSettings().borderSettings().renderBorder();
+    }
+
+    @Override
+    public int getBorderColor() {
+        return getRaidSettings().borderSettings().borderColor();
     }
 
     @Override
@@ -63,7 +84,7 @@ public abstract class BaseRaid extends RaidComponent {
     }
 
     @Override
-    public BossEvent.BossBarColor getRaidColor() {
+    public BossEvent.BossBarColor getBarColor() {
         return getRaidSettings().raidColor();
     }
 
@@ -97,21 +118,34 @@ public abstract class BaseRaid extends RaidComponent {
         return getRaidSettings().lossSound();
     }
 
-    protected record RaidSettings(PlaceComponent placeComponent, int victoryDuration, int lossDuration, double raidRange, boolean showRoundTitle, MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle, Optional<SoundEvent> raidStartSound, Optional<SoundEvent> waveStartSound, Optional<SoundEvent> victorySound, Optional<SoundEvent> lossSound) {
+    protected record RaidSettings(PlaceComponent placeComponent, BorderSettings borderSettings, int victoryDuration, int lossDuration, boolean showRoundTitle, MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle, Optional<SoundEvent> raidStartSound, Optional<SoundEvent> waveStartSound, Optional<SoundEvent> victorySound, Optional<SoundEvent> lossSound) {
         public static final Codec<RaidSettings> CODEC = RecordCodecBuilder.<RaidSettings>mapCodec(instance -> instance.group(
                 HTPlaceComponents.getCodec().optionalFieldOf("placement_type", HTPlaceComponents.DEFAULT.getValue()).forGetter(RaidSettings::placeComponent),
+                BorderSettings.CODEC.fieldOf("border_settings").forGetter(RaidSettings::borderSettings),
+
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("victory_duration", 100).forGetter(RaidSettings::victoryDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("loss_duration", 100).forGetter(RaidSettings::lossDuration),
-                Codec.doubleRange(0, Double.MAX_VALUE).optionalFieldOf("raid_range", 40D).forGetter(RaidSettings::raidRange),
+
                 Codec.BOOL.optionalFieldOf("show_wave_title", true).forGetter(RaidSettings::showRoundTitle),
                 StringHelper.CODEC.optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(RaidSettings::raidTitle),
                 BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(RaidSettings::raidColor),
                 StringHelper.CODEC.optionalFieldOf("victory_title", AbstractRaid.RAID_VICTORY_TITLE).forGetter(RaidSettings::victoryTitle),
                 StringHelper.CODEC.optionalFieldOf("loss_title", AbstractRaid.RAID_LOSS_TITLE).forGetter(RaidSettings::lossTitle),
+
                 Codec.optionalField("raid_start_sound", SoundEvent.CODEC).forGetter(RaidSettings::raidStartSound),
                 Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(RaidSettings::waveStartSound),
                 Codec.optionalField("victory_sound", SoundEvent.CODEC).forGetter(RaidSettings::victorySound),
                 Codec.optionalField("loss_sound", SoundEvent.CODEC).forGetter(RaidSettings::lossSound)
         ).apply(instance, RaidSettings::new)).codec();
+    }
+
+    protected record BorderSettings(double raidRange, boolean blockInside, boolean blockOutside, boolean renderBorder, int borderColor) {
+        public static final Codec<BorderSettings> CODEC = RecordCodecBuilder.<BorderSettings>mapCodec(instance -> instance.group(
+                Codec.doubleRange(0, Double.MAX_VALUE).optionalFieldOf("raid_range", 40D).forGetter(BorderSettings::raidRange),
+                Codec.BOOL.optionalFieldOf("block_inside", false).forGetter(BorderSettings::blockInside),
+                Codec.BOOL.optionalFieldOf("block_outside", false).forGetter(BorderSettings::blockOutside),
+                Codec.BOOL.optionalFieldOf("render_border", false).forGetter(BorderSettings::renderBorder),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("border_color", ColorHelper.BORDER_AQUA).forGetter(BorderSettings::borderColor)
+        ).apply(instance, BorderSettings::new)).codec();
     }
 }

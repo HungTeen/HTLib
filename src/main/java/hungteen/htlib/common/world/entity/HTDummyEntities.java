@@ -20,13 +20,13 @@ public class HTDummyEntities {
 
     private static final HTSimpleRegistry<DummyEntityType<?>> DUMMY_ENTITY_TYPES = HTRegistryManager.create(HTLib.prefix("dummy_entities"));
 
-    public static final DummyEntityType<DefaultRaid> CUSTOM_RAID = new DummyEntityType<>(HTLib.prefix("custom_raid"), DefaultRaid::new);
+    public static final DummyEntityType<DefaultRaid> DEFAULT_RAID = new DummyEntityType<>(HTLib.prefix("default_raid"), DefaultRaid::new);
 
     /**
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-        List.of(CUSTOM_RAID).forEach(HTDummyEntities::register);
+        List.of(DEFAULT_RAID).forEach(HTDummyEntities::register);
     }
 
     public static Optional<? extends DummyEntityType<?>> getEntityType(ResourceLocation location){

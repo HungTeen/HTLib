@@ -58,8 +58,8 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     public final ResourceLocation raidLocation;
     protected RaidComponent raidComponent;
     protected WaveComponent waveComponent;
-    protected List<SpawnComponent> spawnComponents;
-    protected DefaultRaid.Status status = DefaultRaid.Status.PREPARE;
+    protected List<ISpawnComponent> spawnComponents;
+    protected Status status = Status.PREPARE;
     protected final Set<Entity> raiderSet = Sets.newHashSet();
     protected final Set<UUID> heroes = new HashSet<>();
     protected int tick = 0;
@@ -104,7 +104,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             this.currentWave = tag.getInt("CurrentWave");
         }
         if (tag.contains("RaidStatus")) {
-            this.status = DefaultRaid.Status.values()[tag.getInt("RaidStatus")];
+            this.status = Status.values()[tag.getInt("RaidStatus")];
         }
         if (tag.contains("FirstTick")) {
             this.firstTick = tag.getBoolean("FirstTick");
@@ -272,7 +272,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 this.progressBar.setProgress(1F);
             }
             default -> {
-                this.progressBar.setColor(this.getRaidComponent().getRaidColor());
+                this.progressBar.setColor(this.getRaidComponent().getBarColor());
             }
         }
     }
@@ -503,13 +503,33 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @Override
-    public List<VoxelShape> getCollisionShapes(Entity entity) {
+    public VoxelShape getCollisionShapes(Entity entity) {
         if (this.isWithinBounds(entity.position(), 0)) {
-            return List.of(Shapes.join(Shapes.INFINITY, getEntityShape(), BooleanOp.ONLY_FIRST));
+            return Shapes.join(Shapes.INFINITY, getEntityShape(), BooleanOp.ONLY_FIRST);
         } else if (this.isOutOfBounds(entity.position(), 0)) {
-            return List.of(getEntityShape());
+            return getEntityShape();
         }
-        return List.of();
+        return super.getCollisionShapes(entity);
+    }
+
+    @Override
+    public boolean blockInsideStuffs() {
+        return this.getRaidComponent() != null && this.getRaidComponent().blockInside();
+    }
+
+    @Override
+    public boolean blockOutsideStuffs() {
+        return this.getRaidComponent() != null && this.getRaidComponent().blockOutside();
+    }
+
+    @Override
+    public boolean renderBorder() {
+        return this.getRaidComponent() != null && this.getRaidComponent().renderBorder();
+    }
+
+    @Override
+    public int getBorderColor() {
+        return this.getRaidComponent() != null ? this.getRaidComponent().getBorderColor() : super.getBorderColor();
     }
 
     @Override
@@ -550,12 +570,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @NotNull
-    public List<SpawnComponent> getSpawnComponents() {
+    public List<ISpawnComponent> getSpawnComponents() {
         return this.spawnComponents != null ? this.spawnComponents : (this.spawnComponents = this.getCurrentWave().getWaveSpawns(this, this.currentWave));
     }
 
     @Override
-    public Function<SpawnComponent, PlaceComponent> getPlaceComponent() {
+    public Function<ISpawnComponent, PlaceComponent> getPlaceComponent() {
         return spawnComponent -> {
             return spawnComponent.getSpawnPlacement().isPresent() ? spawnComponent.getSpawnPlacement().get() :
                     getCurrentWave().getSpawnPlacement().isPresent() ? getCurrentWave().getSpawnPlacement().get() :

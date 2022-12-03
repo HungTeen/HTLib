@@ -18,7 +18,7 @@ public abstract class WaveComponent {
      * Get the wave getSpawnEntities list.
      * @return list of wave getSpawnEntities.
      */
-    public abstract List<SpawnComponent> getWaveSpawns(IRaid raid, int tick);
+    public abstract List<ISpawnComponent> getWaveSpawns(IRaid raid, int tick);
 
     /**
      * How long before the wave start.

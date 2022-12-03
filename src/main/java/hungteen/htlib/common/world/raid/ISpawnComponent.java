@@ -15,31 +15,31 @@ import java.util.Optional;
  *
  * 决定了生成的生物的种类
  */
-public abstract class SpawnComponent {
+public interface ISpawnComponent {
 
     /**
      * getSpawnEntities entities.
      * @param tick current tick.
      */
-    public abstract List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick);
+    List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick);
 
     /**
      * Check for skipping this wave.
      * @param tick current tick.
      * @return true means can skip.
      */
-    public abstract boolean finishedSpawn(int tick);
+    boolean finishedSpawn(int tick);
 
     /**
      * Get the method to place the upcoming getSpawnEntities entity.
      * @return placement method.
      */
-    public abstract Optional<PlaceComponent> getSpawnPlacement();
+    Optional<PlaceComponent> getSpawnPlacement();
 
     /**
      * Get the entityType of getSpawnEntities.
      * @return wave entityType.
      */
-    public abstract ISpawnComponentType<?> getType();
+    ISpawnComponentType<?> getType();
 
 }

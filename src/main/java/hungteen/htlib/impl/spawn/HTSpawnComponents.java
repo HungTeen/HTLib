@@ -6,7 +6,7 @@ import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.SpawnComponent;
+import hungteen.htlib.common.world.raid.ISpawnComponent;
 import hungteen.htlib.util.interfaces.ISpawnComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
@@ -23,7 +23,7 @@ import java.util.Optional;
 public class HTSpawnComponents {
 
     public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(HTLib.prefix("spawn_type"));
-    public static final HTCodecRegistry<SpawnComponent> SPAWNS = HTRegistryManager.create(SpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec);
+    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec);
 
     /* Spawn types */
 
@@ -49,15 +49,15 @@ public class HTSpawnComponents {
         SPAWN_TYPES.register(type);
     }
 
-    public static Codec<SpawnComponent> getCodec(){
-        return SPAWN_TYPES.byNameCodec().dispatch(SpawnComponent::getType, ISpawnComponentType::codec);
+    public static Codec<ISpawnComponent> getCodec(){
+        return SPAWN_TYPES.byNameCodec().dispatch(ISpawnComponent::getType, ISpawnComponentType::codec);
     }
 
     public static SpawnSettingBuilder builder(){
         return new SpawnSettingBuilder();
     }
 
-    protected record DefaultWaveSpawn<P extends SpawnComponent>(String name, Codec<P> codec) implements ISpawnComponentType<P> {
+    protected record DefaultWaveSpawn<P extends ISpawnComponent>(String name, Codec<P> codec) implements ISpawnComponentType<P> {
 
         @Override
         public String getName() {

@@ -46,7 +46,7 @@ public abstract class RaidComponent {
      * Get the raid bar color.
      * @return Raid bar color.
      */
-    public abstract BossEvent.BossBarColor getRaidColor();
+    public abstract BossEvent.BossBarColor getBarColor();
 
     /**
      * Get the bar title when defeated the raid.
@@ -73,6 +73,14 @@ public abstract class RaidComponent {
     public abstract int getLossDuration();
 
     public abstract double getRaidRange();
+
+    public abstract boolean blockInside();
+
+    public abstract boolean blockOutside();
+
+    public abstract boolean renderBorder();
+
+    public abstract int getBorderColor();
 
     public abstract boolean showRoundTitle();
 

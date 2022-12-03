@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.*;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.util.helper.ColorHelper;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -48,13 +47,15 @@ public class LevelRenderHandler {
         final double minX = entityIn.getMinX();
         final double maxZ = entityIn.getMaxZ();
         final double minZ = entityIn.getMinZ();
-        if (!(camera.getPosition().x < maxX - validDistance) || !(camera.getPosition().x > minX + validDistance) || !(camera.getPosition().z < maxZ - validDistance) || !(camera.getPosition().z > minZ + validDistance)) {
+        final double originX = camera.getPosition().x;
+        final double originZ = camera.getPosition().z;
+        // Can see at least one side of border.
+        if (originX > maxX - validDistance || originX < minX + validDistance || originZ > maxZ - validDistance || originZ > minZ + validDistance) {
 //            double d1 = 1.0D - Mth.sqrt((float) entityIn.distanceToSqr(new Vec3(camera.getPosition().x, entityIn.getY(), camera.getPosition().z))) / validDistance;
             double d1 = 1;
             d1 = Math.pow(d1, 4.0D);
             d1 = Mth.clamp(d1, 0.0D, 1.0D);
-            final double originX = camera.getPosition().x;
-            final double originZ = camera.getPosition().z;
+
             double d4 = ClientProxy.MC.gameRenderer.getDepthFar();
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
@@ -64,7 +65,7 @@ public class LevelRenderHandler {
             PoseStack posestack = RenderSystem.getModelViewStack();
             posestack.pushPose();
             RenderSystem.applyModelViewMatrix();
-            final int color = ColorHelper.RED;
+            final int color = entityIn.getBorderColor();
             final float red = (float)(color >> 16 & 255) / 255.0F;
             final float green = (float)(color >> 8 & 255) / 255.0F;
             final float blue = (float)(color & 255) / 255.0F;
