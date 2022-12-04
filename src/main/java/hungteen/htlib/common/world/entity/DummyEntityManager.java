@@ -9,6 +9,7 @@ import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.slf4j.Logger;
@@ -59,6 +60,12 @@ public class DummyEntityManager extends SavedData {
         if (this.level.getGameTime() % 200 == 0) {
             this.setDirty();
         }
+    }
+
+    public void syncToClient(ServerPlayer player){
+        this.entityMap.forEach((id, entity) -> {
+            NetworkHandler.sendToClient(player, new DummyEntityPacket(DummyEntityPacket.Operation.CREATE, entity));
+        });
     }
 
     public void sync(boolean add, DummyEntity dummyEntity){

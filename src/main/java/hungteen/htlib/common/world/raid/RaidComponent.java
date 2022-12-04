@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.BossEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -87,6 +88,8 @@ public abstract class RaidComponent {
     public abstract Optional<SoundEvent> getRaidStartSound();
 
     public abstract Optional<SoundEvent> getWaveStartSound();
+
+    public abstract List<IResultComponent> getResultComponents();
 
     /**
      * Get the entityType of raid.

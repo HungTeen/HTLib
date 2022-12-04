@@ -4,28 +4,30 @@ import hungteen.htlib.common.world.raid.IResultComponent;
 import hungteen.htlib.util.interfaces.IRaid;
 import hungteen.htlib.util.interfaces.IResultComponentType;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-12-03 22:49
+ *
+ * {@link net.minecraft.advancements.AdvancementRewards}
+ * TODO 支持进度的奖励。
  **/
 public class AdvancementReward implements IResultComponent {
 
-//    public static final Codec<AdvancementRewards> REWARDS_CODEC = Codec.STRING.flatXmap()
-//
-//    public static final Codec<AdvancementReward> CODEC = RecordCodecBuilder.<AdvancementReward>mapCodec(instance -> instance.group(
-//
-//    ));
-
     @Override
-    public void applyToDefender(IRaid raid, ServerLevel level, int tick) {
+    public void apply(IRaid raid, ServerLevel level, int tick) {
 
     }
 
     @Override
-    public void applyToDefender(IRaid raid, ServerPlayer player, int tick) {
+    public void applyToDefender(IRaid raid, Entity defender, int tick) {
+
+    }
+
+    @Override
+    public void applyToRaider(IRaid raid, Entity raider, int tick) {
 
     }
 

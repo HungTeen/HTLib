@@ -17,6 +17,7 @@ import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTTestGen;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.impl.raid.HTRaidComponents;
+import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.impl.wave.HTWaveComponents;
 import hungteen.htlib.util.interfaces.IBoatType;
@@ -94,6 +95,7 @@ public class HTLib {
             HTPlaceComponents.registerStuffs();
             HTSpawnComponents.registerStuffs();
             HTWaveComponents.registerStuffs();
+            HTResultComponents.registerStuffs();
             HTRaidComponents.registerStuffs();
             HTDummyEntities.registerStuffs();
             HTBoat.getBoatTypes().forEach(type -> {

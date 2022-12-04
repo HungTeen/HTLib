@@ -12,11 +12,16 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -80,8 +85,11 @@ public abstract class DummyEntity implements IDummyEntity {
     /**
      * {@link hungteen.htlib.mixin.MixinEntity}
      */
-    public boolean collideWith(Entity entity){
-        return true;
+    public void collideWith(Entity entity){
+        if(entity instanceof Projectile){
+            ((Projectile) entity).onHit(new BlockHitResult(entity.position(), entity.getDirection(), entity.blockPosition(), false));
+            entity.discard();
+        }
     }
 
     /**
@@ -122,6 +130,18 @@ public abstract class DummyEntity implements IDummyEntity {
      * 不考虑此类实体的碰撞。
      */
     public boolean ignoreEntity(Entity entity){
+        return false;
+    }
+
+    public boolean requireBlockProjectile(Entity entity, AABB aabb){
+        if(! this.ignoreEntity(entity) && this.isCloseToBorder(entity, aabb) && this.getDistanceToBorder(entity.position()) < 1){
+            if(this.blockInsideStuffs() && this.isWithinBounds(entity.position(), entity.getBbWidth() / 2 + 1)){
+                return true;
+            }
+            if(this.blockOutsideStuffs() && this.isOutOfBounds(entity.position(), entity.getBbWidth() / 2 + 1)){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -183,8 +203,13 @@ public abstract class DummyEntity implements IDummyEntity {
     /**
      * 计算碰撞体。{@link hungteen.htlib.mixin.MixinEntity}
      */
-    public VoxelShape getCollisionShapes(Entity entity) {
-        return getEntityShape();
+    public Optional<VoxelShape> getCollisionShapes(Entity entity) {
+        if (this.blockInsideStuffs() && this.isWithinBounds(entity.position(), 0)) {
+            return Optional.of(Shapes.join(Shapes.INFINITY, getEntityShape(), BooleanOp.ONLY_FIRST));
+        } else if (this.blockOutsideStuffs() && this.isOutOfBounds(entity.position(), 0)) {
+            return Optional.ofNullable(getEntityShape());
+        }
+        return Optional.empty();
     }
 
     protected double leastDistance(AABB aabb) {

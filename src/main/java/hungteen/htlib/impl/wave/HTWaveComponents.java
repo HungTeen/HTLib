@@ -23,11 +23,11 @@ public class HTWaveComponents {
     public static final HTSimpleRegistry<IWaveComponentType<?>> WAVE_TYPES = HTRegistryManager.create(HTLib.prefix("wave_type"));
     public static final HTCodecRegistry<WaveComponent> WAVES = HTRegistryManager.create(WaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec);
 
-    /* Spawn types */
+    /* Wave types */
 
     public static final IWaveComponentType<CommonWave> COMMON_WAVE_TYPE = new DefaultWaveType<>("common_wave", CommonWave.CODEC);
 
-    /* Spawns */
+    /* Waves */
 
 //    public static final HTRegistryHolder<SpawnPlacement> DEFAULT = SPAWNS.innerRegister(
 //            HTLib.prefix("default"), new CenterAreaPlacement(

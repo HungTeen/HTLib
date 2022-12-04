@@ -3,9 +3,11 @@ package hungteen.htlib.impl.raid;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.AbstractRaid;
+import hungteen.htlib.common.world.raid.IResultComponent;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.network.chat.MutableComponent;
@@ -13,6 +15,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.BossEvent;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -79,63 +82,65 @@ public abstract class BaseRaid extends RaidComponent {
     }
 
     @Override
+    public List<IResultComponent> getResultComponents() {
+        return getRaidSettings().resultComponents();
+    }
+
+    @Override
     public MutableComponent getRaidTitle() {
-        return getRaidSettings().raidTitle();
+        return getRaidSettings().barSettings().raidTitle();
     }
 
     @Override
     public BossEvent.BossBarColor getBarColor() {
-        return getRaidSettings().raidColor();
+        return getRaidSettings().barSettings().raidColor();
     }
 
     @Override
     public MutableComponent getVictoryTitle() {
-        return getRaidSettings().victoryTitle();
+        return getRaidSettings().barSettings().victoryTitle();
     }
 
     @Override
     public MutableComponent getLossTitle() {
-        return getRaidSettings().lossTitle();
+        return getRaidSettings().barSettings().lossTitle();
     }
 
     @Override
     public Optional<SoundEvent> getRaidStartSound() {
-        return getRaidSettings().raidStartSound();
+        return getRaidSettings().soundSettings().raidStartSound();
     }
 
     @Override
     public Optional<SoundEvent> getWaveStartSound() {
-        return getRaidSettings().waveStartSound();
+        return getRaidSettings().soundSettings().waveStartSound();
     }
 
     @Override
     public Optional<SoundEvent> getVictorySound() {
-        return getRaidSettings().victorySound();
+        return getRaidSettings().soundSettings().victorySound();
     }
 
     @Override
     public Optional<SoundEvent> getLossSound() {
-        return getRaidSettings().lossSound();
+        return getRaidSettings().soundSettings().lossSound();
     }
 
-    protected record RaidSettings(PlaceComponent placeComponent, BorderSettings borderSettings, int victoryDuration, int lossDuration, boolean showRoundTitle, MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle, Optional<SoundEvent> raidStartSound, Optional<SoundEvent> waveStartSound, Optional<SoundEvent> victorySound, Optional<SoundEvent> lossSound) {
+    protected record RaidSettings(PlaceComponent placeComponent, BorderSettings borderSettings, BarSettings barSettings, SoundSettings soundSettings, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
         public static final Codec<RaidSettings> CODEC = RecordCodecBuilder.<RaidSettings>mapCodec(instance -> instance.group(
                 HTPlaceComponents.getCodec().optionalFieldOf("placement_type", HTPlaceComponents.DEFAULT.getValue()).forGetter(RaidSettings::placeComponent),
+
                 BorderSettings.CODEC.fieldOf("border_settings").forGetter(RaidSettings::borderSettings),
+                BarSettings.CODEC.fieldOf("bar_settings").forGetter(RaidSettings::barSettings),
+                SoundSettings.CODEC.fieldOf("sound_settings").forGetter(RaidSettings::soundSettings),
+
+                HTResultComponents.getCodec().listOf().optionalFieldOf("results", List.of()).forGetter(RaidSettings::resultComponents),
 
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("victory_duration", 100).forGetter(RaidSettings::victoryDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("loss_duration", 100).forGetter(RaidSettings::lossDuration),
+                Codec.BOOL.optionalFieldOf("show_wave_title", true).forGetter(RaidSettings::showRoundTitle)
 
-                Codec.BOOL.optionalFieldOf("show_wave_title", true).forGetter(RaidSettings::showRoundTitle),
-                StringHelper.CODEC.optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(RaidSettings::raidTitle),
-                BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(RaidSettings::raidColor),
-                StringHelper.CODEC.optionalFieldOf("victory_title", AbstractRaid.RAID_VICTORY_TITLE).forGetter(RaidSettings::victoryTitle),
-                StringHelper.CODEC.optionalFieldOf("loss_title", AbstractRaid.RAID_LOSS_TITLE).forGetter(RaidSettings::lossTitle),
 
-                Codec.optionalField("raid_start_sound", SoundEvent.CODEC).forGetter(RaidSettings::raidStartSound),
-                Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(RaidSettings::waveStartSound),
-                Codec.optionalField("victory_sound", SoundEvent.CODEC).forGetter(RaidSettings::victorySound),
-                Codec.optionalField("loss_sound", SoundEvent.CODEC).forGetter(RaidSettings::lossSound)
         ).apply(instance, RaidSettings::new)).codec();
     }
 
@@ -147,5 +152,23 @@ public abstract class BaseRaid extends RaidComponent {
                 Codec.BOOL.optionalFieldOf("render_border", false).forGetter(BorderSettings::renderBorder),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("border_color", ColorHelper.BORDER_AQUA).forGetter(BorderSettings::borderColor)
         ).apply(instance, BorderSettings::new)).codec();
+    }
+
+    protected record SoundSettings(Optional<SoundEvent> raidStartSound, Optional<SoundEvent> waveStartSound, Optional<SoundEvent> victorySound, Optional<SoundEvent> lossSound) {
+        public static final Codec<SoundSettings> CODEC = RecordCodecBuilder.<SoundSettings>mapCodec(instance -> instance.group(
+                Codec.optionalField("raid_start_sound", SoundEvent.CODEC).forGetter(SoundSettings::raidStartSound),
+                Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(SoundSettings::waveStartSound),
+                Codec.optionalField("victory_sound", SoundEvent.CODEC).forGetter(SoundSettings::victorySound),
+                Codec.optionalField("loss_sound", SoundEvent.CODEC).forGetter(SoundSettings::lossSound)
+        ).apply(instance, SoundSettings::new)).codec();
+    }
+
+    protected record BarSettings(MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle) {
+        public static final Codec<BarSettings> CODEC = RecordCodecBuilder.<BarSettings>mapCodec(instance -> instance.group(
+                StringHelper.CODEC.optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(BarSettings::raidTitle),
+                BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(BarSettings::raidColor),
+                StringHelper.CODEC.optionalFieldOf("victory_title", AbstractRaid.RAID_VICTORY_TITLE).forGetter(BarSettings::victoryTitle),
+                StringHelper.CODEC.optionalFieldOf("loss_title", AbstractRaid.RAID_LOSS_TITLE).forGetter(BarSettings::lossTitle)
+        ).apply(instance, BarSettings::new)).codec();
     }
 }

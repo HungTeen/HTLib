@@ -6,7 +6,8 @@
   "mixins": [
     "MixinEntity",
     "MixinCollisionGetter",
-    "MixinDismountHelper"
+    "MixinDismountHelper",
+    "MixinProjectileUtil"
   ],
   "client": [
   ],

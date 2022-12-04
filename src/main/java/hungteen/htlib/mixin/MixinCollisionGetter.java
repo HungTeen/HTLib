@@ -73,8 +73,8 @@ public interface MixinCollisionGetter {
         } else {
             AtomicBoolean hasCollision = new AtomicBoolean(false);
             HTLib.PROXY.getDummyEntities(entity.level).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
-                if (! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb)) {
-                    if (Shapes.joinIsNotEmpty(dummyEntity.getCollisionShapes(entity), Shapes.create(aabb), BooleanOp.AND)) {
+                if (! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb) && dummyEntity.getCollisionShapes(entity).isPresent()) {
+                    if (Shapes.joinIsNotEmpty(dummyEntity.getCollisionShapes(entity).get(), Shapes.create(aabb), BooleanOp.AND)) {
                         hasCollision.set(true);
                     }
                 }

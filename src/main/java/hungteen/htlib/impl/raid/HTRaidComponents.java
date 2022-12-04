@@ -8,9 +8,11 @@ import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.AbstractRaid;
+import hungteen.htlib.common.world.raid.IResultComponent;
 import hungteen.htlib.common.world.raid.PlaceComponent;
 import hungteen.htlib.common.world.raid.RaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.impl.spawn.DurationSpawn;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.impl.spawn.OnceSpawn;
@@ -24,10 +26,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.EntityType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -48,7 +47,7 @@ public class HTRaidComponents {
 
     public static final HTRegistryHolder<RaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
             new CommonRaid(
-                    HTRaidComponents.builder().build(),
+                    HTRaidComponents.builder().blockInside(true).blockOutside(true).renderBorder(true).result(HTResultComponents.TEST.getValue()).build(),
                     Arrays.asList(
                             new CommonWave(
                                     HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
@@ -128,6 +127,7 @@ public class HTRaidComponents {
 
     public static class RaidSettingBuilder {
         private PlaceComponent placeComponent = HTPlaceComponents.DEFAULT.getValue();
+        private List<IResultComponent> resultComponents = new ArrayList<>();
         private double raidRange = 40;
         private boolean blockInside = false;
         private boolean blockOutside = false;
@@ -150,6 +150,11 @@ public class HTRaidComponents {
             return this;
         }
 
+        public RaidSettingBuilder result(IResultComponent resultComponent){
+            this.resultComponents.add(resultComponent);
+            return this;
+        }
+
         public RaidSettingBuilder range(int raidRange){
             this.raidRange = raidRange;
             return this;
@@ -166,7 +171,7 @@ public class HTRaidComponents {
         }
 
         public RaidSettingBuilder renderBorder(boolean render){
-            this.renderBorder = renderBorder;
+            this.renderBorder = render;
             return this;
         }
 
@@ -191,7 +196,7 @@ public class HTRaidComponents {
         }
 
         public RaidSettingBuilder color(BossEvent.BossBarColor color){
-            this.raidColor = raidColor;
+            this.raidColor = color;
             return this;
         }
 
@@ -232,7 +237,7 @@ public class HTRaidComponents {
 
         public BaseRaid.RaidSettings build(){
             return new BaseRaid.RaidSettings(
-                    placeComponent,
+                    this.placeComponent,
                     new BaseRaid.BorderSettings(
                             this.raidRange,
                             this.blockInside,
@@ -240,17 +245,23 @@ public class HTRaidComponents {
                             this.renderBorder,
                             this.borderColor
                     ),
-                    victoryDuration,
-                    lossDuration,
-                    showRoundTitle,
-                    raidTitle,
-                    raidColor,
-                    victoryTitle,
-                    lossTitle,
-                    Optional.ofNullable(raidStartSound),
-                    Optional.ofNullable(waveStartSound),
-                    Optional.ofNullable(victorySound),
-                    Optional.ofNullable(lossSound));
+                    new BaseRaid.BarSettings(
+                            this.raidTitle,
+                            this.raidColor,
+                            this.victoryTitle,
+                            this.lossTitle
+                    ),
+                    new BaseRaid.SoundSettings(
+                            Optional.ofNullable(this.raidStartSound),
+                            Optional.ofNullable(this.waveStartSound),
+                            Optional.ofNullable(this.victorySound),
+                            Optional.ofNullable(this.lossSound)
+                    ),
+                    this.resultComponents,
+                    this.victoryDuration,
+                    this.lossDuration,
+                    this.showRoundTitle
+            );
         }
 
     }

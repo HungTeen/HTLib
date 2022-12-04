@@ -2,7 +2,10 @@ package hungteen.htlib.common.event;
 
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,6 +18,13 @@ import net.minecraftforge.fml.common.Mod;
  **/
 @Mod.EventBusSubscriber(modid = HTLib.MOD_ID)
 public class HTPlayerEvents {
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void login(PlayerEvent.PlayerLoggedInEvent event){
+        if(event.getEntity().level instanceof ServerLevel && event.getEntity() instanceof ServerPlayer){
+            DummyEntityManager.get((ServerLevel) event.getEntity().level).syncToClient((ServerPlayer) event.getEntity());
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void interactAt(PlayerInteractEvent.EntityInteractSpecific event){
