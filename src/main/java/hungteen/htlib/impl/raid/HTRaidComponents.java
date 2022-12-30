@@ -8,9 +8,9 @@ import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.AbstractRaid;
-import hungteen.htlib.common.world.raid.IResultComponent;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.RaidComponent;
+import hungteen.htlib.api.interfaces.raid.IResultComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.impl.spawn.DurationSpawn;
@@ -19,7 +19,7 @@ import hungteen.htlib.impl.spawn.OnceSpawn;
 import hungteen.htlib.impl.wave.CommonWave;
 import hungteen.htlib.impl.wave.HTWaveComponents;
 import hungteen.htlib.util.helper.ColorHelper;
-import hungteen.htlib.util.interfaces.IRaidComponentType;
+import hungteen.htlib.api.interfaces.raid.IRaidComponentType;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 public class HTRaidComponents {
 
     public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
-    public static final HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.create(RaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
+    public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec, true);
 
     /* Raid types */
 
@@ -45,7 +45,7 @@ public class HTRaidComponents {
 
     /* Raids */
 
-    public static final HTRegistryHolder<RaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
+    public static final HTRegistryHolder<IRaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
             new CommonRaid(
                     HTRaidComponents.builder().blockInside(true).blockOutside(true).renderBorder(true).result(HTResultComponents.TEST.getValue()).build(),
                     Arrays.asList(
@@ -92,27 +92,27 @@ public class HTRaidComponents {
         return RAID_TYPES.getValue(location).orElse(null);
     }
 
-    public static RaidComponent getRaidComponent(ResourceLocation location){
+    public static IRaidComponent getRaidComponent(ResourceLocation location){
         return RAIDS.getValue(location).orElse(null);
     }
 
     public static Stream<ResourceLocation> getIds(){
-        return RAIDS.getAllWithLocation().stream().map(Map.Entry::getKey);
+        return RAIDS.getEntries().stream().map(Map.Entry::getKey);
     }
 
     public static void registerRaidType(IRaidComponentType<?> type){
         RAID_TYPES.register(type);
     }
 
-    public static Codec<RaidComponent> getCodec(){
-        return RAID_TYPES.byNameCodec().dispatch(RaidComponent::getType, IRaidComponentType::codec);
+    public static Codec<IRaidComponent> getCodec(){
+        return RAID_TYPES.byNameCodec().dispatch(IRaidComponent::getType, IRaidComponentType::codec);
     }
 
     public static RaidSettingBuilder builder(){
         return new RaidSettingBuilder();
     }
 
-    protected record DefaultRaidType<P extends RaidComponent>(String name, Codec<P> codec) implements IRaidComponentType<P> {
+    protected record DefaultRaidType<P extends IRaidComponent>(String name, Codec<P> codec) implements IRaidComponentType<P> {
 
         @Override
         public String getName() {
@@ -126,7 +126,7 @@ public class HTRaidComponents {
     }
 
     public static class RaidSettingBuilder {
-        private PlaceComponent placeComponent = HTPlaceComponents.DEFAULT.getValue();
+        private IPlaceComponent placeComponent = HTPlaceComponents.DEFAULT.getValue();
         private List<IResultComponent> resultComponents = new ArrayList<>();
         private double raidRange = 40;
         private boolean blockInside = false;
@@ -145,7 +145,7 @@ public class HTRaidComponents {
         private SoundEvent victorySound = HTSounds.VICTORY.get();
         private SoundEvent lossSound = HTSounds.LOSS.get();
 
-        public RaidSettingBuilder place(PlaceComponent placeComponent){
+        public RaidSettingBuilder place(IPlaceComponent placeComponent){
             this.placeComponent = placeComponent;
             return this;
         }
@@ -235,23 +235,23 @@ public class HTRaidComponents {
             return this;
         }
 
-        public BaseRaid.RaidSettings build(){
-            return new BaseRaid.RaidSettings(
+        public RaidComponent.RaidSettings build(){
+            return new RaidComponent.RaidSettings(
                     this.placeComponent,
-                    new BaseRaid.BorderSettings(
+                    new RaidComponent.BorderSettings(
                             this.raidRange,
                             this.blockInside,
                             this.blockOutside,
                             this.renderBorder,
                             this.borderColor
                     ),
-                    new BaseRaid.BarSettings(
+                    new RaidComponent.BarSettings(
                             this.raidTitle,
                             this.raidColor,
                             this.victoryTitle,
                             this.lossTitle
                     ),
-                    new BaseRaid.SoundSettings(
+                    new RaidComponent.SoundSettings(
                             Optional.ofNullable(this.raidStartSound),
                             Optional.ofNullable(this.waveStartSound),
                             Optional.ofNullable(this.victorySound),

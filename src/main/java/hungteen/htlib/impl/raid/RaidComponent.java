@@ -3,9 +3,9 @@ package hungteen.htlib.impl.raid;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.common.world.raid.AbstractRaid;
-import hungteen.htlib.common.world.raid.IResultComponent;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.RaidComponent;
+import hungteen.htlib.api.interfaces.raid.IResultComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.util.helper.ColorHelper;
@@ -23,12 +23,12 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-28 23:37
  **/
-public abstract class BaseRaid extends RaidComponent {
+public abstract class RaidComponent implements IRaidComponent {
 
     public static final Codec<BossEvent.BossBarColor> BOSS_BAR_COLOR_CODEC = ExtraCodecs.stringResolverCodec(BossEvent.BossBarColor::getName, BossEvent.BossBarColor::byName);
     private final RaidSettings raidSettings;
 
-    public BaseRaid(RaidSettings raidSettings){
+    public RaidComponent(RaidSettings raidSettings){
         this.raidSettings = raidSettings;
     }
 
@@ -37,7 +37,7 @@ public abstract class BaseRaid extends RaidComponent {
     }
 
     @Override
-    public PlaceComponent getSpawnPlacement() {
+    public IPlaceComponent getSpawnPlacement() {
         return getRaidSettings().placeComponent();
     }
 
@@ -126,7 +126,7 @@ public abstract class BaseRaid extends RaidComponent {
         return getRaidSettings().soundSettings().lossSound();
     }
 
-    protected record RaidSettings(PlaceComponent placeComponent, BorderSettings borderSettings, BarSettings barSettings, SoundSettings soundSettings, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
+    protected record RaidSettings(IPlaceComponent placeComponent, BorderSettings borderSettings, BarSettings barSettings, SoundSettings soundSettings, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
         public static final Codec<RaidSettings> CODEC = RecordCodecBuilder.<RaidSettings>mapCodec(instance -> instance.group(
                 HTPlaceComponents.getCodec().optionalFieldOf("placement_type", HTPlaceComponents.DEFAULT.getValue()).forGetter(RaidSettings::placeComponent),
 

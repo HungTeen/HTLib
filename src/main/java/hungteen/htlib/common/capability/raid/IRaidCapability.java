@@ -1,6 +1,6 @@
 package hungteen.htlib.common.capability.raid;
 
-import hungteen.htlib.util.interfaces.IRaid;
+import hungteen.htlib.api.interfaces.raid.IRaid;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 /**

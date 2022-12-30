@@ -3,12 +3,12 @@ package hungteen.htlib.impl.spawn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.ISpawnComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.helper.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.interfaces.IRaid;
+import hungteen.htlib.api.interfaces.raid.IRaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
@@ -23,11 +23,11 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 18:14
  **/
-public abstract class BaseSpawn implements ISpawnComponent {
+public abstract class SpawnComponent implements ISpawnComponent {
 
     private final SpawnSettings spawnSettings;
 
-    public BaseSpawn(SpawnSettings spawnSettings) {
+    public SpawnComponent(SpawnSettings spawnSettings) {
         this.spawnSettings = spawnSettings;
     }
 
@@ -63,7 +63,7 @@ public abstract class BaseSpawn implements ISpawnComponent {
     }
 
     @Override
-    public Optional<PlaceComponent> getSpawnPlacement() {
+    public Optional<IPlaceComponent> getSpawnPlacement() {
         return this.getSpawnSettings().placeComponent();
     }
 
@@ -83,7 +83,7 @@ public abstract class BaseSpawn implements ISpawnComponent {
         return spawnSettings;
     }
 
-    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<PlaceComponent> placeComponent){
+    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<IPlaceComponent> placeComponent){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

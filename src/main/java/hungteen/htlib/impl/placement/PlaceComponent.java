@@ -1,6 +1,6 @@
 package hungteen.htlib.impl.placement;
 
-import hungteen.htlib.common.world.raid.PlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.util.helper.RandomHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -10,13 +10,13 @@ import net.minecraft.world.phys.Vec3;
  * @author: HungTeen
  * @create: 2022-11-27 18:22
  **/
-public abstract class BaseAreaPlacement extends PlaceComponent {
+public abstract class PlaceComponent implements IPlaceComponent {
 
     private final double excludeRadius;
     private final double radius;
     private final boolean isCircle;
 
-    public BaseAreaPlacement(double excludeRadius, double radius, boolean isCircle){
+    public PlaceComponent(double excludeRadius, double radius, boolean isCircle){
         this.excludeRadius = excludeRadius;
         this.radius = radius;
         this.isCircle = isCircle;

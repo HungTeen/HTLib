@@ -5,7 +5,7 @@ import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
-import hungteen.htlib.util.interfaces.IDummyEntity;
+import hungteen.htlib.api.interfaces.IDummyEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

@@ -2,8 +2,8 @@ package hungteen.htlib.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.util.interfaces.IRaid;
-import hungteen.htlib.util.interfaces.ISpawnComponentType;
+import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.api.interfaces.raid.ISpawnComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-27 17:56
  **/
-public class OnceSpawn extends BaseSpawn {
+public class OnceSpawn extends SpawnComponent {
 
     /**
      * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

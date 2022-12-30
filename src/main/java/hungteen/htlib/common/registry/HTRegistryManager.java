@@ -3,10 +3,11 @@ package hungteen.htlib.common.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.ISimpleRegistry;
+import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -19,10 +20,14 @@ public class HTRegistryManager {
 
     private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = HashBiMap.create();
 
+    public static void init() {
+        getRegistries().stream().filter(HTCodecRegistry::isGlobal).forEach(HTCodecRegistry::init);
+    }
+
     /**
      * do not create more than one registry for specific registry entityType.
      */
-    public static <T extends ISimpleRegistry> HTSimpleRegistry<T> create(ResourceLocation registryName){
+    public static <T extends ISimpleEntry> HTSimpleRegistry<T> create(ResourceLocation registryName){
         return new HTSimpleRegistry<>(registryName);
     }
 
@@ -31,16 +36,20 @@ public class HTRegistryManager {
     }
 
     public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier){
+        return create(clazz, registryName, supplier, false);
+    }
+
+    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal){
         if(CODEC_REGISTRIES.containsKey(registryName)){
             throw new IllegalArgumentException("Cannot create duplicate registry {}, use get instead".formatted(registryName));
         }
-        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier);
+        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal);
         CODEC_REGISTRIES.put(registryName, registry);
         return registry;
     }
 
-    public static List<String> getRegistryNames(){
-        return CODEC_REGISTRIES.keySet().stream().toList();
+    public static List<String> getRegistryNames(boolean isGlobal){
+        return CODEC_REGISTRIES.entrySet().stream().filter(entry -> entry.getValue().isGlobal() == isGlobal).map(Map.Entry::getKey).toList();
     }
 
     public static List<HTCodecRegistry<?>> getRegistries(){

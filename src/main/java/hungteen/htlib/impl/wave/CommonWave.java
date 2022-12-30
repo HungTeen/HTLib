@@ -2,10 +2,10 @@ package hungteen.htlib.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.ISpawnComponent;
+import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.impl.spawn.HTSpawnComponents;
-import hungteen.htlib.util.interfaces.IRaid;
-import hungteen.htlib.util.interfaces.IWaveComponentType;
+import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-29 09:14
  **/
-public class CommonWave extends BaseWave{
+public class CommonWave extends WaveComponent {
 
     /**
      * spawnPlacement : 放置类型

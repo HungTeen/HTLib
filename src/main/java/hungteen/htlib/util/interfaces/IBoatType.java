@@ -1,6 +1,6 @@
 package hungteen.htlib.util.interfaces;
 
-import hungteen.htlib.api.interfaces.ISimpleRegistry;
+import hungteen.htlib.api.interfaces.ISimpleEntry;
 import hungteen.htlib.common.entity.HTBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
  *
  * Copy from {@link net.minecraft.world.entity.vehicle.Boat.Type}
  **/
-public interface IBoatType extends ISimpleRegistry {
+public interface IBoatType extends ISimpleEntry {
 
     IBoatType DEFAULT = new IBoatType(){
         @Override

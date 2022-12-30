@@ -1,6 +1,6 @@
 package hungteen.htlib.common.world.entity;
 
-import hungteen.htlib.api.interfaces.ISimpleRegistry;
+import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  * @author: HungTeen
  * @create: 2022-11-27 22:34
  **/
-public final class DummyEntityType<T extends DummyEntity> implements ISimpleRegistry {
+public final class DummyEntityType<T extends DummyEntity> implements ISimpleEntry {
 
     private final ResourceLocation location;
     private final Factory<T> factory;

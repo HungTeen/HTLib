@@ -64,7 +64,7 @@ public abstract class HTCodecGen implements DataProvider {
 
     protected <E> void register(Path location, CachedOutput cache, Encoder<E> encoder, E entry) {
         try {
-            Optional<JsonElement> opt = encoder.encodeStart(ops, entry).resultOrPartial((s) -> {
+            Optional<JsonElement> opt = encoder.encodeStart(JsonOps.INSTANCE, entry).resultOrPartial((s) -> {
                 HTLib.getLogger().error("Couldn't serialize element {}: {}", location, s);
             });
             if (opt.isPresent()) {

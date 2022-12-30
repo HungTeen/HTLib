@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
  *
  * 很多模组自定义的注册项是需要保存或显示的，故需要名字来区分显示。
  **/
-public interface ISimpleRegistry {
+public interface ISimpleEntry {
 
     /**
      * 获取名字。

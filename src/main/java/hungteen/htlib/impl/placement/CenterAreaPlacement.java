@@ -2,7 +2,7 @@ package hungteen.htlib.impl.placement;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.util.interfaces.IPlaceComponentType;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponentType;
 import hungteen.htlib.util.helper.WorldHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:38
  */
-public class CenterAreaPlacement extends BaseAreaPlacement {
+public class CenterAreaPlacement extends PlaceComponent {
 
     /**
      * getCenterOffset 中心点偏移，默认为不偏移。offset to the origin point, default to (0, 0, 0).

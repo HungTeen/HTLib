@@ -1,7 +1,5 @@
-package hungteen.htlib.common.world.raid;
+package hungteen.htlib.api.interfaces.raid;
 
-import hungteen.htlib.util.interfaces.IRaid;
-import hungteen.htlib.util.interfaces.ISpawnComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
@@ -12,14 +10,15 @@ import java.util.Optional;
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/18 10:02
- *
- * 决定了生成的生物的种类
  */
 public interface ISpawnComponent {
 
     /**
-     * getSpawnEntities entities.
+     * Get spawned entities.
+     * @param level Check level.
+     * @param raid Current raid.
      * @param tick current tick.
+     * @return List of spawned entities.
      */
     List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick);
 
@@ -34,11 +33,11 @@ public interface ISpawnComponent {
      * Get the method to place the upcoming getSpawnEntities entity.
      * @return placement method.
      */
-    Optional<PlaceComponent> getSpawnPlacement();
+    Optional<IPlaceComponent> getSpawnPlacement();
 
     /**
-     * Get the entityType of getSpawnEntities.
-     * @return wave entityType.
+     * Get Serializer.
+     * @return Serialize type.
      */
     ISpawnComponentType<?> getType();
 

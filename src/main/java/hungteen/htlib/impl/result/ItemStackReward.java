@@ -2,9 +2,9 @@ package hungteen.htlib.impl.result;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.IResultComponent;
-import hungteen.htlib.util.interfaces.IRaid;
-import hungteen.htlib.util.interfaces.IResultComponentType;
+import hungteen.htlib.api.interfaces.raid.IResultComponent;
+import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.api.interfaces.raid.IResultComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

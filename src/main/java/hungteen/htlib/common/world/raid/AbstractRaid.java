@@ -2,6 +2,7 @@ package hungteen.htlib.common.world.raid;
 
 import com.google.common.collect.Sets;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
@@ -11,7 +12,6 @@ import hungteen.htlib.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.impl.wave.HTWaveComponents;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
-import hungteen.htlib.util.interfaces.IRaid;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.nbt.CompoundTag;
@@ -56,8 +56,8 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     public static final MutableComponent RAID_WARN = Component.translatable("raid.htlib.too_far_away").withStyle(ChatFormatting.RED);
     private final ServerBossEvent progressBar = new ServerBossEvent(RAID_TITLE, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
     public final ResourceLocation raidLocation;
-    protected RaidComponent raidComponent;
-    protected WaveComponent waveComponent;
+    protected IRaidComponent raidComponent;
+    protected IWaveComponent waveComponent;
     protected List<ISpawnComponent> spawnComponents;
     protected Status status = Status.PREPARE;
     protected final Set<Entity> raiderSet = Sets.newHashSet();
@@ -543,12 +543,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      * Get raid component by resource, use cache to speed up.
      */
     @Nullable
-    public RaidComponent getRaidComponent() {
+    public IRaidComponent getRaidComponent() {
         return this.raidComponent != null ? this.raidComponent : (this.raidComponent = HTRaidComponents.getRaidComponent(this.raidLocation));
     }
 
     @NotNull
-    public WaveComponent getCurrentWave() {
+    public IWaveComponent getCurrentWave() {
         return this.waveComponent != null ? this.waveComponent : (this.waveComponent = Objects.requireNonNull(this.getRaidComponent()).getCurrentWave(this, this.currentWave));
     }
 
@@ -565,7 +565,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @Override
-    public Function<ISpawnComponent, PlaceComponent> getPlaceComponent() {
+    public Function<ISpawnComponent, IPlaceComponent> getPlaceComponent() {
         return spawnComponent -> {
             return spawnComponent.getSpawnPlacement().isPresent() ? spawnComponent.getSpawnPlacement().get() :
                     getCurrentWave().getSpawnPlacement().isPresent() ? getCurrentWave().getSpawnPlacement().get() :

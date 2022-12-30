@@ -1,7 +1,7 @@
 package hungteen.htlib.common.capability.raid;
 
 import hungteen.htlib.common.world.entity.DummyEntityManager;
-import hungteen.htlib.util.interfaces.IRaid;
+import hungteen.htlib.api.interfaces.raid.IRaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

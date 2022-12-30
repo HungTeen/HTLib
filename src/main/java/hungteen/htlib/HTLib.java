@@ -33,6 +33,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -60,6 +61,9 @@ public class HTLib {
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
         modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
             event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator()));
+        });
+        modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, (event) -> {
+            HTRegistryManager.init();
         });
         HTEntities.register(modBus);
         HTSounds.register(modBus);

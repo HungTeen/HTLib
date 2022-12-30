@@ -5,10 +5,12 @@ import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.ISimpleRegistry;
+import hungteen.htlib.api.interfaces.IHTSimpleRegistry;
+import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,7 +21,7 @@ import java.util.Optional;
  * 主要是用于先于常规注册的一些东西，先注册这些可以更方便的一个循环来注册常规注册。<br>
  * 建议在mod构造函数中注册。
  */
-public final class HTSimpleRegistry<T extends ISimpleRegistry> {
+public final class HTSimpleRegistry<T extends ISimpleEntry> implements IHTSimpleRegistry<T> {
 
     private final BiMap<ResourceLocation, Optional<? extends T>> registryMap = HashBiMap.create();
     private final ResourceLocation registryName;
@@ -28,6 +30,7 @@ public final class HTSimpleRegistry<T extends ISimpleRegistry> {
         this.registryName = registryName;
     }
 
+    @Override
     public <I extends T> void register(I type) {
         if(registryMap.containsKey(type.getLocation())){
             HTLib.getLogger().warn("HTSimpleRegistry {} already registered {}", this.getRegistryName(), type.getLocation());
@@ -35,33 +38,41 @@ public final class HTSimpleRegistry<T extends ISimpleRegistry> {
         registryMap.put(type.getLocation(), Optional.ofNullable(type));
     }
 
-//    /**
-//     * Require Mod Bus.
-//     */
-//    public void register(IEventBus bus) {
-//        bus.register(new HTEventDispatcher(this));
-//    }
-
-    public List<? extends T> getAll() {
-        return registryMap.values().stream().filter(Optional::isPresent).map(Optional::get).toList();
+    @Override
+    public List<T> getValues() {
+        return registryMap.values().stream().filter(Optional::isPresent).map(Optional::get).map(t -> (T)t).toList();
     }
 
+    @Override
     public List<ResourceLocation> getIds() {
         return registryMap.keySet().stream().toList();
     }
 
-    public Optional<? extends T> getValue(ResourceLocation type) {
-        return registryMap.getOrDefault(type, Optional.empty());
+    @Override
+    public List<Map.Entry<ResourceLocation, T>> getEntries() {
+        return registryMap.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue().map(tmp -> (T)tmp)))
+                .filter(entry -> entry.getValue().isPresent())
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue().get()))
+                .toList();
     }
 
+    @Override
+    public Optional<T> getValue(ResourceLocation type) {
+        return registryMap.getOrDefault(type, Optional.empty()).map(t -> (T)t);
+    }
+
+    @Override
     public <I extends T> Optional<ResourceLocation> getKey(I type) {
         return Optional.ofNullable(registryMap.inverse().getOrDefault(Optional.ofNullable(type), null));
     }
 
+    @Override
     public ResourceLocation getRegistryName() {
         return registryName;
     }
 
+    @Override
     public Codec<T> byNameCodec() {
         return ResourceLocation.CODEC.flatXmap((location) -> {
             return this.getValue(location).map(DataResult::success).orElseGet(() -> {
@@ -74,16 +85,4 @@ public final class HTSimpleRegistry<T extends ISimpleRegistry> {
         });
     }
 
-//    public static class HTEventDispatcher {
-//        private final HTSimpleRegistry<?> register;
-//
-//        public HTEventDispatcher(final HTSimpleRegistry<?> register) {
-//            this.register = register;
-//        }
-//
-//        @SubscribeEvent
-//        public void handleEvent(NewRegistryEvent event) {
-//            register.addEntries();
-//        }
-//    }
 }

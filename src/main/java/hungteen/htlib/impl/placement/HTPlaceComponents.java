@@ -2,13 +2,14 @@ package hungteen.htlib.impl.placement;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.util.interfaces.IPlaceComponentType;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponentType;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
 public class HTPlaceComponents {
 
     public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
-    public static final HTCodecRegistry<PlaceComponent> PLACEMENTS = HTRegistryManager.create(PlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec);
+    public static final HTCodecRegistry<IPlaceComponent> PLACEMENTS = HTRegistryManager.create(IPlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec);
 
     /* Placement types */
 
@@ -29,14 +30,14 @@ public class HTPlaceComponents {
 
     /* Placements */
 
-    public static final HTRegistryHolder<PlaceComponent> DEFAULT = PLACEMENTS.innerRegister(
+    public static final HTRegistryHolder<IPlaceComponent> DEFAULT = PLACEMENTS.innerRegister(
             HTLib.prefix("default"), new CenterAreaPlacement(
                     Vec3.ZERO, 0, 1, true, 0, true
             )
     );
 
     /**
-     * {@link HTLib#HTLib()}
+     * {@link HTLib#setUp(FMLCommonSetupEvent)} ()}
      */
     public static void registerStuffs(){
         List.of(CENTER_AREA_TYPE, ABSOLUTE_AREA_TYPE).forEach(HTPlaceComponents::registerPlacementType);
@@ -46,11 +47,11 @@ public class HTPlaceComponents {
         PLACEMENT_TYPES.register(type);
     }
 
-    public static Codec<PlaceComponent> getCodec(){
-        return PLACEMENT_TYPES.byNameCodec().dispatch(PlaceComponent::getType, IPlaceComponentType::codec);
+    public static Codec<IPlaceComponent> getCodec(){
+        return PLACEMENT_TYPES.byNameCodec().dispatch(IPlaceComponent::getType, IPlaceComponentType::codec);
     }
 
-    protected record DefaultSpawnPlacement<P extends PlaceComponent>(String name, Codec<P> codec) implements IPlaceComponentType<P> {
+    protected record DefaultSpawnPlacement<P extends IPlaceComponent>(String name, Codec<P> codec) implements IPlaceComponentType<P> {
 
         @Override
         public String getName() {

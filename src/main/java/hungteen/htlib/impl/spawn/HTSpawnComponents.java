@@ -5,9 +5,9 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.ISpawnComponent;
-import hungteen.htlib.util.interfaces.ISpawnComponentType;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
+import hungteen.htlib.api.interfaces.raid.ISpawnComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -75,10 +75,10 @@ public class HTSpawnComponents {
         private EntityType<?> entityType = EntityType.PIG;
         private CompoundTag nbt = new CompoundTag();
         private boolean enableDefaultSpawn = true;
-        private PlaceComponent placeComponent = null;
+        private IPlaceComponent placeComponent = null;
 
-        public BaseSpawn.SpawnSettings build() {
-            return new BaseSpawn.SpawnSettings(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
+        public SpawnComponent.SpawnSettings build() {
+            return new SpawnComponent.SpawnSettings(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
         }
 
         public SpawnSettingBuilder entityType(EntityType<?> type) {
@@ -96,7 +96,7 @@ public class HTSpawnComponents {
             return this;
         }
 
-        public SpawnSettingBuilder placement(PlaceComponent placeComponent){
+        public SpawnSettingBuilder placement(IPlaceComponent placeComponent){
             this.placeComponent = placeComponent;
             return this;
         }

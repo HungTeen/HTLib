@@ -5,9 +5,9 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.WaveComponent;
-import hungteen.htlib.util.interfaces.IWaveComponentType;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IWaveComponent;
+import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class HTWaveComponents {
 
     public static final HTSimpleRegistry<IWaveComponentType<?>> WAVE_TYPES = HTRegistryManager.create(HTLib.prefix("wave_type"));
-    public static final HTCodecRegistry<WaveComponent> WAVES = HTRegistryManager.create(WaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec);
+    public static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(IWaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec);
 
     /* Wave types */
 
@@ -46,15 +46,15 @@ public class HTWaveComponents {
         WAVE_TYPES.register(type);
     }
 
-    public static Codec<WaveComponent> getCodec(){
-        return WAVE_TYPES.byNameCodec().dispatch(WaveComponent::getType, IWaveComponentType::codec);
+    public static Codec<IWaveComponent> getCodec(){
+        return WAVE_TYPES.byNameCodec().dispatch(IWaveComponent::getType, IWaveComponentType::codec);
     }
 
     public static WaveSettingBuilder builder(){
         return new WaveSettingBuilder();
     }
 
-    protected record DefaultWaveType<P extends WaveComponent>(String name, Codec<P> codec) implements IWaveComponentType<P> {
+    protected record DefaultWaveType<P extends IWaveComponent>(String name, Codec<P> codec) implements IWaveComponentType<P> {
 
         @Override
         public String getName() {
@@ -69,17 +69,17 @@ public class HTWaveComponents {
 
     public static class WaveSettingBuilder {
 
-        private Optional<PlaceComponent> spawnPlacement = Optional.empty();
+        private Optional<IPlaceComponent> spawnPlacement = Optional.empty();
         private int prepareDuration = 100;
         private int waveDuration = 0;
         private boolean canSkip = true;
         private Optional<SoundEvent> waveStartSound = Optional.empty();
 
-        public BaseWave.WaveSettings build(){
-            return new BaseWave.WaveSettings(spawnPlacement, prepareDuration, waveDuration, canSkip, waveStartSound);
+        public WaveComponent.WaveSettings build(){
+            return new WaveComponent.WaveSettings(spawnPlacement, prepareDuration, waveDuration, canSkip, waveStartSound);
         }
 
-        public WaveSettingBuilder placement(PlaceComponent spawnPlacement){
+        public WaveSettingBuilder placement(IPlaceComponent spawnPlacement){
             this.spawnPlacement = Optional.ofNullable(spawnPlacement);
             return this;
         }

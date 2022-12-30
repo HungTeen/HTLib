@@ -2,8 +2,8 @@ package hungteen.htlib.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.world.raid.PlaceComponent;
-import hungteen.htlib.common.world.raid.WaveComponent;
+import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.impl.placement.HTPlaceComponents;
 import net.minecraft.sounds.SoundEvent;
 
@@ -14,16 +14,16 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-29 09:08
  **/
-public abstract class BaseWave extends WaveComponent {
+public abstract class WaveComponent implements IWaveComponent {
 
     private final WaveSettings waveSettings;
 
-    public BaseWave(WaveSettings waveSettings) {
+    public WaveComponent(WaveSettings waveSettings) {
         this.waveSettings = waveSettings;
     }
 
     @Override
-    public Optional<PlaceComponent> getSpawnPlacement() {
+    public Optional<IPlaceComponent> getSpawnPlacement() {
         return getWaveSettings().spawnPlacement();
     }
 
@@ -51,7 +51,7 @@ public abstract class BaseWave extends WaveComponent {
         return waveSettings;
     }
 
-    public record WaveSettings(Optional<PlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<SoundEvent> waveStartSound){
+    public record WaveSettings(Optional<IPlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<SoundEvent> waveStartSound){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

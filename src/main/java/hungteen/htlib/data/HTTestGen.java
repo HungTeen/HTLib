@@ -4,6 +4,11 @@ import com.mojang.serialization.Encoder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
+import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.impl.raid.HTRaidComponents;
+import hungteen.htlib.impl.result.HTResultComponents;
+import hungteen.htlib.impl.spawn.HTSpawnComponents;
+import hungteen.htlib.impl.wave.HTWaveComponents;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 
@@ -20,11 +25,16 @@ public class HTTestGen extends HTCodecGen{
 
     @Override
     public void run(CachedOutput cache) {
-//        register(cache, HTRaidComponents.RAIDS, HTRaidComponents.getCodec());
+        HTPlaceComponents.registerStuffs();
+        HTSpawnComponents.registerStuffs();
+        HTWaveComponents.registerStuffs();
+        HTResultComponents.registerStuffs();
+        HTRaidComponents.registerStuffs();
+        register(cache, HTRaidComponents.RAIDS, HTRaidComponents.getCodec());
     }
 
     protected <E, T extends HTRegistryHolder<E>> void register(CachedOutput cache, HTCodecRegistry<E> registry, Encoder<E> encoder) {
-        registry.getAllWithLocation().forEach(entry -> {
+        registry.getEntries().forEach(entry -> {
             register(createPath(path, registry.getRegistryName(), entry.getKey()), cache, encoder, entry.getValue());
         });
     }
