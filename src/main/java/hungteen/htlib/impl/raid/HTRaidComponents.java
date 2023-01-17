@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 public class HTRaidComponents {
 
     public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
-    public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec, true);
+    public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
 
     /* Raid types */
 

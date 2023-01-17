@@ -19,16 +19,13 @@ public class WeightList<T> {
     private final List<Integer> weightList; // weight of items
     private Optional<T> leftItem = Optional.empty(); // alternative item.
     protected int totalWeight = 0;
-
     public WeightList() {
         this.itemList = new ArrayList<>();
         this.weightList = new ArrayList<>();
     }
-
     public WeightList(List<T> itemList, Function<T, Integer> func) {
         this(itemList, itemList.stream().map(func).collect(Collectors.toList()));
     }
-
     public WeightList(List<T> itemList, List<Integer> weightList) {
         this.itemList = new ArrayList<>(itemList);
         this.weightList = new ArrayList<>(weightList);

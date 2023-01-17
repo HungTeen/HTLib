@@ -107,6 +107,7 @@ public class HTCodecLoader extends SimpleJsonResourceReloadListener {
                 HTLib.getLogger().error("Missing HTCodecRegistry for {}", res);
             }
         });
+        HTRegistryManager.globalInit();
     }
 
     @Override

@@ -20,7 +20,10 @@ public class HTRegistryManager {
 
     private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = HashBiMap.create();
 
-    public static void init() {
+    /**
+     * 全局初始化。
+     */
+    public static void globalInit() {
         getRegistries().stream().filter(HTCodecRegistry::isGlobal).forEach(HTCodecRegistry::init);
     }
 

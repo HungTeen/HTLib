@@ -91,6 +91,8 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
         } else if(! this.rootDir.isDirectory()){
             throw new RuntimeException(this.rootDir.getAbsolutePath() + " is a file, not a folder.");
         }
+        // Clear first.
+        this.clearOutRegistries();
         final List<File> files = FileHelper.getAllFiles(this.rootDir, f -> f.getName().endsWith(".json"));
         files.forEach(file -> {
             try (FileInputStream stream = new FileInputStream(file)) {

@@ -63,7 +63,7 @@ public class HTLib {
             event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator()));
         });
         modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, (event) -> {
-            HTRegistryManager.init();
+            HTRegistryManager.globalInit();
         });
         HTEntities.register(modBus);
         HTSounds.register(modBus);
