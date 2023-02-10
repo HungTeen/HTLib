@@ -119,12 +119,10 @@ public class WeightList<T> {
      */
     public List<T> getRandomItems(RandomSource rand, int itemCount, boolean different) {
         final List<T> resultList = new ArrayList<>();
-        final int len = getLen();
-        while(Math.min(len, itemCount) > resultList.size()) {
+        for(int i = 0; i < itemCount; ++ i){
             getRandomItem(rand).ifPresent(item -> {
                 if(! different || ! resultList.contains(item)){
                     resultList.add(item);
-                    this.removeItem(item);
                 }
             });
         }

@@ -18,12 +18,12 @@ import java.util.List;
 public class CommonRaid extends RaidComponent {
 
     public static final Codec<CommonRaid> CODEC = RecordCodecBuilder.<CommonRaid>mapCodec(instance -> instance.group(
-            RaidSettings.CODEC.fieldOf("settings").forGetter(CommonRaid::getRaidSettings),
+            RaidSetting.CODEC.fieldOf("setting").forGetter(CommonRaid::getRaidSettings),
             HTWaveComponents.getCodec().listOf().fieldOf("waves").forGetter(CommonRaid::getWaveComponents)
     ).apply(instance, CommonRaid::new)).codec();
     private final List<IWaveComponent> waveComponents;
 
-    public CommonRaid(RaidSettings raidSettings, List<IWaveComponent> waveComponents) {
+    public CommonRaid(RaidSetting raidSettings, List<IWaveComponent> waveComponents) {
         super(raidSettings);
         this.waveComponents = waveComponents;
     }

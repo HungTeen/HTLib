@@ -3,6 +3,7 @@ package hungteen.htlib.common.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
+import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -38,15 +39,26 @@ public class HTRegistryManager {
         return Optional.ofNullable(CODEC_REGISTRIES.getOrDefault(registryName, null));
     }
 
+    /**
+     * Globally create.
+     */
+    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, String namespace){
+        return create(clazz, registryName, supplier, true, namespace);
+    }
+
+    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal){
+        return create(clazz, registryName, supplier, isGlobal, HTLib.MOD_ID);
+    }
+
     public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier){
         return create(clazz, registryName, supplier, false);
     }
 
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal){
+    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal, String namespace){
         if(CODEC_REGISTRIES.containsKey(registryName)){
             throw new IllegalArgumentException("Cannot create duplicate registry {}, use get instead".formatted(registryName));
         }
-        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal);
+        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal, namespace);
         CODEC_REGISTRIES.put(registryName, registry);
         return registry;
     }

@@ -23,12 +23,12 @@ import java.util.Optional;
 public class HTSpawnComponents {
 
     public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(HTLib.prefix("spawn_type"));
-    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec);
+    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec, true);
 
     /* Spawn types */
 
-    public static final ISpawnComponentType<OnceSpawn> ONCE_SPAWN_TYPE = new DefaultWaveSpawn<>("once_spawn",  OnceSpawn.CODEC);
-    public static final ISpawnComponentType<DurationSpawn> DURATION_SPAWN_TYPE = new DefaultWaveSpawn<>("duration_spawn",  DurationSpawn.CODEC);
+    public static final ISpawnComponentType<OnceSpawn> ONCE_SPAWN_TYPE = new DefaultWaveSpawn<>("once",  OnceSpawn.CODEC);
+    public static final ISpawnComponentType<DurationSpawn> DURATION_SPAWN_TYPE = new DefaultWaveSpawn<>("duration",  DurationSpawn.CODEC);
 
     /* Spawns */
 

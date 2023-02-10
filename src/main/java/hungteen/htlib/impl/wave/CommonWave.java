@@ -24,7 +24,7 @@ public class CommonWave extends WaveComponent {
      * spawnComponents : 生成部件
      */
     public static final Codec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
-            WaveSettings.CODEC.fieldOf("wave_settings").forGetter(CommonWave::getWaveSettings),
+            WaveSettings.CODEC.fieldOf("setting").forGetter(CommonWave::getWaveSettings),
             HTSpawnComponents.getCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
     ).apply(instance, CommonWave::new)).codec();
     private final List<ISpawnComponent> spawnComponents;

@@ -37,11 +37,11 @@ import java.util.stream.Stream;
 public class HTRaidComponents {
 
     public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
-    public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec);
+    public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec, true);
 
     /* Raid types */
 
-    public static final IRaidComponentType<CommonRaid> COMMON_RAID_TYPE = new DefaultRaidType<>("common_raid", CommonRaid.CODEC);
+    public static final IRaidComponentType<CommonRaid> COMMON_RAID_TYPE = new DefaultRaidType<>("common", CommonRaid.CODEC);
 
     /* Raids */
 
@@ -235,23 +235,23 @@ public class HTRaidComponents {
             return this;
         }
 
-        public RaidComponent.RaidSettings build(){
-            return new RaidComponent.RaidSettings(
+        public RaidComponent.RaidSetting build(){
+            return new RaidComponent.RaidSetting(
                     this.placeComponent,
-                    new RaidComponent.BorderSettings(
+                    new RaidComponent.BorderSetting(
                             this.raidRange,
                             this.blockInside,
                             this.blockOutside,
                             this.renderBorder,
                             this.borderColor
                     ),
-                    new RaidComponent.BarSettings(
+                    new RaidComponent.BarSetting(
                             this.raidTitle,
                             this.raidColor,
                             this.victoryTitle,
                             this.lossTitle
                     ),
-                    new RaidComponent.SoundSettings(
+                    new RaidComponent.SoundSetting(
                             Optional.ofNullable(this.raidStartSound),
                             Optional.ofNullable(this.waveStartSound),
                             Optional.ofNullable(this.victorySound),

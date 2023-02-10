@@ -23,7 +23,7 @@ import java.util.List;
 public class HTResultComponents {
 
     public static final HTSimpleRegistry<IResultComponentType<?>> RESULT_TYPE = HTRegistryManager.create(HTLib.prefix("result_type"));
-    public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(IResultComponent.class, "custom_raid/results", HTResultComponents::getCodec);
+    public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(IResultComponent.class, "custom_raid/results", HTResultComponents::getCodec, true);
 
     /* Result types */
 

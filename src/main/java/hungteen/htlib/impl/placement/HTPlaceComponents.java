@@ -21,7 +21,7 @@ import java.util.List;
 public class HTPlaceComponents {
 
     public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
-    public static final HTCodecRegistry<IPlaceComponent> PLACEMENTS = HTRegistryManager.create(IPlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec);
+    public static final HTCodecRegistry<IPlaceComponent> PLACEMENTS = HTRegistryManager.create(IPlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec, true);
 
     /* Placement types */
 

@@ -50,13 +50,15 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
     private final Class<V> registryClass;
     private final Supplier<Codec<V>> supplier;
     private final boolean isGlobal;
+    private final String defaultNamespace;
     private File rootDir;
 
-    HTCodecRegistry(Class<V> registryClass, String registryName, Supplier<Codec<V>> supplier, boolean isGlobal) {
+    HTCodecRegistry(Class<V> registryClass, String registryName, Supplier<Codec<V>> supplier, boolean isGlobal, String defaultNamespace) {
         this.registryClass = registryClass;
         this.registryName = registryName;
         this.supplier = supplier;
         this.isGlobal = isGlobal;
+        this.defaultNamespace = defaultNamespace;
     }
 
     /**
@@ -101,7 +103,7 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
                 getCodec().parse(JsonOps.INSTANCE, element)
                         .resultOrPartial(msg -> HTLib.getLogger().error(msg + " [HTCodecRegistry] - " + this.registryName))
                         .ifPresent(l -> {
-                            this.outerRegister(HTLib.prefix(file.getName().substring(0, file.getName().length() - 4)), l);
+                            this.outerRegister(HTLib.res(this.defaultNamespace, file.getName().substring(0, file.getName().length() - 5)), l);
                         });
             } catch (Exception e) {
                 HTLib.getLogger().error("Failed to load json from {}, skipping", file, e);

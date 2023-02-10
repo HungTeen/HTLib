@@ -20,7 +20,7 @@ public class AbsoluteAreaPlacement extends PlaceComponent {
      * isCircle: 默认是圆心，否则是方形。default is circle, or it will be square.
      */
     public static final Codec<AbsoluteAreaPlacement> CODEC = RecordCodecBuilder.<AbsoluteAreaPlacement>mapCodec(instance -> instance.group(
-            Vec3.CODEC.fieldOf("getPosition").forGetter(AbsoluteAreaPlacement::getPosition),
+            Vec3.CODEC.fieldOf("position").forGetter(AbsoluteAreaPlacement::getPosition),
             Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("exclude_radius", 0D).forGetter(AbsoluteAreaPlacement::getExcludeRadius),
             Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("radius", 0D).forGetter(AbsoluteAreaPlacement::getRadius),
             Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(AbsoluteAreaPlacement::isCircle)
