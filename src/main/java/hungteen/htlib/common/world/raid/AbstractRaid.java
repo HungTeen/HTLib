@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
+import hungteen.htlib.common.event.events.RaidEvent;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.DummyEntityType;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -388,6 +390,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 PlayerHelper.playClientSound(p, this.getRaidComponent().getWaveStartSound().get());
             }
         });
+        MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidWaveStartEvent(this.getLevel(), this, this.currentWave));
         this.setDirty();
     }
 
@@ -426,6 +429,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             this.tick = 0;
             this.updateWaveAndSpawn();
             this.setStatus(Status.PREPARE);
+            MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidWaveFinishEvent(this.getLevel(), this, this.currentWave));
         }
         this.setDirty();
     }
@@ -455,7 +459,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         this.getPlayers().forEach(p -> {
             Objects.requireNonNull(this.getRaidComponent()).getLossSound().ifPresent(sound -> PlayerHelper.playClientSound(p, sound));
         });
-//        MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidLossEvent(this));
+        MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidLostEvent(this.getLevel(), this));
     }
 
     /**
@@ -474,12 +478,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 //TODO 自己的Trigger
 //            ChallengeTrigger.INSTANCE.trigger(p, this.raidLocation.toString());
         });
-//        if(! MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidWinEvent(this))) {
-//            this.getPlayers().forEach(p -> {
-//                this.raidComponent.getRewards().forEach(r -> r.reward(p));
-//            });
-//            this.raidComponent.getRewards().forEach(r -> r.rewardGlobally(this));
-//        }
+        MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidDefeatedEvent(this.getLevel(), this));
     }
 
     public void removeFromRaid(Entity raider) {

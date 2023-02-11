@@ -76,20 +76,10 @@ public class HTCommand {
         if (!Level.isInSpawnableBounds(blockpos)) {
             throw INVALID_POSITION.create();
         }
-        if(HTDummyEntities.getEntityType(location).isPresent()){
-            final DummyEntityType<?> dummyEntityType = HTDummyEntities.getEntityType(location).get();
-            CompoundTag compoundtag = tag.copy();
-            compoundtag.putInt("DummyEntityID", DummyEntityManager.get(sourceStack.getLevel()).getUniqueId());
-            Vec3.CODEC.encodeStart(NbtOps.INSTANCE, position)
-                    .result().ifPresent(nbt -> compoundtag.put("Position", nbt));
-
-            DummyEntity dummyEntity = dummyEntityType.create(sourceStack.getLevel(), compoundtag);
-
-            if (dummyEntity != null) {
-                DummyEntityManager.get(sourceStack.getLevel()).add(dummyEntity);
-                sourceStack.sendSuccess(Component.translatable("commands.summon.success", dummyEntityType.getRegistryName()), true);
-                return 1;
-            }
+        DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
+        if(dummyEntity != null){
+            sourceStack.sendSuccess(Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
+            return 1;
         }
         throw ERROR_FAILED.create();
     }

@@ -1,17 +1,25 @@
 package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.PlayerHelper;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -37,6 +45,24 @@ public class DummyEntityManager extends SavedData {
     public DummyEntityManager(ServerLevel level) {
         this.level = level;
         this.setDirty();
+    }
+
+    public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
+        BlockPos blockpos = new BlockPos(position);
+        if(Level.isInSpawnableBounds(blockpos) && HTDummyEntities.getEntityType(location).isPresent()){
+            final DummyEntityType<?> dummyEntityType = HTDummyEntities.getEntityType(location).get();
+            CompoundTag compoundtag = tag.copy();
+            compoundtag.putInt("DummyEntityID", DummyEntityManager.get(level).getUniqueId());
+            Vec3.CODEC.encodeStart(NbtOps.INSTANCE, position)
+                    .result().ifPresent(nbt -> compoundtag.put("Position", nbt));
+
+            DummyEntity dummyEntity = dummyEntityType.create(level, compoundtag);
+            if (dummyEntity != null && ! MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity))) {
+                DummyEntityManager.get(level).add(dummyEntity);
+            }
+            return dummyEntity;
+        }
+        return null;
     }
 
     /**

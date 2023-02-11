@@ -1,0 +1,1 @@
+hungteen.htlib.compat.kubejs.HTKubeJSPlugin
