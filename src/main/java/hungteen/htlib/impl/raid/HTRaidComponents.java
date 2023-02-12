@@ -47,7 +47,7 @@ public class HTRaidComponents {
 
     public static final HTRegistryHolder<IRaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
             new CommonRaid(
-                    HTRaidComponents.builder().blockInside(true).blockOutside(true).renderBorder(true).result(HTResultComponents.TEST.getValue()).build(),
+                    HTRaidComponents.builder().blockInside(true).blockOutside(true).renderBorder(true).result(HTResultComponents.TEST.getValue()).color(BossEvent.BossBarColor.BLUE).build(),
                     Arrays.asList(
                             new CommonWave(
                                     HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),

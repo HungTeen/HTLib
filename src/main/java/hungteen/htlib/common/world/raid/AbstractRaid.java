@@ -114,10 +114,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     @Override
     public CompoundTag save(CompoundTag tag) {
         tag.putString("RaidLocation", this.raidLocation.toString());
-        HTWaveComponents.getCodec().encodeStart(NbtOps.INSTANCE, this.getCurrentWave())
-                .result().ifPresent(compoundTag -> tag.put("WaveComponent", compoundTag));
-        HTSpawnComponents.getCodec().listOf().encodeStart(NbtOps.INSTANCE, this.getSpawnComponents())
-                .result().ifPresent(compoundTag -> tag.put("SpawnComponents", compoundTag));
+        if(this.getRaidComponent() != null){
+            HTWaveComponents.getCodec().encodeStart(NbtOps.INSTANCE, this.getCurrentWave())
+                    .result().ifPresent(compoundTag -> tag.put("WaveComponent", compoundTag));
+            HTSpawnComponents.getCodec().listOf().encodeStart(NbtOps.INSTANCE, this.getSpawnComponents())
+                    .result().ifPresent(compoundTag -> tag.put("SpawnComponents", compoundTag));
+        }
         Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.position)
                 .result().ifPresent(compoundTag -> tag.put("Position", compoundTag));
         tag.putInt("RaidTick", this.tick);
@@ -188,16 +190,16 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 case RUNNING -> {
                     this.checkNextWave();
                     this.checkSpawn();
-                    ++this.tick;
+                    ++ this.tick;
                 }
                 case LOSS -> {
-                    this.getRaidComponent().getResultComponents().stream().filter(IResultComponent::forLoss).forEach(this::tickResult);
+                    this.getRaidComponent().getResultComponents().stream().forEach(this::tickResult);
                     if (++ this.tick >= this.getRaidComponent().getLossDuration()) {
                         this.remove();
                     }
                 }
                 case VICTORY -> {
-                    this.getRaidComponent().getResultComponents().stream().filter(IResultComponent::forVictory).forEach(this::tickResult);
+                    this.getRaidComponent().getResultComponents().stream().forEach(this::tickResult);
                     if (++ this.tick >= this.getRaidComponent().getVictoryDuration()) {
                         this.remove();
                     }
@@ -256,10 +258,8 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(this.getRaidComponent().getLossTitle()));
                 this.progressBar.setProgress(1F);
             }
-            default -> {
-                this.progressBar.setColor(this.getRaidComponent().getBarColor());
-            }
         }
+        this.progressBar.setColor(this.getRaidComponent().getBarColor());
     }
 
     /**
@@ -526,8 +526,36 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return this.getRaidComponent() == null ? super.getWidth() : this.getRaidComponent().getRaidRange() * 2;
     }
 
+    public int getTick(){
+        return this.tick;
+    }
+
+    public int getRound(){
+        return this.currentWave;
+    }
+
+    public int getTotalRound(){
+        return this.getRaidComponent() == null ? 0 : this.getRaidComponent().getWaveCount(this);
+    }
+
     public boolean isStopping() {
         return this.stopTick > 0;
+    }
+
+    public boolean isRunning() {
+        return this.getStatus() == Status.RUNNING;
+    }
+
+    public boolean isPreparing(){
+        return this.getStatus() == Status.PREPARE;
+    }
+
+    public boolean isLost(){
+        return this.getStatus() == Status.LOSS;
+    }
+
+    public boolean isDefeated(){
+        return this.getStatus() == Status.VICTORY;
     }
 
     public void setStatus(Status status) {

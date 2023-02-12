@@ -19,6 +19,10 @@ public interface IRaid extends IDummyEntity {
      */
     boolean addRaider(Entity raider);
 
+    boolean isDefeated();
+
+    boolean isLost();
+
     /**
      * Get getSpawnEntities placement by priority.
      * @return Function (Spawn -> Placement).

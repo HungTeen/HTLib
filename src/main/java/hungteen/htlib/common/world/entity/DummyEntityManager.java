@@ -49,8 +49,9 @@ public class DummyEntityManager extends SavedData {
 
     public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
         BlockPos blockpos = new BlockPos(position);
-        if(Level.isInSpawnableBounds(blockpos) && HTDummyEntities.getEntityType(location).isPresent()){
-            final DummyEntityType<?> dummyEntityType = HTDummyEntities.getEntityType(location).get();
+        Optional<? extends DummyEntityType<?>> opt = HTDummyEntities.getEntityType(location);
+        if(Level.isInSpawnableBounds(blockpos) && opt.isPresent()){
+            final DummyEntityType<?> dummyEntityType = opt.get();
             CompoundTag compoundtag = tag.copy();
             compoundtag.putInt("DummyEntityID", DummyEntityManager.get(level).getUniqueId());
             Vec3.CODEC.encodeStart(NbtOps.INSTANCE, position)

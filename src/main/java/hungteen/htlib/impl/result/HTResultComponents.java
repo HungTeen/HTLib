@@ -27,12 +27,14 @@ public class HTResultComponents {
 
     /* Result types */
 
-    public static final IResultComponentType<ItemStackReward> ITEM_STACK_TYPE = new DefaultResultType<>("item_stack", ItemStackReward.CODEC);
+    public static final IResultComponentType<ItemStackResult> ITEM_STACK = new DefaultResultType<>("item_stack", ItemStackResult.CODEC);
+    public static final IResultComponentType<ChestResult> CHEST = new DefaultResultType<>("chest", ChestResult.CODEC);
+    public static final IResultComponentType<EventResult> EVENT = new DefaultResultType<>("event", EventResult.CODEC);
 
     /* Result */
 
     public static final HTRegistryHolder<IResultComponent> TEST = RESULTS.innerRegister(
-            HTLib.prefix("test"), new ItemStackReward(
+            HTLib.prefix("test"), new ItemStackResult(
                     true, false,
                     Arrays.asList(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
             )
@@ -42,7 +44,7 @@ public class HTResultComponents {
      * {@link HTLib#HTLib()}
      */
     public static void registerStuffs(){
-        List.of(ITEM_STACK_TYPE).forEach(HTResultComponents::registerWaveType);
+        List.of(ITEM_STACK, CHEST, EVENT).forEach(HTResultComponents::registerWaveType);
     }
 
     public static void registerWaveType(IResultComponentType<?> type){

@@ -19,7 +19,7 @@ import java.util.*;
  * @author: HungTeen
  * @create: 2022-12-03 21:43
  **/
-public class DefaultRaid extends AbstractRaid{
+public class DefaultRaid extends AbstractRaid {
 
     protected final Set<UUID> defenders = new HashSet<>();
 

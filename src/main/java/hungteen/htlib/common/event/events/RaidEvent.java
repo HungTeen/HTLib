@@ -1,6 +1,8 @@
 package hungteen.htlib.common.event.events;
 
 import hungteen.htlib.common.world.raid.AbstractRaid;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -66,6 +68,77 @@ public abstract class RaidEvent extends Event {
 
         public int getRound() {
             return round;
+        }
+    }
+
+    public static class RaidResultLevelEvent extends RaidEvent {
+
+        private final ResourceLocation id;
+        private final int tick;
+        public RaidResultLevelEvent(Level level, AbstractRaid raid, ResourceLocation id, int tick) {
+            super(level, raid);
+            this.id = id;
+            this.tick = tick;
+        }
+
+        public int getTick() {
+            return tick;
+        }
+
+        public ResourceLocation getId() {
+            return id;
+        }
+    }
+
+    public static class RaidResultDefenderEvent extends RaidEvent {
+
+        private final ResourceLocation id;
+        private final Entity entity;
+        private final int tick;
+
+        public RaidResultDefenderEvent(Level level, AbstractRaid raid, ResourceLocation id, Entity entity, int tick) {
+            super(level, raid);
+            this.id = id;
+            this.entity = entity;
+            this.tick = tick;
+        }
+
+        public Entity getEntity() {
+            return entity;
+        }
+
+        public int getTick() {
+            return tick;
+        }
+
+        public ResourceLocation getId() {
+            return id;
+        }
+    }
+
+    public static class RaidResultRaiderEvent extends RaidEvent {
+
+        private final ResourceLocation id;
+        private final Entity entity;
+        private final int tick;
+
+        public RaidResultRaiderEvent(Level level, AbstractRaid raid, ResourceLocation id, Entity entity, int tick) {
+            super(level, raid);
+            this.id = id;
+            this.entity = entity;
+            this.tick = tick;
+        }
+
+        public Entity getEntity() {
+            return entity;
+        }
+
+        public int getTick() {
+            return tick;
+        }
+
+        public ResourceLocation getId() {
+            return id;
         }
     }
 

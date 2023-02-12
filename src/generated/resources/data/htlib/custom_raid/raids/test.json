@@ -1,7 +1,9 @@
 {
   "type": "htlib:common",
   "setting": {
-    "bar_setting": {},
+    "bar_setting": {
+      "raid_bar_color": "blue"
+    },
     "border_setting": {
       "block_inside": true,
       "block_outside": true,

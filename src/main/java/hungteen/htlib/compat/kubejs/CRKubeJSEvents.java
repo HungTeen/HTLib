@@ -2,10 +2,8 @@ package hungteen.htlib.compat.kubejs;
 
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
-import hungteen.htlib.compat.kubejs.event.RaidDefeatedEventJS;
-import hungteen.htlib.compat.kubejs.event.RaidLostEventJS;
-import hungteen.htlib.compat.kubejs.event.RaidWaveFinishEventJS;
-import hungteen.htlib.compat.kubejs.event.RaidWaveStartEventJS;
+import hungteen.htlib.common.event.events.RaidEvent;
+import hungteen.htlib.compat.kubejs.event.*;
 
 /**
  * @program: HTLib
@@ -20,4 +18,7 @@ public interface CRKubeJSEvents {
     EventHandler RAID_LOST = GROUP.server("raidLost", () -> RaidLostEventJS.class);
     EventHandler WAVE_START = GROUP.server("waveStart", () -> RaidWaveStartEventJS.class);
     EventHandler WAVE_FINISH = GROUP.server("waveFinish", () -> RaidWaveFinishEventJS.class);
+    EventHandler RESULT_LEVEL = GROUP.server("resultLevel", () -> RaidResultLevelEventJS.class);
+    EventHandler RESULT_DEFENDER = GROUP.server("resultDefender", () -> RaidResultDefenderEventJS.class);
+    EventHandler RESULT_RAIDER = GROUP.server("resultRaider", () -> RaidResultRaiderEventJS.class);
 }

@@ -11,22 +11,6 @@ import net.minecraft.world.entity.Entity;
 public interface IResultComponent {
 
     /**
-     * Whether the result is used for victory.
-     * @return True if the result is used for victory
-     */
-    default boolean forVictory(){
-        return false;
-    }
-
-    /**
-     * Whether the result is used for loss.
-     * @return True if the result is used for loss.
-     */
-    default boolean forLoss(){
-        return false;
-    }
-
-    /**
      * Global tick, 全局触发。
      * @param raid Current raid.
      * @param level Current level.
