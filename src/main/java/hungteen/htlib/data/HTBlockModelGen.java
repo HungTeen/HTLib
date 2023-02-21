@@ -1,5 +1,6 @@
 package hungteen.htlib.data;
 
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.data.DataGenerator;
@@ -53,6 +54,14 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
         final ResourceLocation res = StringHelper.replace(BlockHelper.blockTexture(block), "button", "planks");
         buttonInventory(name(block) + "_inventory", res);
         this.addedBlocks.add(block);
+    }
+
+    /**
+     * Gen wood-related at once.
+     */
+    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.FENCE).ifPresent(this::fence);
+        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
     }
 
     @NotNull

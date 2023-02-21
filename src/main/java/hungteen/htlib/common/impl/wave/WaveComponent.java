@@ -1,10 +1,10 @@
-package hungteen.htlib.impl.wave;
+package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.placement.HTPlaceComponents;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.Optional;

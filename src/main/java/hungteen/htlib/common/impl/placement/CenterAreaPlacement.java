@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.placement;
+package hungteen.htlib.common.impl.placement;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -77,6 +77,14 @@ public class StringHelper {
         return new ResourceLocation(location.getNamespace(), location.getPath() + "_" + suffix);
     }
 
+    public static ResourceLocation prefix(ResourceLocation location, String prefix){
+        return new ResourceLocation(location.getNamespace(), prefix + "_" + location.getPath());
+    }
+
+    public static ResourceLocation update(ResourceLocation location, String prefix, String suffix){
+        return new ResourceLocation(location.getNamespace(), prefix + "_" + location.getPath() + "_" + suffix);
+    }
+
     /**
      * Get translated text.
      */

@@ -4,11 +4,11 @@ import com.mojang.serialization.Encoder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
-import hungteen.htlib.impl.raid.HTRaidComponents;
-import hungteen.htlib.impl.result.HTResultComponents;
-import hungteen.htlib.impl.spawn.HTSpawnComponents;
-import hungteen.htlib.impl.wave.HTWaveComponents;
+import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.raid.HTRaidComponents;
+import hungteen.htlib.common.impl.result.HTResultComponents;
+import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
+import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 

@@ -14,12 +14,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
+ * 主要是用于先于常规注册的一些东西，先注册这些可以更方便的一个循环来注册常规注册。<br>
+ * 建议在自身mod的构造函数中注册，如{@link HTLib#HTLib()}。
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/25 9:21
- *
- * 主要是用于先于常规注册的一些东西，先注册这些可以更方便的一个循环来注册常规注册。<br>
- * 建议在mod构造函数中注册。
  */
 public final class HTSimpleRegistry<T extends ISimpleEntry> implements IHTSimpleRegistry<T> {
 

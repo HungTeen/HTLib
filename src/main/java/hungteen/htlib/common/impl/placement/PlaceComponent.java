@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.placement;
+package hungteen.htlib.common.impl.placement;
 
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.util.helper.RandomHelper;

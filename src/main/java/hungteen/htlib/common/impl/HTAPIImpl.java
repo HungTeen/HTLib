@@ -1,4 +1,4 @@
-package hungteen.htlib.impl;
+package hungteen.htlib.common.impl;
 
 import hungteen.htlib.api.HTAPI;
 

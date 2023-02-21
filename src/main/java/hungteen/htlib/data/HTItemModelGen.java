@@ -1,6 +1,8 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.util.helper.BlockHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -55,6 +57,25 @@ public abstract class HTItemModelGen extends ItemModelProvider {
 
     protected void genNormalModel(Item item) {
         genNormal(name(item), HTLib.res(this.modid, "item/" + name(item)));
+    }
+
+    /**
+     * Gen wood-related at once.
+     */
+    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+        woodIntegration.getWoodBlocks().forEach(pair -> {
+            final Block block = pair.second();
+            if(pair.first().hasItem()){
+                switch (pair.first()) {
+                    case FENCE, BUTTON -> genBlockModel(block, BlockHelper.getKey(block).getPath() + "_inventory");
+                    case TRAP_DOOR -> genBlockModel(block, BlockHelper.getKey(block).getPath() + "_bottom");
+                    case DOOR, STANDING_SIGN -> {
+                        genNormalModel(block.asItem());
+                        this.addedItems.add(block.asItem());
+                    }
+                }
+            }
+        });
     }
 
     protected ItemModelBuilder genNormal(String name, ResourceLocation... layers) {

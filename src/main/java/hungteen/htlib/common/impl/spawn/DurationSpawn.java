@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.spawn;
+package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

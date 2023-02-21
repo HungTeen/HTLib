@@ -1,4 +1,4 @@
-package hungteen.htlib.menu.container;
+package hungteen.htlib.common.menu.container;
 
 import net.minecraft.world.SimpleContainer;
 

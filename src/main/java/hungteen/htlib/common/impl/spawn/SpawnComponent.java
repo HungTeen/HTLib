@@ -1,11 +1,11 @@
-package hungteen.htlib.impl.spawn;
+package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.placement.HTPlaceComponents;
 import hungteen.htlib.util.helper.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.api.interfaces.raid.IRaid;

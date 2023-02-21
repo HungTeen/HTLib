@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.result;
+package hungteen.htlib.common.impl.result;
 
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;

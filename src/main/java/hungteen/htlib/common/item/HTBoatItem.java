@@ -1,8 +1,8 @@
 package hungteen.htlib.common.item;
 
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
-import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -32,10 +32,10 @@ import java.util.function.Predicate;
 public class HTBoatItem extends Item {
 
     private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
-    private final IBoatType type;
+    private final WoodIntegrations.IBoatType type;
     private final boolean hasChest;
 
-    public HTBoatItem(Item.Properties properties, IBoatType type, boolean hasChest) {
+    public HTBoatItem(Item.Properties properties, WoodIntegrations.IBoatType type, boolean hasChest) {
         super(properties);
         this.type = type;
         this.hasChest = hasChest;

@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.result;
+package hungteen.htlib.common.impl.result;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;

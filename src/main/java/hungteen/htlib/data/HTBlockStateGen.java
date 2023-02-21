@@ -1,6 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -215,6 +216,68 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 //		ModelFile file = models().cubeAll(block.getRegistryName().getPath(), StringUtil.prefix("block/" + block.getRegistryName().getPath()));
 //		horizontalBlock(block, file);
 //	}
+
+    /**
+     * Gen wood-related at once.
+     */
+    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+        /* Must gen first to avoid crash. */
+        if(woodIntegration.hasWoodSuit(WoodIntegrations.WoodSuits.PLANKS)){
+            woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.PLANKS).ifPresent(block -> {
+                this.addedBlocks.add(block);
+                this.simpleBlock(block);
+            });
+        } else {
+            HTLib.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName());
+            return;
+        }
+        woodIntegration.getWoodBlocks().forEach(pair -> {
+            final Block block = pair.second();
+            switch (pair.first()){
+                /* RotatedPillarBlocks. */
+                case LOG, STRIPPED_LOG -> {
+                    if(block instanceof RotatedPillarBlock b) this.log(b);
+                }
+                /* Blocks with 2 textures(top & side). */
+                case WOOD, STRIPPED_WOOD -> {
+                    if(block instanceof RotatedPillarBlock b) this.wood(b);
+                }
+                case DOOR -> {
+                    if(block instanceof DoorBlock b) this.door(b);
+                }
+                case TRAP_DOOR -> {
+                    if(block instanceof TrapDoorBlock b) this.trapdoor(b);
+                }
+                case FENCE -> {
+                    if(block instanceof FenceBlock b) this.fence(b);
+                }
+                case FENCE_GATE -> {
+                    if(block instanceof FenceGateBlock b) this.fenceGate(b);
+                }
+                case STAIRS -> {
+                    if(block instanceof StairBlock b) this.stair(b);
+                }
+                case BUTTON -> {
+                    if(block instanceof ButtonBlock b) this.button(b);
+                }
+                case SLAB -> {
+                    if(block instanceof SlabBlock b) this.slab(b);
+                }
+                case PRESSURE_PLATE -> {
+                    if(block instanceof PressurePlateBlock b) this.pressPlate(b);
+                }
+                default -> {
+
+                }
+            }
+        });
+        /* Sign Blocks. */
+        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
+            woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
+                if(block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) sign(b1, b2);
+            });
+        });
+    }
 
     @Override
     public String getName() {

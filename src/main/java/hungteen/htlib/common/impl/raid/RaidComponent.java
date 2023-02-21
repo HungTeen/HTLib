@@ -1,13 +1,13 @@
-package hungteen.htlib.impl.raid;
+package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
-import hungteen.htlib.impl.result.HTResultComponents;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.network.chat.MutableComponent;

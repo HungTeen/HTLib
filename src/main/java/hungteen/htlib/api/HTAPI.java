@@ -18,7 +18,7 @@ public class HTAPI {
      */
     private static final Supplier<IHTAPI> LAZY_INSTANCE = Suppliers.memoize(() -> {
         try {
-            Class<?> classes = Class.forName("hungteen.htlib.impl.HTAPIImpl");
+            Class<?> classes = Class.forName("hungteen.htlib.common.impl.HTAPIImpl");
             Constructor<?> constructor = classes.getDeclaredConstructor();
             return (IHTAPI) constructor.newInstance();
         } catch (ReflectiveOperationException e) {

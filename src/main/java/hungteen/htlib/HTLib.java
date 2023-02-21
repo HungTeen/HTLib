@@ -3,24 +3,23 @@ package hungteen.htlib;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.HTSounds;
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
 import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.datapack.HTCodecLoader;
-import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTEntities;
+import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.raid.HTRaidComponents;
+import hungteen.htlib.common.impl.result.HTResultComponents;
+import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
+import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTTestGen;
-import hungteen.htlib.impl.placement.HTPlaceComponents;
-import hungteen.htlib.impl.raid.HTRaidComponents;
-import hungteen.htlib.impl.result.HTResultComponents;
-import hungteen.htlib.impl.spawn.HTSpawnComponents;
-import hungteen.htlib.impl.wave.HTWaveComponents;
-import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -36,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 /**
@@ -65,6 +65,7 @@ public class HTLib {
         modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, (event) -> {
             HTRegistryManager.globalInit();
         });
+        modBus.addListener(EventPriority.LOW, false, RegisterEvent.class, WoodIntegrations::register);
         HTEntities.register(modBus);
         HTSounds.register(modBus);
         HTCommandArgumentInfos.register(modBus);
@@ -88,8 +89,6 @@ public class HTLib {
             HTCommand.register(event.getDispatcher());
         });
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
-
-        HTBoat.register(IBoatType.DEFAULT);
     }
 
     public static void setUp(FMLCommonSetupEvent event) {
@@ -102,7 +101,7 @@ public class HTLib {
             HTResultComponents.registerStuffs();
             HTRaidComponents.registerStuffs();
             HTDummyEntities.registerStuffs();
-            HTBoat.getBoatTypes().forEach(type -> {
+            WoodIntegrations.getBoatTypes().forEach(type -> {
                 DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
                 DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
             });

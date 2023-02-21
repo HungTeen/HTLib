@@ -1,4 +1,4 @@
-package hungteen.htlib.impl.wave;
+package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;

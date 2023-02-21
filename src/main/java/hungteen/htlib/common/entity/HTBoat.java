@@ -1,7 +1,6 @@
 package hungteen.htlib.common.entity;
 
-import hungteen.htlib.HTLib;
-import hungteen.htlib.util.interfaces.IBoatType;
+import hungteen.htlib.common.WoodIntegrations;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -19,10 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkHooks;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-
 /**
  * @program: HTLib
  * @author: HungTeen
@@ -30,19 +25,7 @@ import java.util.HashMap;
  **/
 public class HTBoat extends Boat {
 
-    private static final HashMap<String, IBoatType> BY_NAME = new HashMap<>();
     private static final EntityDataAccessor<String> BOAT_TYPE = SynchedEntityData.defineId(HTBoat.class, EntityDataSerializers.STRING);
-
-    /**
-     * {@link HTLib#HTLib()}
-     */
-    public static void register(IBoatType type){
-        BY_NAME.put(type.getRegistryName(), type);
-    }
-
-    public static Collection<IBoatType> getBoatTypes(){
-        return Collections.unmodifiableCollection(BY_NAME.values());
-    }
 
     public HTBoat(EntityType<? extends HTBoat> entityType, Level level) {
         super(entityType, level);
@@ -59,7 +42,7 @@ public class HTBoat extends Boat {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(BOAT_TYPE, IBoatType.DEFAULT.getRegistryName());
+        entityData.define(BOAT_TYPE, WoodIntegrations.IBoatType.DEFAULT.getRegistryName());
     }
 
     @Override
@@ -110,7 +93,7 @@ public class HTBoat extends Boat {
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         super.readAdditionalSaveData(compoundTag);
         if(compoundTag.contains("HTBoatType")){
-            this.setHTBoatType(BY_NAME.get(compoundTag.getString("HTBoatType")));
+            this.setHTBoatType(WoodIntegrations.getBoatType(compoundTag.getString("HTBoatType")));
         }
     }
 
@@ -120,11 +103,11 @@ public class HTBoat extends Boat {
         compoundTag.putString("HTBoatType", this.getHTBoatType().getRegistryName());
     }
 
-    public IBoatType getHTBoatType() {
-        return BY_NAME.getOrDefault(entityData.get(BOAT_TYPE), IBoatType.DEFAULT);
+    public WoodIntegrations.IBoatType getHTBoatType() {
+        return WoodIntegrations.getBoatType(entityData.get(BOAT_TYPE));
     }
 
-    public void setHTBoatType(IBoatType type){
+    public void setHTBoatType(WoodIntegrations.IBoatType type){
         entityData.set(BOAT_TYPE, type.getRegistryName());
     }
 

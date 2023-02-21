@@ -8,9 +8,9 @@ import net.minecraft.world.level.block.state.properties.WoodType;
  * @author: HungTeen
  * @create: 2022-10-13 22:19
  **/
-public class HTSignBlock extends SignBlock {
+public class HTWallSignBlock extends SignBlock {
 
-    public HTSignBlock(Properties properties, WoodType woodType) {
+    public HTWallSignBlock(Properties properties, WoodType woodType) {
         super(properties, woodType);
     }
 

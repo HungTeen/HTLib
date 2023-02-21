@@ -1,7 +1,7 @@
 package hungteen.htlib.client;
 
 import hungteen.htlib.client.render.entity.HTBoatRender;
-import hungteen.htlib.common.entity.HTBoat;
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.util.helper.BlockHelper;
 import net.minecraft.client.model.BoatModel;
@@ -35,7 +35,7 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerRendererLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        HTBoat.getBoatTypes().forEach(type -> {
+        WoodIntegrations.getBoatTypes().forEach(type -> {
             event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), () -> BoatModel.createBodyModel(false));
             event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), () -> BoatModel.createBodyModel(true));
         });

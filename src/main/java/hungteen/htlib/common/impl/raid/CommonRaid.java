@@ -1,9 +1,9 @@
-package hungteen.htlib.impl.raid;
+package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
-import hungteen.htlib.impl.wave.HTWaveComponents;
+import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IRaidComponentType;
 import org.jetbrains.annotations.NotNull;

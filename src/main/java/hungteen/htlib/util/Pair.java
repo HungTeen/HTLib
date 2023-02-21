@@ -1,5 +1,7 @@
 package hungteen.htlib.util;
 
+import java.util.Map;
+
 /**
  * @program: HTLib
  * @author: HungTeen
@@ -13,6 +15,10 @@ public record Pair<T, K>(T first, K second) {
 
     public K getSecond() {
         return second;
+    }
+
+    public static <T, K> Pair<T, K> of(Map.Entry<T, K> entry){
+        return of(entry.getKey(), entry.getValue());
     }
 
     public static <T, K> Pair<T, K> of(T first, K second) {
