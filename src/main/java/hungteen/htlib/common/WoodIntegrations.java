@@ -4,18 +4,20 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import hungteen.htlib.common.block.*;
 import hungteen.htlib.common.entity.HTBoat;
+import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.item.HTBoatItem;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.util.Pair;
 import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.ItemHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +30,10 @@ import java.util.function.Supplier;
 
 /**
  * Used to resolve wood-related registrations at once. <br>
- * Including wood-related blocks, items, boats and data gen.
+ * Register WoodType for Signs, BoatType for Boats, and related blocks and items at {@link #register(RegisterEvent)} <br>
+ * Provide easy method in data gen, at {@link hungteen.htlib.data.HTBlockStateGen}, {@link hungteen.htlib.data.tag.HTItemTagGen}, {@link hungteen.htlib.data.HTBlockModelGen}, {@link hungteen.htlib.data.HTItemModelGen} <br>
+ * Register axe strip behavior and boat dispense action at {@link #setUp()}
+ *
  * @author PangTeen
  * @program HTLib
  * @data 2023/2/21 10:13
@@ -41,11 +46,11 @@ public class WoodIntegrations {
     /**
      * Register at the tail of event，{@link HTLib#HTLib()}
      */
-    public static void register(RegisterEvent event){
+    public static void register(RegisterEvent event) {
         registerBoatType(IBoatType.DEFAULT);
         getWoodIntegrations().forEach(wood -> {
             BlockHelper.registerWoodType(wood.getWoodType());
-            if(wood.getBoatSetting().isEnabled()){
+            if (wood.getBoatSetting().isEnabled()) {
                 registerBoatType(wood.getBoatSetting().getBoatType());
             }
             wood.registerBlockAndItems(event);
@@ -53,29 +58,57 @@ public class WoodIntegrations {
     }
 
     /**
+     * {@link HTLib#setUp(FMLCommonSetupEvent)}
+     */
+    public static void setUp() {
+        /* Register Boat Dispense Behavior */
+        getBoatTypes().forEach(type -> {
+            DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
+            DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
+        });
+        /* Register Stripped Action */
+        getWoodIntegrations().forEach(wood -> {
+            wood.getBlockOpt(WoodSuits.WOOD).ifPresent(block1 -> {
+                wood.getBlockOpt(WoodSuits.STRIPPED_WOOD).ifPresent(block2 -> {
+                    BlockHelper.registerAxeStrip(block1, block2);
+                });
+            });
+            wood.getBlockOpt(WoodSuits.LOG).ifPresent(block1 -> {
+                wood.getBlockOpt(WoodSuits.STRIPPED_LOG).ifPresent(block2 -> {
+                    BlockHelper.registerAxeStrip(block1, block2);
+                });
+            });
+        });
+    }
+
+    /**
      * Usually other mod no need to use this method, because HTLib has done everything in {@link #register(RegisterEvent)}.
      */
-    public static void registerBoatType(WoodIntegrations.IBoatType type){
+    public static void registerBoatType(WoodIntegrations.IBoatType type) {
         BOAT_TYPES.register(type);
     }
 
     /**
      * Modders should call this method in their mod constructor.
      */
-    public static void registerWoodIntegration(WoodIntegration type){
+    public static void registerWoodIntegration(WoodIntegration type) {
         WOODS.register(type);
     }
 
-    public static Collection<WoodIntegrations.IBoatType> getBoatTypes(){
+    public static Collection<WoodIntegrations.IBoatType> getBoatTypes() {
         return Collections.unmodifiableCollection(BOAT_TYPES.getValues());
     }
 
-    public static List<WoodIntegration> getWoodIntegrations(){
+    public static List<WoodIntegration> getWoodIntegrations() {
         return Collections.unmodifiableList(WOODS.getValues());
     }
 
     public static IBoatType getBoatType(String name) {
         return BOAT_TYPES.getValue(name).orElse(WoodIntegrations.IBoatType.DEFAULT);
+    }
+
+    public static Builder builder(ResourceLocation location) {
+        return new Builder(location);
     }
 
     public static class WoodIntegration implements ISimpleEntry {
@@ -89,6 +122,7 @@ public class WoodIntegrations {
 
         /**
          * Use {@link Builder} instead.
+         *
          * @param registryName such as "pvz:nut", former is mod id, latter is wood name.
          */
         private WoodIntegration(ResourceLocation registryName) {
@@ -201,28 +235,26 @@ public class WoodIntegrations {
 
         private void registerBlockAndItems(RegisterEvent event) {
             woodSettings.forEach((suit, entry) -> {
-                if(woodBlocks.containsKey(suit)){
-                    event.register(ForgeRegistries.BLOCKS.getRegistryKey(), entry.getName(getLocation()), () -> {
-                        final Block block = entry.getSupplier().get();
-                        woodBlocks.put(suit, block);
-                        return block;
+                BlockHelper.get().register(event, entry.getName(getLocation()), () -> {
+                    final Block block = entry.getSupplier().get();
+                    woodBlocks.put(suit, block);
+                    return block;
+                });
+                if (suit.hasItem) {
+                    ItemHelper.get().register(event, entry.getName(getLocation()), () -> {
+                        final Optional<Block> block = getBlockOpt(suit);
+                        assert block.isPresent() : "Why cause block item registry failed ? No block of %s : %s found.".formatted(getLocation().toString(), suit.toString());
+                        return entry.getItemFunction().apply(block.get(), entry.getItemProperties());
                     });
-                    if(suit.hasItem){
-                        event.register(ForgeRegistries.ITEMS.getRegistryKey(), entry.getName(getLocation()), () -> {
-                            final Optional<Block> block = getWoodBlock(suit);
-                            assert block.isPresent() : "Why cause block item registry failed ? No block of %s : %s found.".formatted(getLocation().toString(), suit.toString()) ;
-                            return entry.getItemFunction().apply(block.get(), entry.getItemProperties());
-                        });
-                    }
                 }
             });
-            if(getBoatSetting().isEnabled()){
-                event.register(ForgeRegistries.ITEMS.getRegistryKey(), StringHelper.suffix(getLocation(), "boat"), () -> {
+            if (getBoatSetting().isEnabled()) {
+                ItemHelper.get().register(event, StringHelper.suffix(getLocation(), "boat"), () -> {
                     final Item item = new HTBoatItem(getBoatSetting().getItemProperties(), this.getBoatSetting().getBoatType(), false);
                     this.boatItems.put(BoatSuits.NORMAL, item);
                     return item;
                 });
-                event.register(ForgeRegistries.ITEMS.getRegistryKey(), StringHelper.suffix(getLocation(), "chest_boat"), () -> {
+                ItemHelper.get().register(event, StringHelper.suffix(getLocation(), "chest_boat"), () -> {
                     final Item item = new HTBoatItem(getBoatSetting().getItemProperties(), this.getBoatSetting().getBoatType(), true);
                     this.boatItems.put(BoatSuits.CHEST, item);
                     return item;
@@ -252,24 +284,89 @@ public class WoodIntegrations {
             });
         }
 
-        private void banWoodSuits(WoodSuits ... woodSuits){
+        private void banWoodSuits(WoodSuits... woodSuits) {
             Arrays.stream(woodSuits).forEach(this.woodSettings::remove);
         }
 
-        private void banBoat(){
+        private void banBoat() {
             this.boatSetting.disable();
         }
 
-        public List<Pair<WoodSuits, Block>> getWoodBlocks(){
+        public List<Pair<WoodSuits, Block>> getWoodBlocks() {
             return this.woodBlocks.entrySet().stream().map(Pair::of).toList();
         }
 
-        public boolean hasWoodSuit(WoodSuits woodSuit){
+        public boolean hasWoodSuit(WoodSuits woodSuit) {
             return this.woodBlocks.containsKey(woodSuit);
         }
 
-        public Optional<Block> getWoodBlock(WoodSuits woodSuit){
+        public Optional<Block> getBlockOpt(WoodSuits woodSuit) {
             return Optional.ofNullable(this.woodBlocks.getOrDefault(woodSuit, null));
+        }
+
+        @NotNull
+        public Block getBlock(WoodSuits woodSuit) {
+            return Objects.requireNonNull(this.woodBlocks.get(woodSuit), "Wood type [ " + this.getRegistryName() + " ] has no block for suit [" + woodSuit.toString() + "] !");
+        }
+
+        public Block getLog() {
+            return getBlock(WoodSuits.LOG);
+        }
+
+        public Block getStrippedLog() {
+            return getBlock(WoodSuits.STRIPPED_LOG);
+        }
+
+        public Block getWood() {
+            return getBlock(WoodSuits.WOOD);
+        }
+
+        public Block getStrippedWood() {
+            return getBlock(WoodSuits.STRIPPED_WOOD);
+        }
+
+        public Block getPlanks() {
+            return getBlock(WoodSuits.PLANKS);
+        }
+
+        public Block getDoor() {
+            return getBlock(WoodSuits.DOOR);
+        }
+
+        public Block getTrapDoor() {
+            return getBlock(WoodSuits.TRAP_DOOR);
+        }
+
+        public Block getFence() {
+            return getBlock(WoodSuits.FENCE);
+        }
+
+        public Block getFenceGate() {
+            return getBlock(WoodSuits.FENCE_GATE);
+        }
+
+        public Block getStandingSign() {
+            return getBlock(WoodSuits.STANDING_SIGN);
+        }
+
+        public Block getWallSign() {
+            return getBlock(WoodSuits.WALL_SIGN);
+        }
+
+        public Block getStairs() {
+            return getBlock(WoodSuits.STAIRS);
+        }
+
+        public Block getButton() {
+            return getBlock(WoodSuits.BUTTON);
+        }
+
+        public Block getSlab() {
+            return getBlock(WoodSuits.SLAB);
+        }
+
+        public Block getPressurePlate() {
+            return getBlock(WoodSuits.PRESSURE_PLATE);
         }
 
         public Optional<WoodSetting> getWoodSetting(WoodSuits woodSuits) {
@@ -291,7 +388,7 @@ public class WoodIntegrations {
 
         @Override
         public String getModID() {
-            return this.registryName.getPath();
+            return this.registryName.getNamespace();
         }
 
     }
@@ -306,7 +403,7 @@ public class WoodIntegrations {
         /**
          * 取消一些木制品方块。
          */
-        public Builder banWoodSuits(WoodSuits ... woodSuits){
+        public Builder banWoodSuits(WoodSuits... woodSuits) {
             integration.banWoodSuits(woodSuits);
             return this;
         }
@@ -314,7 +411,7 @@ public class WoodIntegrations {
         /**
          * Ban boat-related registrations.
          */
-        public Builder banBoat(){
+        public Builder banBoat() {
             integration.banBoat();
             return this;
         }
@@ -384,13 +481,14 @@ public class WoodIntegrations {
 
     /**
      * Copy from {@link net.minecraft.world.entity.vehicle.Boat.Type}.
+     *
      * @program: HTLib
      * @author: HungTeen
      * @create: 2022-10-13 22:41
      **/
     public interface IBoatType extends ISimpleEntry {
 
-        IBoatType DEFAULT = new IBoatType(){
+        IBoatType DEFAULT = new IBoatType() {
             @Override
             public String getName() {
                 return "oak";
@@ -451,7 +549,7 @@ public class WoodIntegrations {
             this.itemFunction = itemFunction;
         }
 
-        public void itemProperties(Consumer<Item.Properties> consumer){
+        public void itemProperties(Consumer<Item.Properties> consumer) {
             consumer.accept(itemProperties);
         }
 
@@ -459,7 +557,7 @@ public class WoodIntegrations {
             return itemProperties;
         }
 
-        public void blockProperties(Consumer<BlockBehaviour.Properties> consumer){
+        public void blockProperties(Consumer<BlockBehaviour.Properties> consumer) {
             consumer.accept(blockProperties);
         }
 
@@ -475,7 +573,7 @@ public class WoodIntegrations {
             this.blockFunction = blockFunction;
         }
 
-        public Supplier<Block> getSupplier(){
+        public Supplier<Block> getSupplier() {
             return () -> this.blockFunction.apply(this.getBlockProperties());
         }
 
@@ -495,7 +593,7 @@ public class WoodIntegrations {
             this.boatType = boatType;
         }
 
-        public void itemProperties(Consumer<Item.Properties> consumer){
+        public void itemProperties(Consumer<Item.Properties> consumer) {
             consumer.accept(itemProperties);
         }
 
@@ -506,7 +604,7 @@ public class WoodIntegrations {
         /**
          * Ban boat items.
          */
-        public void disable(){
+        public void disable() {
             this.enabled = false;
         }
 
@@ -562,8 +660,7 @@ public class WoodIntegrations {
 
     public enum BoatSuits {
         NORMAL,
-        CHEST
-        ;
+        CHEST;
     }
 
 }

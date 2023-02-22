@@ -3,7 +3,7 @@ package hungteen.htlib.util.helper;
 import hungteen.htlib.util.Pair;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -12,41 +12,41 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * @program: HTLib
- * @author: HungTeen
- * @create: 2022-11-09 14:08
- **/
-public class SoundHelper extends RegistryHelper<SoundEvent> {
+ * @author PangTeen
+ * @program HTLib
+ * @data 2023/2/22 18:40
+ */
+public class BlockEntityHelper extends RegistryHelper<BlockEntityType<?>>{
 
-    private static final SoundHelper HELPER = new SoundHelper();
+    private static final BlockEntityHelper HELPER = new BlockEntityHelper();
 
     /**
      * Get predicate registry objects.
      */
-    public static List<SoundEvent> getFilterSoundEvents(Predicate<SoundEvent> predicate) {
+    public static List<BlockEntityType<?>> getFilterBlockEntityTypes(Predicate<BlockEntityType<?>> predicate) {
         return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
-    public static Collection<Pair<ResourceKey<SoundEvent>, SoundEvent>> getSoundEventWithKeys() {
+    public static Collection<Pair<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>>> getBlockEntityTypeWithKeys() {
         return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
-    public static ResourceLocation getKey(SoundEvent object) {
+    public static ResourceLocation getKey(BlockEntityType<?> object) {
         return get().getResourceLocation(object);
     }
 
-    public static SoundHelper get(){
+    public static BlockEntityHelper get(){
         return HELPER;
     }
 
     @Override
-    public IForgeRegistry<SoundEvent> getForgeRegistry() {
-        return ForgeRegistries.SOUND_EVENTS;
+    public IForgeRegistry<BlockEntityType<?>> getForgeRegistry() {
+        return ForgeRegistries.BLOCK_ENTITY_TYPES;
     }
 }

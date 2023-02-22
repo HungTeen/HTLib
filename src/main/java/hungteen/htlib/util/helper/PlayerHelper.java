@@ -22,6 +22,9 @@ import java.util.Objects;
  **/
 public class PlayerHelper {
 
+    /**
+     * Only use on client side !
+     */
     public static Player getClientPlayer() {
         return HTLib.PROXY.getPlayer();
     }

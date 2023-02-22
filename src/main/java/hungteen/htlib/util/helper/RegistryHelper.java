@@ -4,12 +4,14 @@ import hungteen.htlib.util.Pair;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +22,13 @@ import java.util.stream.Collectors;
 public abstract class RegistryHelper<T> {
 
     public abstract IForgeRegistry<T> getForgeRegistry();
+
+    /**
+     * Event Register.
+     */
+    public void register(RegisterEvent event, ResourceLocation location, Supplier<T> supplier){
+        event.register(getForgeRegistry().getRegistryKey(), location, supplier);
+    }
 
     /**
      * Get predicate registry objects.

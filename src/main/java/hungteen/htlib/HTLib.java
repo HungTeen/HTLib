@@ -14,7 +14,6 @@ import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
-import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
@@ -24,7 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.*;
@@ -89,6 +87,9 @@ public class HTLib {
             HTCommand.register(event.getDispatcher());
         });
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
+
+
+        WoodIntegrations.registerWoodIntegration(WoodIntegrations.builder(HTLib.prefix("test")).build());
     }
 
     public static void setUp(FMLCommonSetupEvent event) {
@@ -101,10 +102,7 @@ public class HTLib {
             HTResultComponents.registerStuffs();
             HTRaidComponents.registerStuffs();
             HTDummyEntities.registerStuffs();
-            WoodIntegrations.getBoatTypes().forEach(type -> {
-                DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
-                DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
-            });
+
         });
     }
 

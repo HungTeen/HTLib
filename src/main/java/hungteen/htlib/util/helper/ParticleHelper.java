@@ -25,6 +25,7 @@ import java.util.function.Predicate;
 public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
 
     private static final ParticleHelper HELPER = new ParticleHelper();
+
     /**
      * Spawn Particle at pos. <br>
      */
@@ -115,21 +116,25 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
      * Get predicate registry objects.
      */
     public static List<ParticleType<?>> getFilterParticleTypes(Predicate<ParticleType<?>> predicate) {
-        return HELPER.getFilterObjects(predicate);
+        return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public static Collection<Pair<ResourceKey<ParticleType<?>>, ParticleType<?>>> getParticleTypeWithKeys() {
-        return HELPER.getObjectWithKeys();
+        return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
     public static ResourceLocation getKey(ParticleType<?> object) {
-        return HELPER.getResourceLocation(object);
+        return get().getResourceLocation(object);
+    }
+
+    public static ParticleHelper get(){
+        return HELPER;
     }
 
     @Override

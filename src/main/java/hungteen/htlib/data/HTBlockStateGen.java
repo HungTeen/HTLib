@@ -223,7 +223,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         /* Must gen first to avoid crash. */
         if(woodIntegration.hasWoodSuit(WoodIntegrations.WoodSuits.PLANKS)){
-            woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.PLANKS).ifPresent(block -> {
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.PLANKS).ifPresent(block -> {
                 this.addedBlocks.add(block);
                 this.simpleBlock(block);
             });
@@ -272,8 +272,8 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
             }
         });
         /* Sign Blocks. */
-        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
-            woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
                 if(block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) sign(b1, b2);
             });
         });

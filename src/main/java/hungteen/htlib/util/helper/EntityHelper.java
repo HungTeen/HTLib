@@ -111,21 +111,25 @@ public class EntityHelper extends RegistryHelper<EntityType<?>>{
      * Get predicate registry objects.
      */
     public static List<EntityType<?>> getFilterEntityTypes(Predicate<EntityType<?>> predicate) {
-        return HELPER.getFilterObjects(predicate);
+        return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public static Collection<Pair<ResourceKey<EntityType<?>>, EntityType<?>>> getEntityTypeWithKeys() {
-        return HELPER.getObjectWithKeys();
+        return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
     public static ResourceLocation getKey(EntityType<?> object) {
-        return HELPER.getResourceLocation(object);
+        return get().getResourceLocation(object);
+    }
+
+    public static EntityHelper get(){
+        return HELPER;
     }
 
     @Override

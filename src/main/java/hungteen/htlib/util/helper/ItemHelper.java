@@ -32,21 +32,25 @@ public class ItemHelper extends RegistryHelper<Item>{
      * Get predicate registry objects.
      */
     public static List<Item> getFilterItems(Predicate<Item> predicate) {
-        return HELPER.getFilterObjects(predicate);
+        return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public static Collection<Pair<ResourceKey<Item>, Item>> getItemWithKeys() {
-        return HELPER.getObjectWithKeys();
+        return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
     public static ResourceLocation getKey(Item object) {
-        return HELPER.getResourceLocation(object);
+        return get().getResourceLocation(object);
+    }
+
+    public static ItemHelper get(){
+        return HELPER;
     }
 
     @Override

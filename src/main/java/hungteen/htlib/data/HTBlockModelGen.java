@@ -60,8 +60,8 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
      * Gen wood-related at once.
      */
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
-        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.FENCE).ifPresent(this::fence);
-        woodIntegration.getWoodBlock(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.FENCE).ifPresent(this::fence);
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
     }
 
     @NotNull

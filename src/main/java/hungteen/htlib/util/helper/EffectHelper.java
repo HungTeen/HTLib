@@ -46,21 +46,25 @@ public class EffectHelper extends RegistryHelper<MobEffect> {
      * Get predicate registry objects.
      */
     public static List<MobEffect> getFilterEffects(Predicate<MobEffect> predicate) {
-        return HELPER.getFilterObjects(predicate);
+        return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public static Collection<Pair<ResourceKey<MobEffect>, MobEffect>> getEffectWithKeys() {
-        return HELPER.getObjectWithKeys();
+        return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
     public static ResourceLocation getKey(MobEffect object) {
-        return HELPER.getResourceLocation(object);
+        return get().getResourceLocation(object);
+    }
+
+    public static EffectHelper get(){
+        return HELPER;
     }
 
     @Override

@@ -8,7 +8,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -33,7 +32,6 @@ public class BlockHelper extends RegistryHelper<Block>{
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
     private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
     private static final BlockHelper HELPER = new BlockHelper();
-    private static final BlockEntityHelper BLOCK_ENTITY_HELPER = new BlockEntityHelper();
 
     public static ResourceLocation blockTexture(Block block){
         return StringHelper.blockTexture(BlockHelper.getKey(block));
@@ -105,42 +103,25 @@ public class BlockHelper extends RegistryHelper<Block>{
      * Get predicate registry objects.
      */
     public static List<Block> getFilterBlocks(Predicate<Block> predicate) {
-        return HELPER.getFilterObjects(predicate);
+        return get().getFilterObjects(predicate);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public static Collection<Pair<ResourceKey<Block>, Block>> getBlockWithKeys() {
-        return HELPER.getObjectWithKeys();
+        return get().getObjectWithKeys();
     }
 
     /**
      * Get key of specific object.
      */
     public static ResourceLocation getKey(Block object) {
-        return HELPER.getResourceLocation(object);
+        return get().getResourceLocation(object);
     }
 
-    /**
-     * Get predicate registry objects.
-     */
-    public static List<BlockEntityType<?>> getFilterBlockEntityTypes(Predicate<BlockEntityType<?>> predicate) {
-        return BLOCK_ENTITY_HELPER.getFilterObjects(predicate);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public static Collection<Pair<ResourceKey<BlockEntityType<?>>, BlockEntityType<?>>> getBlockEntityTypeWithKeys() {
-        return BLOCK_ENTITY_HELPER.getObjectWithKeys();
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public static ResourceLocation getKey(BlockEntityType<?> object) {
-        return BLOCK_ENTITY_HELPER.getResourceLocation(object);
+    public static BlockHelper get(){
+        return HELPER;
     }
 
     @Override
@@ -148,11 +129,4 @@ public class BlockHelper extends RegistryHelper<Block>{
         return ForgeRegistries.BLOCKS;
     }
 
-    private static class BlockEntityHelper extends RegistryHelper<BlockEntityType<?>>{
-
-        @Override
-        public IForgeRegistry<BlockEntityType<?>> getForgeRegistry() {
-            return ForgeRegistries.BLOCK_ENTITY_TYPES;
-        }
-    }
 }
