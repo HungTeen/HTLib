@@ -1,6 +1,7 @@
 package hungteen.htlib.common.event;
 
 import hungteen.htlib.HTLib;
+import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,8 +23,28 @@ public class HTPlayerEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event){
         if(event.getEntity().level instanceof ServerLevel && event.getEntity() instanceof ServerPlayer){
+            PlayerCapabilityManager.syncToClient(event.getEntity());
             DummyEntityManager.get((ServerLevel) event.getEntity().level).syncToClient((ServerPlayer) event.getEntity());
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if(! event.getEntity().level.isClientSide) {
+            PlayerCapabilityManager.syncToClient(event.getEntity());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if(! event.getEntity().level.isClientSide) {
+            PlayerCapabilityManager.syncToClient(event.getEntity());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        PlayerCapabilityManager.cloneData(event.getOriginal(), event.getEntity(), event.isWasDeath());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

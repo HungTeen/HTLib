@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,15 @@ public class HTRegistryManager {
      */
     public static void globalInit() {
         getRegistries().stream().filter(HTCodecRegistry::isGlobal).forEach(HTCodecRegistry::init);
+    }
+
+    /**
+     * {@link HTLib#HTLib()}
+     */
+    public static void syncToClient(OnDatapackSyncEvent event){
+        HTRegistryManager.getRegistries().forEach(registry -> {
+            event.getPlayerList().getPlayers().forEach(registry::syncToClient);
+        });
     }
 
     /**

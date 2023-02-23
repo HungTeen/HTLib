@@ -14,17 +14,20 @@ import net.minecraft.resources.ResourceLocation;
 public interface ISimpleEntry {
 
     /**
-     * 获取名字。
+     * 获取注册项的名字。
+     * @return real name of the registry.
      */
     String getName();
 
     /**
-     * 获取MOD ID。
+     * 获取注册项的命名空间。
+     * @return namespace of the registry.
      */
     String getModID();
 
     /**
      * 获取文本显示。
+     * @return Text component.
      */
     default MutableComponent getComponent(){
         return Component.empty();
@@ -32,6 +35,7 @@ public interface ISimpleEntry {
 
     /**
      * 获取注册名。
+     * @return String object.
      */
     default String getRegistryName(){
         return getModID() + ":" + getName();
@@ -39,6 +43,7 @@ public interface ISimpleEntry {
 
     /**
      * 获取注册名。
+     * @return ResourceLocation object.
      */
     default ResourceLocation getLocation(){
         return new ResourceLocation(getRegistryName());

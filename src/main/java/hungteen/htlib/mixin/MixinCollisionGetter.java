@@ -57,6 +57,8 @@ public interface MixinCollisionGetter {
 
     /**
      * Mixin不支持注入接口。
+     * @author
+     * @reason
      */
     @Overwrite()
     default boolean noCollision(@Nullable Entity entity, AABB aabb) {

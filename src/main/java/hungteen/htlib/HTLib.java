@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
 import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
@@ -19,13 +20,16 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTTestGen;
+import hungteen.htlib.util.helper.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.*;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -56,40 +60,37 @@ public class HTLib {
     public HTLib() {
         /* Mod Bus Events */
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        register(modBus);
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
-        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, (event) -> {
-            event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator()));
-        });
-        modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, (event) -> {
-            HTRegistryManager.globalInit();
-        });
-        modBus.addListener(EventPriority.LOW, false, RegisterEvent.class, WoodIntegrations::register);
-        HTEntities.register(modBus);
-        HTSounds.register(modBus);
-        HTCommandArgumentInfos.register(modBus);
+        modBus.addListener(EventPriority.NORMAL, false, HTLib::postRegister);
+        modBus.addListener(EventPriority.LOW, false, WoodIntegrations::register);
+        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, event -> event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator())));
+        modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, event -> HTRegistryManager.globalInit());
 
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        forgeBus.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, (event) -> {
-            event.addListener(new HTCodecLoader());
-        });
-        forgeBus.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, (event) -> {
-                HTRegistryManager.getRegistries().forEach(registry -> {
-                    event.getPlayerList().getPlayers().forEach(registry::syncToClient);
-                });
-        });
-        forgeBus.addListener(EventPriority.NORMAL, false, TickEvent.LevelTickEvent.class, (event) -> {
-            if(event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel){
-                DummyEntityManager.get((ServerLevel) event.level).tick();
-            }
-        });
-        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, (event) -> {
-            HTCommand.register(event.getDispatcher());
-        });
+        forgeBus.addListener(EventPriority.NORMAL, DummyEntityManager::tick);
+        forgeBus.addListener(EventPriority.NORMAL, PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
+        forgeBus.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, event -> event.addListener(new HTCodecLoader()));
+        forgeBus.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, HTRegistryManager::syncToClient);
+        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher()));
+    }
 
+    public void register(IEventBus modBus){
+        HTEntities.register(modBus);
+        HTSounds.register(modBus);
+        HTCommandArgumentInfos.register(modBus);
+    }
 
-        WoodIntegrations.registerWoodIntegration(WoodIntegrations.builder(HTLib.prefix("test")).build());
+    public static void postRegister(RegisterEvent event){
+        ItemHelper.get().register(event);
+        BlockHelper.get().register(event);
+        EntityHelper.get().register(event);
+        EffectHelper.get().register(event);
+        BlockEntityHelper.get().register(event);
+        ParticleHelper.get().register(event);
+        SoundHelper.get().register(event);
     }
 
     public static void setUp(FMLCommonSetupEvent event) {
@@ -106,8 +107,8 @@ public class HTLib {
         });
     }
 
-    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event){
-        if(event.getObject() instanceof Player){
+    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof Player) {
 
         } else {
             event.addCapability(prefix("raid"), new RaidCapProvider(event.getObject()));
@@ -128,11 +129,11 @@ public class HTLib {
         return res(MOD_ID, name);
     }
 
-    public static boolean in(ResourceLocation resourceLocation){
+    public static boolean in(ResourceLocation resourceLocation) {
         return in(resourceLocation, MOD_ID);
     }
 
-    public static boolean in(ResourceLocation resourceLocation, String modId){
+    public static boolean in(ResourceLocation resourceLocation, String modId) {
         return resourceLocation.getNamespace().equals(modId);
     }
 

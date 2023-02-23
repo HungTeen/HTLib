@@ -1,18 +1,15 @@
 package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.PlayerHelper;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -67,10 +65,18 @@ public class DummyEntityManager extends SavedData {
     }
 
     /**
-     * tick all raid in running.
      * {@link HTLib#HTLib()}
      */
-    public void tick() {
+    public static void tick(TickEvent.LevelTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel) {
+            DummyEntityManager.get((ServerLevel) event.level).tick();
+        }
+    }
+
+    /**
+     * tick all raid in running.
+     */
+    protected void tick() {
         final List<DummyEntity> removedEntity = new ArrayList<>();
         for (DummyEntity entity : this.entityMap.values()) {
             if(entity.isRemoved()){

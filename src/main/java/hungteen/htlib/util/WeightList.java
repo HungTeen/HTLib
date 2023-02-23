@@ -7,11 +7,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * 用于在一堆item中根据权重进行选择。
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-09-24 23:08
- *
- * 用于在一堆item中根据权重进行选择。
  **/
 public class WeightList<T> {
 
