@@ -107,6 +107,10 @@ public class WoodIntegrations {
         return BOAT_TYPES.getValue(name).orElse(WoodIntegrations.IBoatType.DEFAULT);
     }
 
+    public static WoodIntegration getWoodIntegration(String name) {
+        return WOODS.getValue(name).orElse(null);
+    }
+
     public static Builder builder(ResourceLocation location) {
         return new Builder(location);
     }
@@ -463,7 +467,7 @@ public class WoodIntegrations {
             return this;
         }
 
-        public Builder updateWoodItem(WoodSuits woodSuits, Function<BlockBehaviour.Properties, Block> function) {
+        public Builder updateWoodFunction(WoodSuits woodSuits, Function<BlockBehaviour.Properties, Block> function) {
             integration.setBlockFunction(woodSuits, function);
             return this;
         }

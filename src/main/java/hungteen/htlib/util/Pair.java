@@ -10,11 +10,18 @@ import java.util.Map;
 public record Pair<T, K>(T first, K second) {
 
     public T getFirst() {
-        return first;
+        return first();
     }
 
     public K getSecond() {
-        return second;
+        return second();
+    }
+
+    /**
+     * Vanilla usage.
+     */
+    public com.mojang.datafixers.util.Pair<T, K> cast(){
+        return com.mojang.datafixers.util.Pair.of(getFirst(), getSecond());
     }
 
     public static <T, K> Pair<T, K> of(Map.Entry<T, K> entry){

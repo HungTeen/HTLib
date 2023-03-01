@@ -16,15 +16,18 @@ public class WeightList<T> {
 
     private final List<T> itemList; // items to be selected.
     private final List<Integer> weightList; // weight of items
-    private Optional<T> leftItem = Optional.empty(); // alternative item.
+    private T leftItem = null; // alternative item.
     protected int totalWeight = 0;
+
     public WeightList() {
         this.itemList = new ArrayList<>();
         this.weightList = new ArrayList<>();
     }
+
     public WeightList(List<T> itemList, Function<T, Integer> func) {
         this(itemList, itemList.stream().map(func).collect(Collectors.toList()));
     }
+
     public WeightList(List<T> itemList, List<Integer> weightList) {
         this.itemList = new ArrayList<>(itemList);
         this.weightList = new ArrayList<>(weightList);
@@ -42,7 +45,7 @@ public class WeightList<T> {
      * 设置保底。
      */
     public WeightList<T> setLeftItem(T item) {
-        this.leftItem = Optional.ofNullable(item);
+        this.leftItem = item;
         return this;
     }
 
@@ -65,7 +68,7 @@ public class WeightList<T> {
     public void clear() {
         this.itemList.clear();
         this.weightList.clear();
-        this.leftItem = Optional.empty();
+        this.leftItem = null;
         this.totalWeight = 0;
     }
 
@@ -110,7 +113,7 @@ public class WeightList<T> {
                 }
             }
         }
-        return this.leftItem;
+        return Optional.ofNullable(this.leftItem);
     }
 
     /**
@@ -133,11 +136,7 @@ public class WeightList<T> {
      */
     @SafeVarargs
     public static <W> WeightList<W> of(Pair<W, Integer>... pairs) {
-        WeightList<W> list = new WeightList<>();
-        for (Pair<W, Integer> p : pairs) {
-            list.addItem(p.getFirst(), p.getSecond());
-        }
-        return list;
+        return of(Arrays.stream(pairs).map(Pair::cast).toArray(com.mojang.datafixers.util.Pair[]::new));
     }
 
     /**
@@ -147,4 +146,25 @@ public class WeightList<T> {
     public static <W> WeightList<W> of(int tot, Pair<W, Integer>... pairs) {
         return of(pairs).setTotalWeight(tot);
     }
+
+    /**
+     * add several items with weight.
+     */
+    @SafeVarargs
+    public static <W> WeightList<W> of(com.mojang.datafixers.util.Pair<W, Integer>... pairs) {
+        WeightList<W> list = new WeightList<>();
+        for (com.mojang.datafixers.util.Pair<W, Integer> p : pairs) {
+            list.addItem(p.getFirst(), p.getSecond());
+        }
+        return list;
+    }
+
+    /**
+     * set total while adding.
+     */
+    @SafeVarargs
+    public static <W> WeightList<W> of(int tot, com.mojang.datafixers.util.Pair<W, Integer>... pairs) {
+        return of(pairs).setTotalWeight(tot);
+    }
+
 }
