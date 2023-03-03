@@ -123,7 +123,14 @@ public class HTLib {
     }
 
     /**
-     * get resource with mod prefix.
+     * get resource with Forge prefix.
+     */
+    public static ResourceLocation forgePrefix(String name) {
+        return res("forge", name);
+    }
+
+    /**
+     * get resource with HTLib prefix.
      */
     public static ResourceLocation prefix(String name) {
         return res(MOD_ID, name);

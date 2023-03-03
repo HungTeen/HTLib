@@ -50,14 +50,17 @@ public class MixinDismountHelper {
 //            locals = LocalCapture.CAPTURE_FAILHARD,
 //            cancellable = true
 //    )
-//    private static void findSafeDismountLocation(EntityType<?> entityType, CollisionGetter collisionGetter, BlockPos blockPos, boolean p_38445_, CallbackInfoReturnable<Vec3> result, Vec3 vec3) {
-//        if(collisionGetter instanceof Level){
-//            final AABB aabb = entityType.getDimensions().makeBoundingBox(vec3);
-//            DummyEntityManager.getCollisionEntities((Level)collisionGetter).filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
-//                if(dummyEntity.requireBlock(blockPos, aabb)){
-//                    result.setReturnValue(true);
+//    private static void findSafeDismountLocation(EntityType<?> entityType, CollisionGetter collisionGetter, BlockPos blockPos, boolean p_38445_, CallbackInfoReturnable<Vec3> result, AABB $$6) {
+//        if (collisionGetter instanceof Level) {
+//            AtomicBoolean blocked = new AtomicBoolean(false);
+//            DummyEntityManager.getCollisionEntities((Level) collisionGetter).filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+//                if (dummyEntity.requireBlock(blockPos, $$6)) {
+//                    blocked.set(true);
 //                }
 //            });
+//            if(blocked.get()){
+//                result.setReturnValue(null);
+//            }
 //        }
 //    }
 

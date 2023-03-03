@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
 
@@ -21,6 +22,14 @@ import java.util.Objects;
  * @create: 2022-09-25 15:56
  **/
 public class PlayerHelper {
+
+    public static void setCooldown(Player player, Item item, int coolDown){
+        player.getCooldowns().addCooldown(item, coolDown);
+    }
+
+    public static boolean isOnCooldown(Player player, Item item){
+        return player.getCooldowns().isOnCooldown(item);
+    }
 
     /**
      * Only use on client side !

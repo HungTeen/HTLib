@@ -4,6 +4,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.util.Pair;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -49,6 +50,22 @@ public abstract class RegistryHelper<T> {
             });
         });
         return list;
+    }
+
+    public TagKey<T> tag(String name) {
+        return TagKey.create(getForgeRegistry().getRegistryKey(), new ResourceLocation(name));
+    }
+
+    public TagKey<T> tag(ResourceLocation location) {
+        return TagKey.create(getForgeRegistry().getRegistryKey(), location);
+    }
+
+    public TagKey<T> htTag(String name){
+        return tag(HTLib.prefix(name));
+    }
+
+    public TagKey<T> forgeTag(String name){
+        return tag(HTLib.forgePrefix(name));
     }
 
     public abstract IForgeRegistry<T> getForgeRegistry();

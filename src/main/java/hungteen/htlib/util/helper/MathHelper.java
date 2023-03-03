@@ -75,5 +75,7 @@ public class MathHelper {
         return new BlockPos(vec);
     }
 
-
+    public static AABB getBlockAABB(BlockPos pos) {
+        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
+    }
 }

@@ -6,7 +6,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
@@ -29,6 +31,14 @@ import java.util.stream.Collectors;
 public class EntityHelper extends RegistryHelper<EntityType<?>>{
 
     private static final EntityHelper HELPER = new EntityHelper();
+
+    public static boolean isMainHolding(LivingEntity entity, Predicate<ItemStack> predicate) {
+        return predicate.test(entity.getMainHandItem());
+    }
+
+    public static boolean isOffHolding(LivingEntity entity, Predicate<ItemStack> predicate) {
+        return predicate.test(entity.getOffhandItem());
+    }
 
     public static boolean isEntityValid(Entity entity) {
         return entity != null && entity.isAlive();

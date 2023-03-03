@@ -25,6 +25,10 @@ public class HTEntities{
         return EntityType.Builder.<HTBoat>of(HTChestBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).build(HTLib.prefix("chest_boat").toString());
     });
 
+    public static final RegistryObject<EntityType<SeatEntity>> SEAT = ENTITY_TYPES.register("seat", () -> {
+        return EntityType.Builder.<SeatEntity>of(SeatEntity::new, MobCategory.MISC).sized(0F, 0F).clientTrackingRange(10).build(HTLib.prefix("chest_boat").toString());
+    });
+
 //    private static <T extends Entity> RegistryObject<EntityType<T>> registerEntityType(EntityType.EntityFactory factory, String name, MobCategory classification){
 //        return ENTITY_TYPES.register(name, () -> EntityType.Builder.of(factory, classification).build(HTLib.prefix(name).toString()));
 //    }

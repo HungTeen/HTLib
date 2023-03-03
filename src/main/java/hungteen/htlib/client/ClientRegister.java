@@ -1,5 +1,6 @@
 package hungteen.htlib.client;
 
+import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTEntities;
@@ -31,6 +32,7 @@ public class ClientRegister {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(HTEntities.BOAT.get(), (c) -> new HTBoatRender(c, false));
         event.registerEntityRenderer(HTEntities.CHEST_BOAT.get(), (c) -> new HTBoatRender(c, true));
+        event.registerEntityRenderer(HTEntities.SEAT.get(), EmptyEffectRender::new);
     }
 
     @SubscribeEvent
