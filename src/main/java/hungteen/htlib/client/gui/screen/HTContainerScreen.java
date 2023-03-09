@@ -2,7 +2,7 @@ package hungteen.htlib.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import hungteen.htlib.HTLib;
+import hungteen.htlib.client.RenderHelper;
 import hungteen.htlib.client.gui.widget.DisplayField;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -20,7 +20,7 @@ import java.util.List;
  **/
 public class HTContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 
-    private static final ResourceLocation WIDGETS = HTLib.WIDGETS;
+    private static final ResourceLocation WIDGETS = RenderHelper.WIDGETS;
     protected final List<DisplayField> tips = new ArrayList<>();
 
     public HTContainerScreen(T screenContainer, Inventory inv, Component titleIn) {

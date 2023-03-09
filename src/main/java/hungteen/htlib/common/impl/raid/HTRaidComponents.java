@@ -20,6 +20,7 @@ import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.api.interfaces.raid.IRaidComponentType;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
  */
 public class HTRaidComponents {
 
-    public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(HTLib.prefix("raid_type"));
+    public static final HTSimpleRegistry<IRaidComponentType<?>> RAID_TYPES = HTRegistryManager.create(StringHelper.prefix("raid_type"));
     public static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(IRaidComponent.class, "custom_raid/raids", HTRaidComponents::getCodec, true);
 
     /* Raid types */
@@ -45,7 +46,7 @@ public class HTRaidComponents {
 
     /* Raids */
 
-    public static final HTRegistryHolder<IRaidComponent> TEST = RAIDS.innerRegister(HTLib.prefix("test"),
+    public static final HTRegistryHolder<IRaidComponent> TEST = RAIDS.innerRegister(StringHelper.prefix("test"),
             new CommonRaid(
                     HTRaidComponents.builder().blockInside(true).blockOutside(true).renderBorder(true).result(HTResultComponents.TEST.getValue()).color(BossEvent.BossBarColor.BLUE).build(),
                     Arrays.asList(

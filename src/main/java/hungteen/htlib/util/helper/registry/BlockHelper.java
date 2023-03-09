@@ -1,7 +1,8 @@
-package hungteen.htlib.util.helper;
+package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.util.Pair;
-import net.minecraft.resources.ResourceKey;
+import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.helper.StringHelper;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ItemLike;
@@ -13,18 +14,15 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-07 08:48
  **/
-public class BlockHelper extends RegistryHelper<Block>{
+public class BlockHelper extends RegistryHelper<Block> {
 
     /**
      * Axe Strip when {@link hungteen.htlib.common.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
@@ -34,11 +32,11 @@ public class BlockHelper extends RegistryHelper<Block>{
     private static final BlockHelper HELPER = new BlockHelper();
 
     public static ResourceLocation blockTexture(Block block){
-        return StringHelper.blockTexture(BlockHelper.getKey(block));
+        return StringHelper.blockTexture(BlockHelper.get().getKey(block));
     }
 
     public static ResourceLocation blockTexture(Block block, String suffix){
-        return StringHelper.blockTexture(BlockHelper.getKey(block), suffix);
+        return StringHelper.blockTexture(BlockHelper.get().getKey(block), suffix);
     }
 
     public static boolean stillValid(Player player, BlockEntity entity) {
@@ -99,34 +97,15 @@ public class BlockHelper extends RegistryHelper<Block>{
         return state.hasProperty(property) ? state.setValue(property, value) : state;
     }
 
-    /**
-     * Get predicate registry objects.
-     */
-    public static List<Block> getFilterBlocks(Predicate<Block> predicate) {
-        return get().getFilterObjects(predicate);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public static Collection<Pair<ResourceKey<Block>, Block>> getBlockWithKeys() {
-        return get().getObjectWithKeys();
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public static ResourceLocation getKey(Block object) {
-        return get().getResourceLocation(object);
-    }
+    /* Common Methods */
 
     public static BlockHelper get(){
         return HELPER;
     }
 
     @Override
-    public IForgeRegistry<Block> getForgeRegistry() {
-        return ForgeRegistries.BLOCKS;
+    public Registry<Block> getRegistry() {
+        return Registry.BLOCK;
     }
 
 }

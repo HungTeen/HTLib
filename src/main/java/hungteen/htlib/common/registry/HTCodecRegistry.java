@@ -13,6 +13,7 @@ import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.common.network.DataPackPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.FileHelper;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -103,7 +104,7 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
                 getCodec().parse(JsonOps.INSTANCE, element)
                         .resultOrPartial(msg -> HTLib.getLogger().error(msg + " [HTCodecRegistry] - " + this.registryName))
                         .ifPresent(l -> {
-                            this.outerRegister(HTLib.res(this.defaultNamespace, file.getName().substring(0, file.getName().length() - 5)), l);
+                            this.outerRegister(StringHelper.res(this.defaultNamespace, file.getName().substring(0, file.getName().length() - 5)), l);
                         });
             } catch (Exception e) {
                 HTLib.getLogger().error("Failed to load json from {}, skipping", file, e);

@@ -1,7 +1,7 @@
 package hungteen.htlib.common.entity;
 
 import com.google.common.collect.ImmutableList;
-import hungteen.htlib.util.helper.EntityHelper;
+import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

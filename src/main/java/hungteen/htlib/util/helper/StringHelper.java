@@ -15,8 +15,43 @@ public class StringHelper {
 
     public static final Codec<MutableComponent> CODEC = Codec.STRING.xmap(Component.Serializer::fromJson, Component.Serializer::toJson);
     public static final String EMPTY_STRING = "";
-    public static final ResourceLocation EMPTY_LOCATION = HTLib.prefix("empty");
-//    private static final List<String> ROMAN_NUMBERS = Arrays.asList("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X");
+    public static final ResourceLocation EMPTY_LOCATION = prefix("empty");
+
+    /**
+     * get resource with mod prefix.
+     */
+    public static ResourceLocation res(String modId, String name) {
+        return new ResourceLocation(modId, name);
+    }
+
+    /**
+     * get resource with Forge prefix.
+     */
+    public static ResourceLocation mcPrefix(String name) {
+        return new ResourceLocation(name);
+    }
+
+    /**
+     * get resource with Forge prefix.
+     */
+    public static ResourceLocation forgePrefix(String name) {
+        return res("forge", name);
+    }
+
+    /**
+     * get resource with HTLib prefix.
+     */
+    public static ResourceLocation prefix(String name) {
+        return res(HTLib.MOD_ID, name);
+    }
+
+    public static boolean in(ResourceLocation resourceLocation) {
+        return in(resourceLocation, HTLib.MOD_ID);
+    }
+
+    public static boolean in(ResourceLocation resourceLocation, String modId) {
+        return resourceLocation.getNamespace().equals(modId);
+    }
 
     public static ResourceLocation guiTexture(String modId, String path){
         return texture(modId, "gui/" + path);
@@ -38,7 +73,7 @@ public class StringHelper {
      * Already add suffix of extend name.
      */
     public static ResourceLocation texture(String modId, String path){
-        return HTLib.res(modId, "textures/" + path + ".png");
+        return res(modId, "textures/" + path + ".png");
     }
 
     /**
@@ -52,7 +87,7 @@ public class StringHelper {
      * Used in Item Model Gen.
      */
     public static ResourceLocation itemTexture(ResourceLocation location, String suffix){
-        return HTLib.res(location.getNamespace(), "item/" + location.getPath() + suffix);
+        return res(location.getNamespace(), "item/" + location.getPath() + suffix);
     }
 
     /**
@@ -66,7 +101,7 @@ public class StringHelper {
      * Used in block State Gen.
      */
     public static ResourceLocation blockTexture(ResourceLocation location, String suffix){
-        return HTLib.res(location.getNamespace(), "block/" + location.getPath() + suffix);
+        return res(location.getNamespace(), "block/" + location.getPath() + suffix);
     }
 
     public static ResourceLocation replace(ResourceLocation location, String oldString, String newString){

@@ -1,4 +1,4 @@
-package hungteen.htlib.util;
+package hungteen.htlib.util.helper;
 
 /**
  * What does jvav mean ?

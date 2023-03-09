@@ -1,6 +1,6 @@
 package hungteen.htlib.common.network;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -22,7 +22,7 @@ public class NetworkHandler {
     public static void init() {
 
         CHANNEL = NetworkRegistry.ChannelBuilder
-                .named(HTLib.prefix("networking"))
+                .named(StringHelper.prefix("networking"))
                 .networkProtocolVersion(() -> "1.0")
                 .clientAcceptedVersions(s -> true)
                 .serverAcceptedVersions(s -> true)

@@ -7,6 +7,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,6 +26,8 @@ import net.minecraft.world.entity.LivingEntity;
  **/
 public class RenderHelper {
 
+    // WIDGETS.
+    public static final ResourceLocation WIDGETS = StringHelper.prefix("textures/gui/widgets.png");
     public static final int ITEM_BAR_LEN = 13;
 
     /**
@@ -94,7 +97,7 @@ public class RenderHelper {
     }
 
     public static void renderScrollBar(Screen screen, PoseStack stack, int leftPos, int topPos, int currentPos, int totalCount, int countPerPage, int barLen){
-        RenderSystem.setShaderTexture(0, HTLib.WIDGETS);
+        RenderSystem.setShaderTexture(0, WIDGETS);
         stack.pushPose();
         if(totalCount > countPerPage){
             final int len = MathHelper.getBarLen(currentPos, totalCount - countPerPage, barLen - 15);

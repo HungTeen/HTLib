@@ -1,16 +1,8 @@
-package hungteen.htlib.util.helper;
+package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.util.Pair;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * @program: HTLib
@@ -42,34 +34,15 @@ public class EffectHelper extends RegistryHelper<MobEffect> {
         return new MobEffectInstance(effect, time, level, ambient, display);
     }
 
-    /**
-     * Get predicate registry objects.
-     */
-    public static List<MobEffect> getFilterEffects(Predicate<MobEffect> predicate) {
-        return get().getFilterObjects(predicate);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public static Collection<Pair<ResourceKey<MobEffect>, MobEffect>> getEffectWithKeys() {
-        return get().getObjectWithKeys();
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public static ResourceLocation getKey(MobEffect object) {
-        return get().getResourceLocation(object);
-    }
+    /* Common Methods */
 
     public static EffectHelper get(){
         return HELPER;
     }
 
     @Override
-    public IForgeRegistry<MobEffect> getForgeRegistry() {
-        return ForgeRegistries.MOB_EFFECTS;
+    public Registry<MobEffect> getRegistry() {
+        return Registry.MOB_EFFECT;
     }
 
 }

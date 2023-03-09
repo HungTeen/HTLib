@@ -1,6 +1,6 @@
 package hungteen.htlib.common.blockentity;
 
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;

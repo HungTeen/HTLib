@@ -1,6 +1,6 @@
 package hungteen.htlib.common.block.plants;
 
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

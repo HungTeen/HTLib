@@ -1,28 +1,21 @@
-package hungteen.htlib.util.helper;
+package hungteen.htlib.util.helper.registry;
 
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SpawnParticlePacket;
-import hungteen.htlib.util.Pair;
+import hungteen.htlib.util.helper.RandomHelper;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-09-29 22:33
  **/
-public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
+public class ParticleHelper extends RegistryHelper<ParticleType<?>> {
 
     private static final ParticleHelper HELPER = new ParticleHelper();
 
@@ -108,38 +101,19 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>>{
         if(level.isClientSide){
             level.addParticle(particleType, x, y, z, speedX, speedY, speedZ);
         } else {
-            NetworkHandler.sendToNearByClient(level, new Vec3(x, y, z), 50, new SpawnParticlePacket(getKey(particleType.getType()).toString(), x, y, z, speedX, speedY, speedZ));
+            NetworkHandler.sendToNearByClient(level, new Vec3(x, y, z), 50, new SpawnParticlePacket(get().getKey(particleType.getType()).toString(), x, y, z, speedX, speedY, speedZ));
         }
     }
 
-    /**
-     * Get predicate registry objects.
-     */
-    public static List<ParticleType<?>> getFilterParticleTypes(Predicate<ParticleType<?>> predicate) {
-        return get().getFilterObjects(predicate);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public static Collection<Pair<ResourceKey<ParticleType<?>>, ParticleType<?>>> getParticleTypeWithKeys() {
-        return get().getObjectWithKeys();
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public static ResourceLocation getKey(ParticleType<?> object) {
-        return get().getResourceLocation(object);
-    }
+    /* Common Methods */
 
     public static ParticleHelper get(){
         return HELPER;
     }
 
     @Override
-    public IForgeRegistry<ParticleType<?>> getForgeRegistry() {
-        return ForgeRegistries.PARTICLE_TYPES;
+    public Registry<ParticleType<?>> getRegistry() {
+        return Registry.PARTICLE_TYPE;
     }
 
 }

@@ -5,6 +5,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.common.world.raid.DefaultRaid;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -18,9 +19,9 @@ import java.util.stream.Stream;
  **/
 public class HTDummyEntities {
 
-    private static final HTSimpleRegistry<DummyEntityType<?>> DUMMY_ENTITY_TYPES = HTRegistryManager.create(HTLib.prefix("dummy_entities"));
+    private static final HTSimpleRegistry<DummyEntityType<?>> DUMMY_ENTITY_TYPES = HTRegistryManager.create(StringHelper.prefix("dummy_entities"));
 
-    public static final DummyEntityType<DefaultRaid> DEFAULT_RAID = new DummyEntityType<>(HTLib.prefix("default_raid"), DefaultRaid::new);
+    public static final DummyEntityType<DefaultRaid> DEFAULT_RAID = new DummyEntityType<>(StringHelper.prefix("default_raid"), DefaultRaid::new);
 
     /**
      * {@link HTLib#HTLib()}

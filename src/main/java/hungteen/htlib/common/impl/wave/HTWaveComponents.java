@@ -8,6 +8,7 @@ import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.Optional;
  **/
 public class HTWaveComponents {
 
-    public static final HTSimpleRegistry<IWaveComponentType<?>> WAVE_TYPES = HTRegistryManager.create(HTLib.prefix("wave_type"));
+    public static final HTSimpleRegistry<IWaveComponentType<?>> WAVE_TYPES = HTRegistryManager.create(StringHelper.prefix("wave_type"));
     public static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(IWaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec, true);
 
     /* Wave types */

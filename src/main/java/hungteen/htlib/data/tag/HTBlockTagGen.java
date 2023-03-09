@@ -1,7 +1,7 @@
 package hungteen.htlib.data.tag;
 
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.BlockTags;
@@ -24,7 +24,7 @@ public class HTBlockTagGen extends BlockTagsProvider {
     }
 
     protected List<Block> getFilterItems(Predicate<Block> predicate) {
-        return BlockHelper.getFilterBlocks(predicate);
+        return BlockHelper.get().getFilterEntries(predicate);
     }
 
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {

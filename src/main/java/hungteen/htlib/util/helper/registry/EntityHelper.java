@@ -1,9 +1,8 @@
-package hungteen.htlib.util.helper;
+package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.util.Pair;
+import hungteen.htlib.util.helper.MathHelper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,12 +12,9 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,18 +24,27 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-10-07 08:53
  **/
-public class EntityHelper extends RegistryHelper<EntityType<?>>{
+public class EntityHelper extends RegistryHelper<EntityType<?>> {
 
     private static final EntityHelper HELPER = new EntityHelper();
 
+    /**
+     * 右手持有某个物品、
+     */
     public static boolean isMainHolding(LivingEntity entity, Predicate<ItemStack> predicate) {
         return predicate.test(entity.getMainHandItem());
     }
 
+    /**
+     * 左手持有某个物品
+     */
     public static boolean isOffHolding(LivingEntity entity, Predicate<ItemStack> predicate) {
         return predicate.test(entity.getOffhandItem());
     }
 
+    /**
+     * 实体是否存活。
+     */
     public static boolean isEntityValid(Entity entity) {
         return entity != null && entity.isAlive();
     }
@@ -117,33 +122,14 @@ public class EntityHelper extends RegistryHelper<EntityType<?>>{
         return list;
     }
 
-    /**
-     * Get predicate registry objects.
-     */
-    public static List<EntityType<?>> getFilterEntityTypes(Predicate<EntityType<?>> predicate) {
-        return get().getFilterObjects(predicate);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public static Collection<Pair<ResourceKey<EntityType<?>>, EntityType<?>>> getEntityTypeWithKeys() {
-        return get().getObjectWithKeys();
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public static ResourceLocation getKey(EntityType<?> object) {
-        return get().getResourceLocation(object);
-    }
+    /* Common Methods */
 
     public static EntityHelper get(){
         return HELPER;
     }
 
     @Override
-    public IForgeRegistry<EntityType<?>> getForgeRegistry() {
-        return ForgeRegistries.ENTITY_TYPES;
+    public Registry<EntityType<?>> getRegistry() {
+        return Registry.ENTITY_TYPE;
     }
 }

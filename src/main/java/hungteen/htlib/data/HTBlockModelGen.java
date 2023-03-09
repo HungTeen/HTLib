@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;

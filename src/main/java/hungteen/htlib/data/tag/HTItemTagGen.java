@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.util.helper.ItemHelper;
+import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -23,7 +23,7 @@ public class HTItemTagGen extends ItemTagsProvider {
     }
 
     protected List<Item> getFilterItems(Predicate<Item> predicate) {
-        return ItemHelper.getFilterItems(predicate);
+        return ItemHelper.get().getFilterEntries(predicate);
     }
 
     @Override

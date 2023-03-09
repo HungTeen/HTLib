@@ -9,8 +9,8 @@ import hungteen.htlib.common.item.HTBoatItem;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.util.Pair;
-import hungteen.htlib.util.helper.BlockHelper;
-import hungteen.htlib.util.helper.ItemHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.registry.ItemHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,21 +41,28 @@ import java.util.function.Supplier;
  */
 public class WoodIntegrations {
 
-    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.create(HTLib.prefix("wood"));
-    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.create(HTLib.prefix("boat_type"));
+    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.create(StringHelper.prefix("wood"));
+    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.create(StringHelper.prefix("boat_type"));
 
     /**
      * Register at the tail of event，{@link HTLib#HTLib()}
      */
     public static void register(RegisterEvent event) {
-        registerBoatType(IBoatType.DEFAULT);
-        getWoodIntegrations().forEach(wood -> {
-            BlockHelper.registerWoodType(wood.getWoodType());
-            if (wood.getBoatSetting().isEnabled()) {
-                registerBoatType(wood.getBoatSetting().getBoatType());
-            }
-            wood.registerBlockAndItems(event);
-        });
+        // Only run once to avoid log spam.
+        if(ItemHelper.get().matchEvent(event)){
+            registerBoatType(IBoatType.DEFAULT);
+            getWoodIntegrations().forEach(wood -> {
+                BlockHelper.registerWoodType(wood.getWoodType());
+                if (wood.getBoatSetting().isEnabled()) {
+                    registerBoatType(wood.getBoatSetting().getBoatType());
+                }
+            });
+        }
+        if(ItemHelper.get().matchEvent(event) || BlockHelper.get().matchEvent(event)){
+            getWoodIntegrations().forEach(wood -> {
+                wood.registerBlockAndItems(event);
+            });
+        }
     }
 
     /**

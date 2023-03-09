@@ -20,8 +20,8 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTTestGen;
-import hungteen.htlib.util.helper.*;
-import net.minecraft.resources.ResourceLocation;
+import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.registry.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,8 +54,6 @@ public class HTLib {
     public static final String MOD_ID = "htlib";
     // Proxy of Server and Client.
     public static CommonProxy PROXY = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
-    // WIDGETS.
-    public static final ResourceLocation WIDGETS = prefix("textures/gui/widgets.png");
 
     public HTLib() {
         /* Mod Bus Events */
@@ -111,37 +109,8 @@ public class HTLib {
         if (event.getObject() instanceof Player) {
 
         } else {
-            event.addCapability(prefix("raid"), new RaidCapProvider(event.getObject()));
+            event.addCapability(StringHelper.prefix("raid"), new RaidCapProvider(event.getObject()));
         }
-    }
-
-    /**
-     * get resource with mod prefix.
-     */
-    public static ResourceLocation res(String modId, String name) {
-        return new ResourceLocation(modId, name);
-    }
-
-    /**
-     * get resource with Forge prefix.
-     */
-    public static ResourceLocation forgePrefix(String name) {
-        return res("forge", name);
-    }
-
-    /**
-     * get resource with HTLib prefix.
-     */
-    public static ResourceLocation prefix(String name) {
-        return res(MOD_ID, name);
-    }
-
-    public static boolean in(ResourceLocation resourceLocation) {
-        return in(resourceLocation, MOD_ID);
-    }
-
-    public static boolean in(ResourceLocation resourceLocation, String modId) {
-        return resourceLocation.getNamespace().equals(modId);
     }
 
     public static Logger getLogger() {

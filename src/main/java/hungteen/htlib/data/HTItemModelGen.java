@@ -1,8 +1,8 @@
 package hungteen.htlib.data;
 
-import hungteen.htlib.HTLib;
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -50,13 +50,13 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     protected void genSameModelsWithAdd(Item... items) {
         final Item first = items[0];
         for (Item item : items) {
-            genNormal(name(item), HTLib.res(this.modid, "item/" + name(first)));
+            genNormal(name(item), StringHelper.res(this.modid, "item/" + name(first)));
             this.addedItems.add(item);
         }
     }
 
     protected void genNormalModel(Item item) {
-        genNormal(name(item), HTLib.res(this.modid, "item/" + name(item)));
+        genNormal(name(item), StringHelper.res(this.modid, "item/" + name(item)));
     }
 
     /**
@@ -67,8 +67,8 @@ public abstract class HTItemModelGen extends ItemModelProvider {
             final Block block = pair.second();
             if(pair.first().hasItem()){
                 switch (pair.first()) {
-                    case FENCE, BUTTON -> genBlockModel(block, BlockHelper.getKey(block).getPath() + "_inventory");
-                    case TRAP_DOOR -> genBlockModel(block, BlockHelper.getKey(block).getPath() + "_bottom");
+                    case FENCE, BUTTON -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_inventory");
+                    case TRAP_DOOR -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_bottom");
                     case DOOR, STANDING_SIGN -> {
                         genNormalModel(block.asItem());
                         this.addedItems.add(block.asItem());
@@ -99,12 +99,12 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     }
 
     protected void genBlockModel(Block block, String path) {
-        withExistingParent(name(block), HTLib.res(this.modid, "block/" + path));
+        withExistingParent(name(block), StringHelper.res(this.modid, "block/" + path));
         this.addedItems.add(block.asItem());
     }
 
     protected void genItemModelWithBlock(Item item) {
-        genNormal(name(item), HTLib.res(this.modid, "block/" + name(item)));
+        genNormal(name(item), StringHelper.res(this.modid, "block/" + name(item)));
         this.addedItems.add(item);
     }
 

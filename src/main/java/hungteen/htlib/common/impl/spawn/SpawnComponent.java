@@ -6,7 +6,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.placement.HTPlaceComponents;
-import hungteen.htlib.util.helper.EntityHelper;
+import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import net.minecraft.nbt.CompoundTag;
@@ -38,7 +38,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
         final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(level, raid.getPosition());
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
-            compoundtag.putString("id", EntityHelper.getKey(this.getEntityType()).toString());
+            compoundtag.putString("id", EntityHelper.get().getKey(this.getEntityType()).toString());
             Entity entity = EntityType.loadEntityRecursive(compoundtag, level, (e) -> {
                 e.moveTo(spawnPosition.x, spawnPosition.y, spawnPosition.z, e.getYRot(), e.getXRot());
                 return e;

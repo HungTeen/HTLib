@@ -2,7 +2,7 @@ package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.BlockHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
@@ -49,7 +49,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     }
 
     protected ResourceLocation key(Block block) {
-        return BlockHelper.getKey(block);
+        return BlockHelper.get().getKey(block);
     }
 
     protected String name(Block block) {
@@ -84,7 +84,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         getVariantBuilder(block).forAllStates(state -> {
             int i = state.getValue(property);
             return ConfiguredModel.builder()
-                    .modelFile(models().crop(name(block) + "_" + i, HTLib.res(this.modId, "block/" + name(block) + "_" + i)).renderType(renderType))
+                    .modelFile(models().crop(name(block) + "_" + i, StringHelper.res(this.modId, "block/" + name(block) + "_" + i)).renderType(renderType))
                     .build();
         });
         this.addedBlocks.add(block);

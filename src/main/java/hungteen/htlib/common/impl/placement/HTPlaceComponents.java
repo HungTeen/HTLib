@@ -8,6 +8,7 @@ import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class HTPlaceComponents {
 
-    public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(HTLib.prefix("placement_type"));
+    public static final HTSimpleRegistry<IPlaceComponentType<?>> PLACEMENT_TYPES = HTRegistryManager.create(StringHelper.prefix("placement_type"));
     public static final HTCodecRegistry<IPlaceComponent> PLACEMENTS = HTRegistryManager.create(IPlaceComponent.class, "custom_raid/placements", HTPlaceComponents::getCodec, true);
 
     /* Placement types */
@@ -31,7 +32,7 @@ public class HTPlaceComponents {
     /* Placements */
 
     public static final HTRegistryHolder<IPlaceComponent> DEFAULT = PLACEMENTS.innerRegister(
-            HTLib.prefix("default"), new CenterAreaPlacement(
+            StringHelper.prefix("default"), new CenterAreaPlacement(
                     Vec3.ZERO, 0, 1, true, 0, true
             )
     );
