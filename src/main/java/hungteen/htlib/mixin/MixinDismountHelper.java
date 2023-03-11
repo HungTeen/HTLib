@@ -4,7 +4,6 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
@@ -26,12 +25,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-12-03 19:28
- * <p>
- * 防止船等实体卡边界。
  **/
 @Mixin(DismountHelper.class)
 public class MixinDismountHelper {
 
+    /**
+     * 防止卡骑乘bug到边界之外。
+     */
     @Inject(method = "canDismountTo(Lnet/minecraft/world/level/CollisionGetter;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/AABB;)Z",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/CollisionGetter;getWorldBorder()Lnet/minecraft/world/level/border/WorldBorder;"),
             locals = LocalCapture.CAPTURE_FAILHARD,
@@ -47,14 +47,14 @@ public class MixinDismountHelper {
 
 //    @Inject(method = "findSafeDismountLocation(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/CollisionGetter;Lnet/minecraft/core/BlockPos;Z)Lnet/minecraft/world/phys/Vec3;",
 //            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/CollisionGetter;getWorldBorder()Lnet/minecraft/world/level/border/WorldBorder;"),
-//            locals = LocalCapture.CAPTURE_FAILHARD,
+//            locals = LocalCapture.PRINT,
 //            cancellable = true
 //    )
-//    private static void findSafeDismountLocation(EntityType<?> entityType, CollisionGetter collisionGetter, BlockPos blockPos, boolean p_38445_, CallbackInfoReturnable<Vec3> result, AABB $$6) {
+//    private static void findSafeDismountLocation(EntityType<?> entityType, CollisionGetter collisionGetter, BlockPos blockPos, boolean p_38445_, CallbackInfoReturnable<Vec3> result) {
 //        if (collisionGetter instanceof Level) {
 //            AtomicBoolean blocked = new AtomicBoolean(false);
 //            DummyEntityManager.getCollisionEntities((Level) collisionGetter).filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
-//                if (dummyEntity.requireBlock(blockPos, $$6)) {
+//                if (dummyEntity.requireBlock(blockPos, aabb)) {
 //                    blocked.set(true);
 //                }
 //            });
@@ -84,7 +84,7 @@ public class MixinDismountHelper {
                 Vec3 vec3 = Vec3.upFromBottomCenterOf(blockPos, d0);
                 AABB aabb = entityType.getDimensions().makeBoundingBox(vec3);
 
-                for (VoxelShape voxelshape : collisionGetter.getBlockCollisions((Entity) null, aabb)) {
+                for (VoxelShape voxelshape : collisionGetter.getBlockCollisions(null, aabb)) {
                     if (!voxelshape.isEmpty()) {
                         return null;
                     }

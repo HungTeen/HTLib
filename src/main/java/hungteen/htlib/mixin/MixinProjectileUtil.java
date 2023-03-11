@@ -21,6 +21,9 @@ import java.util.function.Predicate;
 @Mixin(ProjectileUtil.class)
 public class MixinProjectileUtil {
 
+    /**
+     * 不能碰到边界之外。
+     */
     @Inject(method = "getHitResult(Lnet/minecraft/world/entity/Entity;Ljava/util/function/Predicate;)Lnet/minecraft/world/phys/HitResult;",
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILHARD,
@@ -38,6 +41,9 @@ public class MixinProjectileUtil {
         });
     }
 
+    /**
+     * 不能碰到边界之外。
+     */
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILHARD,

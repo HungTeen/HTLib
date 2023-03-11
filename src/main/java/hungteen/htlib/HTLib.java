@@ -81,6 +81,9 @@ public class HTLib {
         HTCommandArgumentInfos.register(modBus);
     }
 
+    /**
+     * Used in group registration.
+     */
     public static void postRegister(RegisterEvent event){
         ItemHelper.get().register(event);
         BlockHelper.get().register(event);
@@ -89,6 +92,12 @@ public class HTLib {
         BlockEntityHelper.get().register(event);
         ParticleHelper.get().register(event);
         SoundHelper.get().register(event);
+        BannerPatternHelper.get().register(event);
+        BiomeHelper.get().register(event);
+        FluidHelper.get().register(event);
+        GameEventHelper.get().register(event);
+        PaintVariantHelper.get().register(event);
+        PoiTypeHelper.get().register(event);
     }
 
     public static void setUp(FMLCommonSetupEvent event) {

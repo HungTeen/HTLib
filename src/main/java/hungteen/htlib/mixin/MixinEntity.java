@@ -28,6 +28,9 @@ public abstract class MixinEntity {
 
     @Shadow public abstract void baseTick();
 
+    /**
+     * 不能移动到边界之外。
+     */
     @Inject(method = "collideBoundingBox(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/world/level/Level;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;",
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILHARD,

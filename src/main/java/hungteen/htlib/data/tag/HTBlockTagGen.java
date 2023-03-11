@@ -3,28 +3,20 @@ package hungteen.htlib.data.tag;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-07 08:46
  **/
-public class HTBlockTagGen extends BlockTagsProvider {
+public abstract class HTBlockTagGen extends HTTagsProvider<Block> {
 
     public HTBlockTagGen(DataGenerator generator, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(generator, modId, existingFileHelper);
-    }
-
-    protected List<Block> getFilterItems(Predicate<Block> predicate) {
-        return BlockHelper.get().getFilterEntries(predicate);
+        super(generator, BlockHelper.get(), modId, existingFileHelper);
     }
 
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
@@ -73,11 +65,6 @@ public class HTBlockTagGen extends BlockTagsProvider {
                 }
             }
         });
-    }
-
-    @Override
-    public String getName() {
-        return this.modId + " block tags";
     }
 
 }

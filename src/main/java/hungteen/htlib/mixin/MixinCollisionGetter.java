@@ -33,28 +33,6 @@ public interface MixinCollisionGetter {
     @Shadow
     VoxelShape borderCollision(Entity p_186441_, AABB p_186442_);
 
-//    @Inject(method = "noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z",
-//            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/CollisionGetter;borderCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Lnet/minecraft/world/phys/shapes/VoxelShape;"),
-//            locals = LocalCapture.CAPTURE_FAILHARD,
-//            cancellable = true,
-//            remap = false
-//    )
-//    default void noCollision(@Nullable Entity entity, AABB aabb, CallbackInfoReturnable<Boolean> result) {
-//        if(entity != null){
-//            AtomicBoolean hasCollision = new AtomicBoolean(false);
-//            HTLib.PROXY.getDummyEntities(entity.level).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
-//                if (! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb) && dummyEntity.getCollisionShapes(entity).isPresent()) {
-//                    if (Shapes.joinIsNotEmpty(dummyEntity.getCollisionShapes(entity).get(), Shapes.create(aabb), BooleanOp.AND)) {
-//                        hasCollision.set(true);
-//                    }
-//                }
-//            });
-//            if (hasCollision.get()) {
-//                result.setReturnValue(false);
-//            }
-//        }
-//    }
-
     /**
      * @author HT
      * @reason Mixin不支持注入接口。

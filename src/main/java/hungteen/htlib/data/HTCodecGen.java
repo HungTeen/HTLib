@@ -26,8 +26,6 @@ import java.util.Optional;
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-25 12:44
- *
- * Copy some code from https://github.com/TeamTwilight/twilightforest/blob/1.18.x/src/main/java/twilightforest/data/WorldGenerator.java
  **/
 public abstract class HTCodecGen implements DataProvider {
 

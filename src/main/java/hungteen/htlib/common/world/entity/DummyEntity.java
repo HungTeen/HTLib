@@ -1,21 +1,19 @@
 package hungteen.htlib.common.world.entity;
 
+import hungteen.htlib.api.interfaces.IDummyEntity;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
-import hungteen.htlib.api.interfaces.IDummyEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -86,10 +84,10 @@ public abstract class DummyEntity implements IDummyEntity {
      * {@link hungteen.htlib.mixin.MixinEntity}
      */
     public void collideWith(Entity entity){
-        if(entity instanceof Projectile){
-            ((Projectile) entity).onHit(new BlockHitResult(entity.position(), entity.getDirection(), entity.blockPosition(), false));
-            entity.discard();
-        }
+//        if(entity instanceof Projectile){
+//            ((Projectile) entity).onHit(new BlockHitResult(entity.position(), entity.getDirection(), entity.blockPosition(), false));
+//            entity.discard();
+//        }
     }
 
     /**
