@@ -2,6 +2,7 @@ package hungteen.htlib.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -41,11 +42,11 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
     /**
      * Register by code.
      */
-    private final BiMap<ResourceLocation, V> innerMap = HashBiMap.create();
+    private final BiMap<ResourceLocation, V> innerMap = Maps.synchronizedBiMap(HashBiMap.create());
     /**
      * Register by data pack.
      */
-    private final BiMap<ResourceLocation, V> outerMap = HashBiMap.create();
+    private final BiMap<ResourceLocation, V> outerMap = Maps.synchronizedBiMap(HashBiMap.create());
     private static final Gson GSON = (new GsonBuilder()).create();
     private final String registryName;
     private final Class<V> registryClass;

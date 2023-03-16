@@ -2,6 +2,7 @@ package hungteen.htlib.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  **/
 public class HTRegistryManager {
 
-    private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = HashBiMap.create();
+    private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = Maps.synchronizedBiMap(HashBiMap.create());
 
     /**
      * 全局初始化。

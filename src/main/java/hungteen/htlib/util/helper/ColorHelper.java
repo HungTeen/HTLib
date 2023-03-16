@@ -1,13 +1,13 @@
 package hungteen.htlib.util.helper;
 
-import hungteen.htlib.util.Triple;
-
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 23:10
  **/
 public class ColorHelper {
+
+    private static final int MASK = 255;
 
     /* Red */
     public static final int RED = 16711680;
@@ -82,15 +82,47 @@ public class ColorHelper {
     public static final int ICE_ROOT = toRGB(69, 213, 228);
 
     public static int toRGB(int red, int green, int blue){
-        return toRGB(Triple.of(red, green, blue));
+        return (red << 16) | (green << 8) | blue;
     }
 
-    public static int toRGB(Triple<Integer, Integer, Integer> triple){
-        return (triple.getLeft() << 16) | (triple.getMid() << 8) | triple.getRight();
+    public static int getRedFromRGB(int rgb){
+        return (rgb >> 16) & MASK;
     }
 
-    public static Triple<Integer, Integer, Integer> getRGB(int rgb){
-        return Triple.of((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
+    public static int getGreenFromRGB(int rgb){
+        return (rgb >> 8) & MASK;
+    }
+
+    public static int getBlueFromRGB(int rgb){
+        return rgb & MASK;
+    }
+
+    public static int toRGBA(int red, int green, int blue, int alpha){
+        return (toRGB(red, green, blue) << 8) | alpha;
+    }
+
+    public static int getRedFromRGBA(int rgba){
+        return (rgba >> 24) & MASK;
+    }
+
+    public static int getGreenFromRGBA(int rgba){
+        return (rgba >> 16) & MASK;
+    }
+
+    public static int getBlueFromRGBA(int rgba){
+        return (rgba >> 8) & MASK;
+    }
+
+    public static int getAlpha(int rgba){
+        return rgba & MASK;
+    }
+
+    public static float to(int value){
+        return value * 1F / MASK;
+    }
+
+    public static int from(float value){
+        return Math.round(value * MASK);
     }
 
 }

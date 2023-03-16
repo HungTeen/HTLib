@@ -21,8 +21,8 @@ public abstract class HTBlockTagGen extends HTTagsProvider<Block> {
 
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
-            final Block block = pair.second();
-            switch (pair.first()){
+            final Block block = pair.getValue();
+            switch (pair.getKey()){
                 /* RotatedPillarBlocks. */
                 case LOG, STRIPPED_LOG, WOOD, STRIPPED_WOOD -> {
                     this.tag(BlockTags.LOGS_THAT_BURN).add(block);

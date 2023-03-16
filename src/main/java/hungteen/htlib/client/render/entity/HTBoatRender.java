@@ -3,12 +3,12 @@ package hungteen.htlib.client.render.entity;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import hungteen.htlib.client.HTModelLayers;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTBoat;
-import hungteen.htlib.util.Pair;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -76,8 +76,8 @@ public class HTBoatRender extends EntityRenderer<HTBoat> {
         VertexConsumer vertexconsumer = bufferSource.getBuffer(boatmodel.renderType(resourcelocation));
         boatmodel.renderToBuffer(poseStack, vertexconsumer, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         if (!boat.isUnderWater()) {
-            VertexConsumer vertexconsumer1 = bufferSource.getBuffer(RenderType.waterMask());
-            boatmodel.waterPatch().render(poseStack, vertexconsumer1, packedLightIn, OverlayTexture.NO_OVERLAY);
+            VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.waterMask());
+            boatmodel.waterPatch().render(poseStack, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY);
         }
 
         poseStack.popPose();

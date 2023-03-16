@@ -1,4 +1,4 @@
-package hungteen.htlib.util.algorithm;
+package hungteen.htlib.util.helper.algorithm;
 
 /**
  * @program: HTLib

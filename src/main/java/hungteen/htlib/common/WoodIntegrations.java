@@ -8,17 +8,15 @@ import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.item.HTBoatItem;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.util.Pair;
+import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
-import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -304,8 +302,8 @@ public class WoodIntegrations {
             this.boatSetting.disable();
         }
 
-        public List<Pair<WoodSuits, Block>> getWoodBlocks() {
-            return this.woodBlocks.entrySet().stream().map(Pair::of).toList();
+        public List<Map.Entry<WoodSuits, Block>> getWoodBlocks() {
+            return this.woodBlocks.entrySet().stream().toList();
         }
 
         public boolean hasWoodSuit(WoodSuits woodSuit) {

@@ -1,6 +1,6 @@
-package hungteen.htlib.util.algorithm;
+package hungteen.htlib.util.helper.algorithm;
 
-import hungteen.htlib.util.Pair;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Comparator;

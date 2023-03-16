@@ -1,7 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.util.Pair;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
  **/
 public abstract class RegistryHelper<T> {
 
-    private final HashMap<ResourceLocation, GroupRegistration<T>> groups = new HashMap<>(); // 每个分组的注册项。
+    private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 
     /**
      * 决定注册帮助类的类型。
@@ -149,10 +148,8 @@ public abstract class RegistryHelper<T> {
     /**
      * Get all registered objects with keys.
      */
-    public Collection<Pair<ResourceKey<T>, T>> getWithKeys() {
-        return getRegistry().entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
-                .toList();
+    public Collection<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
+        return getRegistry().entrySet().stream().toList();
     }
 
     /**

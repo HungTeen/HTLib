@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.ParallelDispatchEvent;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class BlockHelper extends RegistryHelper<Block> {
      * Axe Strip when {@link hungteen.htlib.common.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
      */
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
-    private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
+    private static final List<WoodType> WOOD_TYPES = Collections.synchronizedList(List.of());
     private static final BlockHelper HELPER = new BlockHelper();
 
     public static ResourceLocation blockTexture(Block block){
@@ -48,6 +49,7 @@ public class BlockHelper extends RegistryHelper<Block> {
     }
 
     /**
+     * 不保证线程安全，请使用{@link ParallelDispatchEvent#enqueueWork(Runnable)}. <br>
      * remember to subscribe {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}.
      */
     public static void registerCompostable(float chance, ItemLike itemIn) {
@@ -55,6 +57,7 @@ public class BlockHelper extends RegistryHelper<Block> {
     }
 
     /**
+     * 不保证线程安全，请使用{@link ParallelDispatchEvent#enqueueWork(Runnable)}. <br>
      * remember to subscribe {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}.
      */
     public static void registerAxeStrip(Block oldState, Block newState) {

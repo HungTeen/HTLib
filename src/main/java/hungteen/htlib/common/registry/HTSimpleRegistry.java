@@ -2,6 +2,7 @@ package hungteen.htlib.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import hungteen.htlib.HTLib;
@@ -22,7 +23,7 @@ import java.util.Optional;
  */
 public final class HTSimpleRegistry<T extends ISimpleEntry> implements IHTSimpleRegistry<T> {
 
-    private final BiMap<ResourceLocation, Optional<? extends T>> registryMap = HashBiMap.create();
+    private final BiMap<ResourceLocation, Optional<? extends T>> registryMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final ResourceLocation registryName;
 
     HTSimpleRegistry(ResourceLocation registryName){

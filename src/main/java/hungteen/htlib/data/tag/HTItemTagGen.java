@@ -2,7 +2,6 @@ package hungteen.htlib.data.tag;
 
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
@@ -24,7 +23,7 @@ public abstract class HTItemTagGen extends HTTagsProvider<Item> {
 
     private final Function<TagKey<Block>, TagBuilder> blockTags;
 
-    public HTItemTagGen(DataGenerator generator, BlockTagsProvider blockTagsProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
+    public HTItemTagGen(DataGenerator generator, HTBlockTagGen blockTagsProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(generator, ItemHelper.get(), modId, existingFileHelper);
         this.blockTags = blockTagsProvider::getOrCreateRawBuilder;
     }

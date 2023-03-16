@@ -64,9 +64,9 @@ public abstract class HTItemModelGen extends ItemModelProvider {
      */
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
-            final Block block = pair.second();
-            if(pair.first().hasItem()){
-                switch (pair.first()) {
+            final Block block = pair.getValue();
+            if(pair.getKey().hasItem()){
+                switch (pair.getKey()) {
                     case FENCE, BUTTON -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_inventory");
                     case TRAP_DOOR -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_bottom");
                     case DOOR, STANDING_SIGN -> {

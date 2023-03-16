@@ -232,8 +232,8 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
             return;
         }
         woodIntegration.getWoodBlocks().forEach(pair -> {
-            final Block block = pair.second();
-            switch (pair.first()){
+            final Block block = pair.getValue();
+            switch (pair.getKey()){
                 /* RotatedPillarBlocks. */
                 case LOG, STRIPPED_LOG -> {
                     if(block instanceof RotatedPillarBlock b) this.log(b);
