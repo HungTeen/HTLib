@@ -23,11 +23,11 @@ public class WeightedList<T extends WeightedEntry> {
     private final int totalWeight;
     private final ImmutableList<T> items;
 
-    public WeightedList(List<T> items) {
+    WeightedList(List<T> items) {
         this(items, 0);
     }
 
-    public WeightedList(List<T> items, int totalWeight) {
+    WeightedList(List<T> items, int totalWeight) {
         this.items = ImmutableList.copyOf(items);
         this.totalWeight = Math.max(WeightedRandom.getTotalWeight(items), totalWeight);
     }
@@ -83,8 +83,23 @@ public class WeightedList<T extends WeightedEntry> {
         return codec.listOf().xmap(WeightedList::create, WeightedList::unwrap);
     }
 
-    public static <E> Codec<WeightedList<WeightedPair<E>>> pair(Codec<E> codec) {
-        return codec(WeightedPair.codec(codec));
+    public static class Builder<T extends WeightedEntry> {
+        private final ImmutableList.Builder<T> result = ImmutableList.builder();
+        private int totalWeight = -1;
+
+        public Builder<T> add(T item) {
+            this.result.add(item);
+            return this;
+        }
+
+        public Builder<T> weight(int weight) {
+            this.totalWeight = weight;
+            return this;
+        }
+
+        public WeightedList<T> build() {
+            return this.totalWeight == -1 ? new WeightedList<T>(this.result.build()) : new WeightedList<T>(this.result.build(), this.totalWeight);
+        }
     }
 
 }
