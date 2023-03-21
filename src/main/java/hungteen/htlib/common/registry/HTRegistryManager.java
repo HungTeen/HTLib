@@ -27,7 +27,7 @@ public class HTRegistryManager {
      * 全局初始化。
      */
     public static void globalInit() {
-        getRegistries().stream().filter(HTCodecRegistry::isGlobal).forEach(HTCodecRegistry::init);
+        getRegistries().stream().filter(HTCodecRegistry::isGlobal).filter(HTCodecRegistry::hasUniqueDataPack).forEach(HTCodecRegistry::init);
     }
 
     /**
@@ -66,16 +66,20 @@ public class HTRegistryManager {
     }
 
     public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal, String namespace){
+        return create(clazz, registryName, supplier, isGlobal, true, namespace);
+    }
+
+    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal, boolean hasUniqueDataPack, String namespace){
         if(CODEC_REGISTRIES.containsKey(registryName)){
             throw new IllegalArgumentException("Cannot create duplicate registry {}, use get instead".formatted(registryName));
         }
-        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal, namespace);
+        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal, hasUniqueDataPack, namespace);
         CODEC_REGISTRIES.put(registryName, registry);
         return registry;
     }
 
-    public static List<String> getRegistryNames(boolean isGlobal){
-        return CODEC_REGISTRIES.entrySet().stream().filter(entry -> entry.getValue().isGlobal() == isGlobal).map(Map.Entry::getKey).toList();
+    public static List<String> getRegistryNames(boolean isGlobal, boolean unique){
+        return CODEC_REGISTRIES.entrySet().stream().filter(entry -> entry.getValue().isGlobal() == isGlobal && unique == entry.getValue().hasUniqueDataPack()).map(Map.Entry::getKey).toList();
     }
 
     public static List<HTCodecRegistry<?>> getRegistries(){

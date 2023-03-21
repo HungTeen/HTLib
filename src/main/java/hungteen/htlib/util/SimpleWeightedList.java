@@ -3,10 +3,13 @@ package hungteen.htlib.util;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.util.random.WeightedEntry;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Copy from {@link SimpleWeightedRandomList}. <br>
@@ -26,12 +29,40 @@ public class SimpleWeightedList<T> extends WeightedList<WeightedEntry.Wrapper<T>
         super(items, totalWeight);
     }
 
+    public Optional<T> getItem(RandomSource rand) {
+        return this.getRandomItem(rand).map(WeightedEntry.Wrapper::getData);
+    }
+
+    public List<T> getItems(RandomSource rand, int count, boolean different) {
+        return this.getRandomItems(rand, count, different).stream().map(WeightedEntry.Wrapper::getData).toList();
+    }
+
     public static <T> Codec<SimpleWeightedList<T>> wrappedCodecAllowingEmpty(Codec<T> codec) {
         return WeightedEntry.Wrapper.<T>codec(codec).listOf().xmap(SimpleWeightedList::new, SimpleWeightedList::unwrap);
     }
 
     public static <T> Codec<SimpleWeightedList<T>> wrappedCodec(Codec<T> codec) {
         return ExtraCodecs.nonEmptyList(WeightedEntry.Wrapper.<T>codec(codec).listOf()).xmap(SimpleWeightedList::new, SimpleWeightedList::unwrap);
+    }
+
+    public static <T> SimpleWeightedList.Builder<T> builder() {
+        return new SimpleWeightedList.Builder<>();
+    }
+
+    public static <T> SimpleWeightedList<T> empty() {
+        return new SimpleWeightedList<>(List.of());
+    }
+
+    public static <T> SimpleWeightedList<T> single(T item) {
+        return list(List.of(item));
+    }
+
+    public static <T> SimpleWeightedList<T> pair(T item1, T item2) {
+        return list(Arrays.asList(item1, item2));
+    }
+
+    public static <T> SimpleWeightedList<T> list(List<T> items) {
+        return new SimpleWeightedList<>(items.stream().map(t -> WeightedEntry.wrap(t, 1)).toList());
     }
 
     public static class Builder<T> {

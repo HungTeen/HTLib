@@ -62,6 +62,10 @@ public class WeightedList<T extends WeightedEntry> {
         return resultList;
     }
 
+    public List<T> unwrap() {
+        return this.items;
+    }
+
     public static <E extends WeightedEntry> WeightedList<E> create() {
         return new WeightedList<>(ImmutableList.of());
     }
@@ -73,10 +77,6 @@ public class WeightedList<T extends WeightedEntry> {
 
     public static <E extends WeightedEntry> WeightedList<E> create(List<E> items) {
         return new WeightedList<>(items);
-    }
-
-    public List<T> unwrap() {
-        return this.items;
     }
 
     public static <E extends WeightedEntry> Codec<WeightedList<E>> codec(Codec<E> codec) {

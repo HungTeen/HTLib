@@ -52,14 +52,16 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
     private final Class<V> registryClass;
     private final Supplier<Codec<V>> supplier;
     private final boolean isGlobal;
+    private final boolean hasUniqueDataPack;
     private final String defaultNamespace;
     private File rootDir;
 
-    HTCodecRegistry(Class<V> registryClass, String registryName, Supplier<Codec<V>> supplier, boolean isGlobal, String defaultNamespace) {
+    HTCodecRegistry(Class<V> registryClass, String registryName, Supplier<Codec<V>> supplier, boolean isGlobal, boolean hasUniqueDataPack, String defaultNamespace) {
         this.registryClass = registryClass;
         this.registryName = registryName;
         this.supplier = supplier;
         this.isGlobal = isGlobal;
+        this.hasUniqueDataPack = hasUniqueDataPack;
         this.defaultNamespace = defaultNamespace;
     }
 
@@ -187,5 +189,13 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
      */
     public boolean isGlobal() {
         return isGlobal;
+    }
+
+    /**
+     * 决定此注册有没有独立的数据包，没有则只能安排在别的数据包中。
+     * Determines whether it has independent data pack folder.
+     */
+    public boolean hasUniqueDataPack() {
+        return hasUniqueDataPack;
     }
 }

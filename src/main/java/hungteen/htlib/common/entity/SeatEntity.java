@@ -33,10 +33,11 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
 
     public SeatEntity(EntityType<?> type, Level world) {
         super(type, world);
+        this.noPhysics = true;
     }
 
     public SeatEntity(Level world, Vec3 pos, float yRot, float maxYRot) {
-        super(HTEntities.SEAT.get(), world);
+        this(HTEntities.SEAT.get(), world);
         this.setPos(pos);
         this.setRot(yRot, 0);
         this.maxYRot = maxYRot;
@@ -70,7 +71,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     }
 
     public boolean isSeatInvalid(){
-        return this.getPassengers().isEmpty() || this.level.isEmptyBlock(this.blockPosition());
+        return this.getPassengers().isEmpty() || (this.isRelyOnBlock() && this.level.isEmptyBlock(this.blockPosition()));
     }
 
     public void removeSeat(){
@@ -94,6 +95,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
 
     @Override
     public void positionRider(Entity entity) {
+        super.positionRider(entity);
         this.clampRotation(entity);
     }
 

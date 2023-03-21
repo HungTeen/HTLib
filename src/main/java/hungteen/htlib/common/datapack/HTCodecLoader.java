@@ -39,7 +39,7 @@ public class HTCodecLoader extends SimpleJsonResourceReloadListener {
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager manager, ProfilerFiller filler) {
         Map<ResourceLocation, JsonElement> map = Maps.newHashMap();
-        HTRegistryManager.getRegistryNames(false).forEach(res -> {
+        HTRegistryManager.getRegistryNames(false, true).forEach(res -> {
             map.putAll(prepare(manager, filler, res));
         });
         return map;
@@ -91,7 +91,7 @@ public class HTCodecLoader extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> elementMap, ResourceManager manager, ProfilerFiller filler) {
-        HTRegistryManager.getRegistryNames(false).forEach(res -> {
+        HTRegistryManager.getRegistryNames(false, true).forEach(res -> {
             final Optional<HTCodecRegistry<?>> registryOpt = HTRegistryManager.get(res);
             if(registryOpt.isPresent()){
                 registryOpt.get().clearOutRegistries(); // 先清除再加入新的。
