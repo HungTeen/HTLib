@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class PoiTypeHelper extends RegistryHelper<PoiType> {
     }
 
     @Override
-    public Registry<PoiType> getRegistry() {
-        return Registry.POINT_OF_INTEREST_TYPE;
+    public Either<IForgeRegistry<PoiType>, Registry<PoiType>> getRegistry() {
+        return Either.left(ForgeRegistries.POI_TYPES);
     }
 }

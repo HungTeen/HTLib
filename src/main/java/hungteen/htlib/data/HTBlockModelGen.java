@@ -1,9 +1,9 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
-import net.minecraft.data.DataGenerator;
+import hungteen.htlib.util.helper.registry.BlockHelper;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -24,8 +24,8 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
 
     protected final Set<Block> addedBlocks = new HashSet<>();
 
-    public HTBlockModelGen(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper) {
-        super(generator, modId, existingFileHelper);
+    public HTBlockModelGen(PackOutput output, String modId, ExistingFileHelper existingFileHelper) {
+        super(output, modId, existingFileHelper);
     }
 
     protected ResourceLocation key(Item item) {

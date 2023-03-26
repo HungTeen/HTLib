@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class BlockEntityHelper extends RegistryHelper<BlockEntityType<?>> {
     }
 
     @Override
-    public Registry<BlockEntityType<?>> getRegistry() {
-        return Registry.BLOCK_ENTITY_TYPE;
+    public Either<IForgeRegistry<BlockEntityType<?>>, Registry<BlockEntityType<?>>> getRegistry() {
+        return Either.left(ForgeRegistries.BLOCK_ENTITY_TYPES);
     }
 }

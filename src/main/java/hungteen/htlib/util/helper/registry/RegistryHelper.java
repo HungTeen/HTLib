@@ -1,11 +1,13 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.*;
@@ -28,10 +30,10 @@ public abstract class RegistryHelper<T> {
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 
     /**
-     * 决定注册帮助类的类型。
+     * 决定注册帮助类的类型，有些注册forge有，有些原版才有。
      * @return ForgeRegistry.
      */
-    public abstract Registry<T> getRegistry();
+    public abstract Either<IForgeRegistry<T>, Registry<T>> getRegistry();
 
     /* 分组注册相关 */
 
@@ -88,7 +90,7 @@ public abstract class RegistryHelper<T> {
      * 根据location创建tag。
      */
     public TagKey<T> tag(ResourceLocation location) {
-        return TagKey.create(getRegistry().key(), location);
+        return TagKey.create(resourceKey(), location);
     }
 
     /**
@@ -111,14 +113,18 @@ public abstract class RegistryHelper<T> {
      * 注册类的注册名。
      */
     public ResourceKey<? extends Registry<T>> resourceKey(){
-        return getRegistry().key();
+        return getRegistry().map(IForgeRegistry::getRegistryKey, Registry::key);
+    }
+
+    public ResourceKey<T> createKey(ResourceLocation location){
+        return ResourceKey.create(resourceKey(), location);
     }
 
     /**
      * Used by {@link RegisterEvent}.
      */
     public void register(RegisterEvent event, ResourceLocation location, Supplier<T> supplier){
-        event.register(getRegistry().key(), location, supplier);
+        event.register(resourceKey(), location, supplier);
     }
 
     /**
@@ -132,9 +138,9 @@ public abstract class RegistryHelper<T> {
      * Get predicate registry objects.
      */
     public List<T> getFilterEntries(Predicate<T> predicate) {
-        return getRegistry().stream()
+        return getRegistry().map(IForgeRegistry::getValues, r -> r.stream().toList()).stream()
                 .filter(predicate)
-                .sorted(Comparator.comparing((object) -> Objects.requireNonNullElseGet(getRegistry().getKey(object), () -> StringHelper.EMPTY_LOCATION)))
+                .sorted(Comparator.comparing((object) -> Objects.requireNonNullElseGet(getKey(object), () -> StringHelper.EMPTY_LOCATION)))
                 .collect(Collectors.toList());
     }
 
@@ -142,21 +148,28 @@ public abstract class RegistryHelper<T> {
      * Get registered objects by key.
      */
     public Optional<T> get(ResourceLocation location) {
-        return getRegistry().getOptional(location);
+        return Optional.ofNullable(getRegistry().map(l -> l.getValue(location), r -> r.get(location)));
     }
 
     /**
      * Get all registered objects with keys.
      */
     public Collection<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
-        return getRegistry().entrySet().stream().toList();
+        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet).stream().toList();
     }
 
     /**
      * Get key of specific object.
      */
     public ResourceLocation getKey(T object) {
-        return getRegistry().getKey(object);
+        return getRegistry().map(l -> l.getKey(object), r -> r.getKey(object));
+    }
+
+    /**
+     * Get key of specific object.
+     */
+    public Optional<ResourceKey<T>> getResourceKey(T object) {
+        return getRegistry().map(l -> l.getResourceKey(object), r -> r.getResourceKey(object));
     }
 
     /**

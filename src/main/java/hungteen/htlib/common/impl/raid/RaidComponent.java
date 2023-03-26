@@ -10,6 +10,7 @@ import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.StringHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ExtraCodecs;
@@ -108,22 +109,22 @@ public abstract class RaidComponent implements IRaidComponent {
 
     @Override
     public Optional<SoundEvent> getRaidStartSound() {
-        return getRaidSettings().soundSetting().raidStartSound();
+        return getRaidSettings().soundSetting().raidStartSound().map(Holder::get);
     }
 
     @Override
     public Optional<SoundEvent> getWaveStartSound() {
-        return getRaidSettings().soundSetting().waveStartSound();
+        return getRaidSettings().soundSetting().waveStartSound().map(Holder::get);
     }
 
     @Override
     public Optional<SoundEvent> getVictorySound() {
-        return getRaidSettings().soundSetting().victorySound();
+        return getRaidSettings().soundSetting().victorySound().map(Holder::get);
     }
 
     @Override
     public Optional<SoundEvent> getLossSound() {
-        return getRaidSettings().soundSetting().lossSound();
+        return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
     protected record RaidSetting(IPlaceComponent placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
@@ -154,7 +155,7 @@ public abstract class RaidComponent implements IRaidComponent {
         ).apply(instance, BorderSetting::new)).codec();
     }
 
-    protected record SoundSetting(Optional<SoundEvent> raidStartSound, Optional<SoundEvent> waveStartSound, Optional<SoundEvent> victorySound, Optional<SoundEvent> lossSound) {
+    protected record SoundSetting(Optional<Holder<SoundEvent>> raidStartSound, Optional<Holder<SoundEvent>> waveStartSound, Optional<Holder<SoundEvent>> victorySound, Optional<Holder<SoundEvent>> lossSound) {
         public static final Codec<SoundSetting> CODEC = RecordCodecBuilder.<SoundSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("raid_start_sound", SoundEvent.CODEC).forGetter(SoundSetting::raidStartSound),
                 Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(SoundSetting::waveStartSound),

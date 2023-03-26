@@ -30,6 +30,10 @@ public class HTSounds {
     }
 
     private static RegistryObject<SoundEvent> register(String name){
-        return SOUNDS.register(name, () -> new SoundEvent(StringHelper.prefix(name)));
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(StringHelper.prefix(name)));
+    }
+
+    private static RegistryObject<SoundEvent> register(String name, float range){
+        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(StringHelper.prefix(name), range));
     }
 }

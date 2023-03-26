@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class FluidHelper extends RegistryHelper<Fluid> {
     }
 
     @Override
-    public Registry<Fluid> getRegistry() {
-        return Registry.FLUID;
+    public Either<IForgeRegistry<Fluid>, Registry<Fluid>> getRegistry() {
+        return Either.left(ForgeRegistries.FLUIDS);
     }
 }

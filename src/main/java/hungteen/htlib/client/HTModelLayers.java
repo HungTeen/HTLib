@@ -12,7 +12,11 @@ import net.minecraft.resources.ResourceLocation;
 public class HTModelLayers {
 
     public static ModelLayerLocation createBoatModelName(WoodIntegrations.IBoatType type) {
-        return createLocation(type.getModID(), "boat/" + type.getName(), "boat");
+        return createLocation(type.getModID(), "boat/" + type.getName(), "main");
+    }
+
+    public static ModelLayerLocation createChestBoatModelName(WoodIntegrations.IBoatType type) {
+        return createLocation(type.getModID(), "chest_boat/" + type.getName(), "main");
     }
 
     public static ModelLayerLocation createLocation(String modId, String name, String part) {

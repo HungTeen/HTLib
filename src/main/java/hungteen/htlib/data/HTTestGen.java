@@ -1,46 +1,37 @@
 package hungteen.htlib.data;
 
-import com.mojang.serialization.Encoder;
-import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.impl.placement.HTPlaceComponents;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
-import net.minecraft.data.CachedOutput;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-11-30 10:24
  **/
-public class HTTestGen extends HTCodecGen{
+public class HTTestGen{
 
-    public HTTestGen(DataGenerator generator) {
-        super(generator, HTLib.MOD_ID);
-    }
+    public static void gatherData(GatherDataEvent event){
+        DataGenerator generator = event.getGenerator();
+        PackOutput output = event.getGenerator().getPackOutput();
+        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
+        ExistingFileHelper helper = event.getExistingFileHelper();
 
-    @Override
-    public void run(CachedOutput cache) {
         HTPlaceComponents.registerStuffs();
         HTSpawnComponents.registerStuffs();
         HTWaveComponents.registerStuffs();
         HTResultComponents.registerStuffs();
         HTRaidComponents.registerStuffs();
-        register(cache, HTRaidComponents.RAIDS, HTRaidComponents.getCodec());
-    }
 
-    protected <E, T extends HTRegistryHolder<E>> void register(CachedOutput cache, HTCodecRegistry<E> registry, Encoder<E> encoder) {
-        registry.getEntries().forEach(entry -> {
-            register(createPath(path, registry.getRegistryName(), entry.getKey()), cache, encoder, entry.getValue());
-        });
-    }
-
-    @Override
-    public String getName() {
-        return this.modId + " test gen";
+        generator.addProvider(event.includeServer(), new HTCodecGen<>(output, helper, HTRaidComponents.RAIDS));
     }
 }

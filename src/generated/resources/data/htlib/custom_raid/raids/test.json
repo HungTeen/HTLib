@@ -21,10 +21,18 @@
       }
     ],
     "sound_setting": {
-      "loss_sound": "htlib:loss",
-      "raid_start_sound": "htlib:prepare",
-      "victory_sound": "htlib:victory",
-      "wave_start_sound": "htlib:huge_wave"
+      "loss_sound": {
+        "sound_id": "htlib:loss"
+      },
+      "raid_start_sound": {
+        "sound_id": "htlib:prepare"
+      },
+      "victory_sound": {
+        "sound_id": "htlib:victory"
+      },
+      "wave_start_sound": {
+        "sound_id": "htlib:huge_wave"
+      }
     }
   },
   "waves": [

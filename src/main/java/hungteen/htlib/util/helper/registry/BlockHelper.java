@@ -1,5 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
@@ -15,8 +16,13 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.ParallelDispatchEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @program: HTLib
@@ -107,8 +113,8 @@ public class BlockHelper extends RegistryHelper<Block> {
     }
 
     @Override
-    public Registry<Block> getRegistry() {
-        return Registry.BLOCK;
+    public Either<IForgeRegistry<Block>, Registry<Block>> getRegistry() {
+        return Either.left(ForgeRegistries.BLOCKS);
     }
 
 }

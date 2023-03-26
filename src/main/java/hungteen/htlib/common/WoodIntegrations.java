@@ -12,10 +12,12 @@ import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +62,16 @@ public class WoodIntegrations {
             getWoodIntegrations().forEach(wood -> {
                 wood.registerBlockAndItems(event);
             });
+        }
+    }
+
+    public static void fillInCreativeTab(CreativeModeTabEvent.BuildContents event){
+        if(event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES){
+            for (WoodIntegration wood : getWoodIntegrations()) {
+                wood.boatItems.forEach((suit, item) -> {
+                    event.accept(new ItemStack(item), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                });
+            }
         }
     }
 
@@ -192,12 +204,12 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.DOOR, new WoodSetting(
                     r -> StringHelper.suffix(r, "door"),
                     Block.Properties.copy(Blocks.OAK_DOOR),
-                    DoorBlock::new
+                    properties -> new DoorBlock(properties, SoundEvents.WOODEN_DOOR_CLOSE, SoundEvents.WOODEN_DOOR_OPEN)
             ));
             woodSettings.put(WoodSuits.TRAP_DOOR, new WoodSetting(
                     r -> StringHelper.suffix(r, "trapdoor"),
                     Block.Properties.copy(Blocks.OAK_TRAPDOOR),
-                    TrapDoorBlock::new
+                    properties -> new TrapDoorBlock(properties, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundEvents.WOODEN_TRAPDOOR_OPEN)
             ));
             woodSettings.put(WoodSuits.FENCE, new WoodSetting(
                     r -> StringHelper.suffix(r, "fence"),
@@ -207,13 +219,13 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.FENCE_GATE, new WoodSetting(
                     r -> StringHelper.suffix(r, "fence_gate"),
                     Block.Properties.copy(Blocks.OAK_FENCE_GATE),
-                    HTFenceGateBlock::new
+                    properties -> new HTFenceGateBlock(properties, SoundEvents.FENCE_GATE_CLOSE, SoundEvents.FENCE_GATE_OPEN)
             ));
             woodSettings.put(WoodSuits.STANDING_SIGN, new WoodSetting(
                     r -> StringHelper.suffix(r, "sign"),
                     Block.Properties.copy(Blocks.OAK_SIGN),
                     p -> new HTStandingSignBlock(p, WoodIntegration.this.woodType),
-                    new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_DECORATIONS),
+                    new Item.Properties().stacksTo(16),
                     (block, po) -> new SignItem(po, block, WoodIntegration.this.woodBlocks.get(WoodSuits.WALL_SIGN))
             ));
             woodSettings.put(WoodSuits.WALL_SIGN, new WoodSetting(
@@ -229,7 +241,7 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.BUTTON, new WoodSetting(
                     r -> StringHelper.suffix(r, "button"),
                     Block.Properties.copy(Blocks.OAK_BUTTON),
-                    WoodButtonBlock::new
+                    properties -> new ButtonBlock(properties, 30, true, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundEvents.WOODEN_BUTTON_CLICK_ON)
             ));
             woodSettings.put(WoodSuits.SLAB, new WoodSetting(
                     r -> StringHelper.suffix(r, "slab"),
@@ -239,8 +251,16 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.PRESSURE_PLATE, new WoodSetting(
                     r -> StringHelper.suffix(r, "pressure_plate"),
                     Block.Properties.copy(Blocks.OAK_PRESSURE_PLATE),
-                    p -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, p)
+                    properties -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, properties, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON)
             ));
+        }
+
+        public void fillInCreativeTab(CreativeModeTabEvent.BuildContents event, CreativeModeTab tab, CreativeModeTab.TabVisibility visibility){
+            if(event.getTab() == tab){
+                Arrays.stream(WoodSuits.values()).filter(WoodSuits::hasItem).forEach(suit -> {
+                    event.accept(new ItemStack(getBlock(suit)), visibility);
+                });
+            }
         }
 
         private void registerBlockAndItems(RegisterEvent event) {
@@ -599,7 +619,7 @@ public class WoodIntegrations {
         private boolean enabled = true;
 
         BoatSetting(IBoatType boatType) {
-            this.itemProperties = new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_TRANSPORTATION);
+            this.itemProperties = new Item.Properties().stacksTo(16);
             this.boatType = boatType;
         }
 

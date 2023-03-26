@@ -24,7 +24,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = mod_version
 group = "hungteen.${mod_id}"
-archivesBaseName = mod_name
+archivesBaseName = "${mod_name}-${mc_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -125,9 +125,9 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+//    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+//    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
+//    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 }
 
 mixin {

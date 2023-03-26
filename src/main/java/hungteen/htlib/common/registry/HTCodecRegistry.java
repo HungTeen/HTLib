@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -137,6 +138,14 @@ public final class HTCodecRegistry<V> implements IHTCodecRegistry<V> {
     @Override
     public List<Map.Entry<ResourceLocation, V>> getEntries() {
         return Stream.concat(this.innerMap.entrySet().stream(), this.outerMap.entrySet().stream()).toList();
+    }
+
+    public Map<ResourceLocation, V> getInnerMap() {
+        return Collections.unmodifiableMap(innerMap);
+    }
+
+    public String getDefaultNamespace() {
+        return defaultNamespace;
     }
 
     public void syncToClient(ServerPlayer player) {

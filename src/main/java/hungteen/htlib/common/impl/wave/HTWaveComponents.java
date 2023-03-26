@@ -9,6 +9,7 @@ import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
 import hungteen.htlib.util.helper.StringHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public class HTWaveComponents {
         private int prepareDuration = 100;
         private int waveDuration = 0;
         private boolean canSkip = true;
-        private Optional<SoundEvent> waveStartSound = Optional.empty();
+        private Optional<Holder<SoundEvent>> waveStartSound = Optional.empty();
 
         public WaveComponent.WaveSettings build(){
             return new WaveComponent.WaveSettings(spawnPlacement, prepareDuration, waveDuration, canSkip, waveStartSound);
@@ -101,7 +102,7 @@ public class HTWaveComponents {
         }
 
         public WaveSettingBuilder waveStart(SoundEvent soundEvent){
-            this.waveStartSound = Optional.ofNullable(soundEvent);
+            this.waveStartSound = Optional.of(Holder.direct(soundEvent));
             return this;
         }
 

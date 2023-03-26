@@ -6,6 +6,7 @@ import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.model.BoatModel;
+import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -38,8 +39,10 @@ public class ClientRegister {
     @SubscribeEvent
     public static void registerRendererLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         WoodIntegrations.getBoatTypes().forEach(type -> {
-            event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), () -> BoatModel.createBodyModel(false));
-            event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), () -> BoatModel.createBodyModel(true));
+            if(type != WoodIntegrations.IBoatType.DEFAULT){
+                event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
+                event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
+            }
         });
     }
 

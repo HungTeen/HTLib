@@ -2,13 +2,13 @@ package hungteen.htlib.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3d;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * @program: HTLib
@@ -34,7 +34,7 @@ public abstract class HTEntityRender<T extends Entity> extends EntityRenderer<T>
             final float f = getScaleByEntity(entityIn);
             matrixStackIn.scale(f, f, f);
             matrixStackIn.translate(0.0, -1.501, 0.0);
-            final Vector3d vec = this.getTranslateVec(entityIn);
+            final Vec3 vec = this.getTranslateVec(entityIn);
             matrixStackIn.translate(vec.x, vec.y, vec.z);
             VertexConsumer vertexConsumer = bufferIn.getBuffer(this.model.renderType(this.getTextureLocation(entityIn)));
             this.model.setupAnim(entityIn, 0, 0, entityIn.tickCount + partialTicks, 0, 0);
@@ -49,8 +49,8 @@ public abstract class HTEntityRender<T extends Entity> extends EntityRenderer<T>
 
     protected abstract float getScaleByEntity(T entity);
 
-    public Vector3d getTranslateVec(T entity) {
-        return new Vector3d(0, 0, 0);
+    public Vec3 getTranslateVec(T entity) {
+        return new Vec3(0, 0, 0);
     }
 
 }

@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @program: HTLib
@@ -19,7 +22,7 @@ public class SoundHelper extends RegistryHelper<SoundEvent> {
     }
 
     @Override
-    public Registry<SoundEvent> getRegistry() {
-        return Registry.SOUND_EVENT;
+    public Either<IForgeRegistry<SoundEvent>, Registry<SoundEvent>> getRegistry() {
+        return Either.left(ForgeRegistries.SOUND_EVENTS);
     }
 }

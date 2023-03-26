@@ -21,6 +21,7 @@ import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.api.interfaces.raid.IRaidComponentType;
 import hungteen.htlib.util.helper.StringHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -253,10 +254,10 @@ public class HTRaidComponents {
                             this.lossTitle
                     ),
                     new RaidComponent.SoundSetting(
-                            Optional.ofNullable(this.raidStartSound),
-                            Optional.ofNullable(this.waveStartSound),
-                            Optional.ofNullable(this.victorySound),
-                            Optional.ofNullable(this.lossSound)
+                            Optional.of(Holder.direct(this.raidStartSound)),
+                            Optional.of(Holder.direct(this.waveStartSound)),
+                            Optional.of(Holder.direct(this.victorySound)),
+                            Optional.of(Holder.direct(this.lossSound))
                     ),
                     this.resultComponents,
                     this.victoryDuration,

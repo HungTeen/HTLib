@@ -1,8 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -20,7 +22,7 @@ public class BiomeHelper extends RegistryHelper<Biome> {
     }
 
     @Override
-    public Registry<Biome> getRegistry() {
-        return BuiltinRegistries.BIOME;
+    public Either<IForgeRegistry<Biome>, Registry<Biome>> getRegistry() {
+        return Either.left(ForgeRegistries.BIOMES);
     }
 }

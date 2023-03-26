@@ -2,6 +2,7 @@ package hungteen.htlib.common.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,8 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
  **/
 public class HTFenceGateBlock extends FenceGateBlock {
 
-    public HTFenceGateBlock(Properties properties) {
-        super(properties);
+
+    public HTFenceGateBlock(Properties properties, SoundEvent closeSound, SoundEvent openSound) {
+        super(properties, closeSound, openSound);
     }
 
     @Override

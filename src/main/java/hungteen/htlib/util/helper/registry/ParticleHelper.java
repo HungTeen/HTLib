@@ -1,5 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SpawnParticlePacket;
 import hungteen.htlib.util.helper.RandomHelper;
@@ -9,6 +10,8 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @program: HTLib
@@ -112,8 +115,8 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>> {
     }
 
     @Override
-    public Registry<ParticleType<?>> getRegistry() {
-        return Registry.PARTICLE_TYPE;
+    public Either<IForgeRegistry<ParticleType<?>>, Registry<ParticleType<?>>> getRegistry() {
+        return Either.left(ForgeRegistries.PARTICLE_TYPES);
     }
 
 }

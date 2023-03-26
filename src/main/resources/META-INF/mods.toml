@@ -1,30 +1,31 @@
-modLoader="javafml"
-loaderVersion="[43,)"
-license="GNU LESSER GENERAL PUBLIC LICENSE"
-issueTrackerURL="https://github.com/HungTeen/HTLib/issues"
+modLoader = "javafml"
+loaderVersion = "[44,)"
+license = "GNU LESSER GENERAL PUBLIC LICENSE"
+issueTrackerURL = "https://github.com/HungTeen/HTLib/issues"
+showAsResourcePack = false
 
 [[mods]]
-modId="htlib"
-version="${file.jarVersion}"
-displayName="HungTeen's Lib"
-displayURL="https://space.bilibili.com/362855464"
-logoFile="examplemod.png"
-credits=""
-authors="HungTeen"
-description='''
+modId = "htlib"
+version = "${file.jarVersion}"
+displayName = "HungTeen's Lib"
+displayURL = "https://space.bilibili.com/362855464"
+logoFile = "logo.png"
+credits = ""
+authors = "HungTeen"
+description = '''
 Just a lib.
 '''
 
 [[dependencies.htlib]]
-modId="forge"
-mandatory=true
-versionRange="[43,)"
-ordering="NONE"
-side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[44,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.htlib]]
-modId="minecraft"
-mandatory=true
-versionRange="[1.19.2,1.20)"
-ordering="NONE"
-side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.3,1.20)"
+ordering = "NONE"
+side = "BOTH"

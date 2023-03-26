@@ -2,10 +2,10 @@ package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.WoodIntegrations;
-import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -27,8 +27,8 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     protected final Set<Block> addedBlocks = new HashSet<>();
     protected final String modId;
 
-    public HTBlockStateGen(DataGenerator gen, String modId, ExistingFileHelper exFileHelper) {
-        super(gen, modId, exFileHelper);
+    public HTBlockStateGen(PackOutput output, String modId, ExistingFileHelper exFileHelper) {
+        super(output, modId, exFileHelper);
         this.modId = modId;
     }
 

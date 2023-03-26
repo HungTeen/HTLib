@@ -25,7 +25,6 @@ import hungteen.htlib.util.helper.registry.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -62,7 +61,8 @@ public class HTLib {
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
         modBus.addListener(EventPriority.NORMAL, false, HTLib::postRegister);
         modBus.addListener(EventPriority.LOW, false, WoodIntegrations::register);
-        modBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, event -> event.getGenerator().addProvider(event.includeServer(), new HTTestGen(event.getGenerator())));
+        modBus.addListener(EventPriority.NORMAL, false, HTTestGen::gatherData);
+        modBus.addListener(EventPriority.NORMAL, false, WoodIntegrations::fillInCreativeTab);
         modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, event -> HTRegistryManager.globalInit());
 
         /* Forge Bus Events */

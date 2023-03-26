@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.Optional;
@@ -44,14 +45,14 @@ public abstract class WaveComponent implements IWaveComponent {
 
     @Override
     public Optional<SoundEvent> getWaveStartSound() {
-        return getWaveSettings().waveStartSound();
+        return getWaveSettings().waveStartSound().map(Holder::get);
     }
 
     public WaveSettings getWaveSettings() {
         return waveSettings;
     }
 
-    public record WaveSettings(Optional<IPlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<SoundEvent> waveStartSound){
+    public record WaveSettings(Optional<IPlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

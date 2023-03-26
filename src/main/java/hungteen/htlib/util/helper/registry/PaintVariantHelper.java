@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class PaintVariantHelper extends RegistryHelper<PaintingVariant> {
     }
 
     @Override
-    public Registry<PaintingVariant> getRegistry() {
-        return Registry.PAINTING_VARIANT;
+    public Either<IForgeRegistry<PaintingVariant>, Registry<PaintingVariant>> getRegistry() {
+        return Either.left(ForgeRegistries.PAINTING_VARIANTS);
     }
 }

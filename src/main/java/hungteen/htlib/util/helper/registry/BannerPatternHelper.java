@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class BannerPatternHelper extends RegistryHelper<BannerPattern> {
     }
 
     @Override
-    public Registry<BannerPattern> getRegistry() {
-        return Registry.BANNER_PATTERN;
+    public Either<IForgeRegistry<BannerPattern>, Registry<BannerPattern>> getRegistry() {
+        return Either.right(BuiltInRegistries.BANNER_PATTERN);
     }
 }

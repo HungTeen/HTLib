@@ -1,9 +1,12 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @program: HTLib
@@ -29,8 +32,8 @@ public class ItemHelper extends RegistryHelper<Item> {
     }
 
     @Override
-    public Registry<Item> getRegistry() {
-        return Registry.ITEM;
+    public Either<IForgeRegistry<Item>, Registry<Item>> getRegistry() {
+        return Either.left(ForgeRegistries.ITEMS);
     }
 
 }

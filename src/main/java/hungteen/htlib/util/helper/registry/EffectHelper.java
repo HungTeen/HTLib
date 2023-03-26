@@ -1,8 +1,11 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @program: HTLib
@@ -41,8 +44,8 @@ public class EffectHelper extends RegistryHelper<MobEffect> {
     }
 
     @Override
-    public Registry<MobEffect> getRegistry() {
-        return Registry.MOB_EFFECT;
+    public Either<IForgeRegistry<MobEffect>, Registry<MobEffect>> getRegistry() {
+        return Either.left(ForgeRegistries.MOB_EFFECTS);
     }
 
 }

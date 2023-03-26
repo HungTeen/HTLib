@@ -1,7 +1,10 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * @author PangTeen
@@ -19,7 +22,7 @@ public class GameEventHelper extends RegistryHelper<GameEvent> {
     }
 
     @Override
-    public Registry<GameEvent> getRegistry() {
-        return Registry.GAME_EVENT;
+    public Either<IForgeRegistry<GameEvent>, Registry<GameEvent>> getRegistry() {
+        return Either.right(BuiltInRegistries.GAME_EVENT);
     }
 }

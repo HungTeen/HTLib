@@ -3,7 +3,7 @@ package hungteen.htlib.data;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -24,8 +24,8 @@ public abstract class HTItemModelGen extends ItemModelProvider {
 
     protected final Set<Item> addedItems = new HashSet<>();
 
-    public HTItemModelGen(DataGenerator generator, String modId, ExistingFileHelper helper) {
-        super(generator, modId, helper);
+    public HTItemModelGen(PackOutput output, String modId, ExistingFileHelper helper) {
+        super(output, modId, helper);
     }
 
     protected ResourceLocation key(Item item) {

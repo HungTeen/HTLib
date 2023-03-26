@@ -3,9 +3,7 @@ package hungteen.htlib.client;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import hungteen.htlib.HTLib;
+import com.mojang.math.Axis;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;
@@ -18,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Quaternionf;
 
 /**
  * @program: HTLib
@@ -42,14 +41,14 @@ public class RenderHelper {
         stack.translate(posX, posY, 120.0D);
         stack.scale(scale, scale, scale);
 
-        final Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
-        Quaternion quaternion1 = Vector3f.XP.rotationDegrees(followRotY * 20.0F);
+        final Quaternionf quaternion = Axis.ZP.rotationDegrees(180.0F);
+        Quaternionf quaternion1 = Axis.XP.rotationDegrees(followRotY * 20.0F);
         quaternion.mul(quaternion1);
         stack.mulPose(quaternion);
 
-        stack.mulPose(Vector3f.XP.rotationDegrees((float) xRot));
-        stack.mulPose(Vector3f.YP.rotationDegrees((float) yRot));
-        stack.mulPose(Vector3f.ZP.rotationDegrees((float) zRot));
+        stack.mulPose(Axis.XP.rotationDegrees((float) xRot));
+        stack.mulPose(Axis.YP.rotationDegrees((float) yRot));
+        stack.mulPose(Axis.ZP.rotationDegrees((float) zRot));
 
         //storage rotation.
         final float f1 = entity.getYRot();
@@ -67,12 +66,12 @@ public class RenderHelper {
         entity.yHeadRot = yaw;
         entity.yHeadRotO = yaw;
 
-        quaternion1 = Vector3f.XP.rotationDegrees(- followRotY * 20.0F);
+        quaternion1 = Axis.XP.rotationDegrees(- followRotY * 20.0F);
         quaternion.mul(quaternion1);
 
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        quaternion1.conj();
+        quaternion1.conjugate();
 
         dispatcher.overrideCameraOrientation(quaternion1);
         dispatcher.setRenderShadow(false);

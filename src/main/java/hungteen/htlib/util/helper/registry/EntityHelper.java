@@ -1,5 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.mojang.datafixers.util.Either;
 import hungteen.htlib.util.helper.MathHelper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.Registry;
@@ -12,6 +13,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -129,7 +132,7 @@ public class EntityHelper extends RegistryHelper<EntityType<?>> {
     }
 
     @Override
-    public Registry<EntityType<?>> getRegistry() {
-        return Registry.ENTITY_TYPE;
+    public Either<IForgeRegistry<EntityType<?>>, Registry<EntityType<?>>> getRegistry() {
+        return Either.left(ForgeRegistries.ENTITY_TYPES);
     }
 }
