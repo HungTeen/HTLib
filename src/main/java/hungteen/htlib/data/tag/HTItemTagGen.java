@@ -21,21 +21,21 @@ import java.util.function.Function;
  * @author: HungTeen
  * @create: 2022-10-07 08:45
  **/
-public abstract class HTItemTagGen extends HTTagsProvider<Item> {
-
+public abstract class HTItemTagGen extends HTHolderTagsProvider<Item> {
     private final Function<TagKey<Block>, TagBuilder> blockTags;
 
     public HTItemTagGen(PackOutput output, HTBlockTagGen blockTagsProvider, CompletableFuture<HolderLookup.Provider> provider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, ItemHelper.get(), provider, modId, existingFileHelper);
+        super(output, provider, ItemHelper.get(), modId, existingFileHelper);
+        Objects.requireNonNull(blockTagsProvider);
         this.blockTags = blockTagsProvider::getOrCreateRawBuilder;
     }
 
     protected void copy(TagKey<Block> blockTagKey, TagKey<Item> itemTagKey) {
         TagBuilder itemTagbuilder = this.getOrCreateRawBuilder(itemTagKey);
-        TagBuilder blockTagbuilder = this.blockTags.apply(blockTagKey);
+        TagBuilder blockTagbuilder = (TagBuilder)this.blockTags.apply(blockTagKey);
         List<TagEntry> list = blockTagbuilder.build();
+        Objects.requireNonNull(itemTagbuilder);
         Objects.requireNonNull(itemTagbuilder);
         list.forEach(itemTagbuilder::add);
     }
-
 }

@@ -1,6 +1,7 @@
-[![](http://cf.way2muchnoise.eu/full_794622_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
+# HTLib [![](https://cf.way2muchnoise.eu/full_794622_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
 
-# HTLib
+[![](https://cf.way2muchnoise.eu/versions/794622.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
+
 A lib made by HungTeen for more easily developing minecraft forge mod.
 
 ### Features
@@ -13,7 +14,10 @@ A lib made by HungTeen for more easily developing minecraft forge mod.
 
 ### Current Progress
 
-HTLib for 1.19.2: Developing.
+|   版本   |    开发状态    |
+|:------:|:----------:|
+| 1.19.2 | Available  |
+| 1.19.3 | Developing |
 
 ---
 
