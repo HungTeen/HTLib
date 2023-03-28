@@ -2,11 +2,13 @@ package hungteen.htlib.util.helper.registry;
 
 import com.mojang.datafixers.util.Either;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -110,6 +112,13 @@ public abstract class RegistryHelper<T> {
     /* Common Methods */
 
     /**
+     * 直接创建。
+     */
+    public DeferredRegister<T> createRegister(String modId){
+        return DeferredRegister.create(resourceKey(), modId);
+    }
+
+    /**
      * 注册类的注册名。
      */
     public ResourceKey<? extends Registry<T>> resourceKey(){
@@ -137,7 +146,7 @@ public abstract class RegistryHelper<T> {
     /**
      * Get predicate registry objects.
      */
-    public List<T> getFilterEntries(Predicate<T> predicate) {
+    public List<T> filterValues(Predicate<T> predicate) {
         return getRegistry().map(IForgeRegistry::getValues, r -> r.stream().toList()).stream()
                 .filter(predicate)
                 .sorted(Comparator.comparing((object) -> Objects.requireNonNullElseGet(getKey(object), () -> StringHelper.EMPTY_LOCATION)))
@@ -145,17 +154,41 @@ public abstract class RegistryHelper<T> {
     }
 
     /**
-     * Get registered objects by key.
+     * Get predicate registry objects with key.
      */
-    public Optional<T> get(ResourceLocation location) {
-        return Optional.ofNullable(getRegistry().map(l -> l.getValue(location), r -> r.get(location)));
+    public List<Map.Entry<ResourceKey<T>, T>> filterEntries(Predicate<T> predicate) {
+        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet).stream()
+                .filter(entry -> predicate.test(entry.getValue()))
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all registered objects.
+     */
+    public Collection<T> values() {
+        return filterValues(JavaHelper::alwaysTrue);
     }
 
     /**
      * Get all registered objects with keys.
      */
     public Collection<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
-        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet).stream().toList();
+        return filterEntries(JavaHelper::alwaysTrue);
+    }
+
+    /**
+     * Get all registered objects with keys.
+     */
+    public Collection<ResourceLocation> keys() {
+        return getRegistry().map(IForgeRegistry::getKeys, Registry::keySet);
+    }
+
+    /**
+     * Get registered objects by key.
+     */
+    public Optional<T> get(ResourceLocation location) {
+        return Optional.ofNullable(getRegistry().map(l -> l.getValue(location), r -> r.get(location)));
     }
 
     /**

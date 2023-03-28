@@ -21,7 +21,7 @@ public abstract class HTTagsProvider<T> extends TagsProvider<T> {
 
     private final RegistryHelper<T> helper;
 
-    public HTTagsProvider(PackOutput output, RegistryHelper<T> helper, CompletableFuture<HolderLookup.Provider> provider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
+    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, RegistryHelper<T> helper, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, helper.resourceKey(), provider, modId, existingFileHelper);
         this.helper = helper;
     }

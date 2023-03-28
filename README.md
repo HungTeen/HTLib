@@ -14,10 +14,10 @@ A lib made by HungTeen for more easily developing minecraft forge mod.
 
 ### Current Progress
 
-|   版本   |    开发状态    |
-|:------:|:----------:|
-| 1.19.2 | Available  |
-| 1.19.3 | Developing |
+| Version |   Status   |
+|:-------:|:----------:|
+| 1.19.2  | Available  |
+| 1.19.3  | Developing |
 
 ---
 

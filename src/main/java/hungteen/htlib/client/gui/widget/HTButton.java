@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -53,6 +54,11 @@ public abstract class HTButton extends AbstractButton {
     @Override
     public void onPress() {
         this.onPress.onPress(this);
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput output) {
+
     }
 
     protected abstract Pair<Integer,Integer> getButtonUV();
