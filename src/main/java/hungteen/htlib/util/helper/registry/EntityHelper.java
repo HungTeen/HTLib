@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import hungteen.htlib.util.helper.MathHelper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.Registry;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,9 +28,25 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-10-07 08:53
  **/
-public class EntityHelper extends RegistryHelper<EntityType<?>> {
+public class EntityHelper {
 
-    private static final EntityHelper HELPER = new EntityHelper();
+    private static final RegistryHelper<EntityType<?>> ENTITY_HELPER = new RegistryHelper<>(){
+
+        @Override
+        public Either<IForgeRegistry<EntityType<?>>, Registry<EntityType<?>>> getRegistry() {
+            return Either.left(ForgeRegistries.ENTITY_TYPES);
+        }
+
+    };
+
+    private static final RegistryHelper<EntityDataSerializer<?>> SERIALIZER_HELPER = new RegistryHelper<>(){
+
+        @Override
+        public Either<IForgeRegistry<EntityDataSerializer<?>>, Registry<EntityDataSerializer<?>>> getRegistry() {
+            return Either.left(ForgeRegistries.ENTITY_DATA_SERIALIZERS.get());
+        }
+
+    };
 
     /**
      * 右手持有某个物品、
@@ -127,12 +144,12 @@ public class EntityHelper extends RegistryHelper<EntityType<?>> {
 
     /* Common Methods */
 
-    public static EntityHelper get(){
-        return HELPER;
+    public static RegistryHelper<EntityType<?>> get(){
+        return ENTITY_HELPER;
     }
 
-    @Override
-    public Either<IForgeRegistry<EntityType<?>>, Registry<EntityType<?>>> getRegistry() {
-        return Either.left(ForgeRegistries.ENTITY_TYPES);
+    public static RegistryHelper<EntityDataSerializer<?>> serializer(){
+        return SERIALIZER_HELPER;
     }
+
 }

@@ -67,6 +67,6 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     @NotNull
     @Override
     public String getName() {
-        return this.modid + " item models";
+        return this.modid + " block models";
     }
 }

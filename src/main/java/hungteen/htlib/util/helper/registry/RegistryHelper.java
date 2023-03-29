@@ -7,8 +7,6 @@ import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-11-09 13:12
  **/
-public abstract class RegistryHelper<T> {
+public abstract class RegistryHelper<T> extends ResourceHelper<T>{
 
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 
@@ -37,7 +35,7 @@ public abstract class RegistryHelper<T> {
      */
     public abstract Either<IForgeRegistry<T>, Registry<T>> getRegistry();
 
-    /* 分组注册相关 */
+    /* Group Registration Methods */
 
     /**
      * 创建新的分组。
@@ -79,68 +77,14 @@ public abstract class RegistryHelper<T> {
         return Optional.ofNullable(groups.getOrDefault(group, null));
     }
 
-    /* 标签相关 */
-
-    /**
-     * 根据name创建tag。
-     */
-    public TagKey<T> tag(String name) {
-        return tag(new ResourceLocation(name));
-    }
-
-    /**
-     * 根据location创建tag。
-     */
-    public TagKey<T> tag(ResourceLocation location) {
-        return TagKey.create(resourceKey(), location);
-    }
-
-    /**
-     * 根据name创建ht的tag。
-     */
-    public TagKey<T> htTag(String name){
-        return tag(StringHelper.prefix(name));
-    }
-
-    /**
-     * 根据name创建forge的tag。
-     */
-    public TagKey<T> forgeTag(String name){
-        return tag(StringHelper.forgePrefix(name));
-    }
-
     /* Common Methods */
-
-    /**
-     * 直接创建。
-     */
-    public DeferredRegister<T> createRegister(String modId){
-        return DeferredRegister.create(resourceKey(), modId);
-    }
 
     /**
      * 注册类的注册名。
      */
+    @Override
     public ResourceKey<? extends Registry<T>> resourceKey(){
         return getRegistry().map(IForgeRegistry::getRegistryKey, Registry::key);
-    }
-
-    public ResourceKey<T> createKey(ResourceLocation location){
-        return ResourceKey.create(resourceKey(), location);
-    }
-
-    /**
-     * Used by {@link RegisterEvent}.
-     */
-    public void register(RegisterEvent event, ResourceLocation location, Supplier<T> supplier){
-        event.register(resourceKey(), location, supplier);
-    }
-
-    /**
-     * easy check.
-     */
-    public boolean matchEvent(RegisterEvent event){
-        return resourceKey().equals(event.getRegistryKey());
     }
 
     /**
