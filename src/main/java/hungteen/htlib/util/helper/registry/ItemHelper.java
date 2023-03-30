@@ -5,6 +5,7 @@ import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -13,9 +14,21 @@ import net.minecraftforge.registries.IForgeRegistry;
  * @author: HungTeen
  * @create: 2022-10-07 08:48
  **/
-public class ItemHelper extends RegistryHelper<Item> {
+public class ItemHelper {
 
-    private static final ItemHelper HELPER = new ItemHelper();
+    private static final RegistryHelper<Item> HELPER = new RegistryHelper<>(){
+        @Override
+        public Either<IForgeRegistry<Item>, Registry<Item>> getRegistry() {
+            return Either.left(ForgeRegistries.ITEMS);
+        }
+    };
+
+    private static final RegistryHelper<Enchantment> ENCHANTMENT_HELPER = new RegistryHelper<>(){
+        @Override
+        public Either<IForgeRegistry<Enchantment>, Registry<Enchantment>> getRegistry() {
+            return Either.left(ForgeRegistries.ENCHANTMENTS);
+        }
+    };
 
     public static ResourceLocation itemTexture(Item item) {
         return StringHelper.itemTexture(get().getKey(item));
@@ -27,13 +40,14 @@ public class ItemHelper extends RegistryHelper<Item> {
 
     /* Common Methods */
 
-    public static ItemHelper get(){
+    public static RegistryHelper<Item> get(){
         return HELPER;
     }
 
-    @Override
-    public Either<IForgeRegistry<Item>, Registry<Item>> getRegistry() {
-        return Either.left(ForgeRegistries.ITEMS);
+    public static RegistryHelper<Enchantment> enchant(){
+        return ENCHANTMENT_HELPER;
     }
+
+
 
 }

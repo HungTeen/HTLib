@@ -127,6 +127,10 @@ public class StringHelper {
         return Component.translatable(key, args).getString();
     }
 
+    public static String langKey(String group, String modId, String lang){
+        return group + "." + modId + "." + lang;
+    }
+
     /**
      * Support 1 to 255.
      */

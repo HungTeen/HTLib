@@ -34,11 +34,6 @@ public abstract class HTTagsProvider<T> extends TagsProvider<T> {
         return getHelper().getResourceKey(object);
     }
 
-    @Override
-    public String getName() {
-        return this.modId + " " + getHelper().resourceKey().location() + " tags";
-    }
-
     /**
      * Directly support helper methods.
      */

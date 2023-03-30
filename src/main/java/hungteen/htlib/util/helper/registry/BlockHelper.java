@@ -4,12 +4,16 @@ import com.mojang.datafixers.util.Either;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -29,14 +33,41 @@ import java.util.Map;
  * @author: HungTeen
  * @create: 2022-10-07 08:48
  **/
-public class BlockHelper extends RegistryHelper<Block> {
+public class BlockHelper {
 
     /**
      * Axe Strip when {@link hungteen.htlib.common.event.HTBlockEvents#onToolModifyBlock(BlockEvent.BlockToolModificationEvent)}
      */
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
     private static final List<WoodType> WOOD_TYPES = Collections.synchronizedList(List.of());
-    private static final BlockHelper HELPER = new BlockHelper();
+    private static final RegistryHelper<Block> HELPER = new RegistryHelper<>(){
+        @Override
+        public Either<IForgeRegistry<Block>, Registry<Block>> getRegistry() {
+            return Either.left(ForgeRegistries.BLOCKS);
+        }
+    };
+
+    private static final RegistryHelper<BlockEntityType<?>> ENTITY_HELPER = new RegistryHelper<>(){
+
+        @Override
+        public Either<IForgeRegistry<BlockEntityType<?>>, Registry<BlockEntityType<?>>> getRegistry () {
+            return Either.left(ForgeRegistries.BLOCK_ENTITY_TYPES);
+        }
+    };
+
+    private static final RegistryHelper<BannerPattern> BANNER_HELPER = new RegistryHelper<>(){
+        @Override
+        public Either<IForgeRegistry<BannerPattern>, Registry<BannerPattern>> getRegistry() {
+            return Either.right(BuiltInRegistries.BANNER_PATTERN);
+        }
+    };
+
+    private static final RegistryHelper<PaintingVariant> PAINT_HELPER = new RegistryHelper<>(){
+        @Override
+        public Either<IForgeRegistry<PaintingVariant>, Registry<PaintingVariant>> getRegistry() {
+            return Either.left(ForgeRegistries.PAINTING_VARIANTS);
+        }
+    };
 
     public static ResourceLocation blockTexture(Block block){
         return StringHelper.blockTexture(BlockHelper.get().getKey(block));
@@ -108,13 +139,20 @@ public class BlockHelper extends RegistryHelper<Block> {
 
     /* Common Methods */
 
-    public static BlockHelper get(){
+    public static RegistryHelper<Block> get(){
         return HELPER;
     }
 
-    @Override
-    public Either<IForgeRegistry<Block>, Registry<Block>> getRegistry() {
-        return Either.left(ForgeRegistries.BLOCKS);
+    public static RegistryHelper<BlockEntityType<?>> entity(){
+        return ENTITY_HELPER;
+    }
+
+    public static RegistryHelper<BannerPattern> banner() {
+        return BANNER_HELPER;
+    }
+
+    public static RegistryHelper<PaintingVariant> paint() {
+        return PAINT_HELPER;
     }
 
 }

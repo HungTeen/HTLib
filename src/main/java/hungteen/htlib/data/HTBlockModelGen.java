@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -64,9 +63,4 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
     }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return this.modid + " block models";
-    }
 }

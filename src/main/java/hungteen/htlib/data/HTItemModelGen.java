@@ -112,9 +112,4 @@ public abstract class HTItemModelGen extends ItemModelProvider {
         this.addedItems.add(item);
     }
 
-    @Override
-    public String getName() {
-        return this.modid + " item models";
-    }
-
 }

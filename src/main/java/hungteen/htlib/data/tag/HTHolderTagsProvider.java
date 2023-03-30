@@ -25,9 +25,6 @@ public abstract class HTHolderTagsProvider<T> extends IntrinsicHolderTagsProvide
     protected void addTags(HolderLookup.Provider provider) {
     }
 
-    public String getName() {
-        return this.modId + " " + this.getHelper().resourceKey().location() + " tags";
-    }
 
     public RegistryHelper<T> getHelper() {
         return this.helper;

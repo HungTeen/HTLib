@@ -8,6 +8,7 @@ import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -44,6 +45,15 @@ public class EntityHelper {
         @Override
         public Either<IForgeRegistry<EntityDataSerializer<?>>, Registry<EntityDataSerializer<?>>> getRegistry() {
             return Either.left(ForgeRegistries.ENTITY_DATA_SERIALIZERS.get());
+        }
+
+    };
+
+    private static final RegistryHelper<Attribute> ATTRIBUTE_HELPER = new RegistryHelper<>(){
+
+        @Override
+        public Either<IForgeRegistry<Attribute>, Registry<Attribute>> getRegistry() {
+            return Either.left(ForgeRegistries.ATTRIBUTES);
         }
 
     };
@@ -150,6 +160,10 @@ public class EntityHelper {
 
     public static RegistryHelper<EntityDataSerializer<?>> serializer(){
         return SERIALIZER_HELPER;
+    }
+
+    public static RegistryHelper<Attribute> attribute(){
+        return ATTRIBUTE_HELPER;
     }
 
 }

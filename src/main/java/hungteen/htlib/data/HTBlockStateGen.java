@@ -279,8 +279,4 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         });
     }
 
-    @Override
-    public String getName() {
-        return this.modId + " blockstates";
-    }
 }
