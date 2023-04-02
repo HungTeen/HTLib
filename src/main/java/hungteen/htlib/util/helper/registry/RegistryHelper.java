@@ -1,12 +1,15 @@
 package hungteen.htlib.util.helper.registry;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.StringHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -75,6 +78,16 @@ public abstract class RegistryHelper<T> extends ResourceHelper<T>{
      */
     private Optional<GroupRegistration<T>> getRegistration(ResourceLocation group){
         return Optional.ofNullable(groups.getOrDefault(group, null));
+    }
+
+    /* Tag Methods */
+
+    public List<T> getTagList(TagKey<T> tagKey){
+        return getRegistry().map(
+                l -> Objects.requireNonNull(l.tags()).getTag(tagKey).stream().toList(),
+                r -> r.getTag(tagKey).map(ImmutableList::copyOf)
+                        .map(t -> t.stream().map(Holder::get).collect(Collectors.toList())).orElse(ImmutableList.of())
+                );
     }
 
     /* Common Methods */

@@ -16,7 +16,7 @@ import net.minecraftforge.registries.IForgeRegistry;
  */
 public class BrainHelper {
 
-    private static final ResourceHelper<Activity> ACTIVITY_HELPER = new RegistryHelper<>(){
+    private static final RegistryHelper<Activity> ACTIVITY_HELPER = new RegistryHelper<>(){
 
         @Override
         public Either<IForgeRegistry<Activity>, Registry<Activity>> getRegistry() {
@@ -24,7 +24,7 @@ public class BrainHelper {
         }
     };
 
-    private static final ResourceHelper<Schedule> SCHEDULE_HELPER = new RegistryHelper<>(){
+    private static final RegistryHelper<Schedule> SCHEDULE_HELPER = new RegistryHelper<>(){
 
         @Override
         public Either<IForgeRegistry<Schedule>, Registry<Schedule>> getRegistry() {
@@ -32,7 +32,7 @@ public class BrainHelper {
         }
     };
 
-    private static final ResourceHelper<SensorType<?>> SENSOR_TYPE_HELPER = new RegistryHelper<>(){
+    private static final RegistryHelper<SensorType<?>> SENSOR_TYPE_HELPER = new RegistryHelper<>(){
 
         @Override
         public Either<IForgeRegistry<SensorType<?>>, Registry<SensorType<?>>> getRegistry() {
@@ -40,7 +40,7 @@ public class BrainHelper {
         }
     };
 
-    private static final ResourceHelper<MemoryModuleType<?>> MEMORY_HELPER = new RegistryHelper<>() {
+    private static final RegistryHelper<MemoryModuleType<?>> MEMORY_HELPER = new RegistryHelper<>() {
         @Override
         public Either<IForgeRegistry<MemoryModuleType<?>>, Registry<MemoryModuleType<?>>> getRegistry() {
             return Either.left(ForgeRegistries.MEMORY_MODULE_TYPES);
@@ -49,19 +49,19 @@ public class BrainHelper {
 
     /* Common Methods */
 
-    public static ResourceHelper<Activity> activity(){
+    public static RegistryHelper<Activity> activity(){
         return ACTIVITY_HELPER;
     }
 
-    public static ResourceHelper<Schedule> schedule(){
+    public static RegistryHelper<Schedule> schedule(){
         return SCHEDULE_HELPER;
     }
 
-    public static ResourceHelper<SensorType<?>> sensor(){
+    public static RegistryHelper<SensorType<?>> sensor(){
         return SENSOR_TYPE_HELPER;
     }
 
-    public static ResourceHelper<MemoryModuleType<?>> memory(){
+    public static RegistryHelper<MemoryModuleType<?>> memory(){
         return MEMORY_HELPER;
     }
 

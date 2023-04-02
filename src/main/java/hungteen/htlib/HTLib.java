@@ -87,16 +87,16 @@ public class HTLib {
     public static void postRegister(RegisterEvent event){
         ItemHelper.get().register(event);
         BlockHelper.get().register(event);
+        BlockHelper.entity().register(event);
+        BlockHelper.paint().register(event);
+        BlockHelper.banner().register(event);
         EntityHelper.get().register(event);
         EffectHelper.get().register(event);
-        BlockEntityHelper.get().register(event);
         ParticleHelper.get().register(event);
         SoundHelper.get().register(event);
-        BannerPatternHelper.get().register(event);
         BiomeHelper.get().register(event);
         FluidHelper.get().register(event);
         GameEventHelper.get().register(event);
-        PaintVariantHelper.get().register(event);
         PoiTypeHelper.get().register(event);
     }
 

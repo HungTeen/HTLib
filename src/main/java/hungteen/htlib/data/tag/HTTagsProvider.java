@@ -1,15 +1,12 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.util.helper.registry.RegistryHelper;
+import hungteen.htlib.util.helper.registry.ResourceHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -19,25 +16,22 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class HTTagsProvider<T> extends TagsProvider<T> {
 
-    private final RegistryHelper<T> helper;
+    private final ResourceHelper<T> helper;
 
-    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, RegistryHelper<T> helper, String modId, @Nullable ExistingFileHelper existingFileHelper) {
+    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, ResourceHelper<T> helper, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, helper.resourceKey(), provider, modId, existingFileHelper);
         this.helper = helper;
     }
 
-    public ResourceLocation res(T object){
-        return getHelper().getKey(object);
-    }
+    @Override
+    protected void addTags(HolderLookup.Provider provider) {
 
-    public Optional<ResourceKey<T>> key(T object){
-        return getHelper().getResourceKey(object);
     }
 
     /**
      * Directly support helper methods.
      */
-    public RegistryHelper<T> getHelper() {
+    public ResourceHelper<T> getHelper() {
         return helper;
     }
 }

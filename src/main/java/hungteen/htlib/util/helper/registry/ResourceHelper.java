@@ -58,11 +58,11 @@ public abstract class ResourceHelper<T> {
 
     /* Common Methods */
 
-    public Holder.Reference<T> holder(BootstapContext<T> context, ResourceKey<T> key){
+    public Holder.Reference<T> holder(BootstapContext<?> context, ResourceKey<T> key){
         return context.lookup(resourceKey()).getOrThrow(key);
     }
 
-    public HolderSet.Named<T> holderSet(BootstapContext<T> context, TagKey<T> key){
+    public HolderSet.Named<T> holderSet(BootstapContext<?> context, TagKey<T> key){
         return context.lookup(resourceKey()).getOrThrow(key);
     }
 
