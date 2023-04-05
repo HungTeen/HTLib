@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @program: HTLib
@@ -106,6 +107,16 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     protected void genItemModelWithBlock(Item item) {
         genNormal(name(item), StringHelper.res(this.modid, "block/" + name(item)));
         this.addedItems.add(item);
+    }
+
+    protected void gen(Block block, Consumer<Block> consumer){
+        consumer.accept(block);
+        this.add(block.asItem());
+    }
+
+    protected void gen(Item item, Consumer<Item> consumer){
+        consumer.accept(item);
+        this.add(item);
     }
 
     protected void add(Item item){

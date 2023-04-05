@@ -9,6 +9,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.IHTSimpleRegistry;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -31,11 +32,12 @@ public final class HTSimpleRegistry<T extends ISimpleEntry> implements IHTSimple
     }
 
     @Override
-    public <I extends T> void register(I type) {
+    public <I extends T> I register(@NotNull I type) {
         if(registryMap.containsKey(type.getLocation())){
             HTLib.getLogger().warn("HTSimpleRegistry {} already registered {}", this.getRegistryName(), type.getLocation());
         }
-        registryMap.put(type.getLocation(), Optional.ofNullable(type));
+        registryMap.put(type.getLocation(), Optional.of(type));
+        return type;
     }
 
     @Override

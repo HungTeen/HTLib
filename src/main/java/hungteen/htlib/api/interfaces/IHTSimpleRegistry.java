@@ -20,7 +20,7 @@ public interface IHTSimpleRegistry<T extends ISimpleEntry> {
      * Note: invoke before register event, 建议在注册事件发生前注册。
      * @param type the entry to be registered.
      */
-    <I extends T> void register(I type);
+    <I extends T> I register(I type);
 
     /**
      * Multiple register. <br>

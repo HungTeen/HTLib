@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @program: HTLib
@@ -61,6 +62,15 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.FENCE).ifPresent(this::fence);
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
+    }
+
+    protected void gen(Block block, Consumer<Block> consumer){
+        consumer.accept(block);
+        this.add(block);
+    }
+
+    protected void add(Block block){
+        this.addedBlocks.add(block);
     }
 
 }

@@ -2,6 +2,7 @@ package hungteen.htlib.util.helper.registry;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.StringHelper;
@@ -160,6 +161,10 @@ public abstract class RegistryHelper<T> extends ResourceHelper<T>{
      */
     public Optional<ResourceKey<T>> getResourceKey(T object) {
         return getRegistry().map(l -> l.getResourceKey(object), r -> r.getResourceKey(object));
+    }
+
+    public Codec<T> getCodec(){
+        return getRegistry().map(IForgeRegistry::getCodec, Registry::byNameCodec);
     }
 
     /**

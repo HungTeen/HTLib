@@ -16,6 +16,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @program: HTLib
@@ -277,6 +278,15 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
                 if(block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) sign(b1, b2);
             });
         });
+    }
+
+    protected void gen(Block block, Consumer<Block> consumer){
+        consumer.accept(block);
+        this.add(block);
+    }
+
+    protected void add(Block block){
+        this.addedBlocks.add(block);
     }
 
 }
