@@ -1,4 +1,4 @@
-package hungteen.htlib.common.block;
+package hungteen.htlib.common.block.entityblock;
 
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;

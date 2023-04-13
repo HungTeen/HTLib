@@ -1,17 +1,18 @@
 package hungteen.htlib.data.tag;
 
+import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagBuilder;
-import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -30,12 +31,35 @@ public abstract class HTItemTagGen extends HTHolderTagsProvider<Item> {
         this.blockTags = blockTagsProvider::getOrCreateRawBuilder;
     }
 
+    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+        this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
+        this.copy(BlockTags.WOODEN_BUTTONS, ItemTags.WOODEN_BUTTONS);
+        this.copy(BlockTags.BUTTONS, ItemTags.BUTTONS);
+        this.copy(BlockTags.WOODEN_DOORS, ItemTags.WOODEN_DOORS);
+        this.copy(BlockTags.WOODEN_STAIRS, ItemTags.WOODEN_STAIRS);
+        this.copy(BlockTags.WOODEN_SLABS, ItemTags.WOODEN_SLABS);
+        this.copy(BlockTags.WOODEN_FENCES, ItemTags.WOODEN_FENCES);
+        this.copy(BlockTags.FENCE_GATES, ItemTags.FENCE_GATES);
+        this.copy(BlockTags.WOODEN_PRESSURE_PLATES, ItemTags.WOODEN_PRESSURE_PLATES);
+        this.copy(BlockTags.DOORS, ItemTags.DOORS);
+        this.copy(BlockTags.SLABS, ItemTags.SLABS);
+        this.copy(BlockTags.STAIRS, ItemTags.STAIRS);
+        this.copy(BlockTags.WOODEN_TRAPDOORS, ItemTags.WOODEN_TRAPDOORS);
+        this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
+        this.copy(BlockTags.FENCES, ItemTags.FENCES);
+        this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
+        this.copy(BlockTags.CEILING_HANGING_SIGNS, ItemTags.HANGING_SIGNS);
+        woodIntegration.getBoatItem(WoodIntegrations.BoatSuits.NORMAL).ifPresent(item -> {
+            this.tag(ItemTags.BOATS).add(item);
+        });
+        woodIntegration.getBoatItem(WoodIntegrations.BoatSuits.CHEST).ifPresent(item -> {
+            this.tag(ItemTags.CHEST_BOATS).add(item);
+        });
+    }
+
     protected void copy(TagKey<Block> blockTagKey, TagKey<Item> itemTagKey) {
-        TagBuilder itemTagbuilder = this.getOrCreateRawBuilder(itemTagKey);
-        TagBuilder blockTagbuilder = (TagBuilder)this.blockTags.apply(blockTagKey);
-        List<TagEntry> list = blockTagbuilder.build();
-        Objects.requireNonNull(itemTagbuilder);
-        Objects.requireNonNull(itemTagbuilder);
-        list.forEach(itemTagbuilder::add);
+        final TagBuilder itemTagbuilder = this.getOrCreateRawBuilder(itemTagKey);
+        final TagBuilder blockTagbuilder = this.blockTags.apply(blockTagKey);
+        blockTagbuilder.build().forEach(itemTagbuilder::add);
     }
 }

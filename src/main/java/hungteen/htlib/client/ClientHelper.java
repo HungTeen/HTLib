@@ -2,6 +2,8 @@ package hungteen.htlib.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.world.level.block.state.properties.WoodType;
 
 /**
  * @author PangTeen
@@ -16,6 +18,14 @@ public class ClientHelper {
 
     public static boolean isKeyInput(KeyMapping key) {
         return key.getKey().getType() == InputConstants.Type.KEYSYM;
+    }
+
+    /**
+     * Why not add them together?
+     */
+    public static void addWoodType(WoodType woodType){
+        Sheets.addWoodType(woodType);
+        Sheets.HANGING_SIGN_MATERIALS.put(woodType, Sheets.createHangingSignMaterial(woodType));
     }
 
 }

@@ -7,7 +7,6 @@ import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,7 +24,7 @@ public class ClientRegister {
     @SubscribeEvent
     public static void clientSetUp(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            BlockHelper.getWoodTypes().forEach(Sheets::addWoodType);
+            BlockHelper.getWoodTypes().forEach(ClientHelper::addWoodType);
         });
     }
 

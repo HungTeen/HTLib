@@ -21,20 +21,19 @@ import java.util.List;
 public class HTContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 
     private static final ResourceLocation WIDGETS = RenderHelper.WIDGETS;
-    protected final List<DisplayField> tips = new ArrayList<>();
+    protected final List<DisplayField> helpTips = new ArrayList<>();
 
     public HTContainerScreen(T screenContainer, Inventory inv, Component titleIn) {
         super(screenContainer, inv, titleIn);
     }
 
     @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        super.render(stack, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
     protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, WIDGETS);
-        stack.pushPose();
-        this.tips.forEach(tip -> {
-            blit(stack, this.leftPos + tip.getX(), this.topPos + tip.getY(), tip.getTexX(), tip.getTexY(), tip.getWidth(), tip.getHeight());
-        });
-        stack.popPose();
     }
 
     @Override
@@ -44,10 +43,41 @@ public class HTContainerScreen<T extends AbstractContainerMenu> extends Abstract
     @Override
     protected void renderTooltip(PoseStack stack, int mouseX, int mouseY) {
         super.renderTooltip(stack, mouseX, mouseY);
-        this.tips.forEach(tip -> {
+    }
+
+    protected void renderHelpTipIcons(PoseStack stack){
+        RenderSystem.setShaderTexture(0, WIDGETS);
+        stack.pushPose();
+        this.helpTips.forEach(tip -> {
+            blit(stack, this.leftPos + tip.getX(), this.topPos + tip.getY(), tip.getTexX(), tip.getTexY(), tip.getWidth(), tip.getHeight());
+        });
+        stack.popPose();
+    }
+
+    protected void renderHelpTips(PoseStack stack, int mouseX, int mouseY){
+        this.helpTips.forEach(tip -> {
             if (tip.isInField(mouseX - this.leftPos, mouseY - this.topPos)) {
                 this.minecraft.screen.renderComponentTooltip(stack, tip.getTexts(), mouseX, mouseY);
             }
         });
     }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int key) {
+        return super.mouseClicked(mouseX, mouseY, key);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        return super.mouseScrolled(mouseX, mouseY, delta);
+    }
+
+    protected boolean canClickInventoryButton(int id){
+        return this.menu.clickMenuButton(this.minecraft.player, id);
+    }
+
+    protected void sendInventoryButtonClickPacket(int id){
+        this.minecraft.gameMode.handleInventoryButtonClick((this.menu).containerId, id);
+    }
+
 }

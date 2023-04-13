@@ -146,19 +146,44 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         this.addedBlocks.add(block);
     }
 
-    protected void sign(StandingSignBlock standingSignBlock, WallSignBlock wallSignBlock) {
-        sign(standingSignBlock, wallSignBlock, solid());
+    protected void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock) {
+        sign(signBlock, wallSignBlock, solid());
     }
 
-    protected void sign(StandingSignBlock standingSignBlock, WallSignBlock wallSignBlock, String renderType) {
-        sign(standingSignBlock, wallSignBlock, StringHelper.blockTexture(StringHelper.replace(key(standingSignBlock), "sign", "planks")), renderType);
+    protected void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock, String renderType) {
+        sign(signBlock, wallSignBlock, StringHelper.blockTexture(StringHelper.replace(key(signBlock), "sign", "planks")), renderType);
     }
 
-    public void sign(StandingSignBlock standingSignBlock, WallSignBlock wallSignBlock, ResourceLocation texture, String renderType) {
-        ModelFile sign = models().sign(name(standingSignBlock), texture).renderType(renderType);
-        signBlock(standingSignBlock, wallSignBlock, sign);
-        this.addedBlocks.add(standingSignBlock);
-        this.addedBlocks.add(wallSignBlock);
+    protected void hangingSign(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock) {
+        hangingSign(signBlock, wallSignBlock, solid());
+    }
+
+    protected void hangingSign(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, String renderType) {
+        hangingSign(signBlock, wallSignBlock, StringHelper.blockTexture(StringHelper.replaceAndUpdate(key(signBlock), "hanging_sign", "stripped", "log")), renderType);
+    }
+
+    public void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock, ResourceLocation texture, String renderType) {
+        ModelFile sign = models().sign(name(signBlock), texture).renderType(renderType);
+        signBlock(signBlock, wallSignBlock, sign);
+        this.add(signBlock);
+        this.add(wallSignBlock);
+    }
+
+    public void hangingSign(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture, String renderType) {
+        ModelFile sign = models().sign(name(signBlock), texture).renderType(renderType);
+        hangingSignBlock(signBlock, wallSignBlock, sign);
+        this.add(signBlock);
+        this.add(wallSignBlock);
+    }
+
+    protected void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture) {
+        ModelFile sign = models().sign(name(signBlock), texture);
+        hangingSignBlock(signBlock, wallSignBlock, sign);
+    }
+
+    protected void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ModelFile sign) {
+        simpleBlock(signBlock, sign);
+        simpleBlock(wallSignBlock, sign);
     }
 
     protected void stair(StairBlock block) {
@@ -276,6 +301,11 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
             woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
                 if(block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) sign(b1, b2);
+            });
+        });
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.HANGING_SIGN).ifPresent(block1 -> {
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_HANGING_SIGN).ifPresent(block2 -> {
+                if(block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) hangingSign(b1, b2);
             });
         });
     }

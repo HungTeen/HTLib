@@ -3,6 +3,10 @@ package hungteen.htlib.common;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import hungteen.htlib.common.block.*;
+import hungteen.htlib.common.block.entityblock.HTHangingSignBlock;
+import hungteen.htlib.common.block.entityblock.HTStandingSignBlock;
+import hungteen.htlib.common.block.entityblock.HTWallHangingSignBlock;
+import hungteen.htlib.common.block.entityblock.HTWallSignBlock;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.item.HTBoatItem;
@@ -233,6 +237,18 @@ public class WoodIntegrations {
                     Block.Properties.copy(Blocks.OAK_SIGN),
                     p -> new HTWallSignBlock(p, this.woodType)
             ));
+            woodSettings.put(WoodSuits.HANGING_SIGN, new WoodSetting(
+                    r -> StringHelper.suffix(r, "hanging_sign"),
+                    Block.Properties.copy(Blocks.OAK_HANGING_SIGN),
+                    p -> new HTHangingSignBlock(p, this.woodType),
+                    new Item.Properties().stacksTo(16),
+                    (block, po) -> new HangingSignItem(block, WoodIntegration.this.woodBlocks.get(WoodSuits.WALL_HANGING_SIGN), po)
+            ));
+            woodSettings.put(WoodSuits.WALL_HANGING_SIGN, new WoodSetting(
+                    r -> StringHelper.suffix(r, "wall_hanging_sign"),
+                    Block.Properties.copy(Blocks.OAK_WALL_HANGING_SIGN),
+                    p -> new HTWallHangingSignBlock(p, this.woodType)
+            ));
             woodSettings.put(WoodSuits.STAIRS, new WoodSetting(
                     r -> StringHelper.suffix(r, "stairs"),
                     Block.Properties.copy(Blocks.OAK_STAIRS),
@@ -334,9 +350,18 @@ public class WoodIntegrations {
             return Optional.ofNullable(this.woodBlocks.getOrDefault(woodSuit, null));
         }
 
+        public Optional<Item> getBoatItem(BoatSuits boatSuit){
+            return Optional.ofNullable(this.boatItems.getOrDefault(boatSuit, null));
+        }
+
         @NotNull
         public Block getBlock(WoodSuits woodSuit) {
             return Objects.requireNonNull(this.woodBlocks.get(woodSuit), "Wood type [ " + this.getRegistryName() + " ] has no block for suit [" + woodSuit.toString() + "] !");
+        }
+
+        @NotNull
+        public Item getBoat(BoatSuits boatSuit) {
+            return Objects.requireNonNull(this.boatItems.get(boatSuit), "Boat type [ " + this.getRegistryName() + " ] has no block for suit [" + boatSuit.toString() + "] !");
         }
 
         public Block getLog() {
@@ -383,6 +408,14 @@ public class WoodIntegrations {
             return getBlock(WoodSuits.WALL_SIGN);
         }
 
+        public Block getHangingSign() {
+            return getBlock(WoodSuits.HANGING_SIGN);
+        }
+
+        public Block getWallHangingSign() {
+            return getBlock(WoodSuits.WALL_HANGING_SIGN);
+        }
+
         public Block getStairs() {
             return getBlock(WoodSuits.STAIRS);
         }
@@ -397,6 +430,14 @@ public class WoodIntegrations {
 
         public Block getPressurePlate() {
             return getBlock(WoodSuits.PRESSURE_PLATE);
+        }
+
+        public Item getBoatItem(){
+            return getBoat(BoatSuits.NORMAL);
+        }
+
+        public Item getChestBoatItem(){
+            return getBoat(BoatSuits.CHEST);
         }
 
         public Optional<WoodSetting> getWoodSetting(WoodSuits woodSuits) {
@@ -660,6 +701,8 @@ public class WoodIntegrations {
         FENCE_GATE(2F, 3F),
         STANDING_SIGN(1F),
         WALL_SIGN(1F, 1F, false),
+        HANGING_SIGN(1F),
+        WALL_HANGING_SIGN(1F, 1F, false),
         STAIRS(2F, 3F),
         BUTTON(0.5F),
         SLAB(2F, 3F),

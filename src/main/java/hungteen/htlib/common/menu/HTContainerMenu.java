@@ -20,11 +20,23 @@ public abstract class HTContainerMenu extends AbstractContainerMenu {
     }
 
     /**
+     * 客户端调用的方法。
+     */
+    @Override
+    public boolean clickMenuButton(Player player, int slotId) {
+        return false;
+    }
+
+    /**
      * default offset.
      */
     public void addInventoryAndHotBar(Container inventory, int leftX, int leftY) {
+        this.addInventoryAndHotBar(inventory, leftX, leftY, 58);
+    }
+
+    public void addInventoryAndHotBar(Container inventory, int leftX, int leftY, int offset) {
         this.addPlayerInventory(inventory, leftX, leftY);
-        this.addPlayerHotBar(inventory, leftX, leftY + 58);
+        this.addPlayerHotBar(inventory, leftX, leftY + offset);
     }
 
     public void addPlayerInventory(Container inventory, int leftX, int leftY) {
@@ -47,11 +59,15 @@ public abstract class HTContainerMenu extends AbstractContainerMenu {
         }
     }
 
+    /**
+     * Avoid crash.
+     */
     @Override
     public ItemStack quickMoveStack(Player player, int slotId) {
         return ItemStack.EMPTY;
     }
-    
+
+    @FunctionalInterface
     public interface ISlotSupplier {
 
         Slot get(int slotId, int posX, int posY);

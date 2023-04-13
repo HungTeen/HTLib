@@ -40,6 +40,7 @@ public class BlockHelper {
      */
     private static final Map<Block, Block> STRIPPABLES = new HashMap<>();
     private static final List<WoodType> WOOD_TYPES = Collections.synchronizedList(List.of());
+
     private static final RegistryHelper<Block> HELPER = new RegistryHelper<>(){
         @Override
         public Either<IForgeRegistry<Block>, Registry<Block>> getRegistry() {

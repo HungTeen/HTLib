@@ -22,47 +22,23 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
     }
 
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
-        woodIntegration.getWoodBlocks().forEach((pair) -> {
-            Block block = (Block)pair.getValue();
-            switch ((WoodIntegrations.WoodSuits)pair.getKey()) {
-                case LOG:
-                case STRIPPED_LOG:
-                case WOOD:
-                case STRIPPED_WOOD:
-                    this.tag(BlockTags.LOGS_THAT_BURN).add(block);
-                    break;
-                case PLANKS:
-                    this.tag(BlockTags.PLANKS).add(block);
-                    break;
-                case DOOR:
-                    this.tag(BlockTags.WOODEN_DOORS).add(block);
-                    break;
-                case TRAP_DOOR:
-                    this.tag(BlockTags.WOODEN_TRAPDOORS).add(block);
-                    break;
-                case FENCE:
-                    this.tag(BlockTags.FENCES).add(block);
-                    break;
-                case FENCE_GATE:
-                    this.tag(BlockTags.FENCE_GATES).add(block);
-                    break;
-                case STANDING_SIGN:
-                    this.tag(BlockTags.STANDING_SIGNS).add(block);
-                    break;
-                case WALL_SIGN:
-                    this.tag(BlockTags.WALL_SIGNS).add(block);
-                    break;
-                case STAIRS:
-                    this.tag(BlockTags.BUTTONS).add(block);
-                    break;
-                case BUTTON:
-                    this.tag(BlockTags.WOODEN_STAIRS).add(block);
-                    break;
-                case SLAB:
-                    this.tag(BlockTags.WOODEN_SLABS).add(block);
-                    break;
-                case PRESSURE_PLATE:
-                    this.tag(BlockTags.WOODEN_PRESSURE_PLATES).add(block);
+        woodIntegration.getWoodBlocks().forEach(pair -> {
+            Block block = pair.getValue();
+            switch (pair.getKey()) {
+                case LOG, STRIPPED_LOG, WOOD, STRIPPED_WOOD -> this.tag(BlockTags.LOGS_THAT_BURN).add(block);
+                case PLANKS -> this.tag(BlockTags.PLANKS).add(block);
+                case DOOR -> this.tag(BlockTags.WOODEN_DOORS).add(block);
+                case TRAP_DOOR -> this.tag(BlockTags.WOODEN_TRAPDOORS).add(block);
+                case FENCE -> this.tag(BlockTags.FENCES).add(block);
+                case FENCE_GATE -> this.tag(BlockTags.FENCE_GATES).add(block);
+                case STANDING_SIGN -> this.tag(BlockTags.STANDING_SIGNS).add(block);
+                case WALL_SIGN -> this.tag(BlockTags.WALL_SIGNS).add(block);
+                case HANGING_SIGN -> this.tag(BlockTags.CEILING_HANGING_SIGNS).add(block);
+                case WALL_HANGING_SIGN -> this.tag(BlockTags.WALL_HANGING_SIGNS).add(block);
+                case STAIRS -> this.tag(BlockTags.BUTTONS).add(block);
+                case BUTTON -> this.tag(BlockTags.WOODEN_STAIRS).add(block);
+                case SLAB -> this.tag(BlockTags.WOODEN_SLABS).add(block);
+                case PRESSURE_PLATE -> this.tag(BlockTags.WOODEN_PRESSURE_PLATES).add(block);
             }
 
         });

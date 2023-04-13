@@ -70,7 +70,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
                 switch (pair.getKey()) {
                     case FENCE, BUTTON -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_inventory");
                     case TRAP_DOOR -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_bottom");
-                    case DOOR, STANDING_SIGN -> {
+                    case DOOR, STANDING_SIGN, HANGING_SIGN -> {
                         genNormalModel(block.asItem());
                         this.addedItems.add(block.asItem());
                     }
