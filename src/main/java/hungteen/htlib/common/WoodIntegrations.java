@@ -125,6 +125,24 @@ public class WoodIntegrations {
         return Collections.unmodifiableList(WOODS.getValues());
     }
 
+    public static Set<Block> getSignBlocks(){
+        final Set<Block> blocks = new HashSet<>();
+        getWoodIntegrations().forEach(wood -> {
+            wood.getBlockOpt(WoodSuits.STANDING_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(WoodSuits.WALL_SIGN).ifPresent(blocks::add);
+        });
+        return blocks;
+    }
+
+    public static Set<Block> getHangingSignBlocks(){
+        final Set<Block> blocks = new HashSet<>();
+        getWoodIntegrations().forEach(wood -> {
+            wood.getBlockOpt(WoodSuits.HANGING_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(WoodSuits.WALL_HANGING_SIGN).ifPresent(blocks::add);
+        });
+        return blocks;
+    }
+
     public static IBoatType getBoatType(String name) {
         return BOAT_TYPES.getValue(name).orElse(WoodIntegrations.IBoatType.DEFAULT);
     }

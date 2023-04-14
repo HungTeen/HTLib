@@ -122,6 +122,10 @@ public class HTLib {
         }
     }
 
+    public static String id(){
+        return MOD_ID;
+    }
+
     public static Logger getLogger() {
         return LOGGER;
     }

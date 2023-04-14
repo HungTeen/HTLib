@@ -3,10 +3,13 @@ package hungteen.htlib.client;
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
+import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,6 +36,9 @@ public class ClientRegister {
         event.registerEntityRenderer(HTEntities.BOAT.get(), (c) -> new HTBoatRender(c, false));
         event.registerEntityRenderer(HTEntities.CHEST_BOAT.get(), (c) -> new HTBoatRender(c, true));
         event.registerEntityRenderer(HTEntities.SEAT.get(), EmptyEffectRender::new);
+
+        event.registerBlockEntityRenderer(HTBlockEntities.SIGN.get(), SignRenderer::new);
+        event.registerBlockEntityRenderer(HTBlockEntities.HANGING_SIGN.get(), HangingSignRenderer::new);
     }
 
     @SubscribeEvent
