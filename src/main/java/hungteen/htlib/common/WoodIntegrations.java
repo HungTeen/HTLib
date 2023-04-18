@@ -37,8 +37,7 @@ import java.util.function.Supplier;
  * Used to resolve wood-related registrations at once. <br>
  * Register WoodType for Signs, BoatType for Boats, and related blocks and items at {@link #register(RegisterEvent)} <br>
  * Provide easy method in data gen, at {@link hungteen.htlib.data.HTBlockStateGen}, {@link hungteen.htlib.data.tag.HTItemTagGen}, {@link hungteen.htlib.data.HTBlockModelGen}, {@link hungteen.htlib.data.HTItemModelGen} <br>
- * Register axe strip behavior and boat dispense action at {@link #setUp()}
- *
+ * Register axe strip behavior and boat dispense action at {@link #setUp()}. <br>
  * @author PangTeen
  * @program HTLib
  * @data 2023/2/21 10:13
@@ -166,7 +165,6 @@ public class WoodIntegrations {
 
         /**
          * Use {@link Builder} instead.
-         *
          * @param registryName such as "pvz:nut", former is mod id, latter is wood name.
          */
         private WoodIntegration(ResourceLocation registryName) {

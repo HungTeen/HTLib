@@ -1,8 +1,10 @@
 package hungteen.htlib.data;
 
+import hungteen.htlib.HTLib;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -10,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +31,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     }
 
     protected ResourceLocation key(Item item) {
-        return ForgeRegistries.ITEMS.getKey(item);
+        return ItemHelper.get().getKey(item);
     }
 
     protected String name(Item item) {
@@ -38,7 +39,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     }
 
     protected ResourceLocation key(Block block) {
-        return ForgeRegistries.BLOCKS.getKey(block);
+        return BlockHelper.get().getKey(block);
     }
 
     protected String name(Block block) {
@@ -66,7 +67,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
             final Block block = pair.getValue();
-            if(pair.getKey().hasItem()){
+            if(pair.getKey().hasItem() && ! this.contains(block.asItem())){
                 switch (pair.getKey()) {
                     case FENCE, BUTTON -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_inventory");
                     case TRAP_DOOR -> genBlockModel(block, BlockHelper.get().getKey(block).getPath() + "_bottom");
@@ -109,18 +110,30 @@ public abstract class HTItemModelGen extends ItemModelProvider {
         this.addedItems.add(item);
     }
 
-    protected void gen(Block block, Consumer<Block> consumer){
-        consumer.accept(block);
-        this.add(block.asItem());
+    protected <T extends Block> void gen(T block, Consumer<T> consumer){
+        if(this.contains(block.asItem())){
+            HTLib.getLogger().warn("Already gen item model of {} before !", key(block));
+        } else {
+            consumer.accept(block);
+            this.add(block.asItem());
+        }
     }
 
-    protected void gen(Item item, Consumer<Item> consumer){
-        consumer.accept(item);
-        this.add(item);
+    protected <T extends Item> void gen(T item, Consumer<T> consumer){
+        if(this.contains(item)){
+            HTLib.getLogger().warn("Already gen item model of {} before !", key(item));
+        } else {
+            consumer.accept(item);
+            this.add(item);
+        }
     }
 
     protected void add(Item item){
         this.addedItems.add(item);
+    }
+
+    protected boolean contains(Item item){
+        return this.addedItems.contains(item);
     }
 
 }

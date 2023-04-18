@@ -1,15 +1,16 @@
 package hungteen.htlib.data;
 
+import hungteen.htlib.HTLib;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     }
 
     protected ResourceLocation key(Item item) {
-        return ForgeRegistries.ITEMS.getKey(item);
+        return ItemHelper.get().getKey(item);
     }
 
     protected String name(Item item) {
@@ -37,7 +38,7 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     }
 
     protected ResourceLocation key(Block block) {
-        return ForgeRegistries.BLOCKS.getKey(block);
+        return BlockHelper.get().getKey(block);
     }
 
     protected String name(Block block) {
@@ -47,30 +48,39 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     protected void fence(Block block){
         final ResourceLocation res = StringHelper.replace(BlockHelper.blockTexture(block), "fence", "planks");
         fenceInventory(name(block) + "_inventory", res);
-        this.addedBlocks.add(block);
     }
 
     protected void button(Block block){
         final ResourceLocation res = StringHelper.replace(BlockHelper.blockTexture(block), "button", "planks");
         buttonInventory(name(block) + "_inventory", res);
-        this.addedBlocks.add(block);
     }
 
     /**
      * Gen wood-related at once.
      */
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
-        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.FENCE).ifPresent(this::fence);
-        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.BUTTON).ifPresent(this::button);
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.FENCE).ifPresent(b -> gen(b, this::fence));
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.BUTTON).ifPresent(b -> gen(b, this::button));
     }
 
-    protected void gen(Block block, Consumer<Block> consumer){
+    /**
+     * Gen block model and add it to the gen set.
+     */
+    protected <T extends Block> void gen(T block, Consumer<T> consumer) {
+        if (this.contains(block)) {
+            HTLib.getLogger().warn("Already gen {} before !", key(block));
+            return;
+        }
         consumer.accept(block);
         this.add(block);
     }
 
     protected void add(Block block){
         this.addedBlocks.add(block);
+    }
+
+    protected boolean contains(Block block) {
+        return this.addedBlocks.contains(block);
     }
 
 }

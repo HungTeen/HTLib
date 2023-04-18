@@ -1,5 +1,7 @@
 package hungteen.htlib.util.helper;
 
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraftforge.fml.ModList;
 
 /**
@@ -11,5 +13,9 @@ public class CompatHelper {
 
     public static boolean isModLoaded(String modId){
         return ModList.get().isLoaded(modId);
+    }
+
+    public static FeatureFlagSet allFeatures(){
+        return FeatureFlags.REGISTRY.allFlags();
     }
 }

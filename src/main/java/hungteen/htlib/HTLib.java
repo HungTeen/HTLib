@@ -27,7 +27,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -59,10 +58,10 @@ public class HTLib {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         register(modBus);
         modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
-        modBus.addListener(EventPriority.NORMAL, false, HTLib::postRegister);
-        modBus.addListener(EventPriority.LOW, false, WoodIntegrations::register);
-        modBus.addListener(EventPriority.NORMAL, false, HTTestGen::gatherData);
-        modBus.addListener(EventPriority.NORMAL, false, WoodIntegrations::fillInCreativeTab);
+        modBus.addListener(EventPriority.NORMAL, HTLib::postRegister);
+        modBus.addListener(EventPriority.LOW, WoodIntegrations::register);
+        modBus.addListener(EventPriority.NORMAL, HTTestGen::gatherData);
+        modBus.addListener(EventPriority.NORMAL, WoodIntegrations::fillInCreativeTab);
         modBus.addListener(EventPriority.LOWEST, false, FMLClientSetupEvent.class, event -> HTRegistryManager.globalInit());
 
         /* Forge Bus Events */
@@ -71,7 +70,7 @@ public class HTLib {
         forgeBus.addListener(EventPriority.NORMAL, PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
         forgeBus.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, event -> event.addListener(new HTCodecLoader()));
-        forgeBus.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, HTRegistryManager::syncToClient);
+        forgeBus.addListener(EventPriority.NORMAL, HTRegistryManager::syncToClient);
         forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher()));
     }
 

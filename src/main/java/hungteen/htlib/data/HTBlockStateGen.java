@@ -16,6 +16,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -33,19 +34,19 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         this.modId = modId;
     }
 
-    protected static String solid(){
+    protected static String solid() {
         return RenderType.solid().name;
     }
 
-    protected static String cutout(){
+    protected static String cutout() {
         return RenderType.cutout().name;
     }
 
-    protected static String cutoutMipped(){
+    protected static String cutoutMipped() {
         return RenderType.cutoutMipped().name;
     }
 
-    protected static String translucent(){
+    protected static String translucent() {
         return RenderType.translucent().name;
     }
 
@@ -88,7 +89,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
                     .modelFile(models().crop(name(block) + "_" + i, StringHelper.res(this.modId, "block/" + name(block) + "_" + i)).renderType(renderType))
                     .build();
         });
-        this.addedBlocks.add(block);
     }
 
     protected void log(RotatedPillarBlock block) {
@@ -97,7 +97,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void log(RotatedPillarBlock block, String renderType) {
         logBlockWithRenderType(block, renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void wood(RotatedPillarBlock block) {
@@ -107,7 +106,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     protected void wood(RotatedPillarBlock block, String renderType) {
         final ResourceLocation res = StringHelper.blockTexture(StringHelper.replace(key(block), "wood", "log"));
         axisBlockWithRenderType(block, res, res, renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void door(DoorBlock block) {
@@ -116,7 +114,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void door(DoorBlock block, String renderType) {
         doorBlockWithRenderType(block, BlockHelper.blockTexture(block, "_bottom"), BlockHelper.blockTexture(block, "_top"), renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void trapdoor(TrapDoorBlock block) {
@@ -125,7 +122,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void trapdoor(TrapDoorBlock block, String renderType) {
         trapdoorBlockWithRenderType(block, BlockHelper.blockTexture(block), true, renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void fence(FenceBlock block) {
@@ -134,7 +130,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void fence(FenceBlock block, String renderType) {
         fenceBlockWithRenderType(block, StringHelper.blockTexture(StringHelper.replace(key(block), "fence", "planks")), renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void fenceGate(FenceGateBlock block) {
@@ -143,7 +138,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void fenceGate(FenceGateBlock block, String renderType) {
         fenceGateBlockWithRenderType(block, StringHelper.blockTexture(StringHelper.replace(key(block), "fence_gate", "planks")), renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock) {
@@ -165,15 +159,11 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     public void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock, ResourceLocation texture, String renderType) {
         ModelFile sign = models().sign(name(signBlock), texture).renderType(renderType);
         signBlock(signBlock, wallSignBlock, sign);
-        this.add(signBlock);
-        this.add(wallSignBlock);
     }
 
     public void hangingSign(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture, String renderType) {
         ModelFile sign = models().sign(name(signBlock), texture).renderType(renderType);
         hangingSignBlock(signBlock, wallSignBlock, sign);
-        this.add(signBlock);
-        this.add(wallSignBlock);
     }
 
     protected void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture) {
@@ -192,7 +182,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
 
     protected void stair(StairBlock block, String renderType) {
         stairsBlockWithRenderType(block, StringHelper.blockTexture(StringHelper.replace(key(block), "stairs", "planks")), renderType);
-        this.addedBlocks.add(block);
     }
 
     protected void button(ButtonBlock block) {
@@ -207,7 +196,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         ModelFile button = models().button(name(block), texture).renderType(renderType);
         ModelFile buttonPressed = models().buttonPressed(name(block) + "_pressed", texture).renderType(renderType);
         buttonBlock(block, button, buttonPressed);
-        this.addedBlocks.add(block);
     }
 
     protected void slab(SlabBlock block) {
@@ -224,7 +212,6 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         ModelFile slabTop = models().slabTop(name(block) + "_top", side, bottom, top).renderType(renderType);
         ModelFile doubleSlabFile = models().getExistingFile(doubleSlab);
         slabBlock(block, slab, slabTop, doubleSlabFile);
-        this.addedBlocks.add(block);
     }
 
     protected void pressPlate(PressurePlateBlock block) {
@@ -235,62 +222,50 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         ModelFile pressurePlate = models().pressurePlate(name(block), texture).renderType(renderType);
         ModelFile pressurePlateDown = models().pressurePlateDown(name(block) + "_down", texture).renderType(renderType);
         pressurePlateBlock(block, pressurePlate, pressurePlateDown);
-        this.addedBlocks.add(block);
     }
-
-//	private void horizontalBlockState(Block block) {
-//		ModelFile file = models().cubeAll(block.getRegistryName().getPath(), StringUtil.prefix("block/" + block.getRegistryName().getPath()));
-//		horizontalBlock(block, file);
-//	}
 
     /**
      * Gen wood-related at once.
      */
     protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
         /* Must gen first to avoid crash. */
-        if(woodIntegration.hasWoodSuit(WoodIntegrations.WoodSuits.PLANKS)){
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.PLANKS).ifPresent(block -> {
-                this.addedBlocks.add(block);
-                this.simpleBlock(block);
-            });
-        } else {
-            HTLib.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName());
-            return;
-        }
+        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.PLANKS).ifPresentOrElse(block -> {
+            gen(block, this::simpleBlock);
+        }, () -> HTLib.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName()));
         woodIntegration.getWoodBlocks().forEach(pair -> {
             final Block block = pair.getValue();
-            switch (pair.getKey()){
+            switch (pair.getKey()) {
                 /* RotatedPillarBlocks. */
                 case LOG, STRIPPED_LOG -> {
-                    if(block instanceof RotatedPillarBlock b) this.log(b);
+                    if (block instanceof RotatedPillarBlock b) gen(b, this::log);
                 }
                 /* Blocks with 2 textures(top & side). */
                 case WOOD, STRIPPED_WOOD -> {
-                    if(block instanceof RotatedPillarBlock b) this.wood(b);
+                    if (block instanceof RotatedPillarBlock b) gen(b, this::wood);
                 }
                 case DOOR -> {
-                    if(block instanceof DoorBlock b) this.door(b);
+                    if (block instanceof DoorBlock b) gen(b, this::door);
                 }
                 case TRAP_DOOR -> {
-                    if(block instanceof TrapDoorBlock b) this.trapdoor(b);
+                    if (block instanceof TrapDoorBlock b) gen(b, this::trapdoor);
                 }
                 case FENCE -> {
-                    if(block instanceof FenceBlock b) this.fence(b);
+                    if (block instanceof FenceBlock b) gen(b, this::fence);
                 }
                 case FENCE_GATE -> {
-                    if(block instanceof FenceGateBlock b) this.fenceGate(b);
+                    if (block instanceof FenceGateBlock b) gen(b, this::fenceGate);
                 }
                 case STAIRS -> {
-                    if(block instanceof StairBlock b) this.stair(b);
+                    if (block instanceof StairBlock b) gen(b, this::stair);
                 }
                 case BUTTON -> {
-                    if(block instanceof ButtonBlock b) this.button(b);
+                    if (block instanceof ButtonBlock b) gen(b, this::button);
                 }
                 case SLAB -> {
-                    if(block instanceof SlabBlock b) this.slab(b);
+                    if (block instanceof SlabBlock b) gen(b, this::slab);
                 }
                 case PRESSURE_PLATE -> {
-                    if(block instanceof PressurePlateBlock b) this.pressPlate(b);
+                    if (block instanceof PressurePlateBlock b) gen(b, this::pressPlate);
                 }
                 default -> {
 
@@ -300,23 +275,47 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         /* Sign Blocks. */
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
             woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
-                if(block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) sign(b1, b2);
+                if (block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) gen(b1, b2, this::sign);
             });
         });
         woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.HANGING_SIGN).ifPresent(block1 -> {
             woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_HANGING_SIGN).ifPresent(block2 -> {
-                if(block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) hangingSign(b1, b2);
+                if (block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) gen(b1, b2, this::hangingSign);
             });
         });
     }
 
-    protected void gen(Block block, Consumer<Block> consumer){
+    /**
+     * Gen block model and add it to the gen set.
+     */
+    protected <T extends Block> void gen(T block, Consumer<T> consumer) {
+        if (this.contains(block)) {
+            HTLib.getLogger().warn("Already gen {} before !", key(block));
+            return;
+        }
         consumer.accept(block);
         this.add(block);
     }
 
-    protected void add(Block block){
+    /**
+     * Gen a pair of block.
+     */
+    protected <T extends Block, K extends Block> void gen(T block1, K block2, BiConsumer<T, K> consumer) {
+        if (this.contains(block1) || this.contains(block2)) {
+            HTLib.getLogger().warn("Already gen block state of {} or {} before !", key(block1), key(block2));
+            return;
+        }
+        consumer.accept(block1, block2);
+        this.add(block1);
+        this.add(block2);
+    }
+
+    protected void add(Block block) {
         this.addedBlocks.add(block);
+    }
+
+    protected boolean contains(Block block) {
+        return this.addedBlocks.contains(block);
     }
 
 }
