@@ -5,6 +5,7 @@ import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -21,8 +22,12 @@ public class HTBlockEntities {
             HTSignBlockEntity::new, WoodIntegrations.getSignBlocks().toArray(new Block[0])
     ).build(null));
 
-    public static final RegistryObject<BlockEntityType<HTHangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITIES.register("sign", () -> BlockEntityType.Builder.of(
+    public static final RegistryObject<BlockEntityType<HTHangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITIES.register("hanging_sign", () -> BlockEntityType.Builder.of(
             HTHangingSignBlockEntity::new, WoodIntegrations.getHangingSignBlocks().toArray(new Block[0])
     ).build(null));
+
+    public static void register(IEventBus event){
+        BLOCK_ENTITIES.register(event);
+    }
 
 }

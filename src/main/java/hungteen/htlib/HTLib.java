@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
 import hungteen.htlib.common.command.HTCommand;
@@ -77,6 +78,7 @@ public class HTLib {
     public void register(IEventBus modBus){
         HTEntities.register(modBus);
         HTSounds.register(modBus);
+        HTBlockEntities.register(modBus);
         HTCommandArgumentInfos.register(modBus);
     }
 

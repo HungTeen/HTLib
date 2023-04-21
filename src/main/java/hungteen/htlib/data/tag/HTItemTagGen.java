@@ -49,6 +49,11 @@ public abstract class HTItemTagGen extends HTHolderTagsProvider<Item> {
         this.copy(BlockTags.FENCES, ItemTags.FENCES);
         this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
         this.copy(BlockTags.CEILING_HANGING_SIGNS, ItemTags.HANGING_SIGNS);
+        woodIntegration.getLogBlockTag().ifPresent(blockTag -> {
+            woodIntegration.getLogItemTag().ifPresent(itemTag -> {
+                this.copy(blockTag, itemTag);
+            });
+        });
         woodIntegration.getBoatItem(WoodIntegrations.BoatSuits.NORMAL).ifPresent(item -> {
             this.tag(ItemTags.BOATS).add(item);
         });

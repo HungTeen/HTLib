@@ -17,6 +17,7 @@ import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -162,6 +163,8 @@ public class WoodIntegrations {
         private final WoodType woodType;
         private final BoatSetting boatSetting;
         private final EnumMap<BoatSuits, Item> boatItems = new EnumMap<>(BoatSuits.class);
+        private TagKey<Item> logItemTag;
+        private TagKey<Block> logBlockTag;
 
         /**
          * Use {@link Builder} instead.
@@ -285,6 +288,10 @@ public class WoodIntegrations {
                     Block.Properties.copy(Blocks.OAK_PRESSURE_PLATE),
                     properties -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, properties, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON)
             ));
+
+            final ResourceLocation tagLocation = StringHelper.suffix(this.getLocation(), "logs");
+            this.logItemTag = ItemHelper.get().tag(tagLocation);
+            this.logBlockTag = BlockHelper.get().tag(tagLocation);
         }
 
         public void fillInCreativeTab(CreativeModeTabEvent.BuildContents event, CreativeModeTab tab, CreativeModeTab.TabVisibility visibility){
@@ -378,6 +385,14 @@ public class WoodIntegrations {
         @NotNull
         public Item getBoat(BoatSuits boatSuit) {
             return Objects.requireNonNull(this.boatItems.get(boatSuit), "Boat type [ " + this.getRegistryName() + " ] has no block for suit [" + boatSuit.toString() + "] !");
+        }
+
+        public Optional<TagKey<Item>> getLogItemTag(){
+            return Optional.ofNullable(this.logItemTag);
+        }
+
+        public Optional<TagKey<Block>> getLogBlockTag(){
+            return Optional.ofNullable(this.logBlockTag);
         }
 
         public Block getLog() {
@@ -557,6 +572,12 @@ public class WoodIntegrations {
 
         public Builder updateBoatItems(Consumer<Item.Properties> consumer) {
             integration.updateBoatItems(consumer);
+            return this;
+        }
+
+        public Builder disableLogTag(){
+            integration.logItemTag = null;
+            integration.logBlockTag = null;
             return this;
         }
 

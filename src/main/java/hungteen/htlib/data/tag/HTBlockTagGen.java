@@ -40,7 +40,13 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
                 case SLAB -> this.tag(BlockTags.WOODEN_SLABS).add(block);
                 case PRESSURE_PLATE -> this.tag(BlockTags.WOODEN_PRESSURE_PLATES).add(block);
             }
-
+        });
+        woodIntegration.getLogBlockTag().ifPresent(blockTag -> {
+            this.tag(BlockTags.LOGS_THAT_BURN).addTag(blockTag);
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.LOG).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WOOD).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
         });
     }
 }

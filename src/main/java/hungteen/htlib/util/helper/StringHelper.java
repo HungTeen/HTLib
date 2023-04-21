@@ -15,7 +15,7 @@ public class StringHelper {
 
     public static final Codec<MutableComponent> CODEC = Codec.STRING.xmap(Component.Serializer::fromJson, Component.Serializer::toJson);
     public static final String EMPTY_STRING = "";
-    public static final ResourceLocation EMPTY_LOCATION = prefix("empty");
+    public static final ResourceLocation EMPTY_LOCATION = new ResourceLocation("empty");
     private static final ModIDHelper HELPER = new ModIDHelper(){
         @Override
         public String getModID() {
