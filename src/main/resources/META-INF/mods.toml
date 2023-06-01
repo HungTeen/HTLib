@@ -8,6 +8,7 @@ showAsResourcePack = false
 modId = "htlib"
 version = "${file.jarVersion}"
 displayName = "HungTeen's Lib"
+updateJSONURL="https://hungteen.github.io/minecraft/mods/htlib.json"
 displayURL = "https://space.bilibili.com/362855464"
 logoFile = "logo.png"
 credits = ""
