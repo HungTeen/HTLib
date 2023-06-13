@@ -1,5 +1,6 @@
 package hungteen.htlib.common.recipe;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +28,7 @@ public abstract class HTRecipe<T extends Container> implements Recipe<T> {
     }
 
     @Override
-    public ItemStack assemble(T container) {
+    public ItemStack assemble(T container, RegistryAccess access) {
         return ItemStack.EMPTY;
     }
 
@@ -37,7 +38,7 @@ public abstract class HTRecipe<T extends Container> implements Recipe<T> {
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return this.result;
     }
 

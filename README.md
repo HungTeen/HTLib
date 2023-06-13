@@ -5,19 +5,20 @@
 A lib made by HungTeen for more easily developing minecraft forge mod.
 
 ### Features
-[1] Useful methods in data generators. <br>
-[2] Particle helper for easy spawn different styles of particles on both side. <br>
-[3] Easily make a wood suit including boat, sign, etc. <br>
-[4] Custom raid. <br>
-[5] Easy registration relate helpers. <br>
-[6] Custom registry system. <br>
+* Useful methods in data generators.
+* Particle helper for easy spawn different styles of particles on both side.
+* Easily make a wood suit including boat, sign, etc.
+* Custom raid.
+* Easy registration relate helpers.
+* Custom registry system.
 
 ### Current Progress
 
 | Version |   Status   | Stable | Latest |
 |:-------:|:----------:|:------:|:------:|
-| 1.19.2  | Developing | 0.9.0  | 0.9.0  |
-| 1.19.3  | Developing | 0.9.2  | 0.9.2  |
+| 1.19.2  |  Stopped   | 0.9.0  | 0.9.0  |
+| 1.19.3  |  Stopped   | 0.9.2  | 0.9.2  |
+| 1.19.4  | Developing | 0.9.3  | 0.9.3  |
 |  1.20   |  Waiting   |  None  |  None  |
 
 ---

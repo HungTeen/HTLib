@@ -3,7 +3,7 @@ package hungteen.htlib.common.item;
 import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
-import net.minecraft.core.BlockPos;
+import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -71,7 +71,7 @@ public class HTBoatItem extends Item {
                 } else {
                     if (!level.isClientSide) {
                         level.addFreshEntity(boat);
-                        level.gameEvent(player, GameEvent.ENTITY_PLACE, new BlockPos(hitresult.getLocation()));
+                        level.gameEvent(player, GameEvent.ENTITY_PLACE, MathHelper.toBlockPos(hitresult.getLocation()));
                         if (!player.getAbilities().instabuild) {
                             itemstack.shrink(1);
                         }

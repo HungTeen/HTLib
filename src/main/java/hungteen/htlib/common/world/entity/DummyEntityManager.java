@@ -6,6 +6,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -46,8 +47,8 @@ public class DummyEntityManager extends SavedData {
     }
 
     public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
-        BlockPos blockpos = new BlockPos(position);
-        Optional<? extends DummyEntityType<?>> opt = HTDummyEntities.getEntityType(location);
+        final BlockPos blockpos = MathHelper.toBlockPos(position);
+        final Optional<? extends DummyEntityType<?>> opt = HTDummyEntities.getEntityType(location);
         if(Level.isInSpawnableBounds(blockpos) && opt.isPresent()){
             final DummyEntityType<?> dummyEntityType = opt.get();
             CompoundTag compoundtag = tag.copy();

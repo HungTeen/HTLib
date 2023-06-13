@@ -78,11 +78,11 @@ public final class HTSimpleRegistry<T extends ISimpleEntry> implements IHTSimple
     public Codec<T> byNameCodec() {
         return ResourceLocation.CODEC.flatXmap((location) -> {
             return this.getValue(location).map(DataResult::success).orElseGet(() -> {
-                return DataResult.error("Unknown registry key in " + this.getRegistryName() + ": " + location);
+                return DataResult.error(() -> "Unknown registry key in " + this.getRegistryName() + ": " + location);
             });
         }, (value) -> {
             return this.getKey(value).map(DataResult::success).orElseGet(() -> {
-                return DataResult.error("Unknown registry element in " + this.getRegistryName() + ": " + value);
+                return DataResult.error(() -> "Unknown registry element in " + this.getRegistryName() + ": " + value);
             });
         });
     }

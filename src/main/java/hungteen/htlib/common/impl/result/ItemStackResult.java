@@ -56,7 +56,7 @@ public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemS
                 ItemEntity itementity = player.drop(stack, false);
                 if (itementity != null) {
                     itementity.setNoPickUpDelay();
-                    itementity.setOwner(player.getUUID());
+                    itementity.setThrower(player.getUUID());
                 }
             }
         });

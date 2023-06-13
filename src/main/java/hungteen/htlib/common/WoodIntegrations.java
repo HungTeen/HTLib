@@ -21,6 +21,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -160,6 +161,7 @@ public class WoodIntegrations {
         private final ResourceLocation registryName;
         private final EnumMap<WoodSuits, WoodSetting> woodSettings = new EnumMap<>(WoodSuits.class);
         private final EnumMap<WoodSuits, Block> woodBlocks = new EnumMap<>(WoodSuits.class);
+        private final BlockSetType blockSetType;
         private final WoodType woodType;
         private final BoatSetting boatSetting;
         private final EnumMap<BoatSuits, Item> boatItems = new EnumMap<>(BoatSuits.class);
@@ -198,7 +200,8 @@ public class WoodIntegrations {
                     return WoodIntegration.this.getModID();
                 }
             });
-            this.woodType = WoodType.create(registryName.toString());
+            this.blockSetType = new BlockSetType(registryName.toString());
+            this.woodType = new WoodType(registryName.toString(), this.blockSetType);
             woodSettings.put(WoodSuits.LOG, new WoodSetting(
                     r -> StringHelper.suffix(r, "log"),
                     Block.Properties.copy(Blocks.OAK_LOG),
@@ -227,12 +230,12 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.DOOR, new WoodSetting(
                     r -> StringHelper.suffix(r, "door"),
                     Block.Properties.copy(Blocks.OAK_DOOR),
-                    properties -> new DoorBlock(properties, SoundEvents.WOODEN_DOOR_CLOSE, SoundEvents.WOODEN_DOOR_OPEN)
+                    properties -> new DoorBlock(properties, this.blockSetType)
             ));
             woodSettings.put(WoodSuits.TRAP_DOOR, new WoodSetting(
                     r -> StringHelper.suffix(r, "trapdoor"),
                     Block.Properties.copy(Blocks.OAK_TRAPDOOR),
-                    properties -> new TrapDoorBlock(properties, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundEvents.WOODEN_TRAPDOOR_OPEN)
+                    properties -> new TrapDoorBlock(properties, this.blockSetType)
             ));
             woodSettings.put(WoodSuits.FENCE, new WoodSetting(
                     r -> StringHelper.suffix(r, "fence"),
@@ -276,7 +279,7 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.BUTTON, new WoodSetting(
                     r -> StringHelper.suffix(r, "button"),
                     Block.Properties.copy(Blocks.OAK_BUTTON),
-                    properties -> new ButtonBlock(properties, 30, true, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundEvents.WOODEN_BUTTON_CLICK_ON)
+                    properties -> new ButtonBlock(properties, this.blockSetType, 30, true)
             ));
             woodSettings.put(WoodSuits.SLAB, new WoodSetting(
                     r -> StringHelper.suffix(r, "slab"),
@@ -286,7 +289,7 @@ public class WoodIntegrations {
             woodSettings.put(WoodSuits.PRESSURE_PLATE, new WoodSetting(
                     r -> StringHelper.suffix(r, "pressure_plate"),
                     Block.Properties.copy(Blocks.OAK_PRESSURE_PLATE),
-                    properties -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, properties, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON)
+                    properties -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, properties, this.blockSetType)
             ));
 
             final ResourceLocation tagLocation = StringHelper.suffix(this.getLocation(), "logs");

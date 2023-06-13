@@ -83,11 +83,11 @@ public class HTCommand {
     }
 
     public static int createDummyEntity(CommandSourceStack sourceStack, ResourceLocation location, Vec3 position, CompoundTag tag) throws CommandSyntaxException {
-        BlockPos blockpos = new BlockPos(position);
+        final BlockPos blockpos = MathHelper.toBlockPos(position);
         if (!Level.isInSpawnableBounds(blockpos)) {
             throw INVALID_POSITION.create();
         }
-        DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
+        final DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
         if (dummyEntity != null) {
             sourceStack.sendSuccess(Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
             return 1;

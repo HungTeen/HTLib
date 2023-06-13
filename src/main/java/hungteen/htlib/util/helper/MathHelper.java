@@ -72,7 +72,7 @@ public class MathHelper {
     }
 
     public static BlockPos toBlockPos(Vec3 vec) {
-        return new BlockPos(vec);
+        return BlockPos.containing(vec);
     }
 
     public static AABB getBlockAABB(BlockPos pos) {

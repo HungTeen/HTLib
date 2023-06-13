@@ -48,14 +48,17 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         this.zo = z;
     }
 
+    @Override
     protected float getSinglePassengerXOffset() {
         return 0.15F;
     }
 
+    @Override
     protected int getMaxPassengers() {
         return 1;
     }
 
+    @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         this.addChestVehicleSaveData(tag);
@@ -67,11 +70,13 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         this.readChestVehicleSaveData(tag);
     }
 
+    @Override
     public void destroy(DamageSource source) {
         super.destroy(source);
         this.chestVehicleDestroyed(source, this.level, this);
     }
 
+    @Override
     public void remove(Entity.RemovalReason reason) {
         if (!this.level.isClientSide && reason.shouldDestroy()) {
             Containers.dropContents(this.level, this, this);
@@ -80,10 +85,22 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         super.remove(reason);
     }
 
+    @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        return this.canAddPassenger(player) && !player.isSecondaryUseActive() ? super.interact(player, hand) : this.interactWithChestVehicle(this::gameEvent, player);
+        if (this.canAddPassenger(player) && !player.isSecondaryUseActive()) {
+            return super.interact(player, hand);
+        } else {
+            InteractionResult interactionresult = this.interactWithContainerVehicle(player);
+            if (interactionresult.consumesAction()) {
+                this.gameEvent(GameEvent.CONTAINER_OPEN, player);
+                PiglinAi.angerNearbyPiglins(player, true);
+            }
+
+            return interactionresult;
+        }
     }
 
+    @Override
     public void openCustomInventoryScreen(Player player) {
         player.openMenu(this);
         if (!player.level.isClientSide) {
@@ -98,37 +115,46 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         return getHTBoatType().getChestBoatItem();
     }
 
+    @Override
     public void clearContent() {
         this.clearChestVehicleContent();
     }
 
+    @Override
     public int getContainerSize() {
         return 27;
     }
 
+    @Override
     public ItemStack getItem(int id) {
         return this.getChestVehicleItem(id);
     }
 
+    @Override
     public ItemStack removeItem(int id, int count) {
         return this.removeChestVehicleItem(id, count);
     }
 
+    @Override
     public ItemStack removeItemNoUpdate(int id) {
         return this.removeChestVehicleItemNoUpdate(id);
     }
 
+    @Override
     public void setItem(int id, ItemStack stack) {
         this.setChestVehicleItem(id, stack);
     }
 
+    @Override
     public SlotAccess getSlot(int id) {
         return this.getChestVehicleSlot(id);
     }
 
+    @Override
     public void setChanged() {
     }
 
+    @Override
     public boolean stillValid(Player player) {
         return this.isChestVehicleStillValid(player);
     }
@@ -152,22 +178,27 @@ public class HTChestBoat extends HTBoat implements HasCustomInventoryScreen, Con
         return this.lootTable;
     }
 
+    @Override
     public void setLootTable(@Nullable ResourceLocation p_219890_) {
         this.lootTable = p_219890_;
     }
 
+    @Override
     public long getLootTableSeed() {
         return this.lootTableSeed;
     }
 
+    @Override
     public void setLootTableSeed(long lootTableSeed) {
         this.lootTableSeed = lootTableSeed;
     }
 
+    @Override
     public NonNullList<ItemStack> getItemStacks() {
         return this.itemStacks;
     }
 
+    @Override
     public void clearItemStacks() {
         this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
     }

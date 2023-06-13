@@ -12,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -41,12 +40,12 @@ public class RecipeRenderManager {
             GuiComponent.fill(stack, x, y, x + 16, y + 16, 822018048);
             ItemStack itemstack = ingredient.getItem();
             ItemRenderer itemrenderer = mc.getItemRenderer();
-            itemrenderer.renderAndDecorateItem(itemstack, x, y);
+            itemrenderer.renderAndDecorateItem(stack, itemstack, x, y);
             RenderSystem.depthFunc(516);
             GuiComponent.fill(stack, x, y, x + 16, y + 16, 822083583);
             RenderSystem.depthFunc(515);
             if (i == 0) {
-                itemrenderer.renderGuiItemDecorations(mc.font, itemstack, x, y);
+                itemrenderer.renderGuiItemDecorations(stack, mc.font, itemstack, x, y);
             }
         }
         stack.popPose();

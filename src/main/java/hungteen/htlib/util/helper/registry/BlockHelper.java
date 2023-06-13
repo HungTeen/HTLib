@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.event.level.BlockEvent;
@@ -107,6 +108,7 @@ public class BlockHelper {
      */
     public static void registerWoodType(WoodType woodType){
         WoodType.register(woodType);
+        BlockSetType.register(woodType.setType());
         WOOD_TYPES.add(woodType);
     }
 
