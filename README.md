@@ -17,7 +17,7 @@ A lib made by HungTeen for more easily developing minecraft forge mod.
 | Version |   Status   | Stable | Latest |
 |:-------:|:----------:|:------:|:------:|
 | 1.19.2  | Developing | 0.9.0  | 0.9.0  |
-| 1.19.3  | Developing | 0.9.2  | 0.9.3  |
+| 1.19.3  | Developing | 0.9.2  | 0.9.2  |
 |  1.20   |  Waiting   |  None  |  None  |
 
 ---
