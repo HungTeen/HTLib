@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,7 +26,7 @@ import org.joml.Quaternionf;
 public class RenderHelper {
 
     // WIDGETS.
-    public static final ResourceLocation WIDGETS = StringHelper.prefix("textures/gui/widgets.png");
+    public static final ResourceLocation WIDGETS = HTLibHelper.get().guiTexture("widgets");
     public static final int ITEM_BAR_LEN = 13;
 
     /**

@@ -153,7 +153,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     }
 
     protected void hangingSign(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, String renderType) {
-        hangingSign(signBlock, wallSignBlock, StringHelper.blockTexture(StringHelper.replaceAndUpdate(key(signBlock), "hanging_sign", "stripped", "log")), renderType);
+        hangingSign(signBlock, wallSignBlock, StringHelper.blockTexture(StringHelper.expandAndReplace(key(signBlock), "hanging_sign", "stripped", "log")), renderType);
     }
 
     public void sign(StandingSignBlock signBlock, WallSignBlock wallSignBlock, ResourceLocation texture, String renderType) {

@@ -2,13 +2,13 @@ package hungteen.htlib.common.impl.result;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.api.interfaces.raid.IResultComponent;
+import hungteen.htlib.api.interfaces.raid.IResultComponentType;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryHolder;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
-import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,7 +23,7 @@ import java.util.List;
  **/
 public class HTResultComponents {
 
-    public static final HTSimpleRegistry<IResultComponentType<?>> RESULT_TYPE = HTRegistryManager.create(StringHelper.prefix("result_type"));
+    public static final HTSimpleRegistry<IResultComponentType<?>> RESULT_TYPE = HTRegistryManager.create(HTLibHelper.prefix("result_type"));
     public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(IResultComponent.class, "custom_raid/results", HTResultComponents::getCodec, true);
 
     /* Result types */
@@ -35,7 +35,7 @@ public class HTResultComponents {
     /* Result */
 
     public static final HTRegistryHolder<IResultComponent> TEST = RESULTS.innerRegister(
-            StringHelper.prefix("test"), new ItemStackResult(
+            HTLibHelper.prefix("test"), new ItemStackResult(
                     true, false,
                     Arrays.asList(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
             )

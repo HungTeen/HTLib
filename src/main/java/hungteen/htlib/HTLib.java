@@ -21,7 +21,7 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTTestGen;
-import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.registry.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -119,7 +119,7 @@ public class HTLib {
         if (event.getObject() instanceof Player) {
 
         } else {
-            event.addCapability(StringHelper.prefix("raid"), new RaidCapProvider(event.getObject()));
+            event.addCapability(HTLibHelper.prefix("raid"), new RaidCapProvider(event.getObject()));
         }
     }
 

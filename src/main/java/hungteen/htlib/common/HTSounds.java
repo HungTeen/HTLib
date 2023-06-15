@@ -1,7 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -30,10 +30,10 @@ public class HTSounds {
     }
 
     private static RegistryObject<SoundEvent> register(String name){
-        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(StringHelper.prefix(name)));
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(HTLibHelper.prefix(name)));
     }
 
     private static RegistryObject<SoundEvent> register(String name, float range){
-        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(StringHelper.prefix(name), range));
+        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(HTLibHelper.prefix(name), range));
     }
 }

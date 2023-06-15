@@ -10,8 +10,8 @@ import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
+import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -38,10 +38,10 @@ public class HTCommand {
 
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
-    private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(StringHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
+    private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
         return SharedSuggestionProvider.suggestResource(HTRaidComponents.getIds(), builder);
     });
-    private static final SuggestionProvider<CommandSourceStack> ALL_DUMMY_ENTITIES = SuggestionProviders.register(StringHelper.prefix("all_dummy_entities"), (commandContext, builder) -> {
+    private static final SuggestionProvider<CommandSourceStack> ALL_DUMMY_ENTITIES = SuggestionProviders.register(HTLibHelper.prefix("all_dummy_entities"), (commandContext, builder) -> {
         return SharedSuggestionProvider.suggestResource(HTDummyEntities.getIds(), builder);
     });
 

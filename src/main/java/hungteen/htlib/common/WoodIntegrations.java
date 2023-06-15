@@ -12,6 +12,7 @@ import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.common.item.HTBoatItem;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
@@ -46,8 +47,8 @@ import java.util.function.Supplier;
  */
 public class WoodIntegrations {
 
-    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.create(StringHelper.prefix("wood"));
-    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.create(StringHelper.prefix("boat_type"));
+    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.create(HTLibHelper.prefix("wood"));
+    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.create(HTLibHelper.prefix("boat_type"));
 
     /**
      * Register at the tail of event，{@link HTLib#HTLib()}
@@ -208,7 +209,7 @@ public class WoodIntegrations {
                     HTLogBlock::new
             ));
             woodSettings.put(WoodSuits.STRIPPED_LOG, new WoodSetting(
-                    r -> StringHelper.update(r, "stripped", "log"),
+                    r -> StringHelper.expand(r, "stripped", "log"),
                     Block.Properties.copy(Blocks.STRIPPED_OAK_LOG),
                     HTLogBlock::new
             ));
@@ -218,7 +219,7 @@ public class WoodIntegrations {
                     HTLogBlock::new
             ));
             woodSettings.put(WoodSuits.STRIPPED_WOOD, new WoodSetting(
-                    r -> StringHelper.update(r, "stripped", "wood"),
+                    r -> StringHelper.expand(r, "stripped", "wood"),
                     Block.Properties.copy(Blocks.STRIPPED_OAK_WOOD),
                     HTLogBlock::new
             ));

@@ -1,6 +1,7 @@
 package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.ForgeHelper;
+import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -46,14 +47,14 @@ public abstract class ResourceHelper<T> {
      * 根据name创建ht的tag。
      */
     public TagKey<T> htTag(String name){
-        return tag(StringHelper.prefix(name));
+        return tag(HTLibHelper.prefix(name));
     }
 
     /**
      * 根据name创建forge的tag。
      */
     public TagKey<T> forgeTag(String name){
-        return tag(StringHelper.forgePrefix(name));
+        return tag(ForgeHelper.get().prefix(name));
     }
 
     /* Common Methods */

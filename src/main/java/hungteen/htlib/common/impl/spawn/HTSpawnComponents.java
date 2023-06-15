@@ -2,13 +2,13 @@ package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponentType;
-import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.common.registry.HTCodecRegistry;
+import hungteen.htlib.common.registry.HTRegistryManager;
+import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -23,7 +23,7 @@ import java.util.Optional;
  **/
 public class HTSpawnComponents {
 
-    public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(StringHelper.prefix("spawn_type"));
+    public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(HTLibHelper.prefix("spawn_type"));
     public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec, true);
 
     /* Spawn types */
