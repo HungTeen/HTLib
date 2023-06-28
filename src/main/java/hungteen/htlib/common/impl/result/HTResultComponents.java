@@ -1,20 +1,8 @@
 package hungteen.htlib.common.impl.result;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryHolder;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.util.helper.HTLibHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-
-import java.util.Arrays;
-import java.util.List;
+import hungteen.htlib.api.interfaces.raid.IResultType;
 
 /**
  * @program: HTLib
@@ -23,49 +11,18 @@ import java.util.List;
  **/
 public class HTResultComponents {
 
-    public static final HTSimpleRegistry<IResultComponentType<?>> RESULT_TYPE = HTRegistryManager.create(HTLibHelper.prefix("result_type"));
-    public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(IResultComponent.class, "custom_raid/results", HTResultComponents::getCodec, true);
+//    public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(IResultComponent.class, "custom_raid/results", HTResultComponents::getCodec, true);
 
-    /* Result types */
+//    public static final HTRegistryHolder<IResultComponent> TEST = RESULTS.innerRegister(
+//            HTLibHelper.prefix("test"), new ItemStackResult(
+//                    true, false,
+//                    Arrays.asList(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
+//            )
+//    );
 
-    public static final IResultComponentType<ItemStackResult> ITEM_STACK = new DefaultResultType<>("item_stack", ItemStackResult.CODEC);
-    public static final IResultComponentType<ChestResult> CHEST = new DefaultResultType<>("chest", ChestResult.CODEC);
-    public static final IResultComponentType<EventResult> EVENT = new DefaultResultType<>("event", EventResult.CODEC);
-
-    /* Result */
-
-    public static final HTRegistryHolder<IResultComponent> TEST = RESULTS.innerRegister(
-            HTLibHelper.prefix("test"), new ItemStackResult(
-                    true, false,
-                    Arrays.asList(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
-            )
-    );
-
-    /**
-     * {@link HTLib#HTLib()}
-     */
-    public static void registerStuffs(){
-        List.of(ITEM_STACK, CHEST, EVENT).forEach(HTResultComponents::registerWaveType);
-    }
-
-    public static void registerWaveType(IResultComponentType<?> type){
-        RESULT_TYPE.register(type);
-    }
 
     public static Codec<IResultComponent> getCodec(){
-        return RESULT_TYPE.byNameCodec().dispatch(IResultComponent::getType, IResultComponentType::codec);
+        return HTResultTypes.registry().byNameCodec().dispatch(IResultComponent::getType, IResultType::codec);
     }
 
-    protected record DefaultResultType<P extends IResultComponent>(String name, Codec<P> codec) implements IResultComponentType<P> {
-
-        @Override
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public String getModID() {
-            return HTLib.MOD_ID;
-        }
-    }
 }

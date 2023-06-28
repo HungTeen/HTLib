@@ -1,8 +1,8 @@
-package hungteen.htlib.common.impl.placement;
+package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponentType;
+import hungteen.htlib.api.interfaces.raid.IPositionType;
 import hungteen.htlib.util.helper.WorldHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:38
  */
-public class CenterAreaPlacement extends PlaceComponent {
+public class CenterAreaPosition extends PlaceComponent {
 
     /**
      * getCenterOffset 中心点偏移，默认为不偏移。offset to the origin point, default to (0, 0, 0).
@@ -22,19 +22,19 @@ public class CenterAreaPlacement extends PlaceComponent {
      * getHeightOffset 不放置在地表，则使原坐标高度偏移。place at the specific height offset.
      * isCircle 默认是圆心，否则是方形。default is circle, or it will be square.
      */
-    public static final Codec<CenterAreaPlacement> CODEC = RecordCodecBuilder.<CenterAreaPlacement>mapCodec(instance -> instance.group(
-            Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(CenterAreaPlacement::getCenterOffset),
-            Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(CenterAreaPlacement::getExcludeRadius),
-            Codec.DOUBLE.fieldOf("radius").forGetter(CenterAreaPlacement::getRadius),
-            Codec.BOOL.fieldOf("on_surface").forGetter(CenterAreaPlacement::onSurface),
-            Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(CenterAreaPlacement::getHeightOffset),
-            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(CenterAreaPlacement::isCircle)
-    ).apply(instance, CenterAreaPlacement::new)).codec();
+    public static final Codec<CenterAreaPosition> CODEC = RecordCodecBuilder.<CenterAreaPosition>mapCodec(instance -> instance.group(
+            Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(CenterAreaPosition::getCenterOffset),
+            Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(CenterAreaPosition::getExcludeRadius),
+            Codec.DOUBLE.fieldOf("radius").forGetter(CenterAreaPosition::getRadius),
+            Codec.BOOL.fieldOf("on_surface").forGetter(CenterAreaPosition::onSurface),
+            Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(CenterAreaPosition::getHeightOffset),
+            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(CenterAreaPosition::isCircle)
+    ).apply(instance, CenterAreaPosition::new)).codec();
     private final Vec3 centerOffset;
     private final boolean onSurface;
     private final double heightOffset;
 
-    public CenterAreaPlacement(Vec3 centerOffset, double excludeRadius, double radius, boolean onSurface, double heightOffset, boolean isCircle){
+    public CenterAreaPosition(Vec3 centerOffset, double excludeRadius, double radius, boolean onSurface, double heightOffset, boolean isCircle){
         super(excludeRadius, radius, isCircle);
         this.centerOffset = centerOffset;
         this.onSurface = onSurface;
@@ -54,8 +54,8 @@ public class CenterAreaPlacement extends PlaceComponent {
     }
 
     @Override
-    public IPlaceComponentType<?> getType() {
-        return HTPlaceComponents.CENTER_AREA_TYPE;
+    public IPositionType<?> getType() {
+        return HTPositionTypes.CENTER_AREA;
     }
 
     public Vec3 getCenterOffset() {

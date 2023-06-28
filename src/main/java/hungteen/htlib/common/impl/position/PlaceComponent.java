@@ -1,6 +1,6 @@
-package hungteen.htlib.common.impl.placement;
+package hungteen.htlib.common.impl.position;
 
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.util.helper.RandomHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
  * @author: HungTeen
  * @create: 2022-11-27 18:22
  **/
-public abstract class PlaceComponent implements IPlaceComponent {
+public abstract class PlaceComponent implements IPositionComponent {
 
     private final double excludeRadius;
     private final double radius;

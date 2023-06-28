@@ -6,13 +6,13 @@ import hungteen.htlib.api.interfaces.ISimpleEntry;
 /**
  * @program: HTLib
  * @author: HungTeen
- * @create: 2022-11-27 20:21
+ * @create: 2022-11-27 16:56
  **/
-public interface IWaveComponentType<P extends IWaveComponent> extends ISimpleEntry {
+public interface ISpawnType<P extends ISpawnComponent> extends ISimpleEntry {
 
     /**
-     * Get the method to codec wave.
-     * @return Codec method.
+     * Get the method to codec spawn component.
+     * @return Spawn codec.
      */
     Codec<P> codec();
 

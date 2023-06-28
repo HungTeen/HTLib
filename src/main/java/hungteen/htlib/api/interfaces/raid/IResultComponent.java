@@ -38,6 +38,6 @@ public interface IResultComponent {
      * Get Serializer.
      * @return Serialize type.
      */
-    IResultComponentType<?> getType();
+    IResultType<?> getType();
 
 }

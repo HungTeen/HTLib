@@ -6,13 +6,13 @@ import hungteen.htlib.api.interfaces.ISimpleEntry;
 /**
  * @program: HTLib
  * @author: HungTeen
- * @create: 2022-11-27 16:56
+ * @create: 2022-11-27 20:48
  **/
-public interface ISpawnComponentType<P extends ISpawnComponent> extends ISimpleEntry {
+public interface IRaidType<P extends IRaidComponent> extends ISimpleEntry {
 
     /**
-     * Get the method to codec spawn component.
-     * @return Spawn codec.
+     * Get the method to codec raid.
+     * @return Codec method.
      */
     Codec<P> codec();
 

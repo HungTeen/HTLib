@@ -2,9 +2,9 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
-import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 
@@ -24,7 +24,7 @@ public abstract class WaveComponent implements IWaveComponent {
     }
 
     @Override
-    public Optional<IPlaceComponent> getSpawnPlacement() {
+    public Optional<IPositionComponent> getSpawnPlacement() {
         return getWaveSettings().spawnPlacement();
     }
 
@@ -52,7 +52,7 @@ public abstract class WaveComponent implements IWaveComponent {
         return waveSettings;
     }
 
-    public record WaveSettings(Optional<IPlaceComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
+    public record WaveSettings(Optional<IPositionComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -62,7 +62,7 @@ public abstract class WaveComponent implements IWaveComponent {
          * spawnCount : 生成数量，How many entities to getSpawnEntities.
          */
         public static final Codec<WaveSettings> CODEC = RecordCodecBuilder.<WaveSettings>mapCodec(instance -> instance.group(
-                Codec.optionalField("spawn_placement", HTPlaceComponents.getCodec()).forGetter(WaveSettings::spawnPlacement),
+                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(WaveSettings::spawnPlacement),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 100).forGetter(WaveSettings::prepareDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(WaveSettings::waveDuration),
                 Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSettings::canSkip),

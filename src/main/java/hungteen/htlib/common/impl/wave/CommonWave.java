@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
+import hungteen.htlib.api.interfaces.raid.IWaveType;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class CommonWave extends WaveComponent {
     }
 
     @Override
-    public IWaveComponentType<?> getType() {
-        return HTWaveComponents.COMMON_WAVE_TYPE;
+    public IWaveType<?> getType() {
+        return HTWaveTypes.COMMON;
     }
 }

@@ -1,17 +1,9 @@
 package hungteen.htlib.common.registry;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.event.OnDatapackSyncEvent;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -21,69 +13,25 @@ import java.util.function.Supplier;
  **/
 public class HTRegistryManager {
 
-    private static final BiMap<String, HTCodecRegistry<?>> CODEC_REGISTRIES = Maps.synchronizedBiMap(HashBiMap.create());
-
     /**
-     * 全局初始化。
+     * do not create more than one registry for specific registry entityType.
      */
-    public static void globalInit() {
-        getRegistries().stream().filter(HTCodecRegistry::isGlobal).filter(HTCodecRegistry::hasUniqueDataPack).forEach(HTCodecRegistry::init);
-    }
-
-    /**
-     * {@link HTLib#HTLib()}
-     */
-    public static void syncToClient(OnDatapackSyncEvent event){
-        HTRegistryManager.getRegistries().forEach(registry -> {
-            event.getPlayerList().getPlayers().forEach(registry::syncToClient);
-        });
+    public static <T> HTRegistry<T> create(ResourceLocation registryName){
+        return new HTRegistry<>(registryName);
     }
 
     /**
      * do not create more than one registry for specific registry entityType.
      */
-    public static <T extends ISimpleEntry> HTSimpleRegistry<T> create(ResourceLocation registryName){
+    public static <T extends ISimpleEntry> HTSimpleRegistry<T> createSimple(ResourceLocation registryName){
         return new HTSimpleRegistry<>(registryName);
     }
 
-    public static Optional<HTCodecRegistry<?>> get(String registryName){
-        return Optional.ofNullable(CODEC_REGISTRIES.getOrDefault(registryName, null));
-    }
-
     /**
-     * Globally create.
+     * do not create more than one registry for specific registry entityType.
      */
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, String namespace){
-        return create(clazz, registryName, supplier, true, namespace);
-    }
-
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal){
-        return create(clazz, registryName, supplier, isGlobal, HTLib.MOD_ID);
-    }
-
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier){
-        return create(clazz, registryName, supplier, false);
-    }
-
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal, String namespace){
-        return create(clazz, registryName, supplier, isGlobal, true, namespace);
-    }
-
-    public static <T> HTCodecRegistry<T> create(Class<T> clazz, String registryName, Supplier<Codec<T>> supplier, boolean isGlobal, boolean hasUniqueDataPack, String namespace){
-        if(CODEC_REGISTRIES.containsKey(registryName)){
-            throw new IllegalArgumentException("Cannot create duplicate registry {}, use get instead".formatted(registryName));
-        }
-        HTCodecRegistry<T> registry = new HTCodecRegistry<>(clazz, registryName, supplier, isGlobal, hasUniqueDataPack, namespace);
-        CODEC_REGISTRIES.put(registryName, registry);
-        return registry;
-    }
-
-    public static List<String> getRegistryNames(boolean isGlobal, boolean unique){
-        return CODEC_REGISTRIES.entrySet().stream().filter(entry -> entry.getValue().isGlobal() == isGlobal && unique == entry.getValue().hasUniqueDataPack()).map(Map.Entry::getKey).toList();
-    }
-
-    public static List<HTCodecRegistry<?>> getRegistries(){
-        return CODEC_REGISTRIES.values().stream().toList();
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
+        return new HTCodecRegistry<>(registryName, codecSup, syncSup);
     }
 
 }

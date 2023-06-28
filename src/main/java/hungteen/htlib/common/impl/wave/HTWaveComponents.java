@@ -2,17 +2,12 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
-import hungteen.htlib.api.interfaces.raid.IWaveComponentType;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.api.interfaces.raid.IWaveType;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,14 +17,7 @@ import java.util.Optional;
  **/
 public class HTWaveComponents {
 
-    public static final HTSimpleRegistry<IWaveComponentType<?>> WAVE_TYPES = HTRegistryManager.create(HTLibHelper.prefix("wave_type"));
-    public static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(IWaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec, true);
-
-    /* Wave types */
-
-    public static final IWaveComponentType<CommonWave> COMMON_WAVE_TYPE = new DefaultWaveType<>("common", CommonWave.CODEC);
-
-    /* Waves */
+//    public static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(IWaveComponent.class, "custom_raid/waves", HTWaveComponents::getCodec, true);
 
 //    public static final HTRegistryHolder<SpawnPlacement> DEFAULT = SPAWNS.innerRegister(
 //            HTLib.prefix("default"), new CenterAreaPlacement(
@@ -37,26 +25,15 @@ public class HTWaveComponents {
 //            )
 //    );
 
-    /**
-     * {@link HTLib#HTLib()}
-     */
-    public static void registerStuffs(){
-        List.of(COMMON_WAVE_TYPE).forEach(HTWaveComponents::registerWaveType);
-    }
-
-    public static void registerWaveType(IWaveComponentType<?> type){
-        WAVE_TYPES.register(type);
-    }
-
     public static Codec<IWaveComponent> getCodec(){
-        return WAVE_TYPES.byNameCodec().dispatch(IWaveComponent::getType, IWaveComponentType::codec);
+        return HTWaveTypes.registry().byNameCodec().dispatch(IWaveComponent::getType, IWaveType::codec);
     }
 
     public static WaveSettingBuilder builder(){
         return new WaveSettingBuilder();
     }
 
-    protected record DefaultWaveType<P extends IWaveComponent>(String name, Codec<P> codec) implements IWaveComponentType<P> {
+    protected record DefaultWaveType<P extends IWaveComponent>(String name, Codec<P> codec) implements IWaveType<P> {
 
         @Override
         public String getName() {
@@ -71,7 +48,7 @@ public class HTWaveComponents {
 
     public static class WaveSettingBuilder {
 
-        private Optional<IPlaceComponent> spawnPlacement = Optional.empty();
+        private Optional<IPositionComponent> spawnPlacement = Optional.empty();
         private int prepareDuration = 100;
         private int waveDuration = 0;
         private boolean canSkip = true;
@@ -81,7 +58,7 @@ public class HTWaveComponents {
             return new WaveComponent.WaveSettings(spawnPlacement, prepareDuration, waveDuration, canSkip, waveStartSound);
         }
 
-        public WaveSettingBuilder placement(IPlaceComponent spawnPlacement){
+        public WaveSettingBuilder placement(IPositionComponent spawnPlacement){
             this.spawnPlacement = Optional.ofNullable(spawnPlacement);
             return this;
         }

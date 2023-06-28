@@ -3,7 +3,7 @@ package hungteen.htlib.common.impl.spawn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.ISpawnComponentType;
+import hungteen.htlib.api.interfaces.raid.ISpawnType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
@@ -68,8 +68,8 @@ public class DurationSpawn extends SpawnComponent {
     }
 
     @Override
-    public ISpawnComponentType<?> getType() {
-        return HTSpawnComponents.DURATION_SPAWN_TYPE;
+    public ISpawnType<?> getType() {
+        return HTSpawnTypes.DURATION;
     }
 
     public int getStartSpawnTick() {

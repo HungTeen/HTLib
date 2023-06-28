@@ -35,7 +35,7 @@ public interface IRaidComponent {
      * Determines the wave getSpawnEntities placement entityType.
      * @return The least high priority getSpawnEntities placement.
      */
-    IPlaceComponent getSpawnPlacement();
+    IPositionComponent getSpawnPlacement();
 
     /**
      * Get the raid bar title.
@@ -143,5 +143,5 @@ public interface IRaidComponent {
      * Get the entityType of raid.
      * @return Raid entityType.
      */
-    IRaidComponentType<?> getType();
+    IRaidType<?> getType();
 }

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.IRaidComponentType;
+import hungteen.htlib.api.interfaces.raid.IRaidType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class CommonRaid extends RaidComponent {
     }
 
     @Override
-    public IRaidComponentType<?> getType() {
-        return HTRaidComponents.COMMON_RAID_TYPE;
+    public IRaidType<?> getType() {
+        return HTRaidTypes.COMMON;
     }
 }

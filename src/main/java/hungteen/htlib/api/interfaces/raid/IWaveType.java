@@ -4,14 +4,14 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 
 /**
- * @author PangTeen
- * @program HTLib
- * @data 2022/11/24 10:48
- */
-public interface IPlaceComponentType<P extends IPlaceComponent> extends ISimpleEntry {
+ * @program: HTLib
+ * @author: HungTeen
+ * @create: 2022-11-27 20:21
+ **/
+public interface IWaveType<P extends IWaveComponent> extends ISimpleEntry {
 
     /**
-     * Get the method to codec placement.
+     * Get the method to codec wave.
      * @return Codec method.
      */
     Codec<P> codec();

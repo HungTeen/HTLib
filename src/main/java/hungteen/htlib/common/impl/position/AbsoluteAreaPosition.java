@@ -1,8 +1,8 @@
-package hungteen.htlib.common.impl.placement;
+package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponentType;
+import hungteen.htlib.api.interfaces.raid.IPositionType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:38
  */
-public class AbsoluteAreaPlacement extends PlaceComponent {
+public class AbsoluteAreaPosition extends PlaceComponent {
 
     /**
      * getPosition: 绝对坐标。absolute coordinates.
@@ -19,15 +19,15 @@ public class AbsoluteAreaPlacement extends PlaceComponent {
      * radius: 放置半径。points in the circle with this radius but not in excludeRadius can be placed.
      * isCircle: 默认是圆心，否则是方形。default is circle, or it will be square.
      */
-    public static final Codec<AbsoluteAreaPlacement> CODEC = RecordCodecBuilder.<AbsoluteAreaPlacement>mapCodec(instance -> instance.group(
-            Vec3.CODEC.fieldOf("position").forGetter(AbsoluteAreaPlacement::getPosition),
-            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("exclude_radius", 0D).forGetter(AbsoluteAreaPlacement::getExcludeRadius),
-            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("radius", 0D).forGetter(AbsoluteAreaPlacement::getRadius),
-            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(AbsoluteAreaPlacement::isCircle)
-    ).apply(instance, AbsoluteAreaPlacement::new)).codec();
+    public static final Codec<AbsoluteAreaPosition> CODEC = RecordCodecBuilder.<AbsoluteAreaPosition>mapCodec(instance -> instance.group(
+            Vec3.CODEC.fieldOf("position").forGetter(AbsoluteAreaPosition::getPosition),
+            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("exclude_radius", 0D).forGetter(AbsoluteAreaPosition::getExcludeRadius),
+            Codec.doubleRange(0D, Double.MAX_VALUE).optionalFieldOf("radius", 0D).forGetter(AbsoluteAreaPosition::getRadius),
+            Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(AbsoluteAreaPosition::isCircle)
+    ).apply(instance, AbsoluteAreaPosition::new)).codec();
     private final Vec3 position;
 
-    public AbsoluteAreaPlacement(Vec3 position, double excludeRadius, double radius, boolean isCircle) {
+    public AbsoluteAreaPosition(Vec3 position, double excludeRadius, double radius, boolean isCircle) {
         super(excludeRadius, radius, isCircle);
         this.position = position;
     }
@@ -42,8 +42,8 @@ public class AbsoluteAreaPlacement extends PlaceComponent {
     }
 
     @Override
-    public IPlaceComponentType<?> getType() {
-        return HTPlaceComponents.ABSOLUTE_AREA_TYPE;
+    public IPositionType<?> getType() {
+        return HTPositionTypes.ABSOLUTE_AREA;
     }
 
     public Vec3 getPosition() {

@@ -1,19 +1,12 @@
 package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.api.interfaces.raid.ISpawnComponentType;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.api.interfaces.raid.ISpawnType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,15 +16,8 @@ import java.util.Optional;
  **/
 public class HTSpawnComponents {
 
-    public static final HTSimpleRegistry<ISpawnComponentType<?>> SPAWN_TYPES = HTRegistryManager.create(HTLibHelper.prefix("spawn_type"));
-    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec, true);
+//    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec, true);
 
-    /* Spawn types */
-
-    public static final ISpawnComponentType<OnceSpawn> ONCE_SPAWN_TYPE = new DefaultWaveSpawn<>("once",  OnceSpawn.CODEC);
-    public static final ISpawnComponentType<DurationSpawn> DURATION_SPAWN_TYPE = new DefaultWaveSpawn<>("duration",  DurationSpawn.CODEC);
-
-    /* Spawns */
 
 //    public static final HTRegistryHolder<SpawnPlacement> DEFAULT = SPAWNS.innerRegister(
 //            HTLib.prefix("default"), new CenterAreaPlacement(
@@ -39,44 +25,22 @@ public class HTSpawnComponents {
 //            )
 //    );
 
-    /**
-     * {@link HTLib#setUp(FMLCommonSetupEvent)}
-     */
-    public static void registerStuffs(){
-        List.of(ONCE_SPAWN_TYPE, DURATION_SPAWN_TYPE).forEach(HTSpawnComponents::registerSpawnType);
-    }
-
-    public static void registerSpawnType(ISpawnComponentType<?> type){
-        SPAWN_TYPES.register(type);
-    }
 
     public static Codec<ISpawnComponent> getCodec(){
-        return SPAWN_TYPES.byNameCodec().dispatch(ISpawnComponent::getType, ISpawnComponentType::codec);
+        return HTSpawnTypes.registry().byNameCodec().dispatch(ISpawnComponent::getType, ISpawnType::codec);
     }
 
     public static SpawnSettingBuilder builder(){
         return new SpawnSettingBuilder();
     }
 
-    protected record DefaultWaveSpawn<P extends ISpawnComponent>(String name, Codec<P> codec) implements ISpawnComponentType<P> {
-
-        @Override
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public String getModID() {
-            return HTLib.MOD_ID;
-        }
-    }
 
     public static class SpawnSettingBuilder {
 
         private EntityType<?> entityType = EntityType.PIG;
         private CompoundTag nbt = new CompoundTag();
         private boolean enableDefaultSpawn = true;
-        private IPlaceComponent placeComponent = null;
+        private IPositionComponent placeComponent = null;
 
         public SpawnComponent.SpawnSettings build() {
             return new SpawnComponent.SpawnSettings(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
@@ -97,7 +61,7 @@ public class HTSpawnComponents {
             return this;
         }
 
-        public SpawnSettingBuilder placement(IPlaceComponent placeComponent){
+        public SpawnSettingBuilder placement(IPositionComponent placeComponent){
             this.placeComponent = placeComponent;
             return this;
         }

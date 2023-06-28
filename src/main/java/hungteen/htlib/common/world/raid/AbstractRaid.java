@@ -592,7 +592,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @Override
-    public Function<ISpawnComponent, IPlaceComponent> getPlaceComponent() {
+    public Function<ISpawnComponent, IPositionComponent> getPlaceComponent() {
         return spawnComponent -> {
             return spawnComponent.getSpawnPlacement().isPresent() ? spawnComponent.getSpawnPlacement().get() :
                     getCurrentWave().getSpawnPlacement().isPresent() ? getCurrentWave().getSpawnPlacement().get() :

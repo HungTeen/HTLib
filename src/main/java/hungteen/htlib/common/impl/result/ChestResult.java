@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
+import hungteen.htlib.api.interfaces.raid.IResultType;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.WorldHelper;
 import net.minecraft.core.BlockPos;
@@ -51,7 +51,7 @@ public record ChestResult(boolean forLoss, boolean forVictory, boolean onGround,
     }
 
     @Override
-    public IResultComponentType<?> getType() {
-        return HTResultComponents.CHEST;
+    public IResultType<?> getType() {
+        return HTResultTypes.CHEST;
     }
 }

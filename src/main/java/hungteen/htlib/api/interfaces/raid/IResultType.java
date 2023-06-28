@@ -8,7 +8,7 @@ import hungteen.htlib.api.interfaces.ISimpleEntry;
  * @program HTLib
  * @data 2022/11/24 10:48
  */
-public interface IResultComponentType<P extends IResultComponent> extends ISimpleEntry {
+public interface IResultType<P extends IResultComponent> extends ISimpleEntry {
 
     /**
      * Get Codec.

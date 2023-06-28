@@ -2,7 +2,7 @@ package hungteen.htlib.common.impl.result;
 
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
+import hungteen.htlib.api.interfaces.raid.IResultType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
@@ -32,7 +32,7 @@ public class AdvancementReward implements IResultComponent {
     }
 
     @Override
-    public IResultComponentType<?> getType() {
+    public IResultType<?> getType() {
         return null;
     }
 }

@@ -4,14 +4,14 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
 
 /**
- * @program: HTLib
- * @author: HungTeen
- * @create: 2022-11-27 20:48
- **/
-public interface IRaidComponentType<P extends IRaidComponent> extends ISimpleEntry {
+ * @author PangTeen
+ * @program HTLib
+ * @data 2022/11/24 10:48
+ */
+public interface IPositionType<P extends IPositionComponent> extends ISimpleEntry {
 
     /**
-     * Get the method to codec raid.
+     * Get the method to codec placement.
      * @return Codec method.
      */
     Codec<P> codec();

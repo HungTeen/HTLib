@@ -3,6 +3,7 @@ package hungteen.htlib.util.helper.registry;
 import hungteen.htlib.util.helper.ForgeHelper;
 import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.BootstapContext;
@@ -59,12 +60,16 @@ public abstract class ResourceHelper<T> {
 
     /* Common Methods */
 
-    public Holder.Reference<T> holder(BootstapContext<?> context, ResourceKey<T> key){
-        return context.lookup(resourceKey()).getOrThrow(key);
+    public HolderGetter<T> lookup(BootstapContext<?> context){
+        return context.lookup(resourceKey());
     }
 
-    public HolderSet.Named<T> holderSet(BootstapContext<?> context, TagKey<T> key){
-        return context.lookup(resourceKey()).getOrThrow(key);
+    public Holder<T> holder(BootstapContext<?> context, ResourceKey<T> key){
+        return lookup(context).getOrThrow(key);
+    }
+
+    public HolderSet<T> holderSet(BootstapContext<?> context, TagKey<T> key){
+        return lookup(context).getOrThrow(key);
     }
 
     /**

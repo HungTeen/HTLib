@@ -2,11 +2,11 @@ package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.StringHelper;
@@ -38,7 +38,7 @@ public abstract class RaidComponent implements IRaidComponent {
     }
 
     @Override
-    public IPlaceComponent getSpawnPlacement() {
+    public IPositionComponent getSpawnPlacement() {
         return getRaidSettings().placeComponent();
     }
 
@@ -127,9 +127,9 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(IPlaceComponent placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
+    protected record RaidSetting(IPositionComponent placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
-                HTPlaceComponents.getCodec().optionalFieldOf("placement_type", HTPlaceComponents.DEFAULT.getValue()).forGetter(RaidSetting::placeComponent),
+                HTPositionComponents.getCodec().fieldOf("placement_type").forGetter(RaidSetting::placeComponent),
 
                 BorderSetting.CODEC.fieldOf("border_setting").forGetter(RaidSetting::borderSetting),
                 BarSetting.CODEC.fieldOf("bar_setting").forGetter(RaidSetting::barSetting),

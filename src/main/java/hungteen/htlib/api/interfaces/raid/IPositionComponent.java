@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:02
  */
-public interface IPlaceComponent {
+public interface IPositionComponent {
 
     /**
      * Calculate the getSpawnEntities point of entity.
@@ -21,8 +21,8 @@ public interface IPlaceComponent {
 
     /**
      * Get the type of placement.
-     * @return Place type.
+     * @return Position type.
      */
-    IPlaceComponentType<?> getType();
+    IPositionType<?> getType();
 
 }

@@ -3,9 +3,9 @@ package hungteen.htlib.common.impl.spawn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.raid.IPlaceComponent;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.common.impl.placement.HTPlaceComponents;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.api.interfaces.raid.IRaid;
@@ -63,7 +63,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
     }
 
     @Override
-    public Optional<IPlaceComponent> getSpawnPlacement() {
+    public Optional<IPositionComponent> getSpawnPlacement() {
         return this.getSpawnSettings().placeComponent();
     }
 
@@ -83,7 +83,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return spawnSettings;
     }
 
-    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<IPlaceComponent> placeComponent){
+    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<IPositionComponent> placeComponent){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -96,7 +96,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSettings::entityType),
                 CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSettings::nbt),
                 Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSettings::enableDefaultSpawn),
-                Codec.optionalField("spawn_placement", HTPlaceComponents.getCodec()).forGetter(SpawnSettings::placeComponent)
+                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSettings::placeComponent)
                 ).apply(instance, SpawnSettings::new)).codec();
     }
 

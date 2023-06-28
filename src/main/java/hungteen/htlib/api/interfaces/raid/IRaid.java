@@ -27,5 +27,5 @@ public interface IRaid extends IDummyEntity {
      * Get getSpawnEntities placement by priority.
      * @return Function (Spawn -> Placement).
      */
-    Function<ISpawnComponent, IPlaceComponent> getPlaceComponent();
+    Function<ISpawnComponent, IPositionComponent> getPlaceComponent();
 }

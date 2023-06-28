@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
 import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
+import hungteen.htlib.api.interfaces.raid.IResultType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -63,7 +63,7 @@ public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemS
     }
 
     @Override
-    public IResultComponentType<?> getType() {
-        return HTResultComponents.ITEM_STACK;
+    public IResultType<?> getType() {
+        return HTResultTypes.ITEM_STACK;
     }
 }

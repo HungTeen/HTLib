@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IResultComponentType;
+import hungteen.htlib.api.interfaces.raid.IResultType;
 import hungteen.htlib.common.event.events.RaidEvent;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +48,7 @@ public record EventResult(ResourceLocation id, boolean forLevel, boolean forDefe
     }
 
     @Override
-    public IResultComponentType<?> getType() {
-        return HTResultComponents.EVENT;
+    public IResultType<?> getType() {
+        return HTResultTypes.EVENT;
     }
 }

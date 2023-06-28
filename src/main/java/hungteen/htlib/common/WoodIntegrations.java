@@ -47,8 +47,8 @@ import java.util.function.Supplier;
  */
 public class WoodIntegrations {
 
-    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.create(HTLibHelper.prefix("wood"));
-    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.create(HTLibHelper.prefix("boat_type"));
+    private static final HTSimpleRegistry<WoodIntegration> WOODS = HTRegistryManager.createSimple(HTLibHelper.prefix("wood"));
+    private static final HTSimpleRegistry<IBoatType> BOAT_TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("boat_type"));
 
     /**
      * Register at the tail of event，{@link HTLib#HTLib()}
@@ -123,8 +123,8 @@ public class WoodIntegrations {
         return Collections.unmodifiableCollection(BOAT_TYPES.getValues());
     }
 
-    public static List<WoodIntegration> getWoodIntegrations() {
-        return Collections.unmodifiableList(WOODS.getValues());
+    public static Collection<WoodIntegration> getWoodIntegrations() {
+        return Collections.unmodifiableCollection(WOODS.getValues());
     }
 
     public static Set<Block> getSignBlocks(){
