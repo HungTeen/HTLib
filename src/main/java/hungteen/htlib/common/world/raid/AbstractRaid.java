@@ -5,12 +5,13 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.event.events.RaidEvent;
-import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.common.world.entity.DummyEntityManager;
-import hungteen.htlib.common.world.entity.DummyEntityType;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
+import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityType;
+import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.ChatFormatting;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,12 +36,10 @@ import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * @program: HTLib
@@ -52,15 +50,16 @@ import java.util.function.Predicate;
  **/
 public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
+    public static final String RAID_TAG = "RaidTag";
     public static final MutableComponent RAID_TITLE = Component.translatable("raid.htlib.title");
     public static final MutableComponent RAID_VICTORY_TITLE = Component.translatable("raid.htlib.victory_title");
     public static final MutableComponent RAID_LOSS_TITLE = Component.translatable("raid.htlib.loss_title");
     public static final MutableComponent RAID_WARN = Component.translatable("raid.htlib.too_far_away").withStyle(ChatFormatting.RED);
     private final ServerBossEvent progressBar = new ServerBossEvent(RAID_TITLE, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
-    public final ResourceLocation raidLocation;
+    protected CompoundTag raidTag = new CompoundTag();
     protected IRaidComponent raidComponent;
     protected IWaveComponent waveComponent;
-    protected List<ISpawnComponent> spawnComponents;
+    protected List<ISpawnComponent> spawnComponents = List.of();
     protected Status status = Status.PREPARE;
     protected final Set<Entity> raiderSet = Sets.newHashSet();
     protected int tick = 0;
@@ -69,25 +68,28 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected int currentWave = 0;
     private boolean firstTick = false;
 
-    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, int id, ResourceLocation location, Vec3 position) {
-        super(dummyEntityType, serverLevel, id, position);
-        this.raidLocation = location;
+    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, Vec3 position, IRaidComponent raidComponent) {
+        super(dummyEntityType, serverLevel, position);
+        CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), raidComponent)
+                .result().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).ifPresent(tag -> this.raidTag = tag);
     }
 
-    public AbstractRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag tag) {
-        super(dummyEntityType, level, tag);
-        this.raidLocation = new ResourceLocation(tag.getString("RaidLocation"));
+    public AbstractRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag raidTag) {
+        super(dummyEntityType, level, raidTag);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        if(tag.contains(RAID_TAG)){
+            this.raidTag = tag.getCompound(RAID_TAG);
+        }
         if (tag.contains("WaveComponent")) {
-            HTWaveComponents.getCodec().parse(NbtOps.INSTANCE, tag.get("WaveComponent"))
+            HTWaveComponents.getDirectCodec().parse(NbtOps.INSTANCE, tag.get("WaveComponent"))
                     .result().ifPresent(wave -> this.waveComponent = wave);
         }
         if (tag.contains("SpawnComponents")) {
-            HTSpawnComponents.getCodec().listOf().parse(NbtOps.INSTANCE, tag.get("SpawnComponents"))
+            HTSpawnComponents.getDirectCodec().listOf().parse(NbtOps.INSTANCE, tag.get("SpawnComponents"))
                     .result().ifPresent(spawns -> this.spawnComponents = spawns);
         }
         if (tag.contains("Position")) {
@@ -113,13 +115,11 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        tag.putString("RaidLocation", this.raidLocation.toString());
-        if(this.getRaidComponent() != null){
-            HTWaveComponents.getCodec().encodeStart(NbtOps.INSTANCE, this.getCurrentWave())
-                    .result().ifPresent(compoundTag -> tag.put("WaveComponent", compoundTag));
-            HTSpawnComponents.getCodec().listOf().encodeStart(NbtOps.INSTANCE, this.getSpawnComponents())
-                    .result().ifPresent(compoundTag -> tag.put("SpawnComponents", compoundTag));
-        }
+        tag.put(RAID_TAG, this.raidTag);
+        this.getCurrentWave().flatMap(wave -> CodecHelper.encodeNbt(HTWaveComponents.getDirectCodec(), wave)
+                .result()).ifPresent(compoundTag -> tag.put("WaveComponent", compoundTag));
+        HTSpawnComponents.getDirectCodec().listOf().encodeStart(NbtOps.INSTANCE, this.getCurrentSpawns())
+                .result().ifPresent(compoundTag -> tag.put("SpawnComponents", compoundTag));
         Vec3.CODEC.encodeStart(NbtOps.INSTANCE, this.position)
                 .result().ifPresent(compoundTag -> tag.put("Position", compoundTag));
         tag.putInt("RaidTick", this.tick);
@@ -139,26 +139,22 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return this.getLevel().hasChunkAt(MathHelper.toBlockPos(this.position));
     }
 
-    /**
-     * {@link DummyEntityManager#tick()}
-     */
     @Override
     public void tick() {
         if (!this.isRemoved() && this.canTick()) {
-            /* Skip Tick */
+            // Skip Tick.
             if (this.getLevel().getDifficulty() == Difficulty.PEACEFUL) {
                 this.remove();
                 return;
             }
-            if (this.getRaidComponent() == null) {
-                if (++this.invalidTick >= 100) {
-                    HTLib.getLogger().warn("CustomRaid removing : Missing raid component {} ?", this.raidLocation);
-                    this.remove();
-                }
-                return;
-            } else {
-                this.invalidTick = 0;
+            // No Raid Component.
+            if(this.checkAndRun(() -> this.getRaidComponent() == null)) return;
+            // Init Wave.
+            if(this.getCurrentWave().isEmpty() && this.currentWave == 0){
+                this.updateWave(false);
             }
+            if(this.checkAndRun(this.getCurrentWave()::isEmpty)) return;
+            final IWaveComponent wave = this.getCurrentWave().get();
 
             if (this.tick % 20 == 0 || this.stopTick % 10 == 5) {
                 this.updatePlayers();
@@ -177,29 +173,29 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             if (!this.firstTick) {
                 this.firstTick = true;
                 this.getPlayers().forEach(p -> {
-                    this.getRaidComponent().getRaidStartSound().ifPresent(sound -> PlayerHelper.playClientSound(p, sound));
+                    Objects.requireNonNull(this.getRaidComponent()).getRaidStartSound().ifPresent(sound -> PlayerHelper.playClientSound(p, sound));
                 });
             }
 
             switch (this.getStatus()) {
                 case PREPARE -> {
-                    if (++ this.tick >= this.getCurrentWave().getPrepareDuration()) {
-                        this.waveStart();
+                    if (++ this.tick >= wave.getPrepareDuration()) {
+                        this.waveStart(wave);
                     }
                 }
                 case RUNNING -> {
-                    this.checkNextWave();
+                    this.checkNextWave(wave);
                     this.checkSpawn();
                     ++ this.tick;
                 }
                 case LOSS -> {
-                    this.getRaidComponent().getResultComponents().stream().forEach(this::tickResult);
+                    Objects.requireNonNull(this.getRaidComponent()).getResultComponents().forEach(this::tickResult);
                     if (++ this.tick >= this.getRaidComponent().getLossDuration()) {
                         this.remove();
                     }
                 }
                 case VICTORY -> {
-                    this.getRaidComponent().getResultComponents().stream().forEach(this::tickResult);
+                    Objects.requireNonNull(this.getRaidComponent()).getResultComponents().forEach(this::tickResult);
                     if (++ this.tick >= this.getRaidComponent().getVictoryDuration()) {
                         this.remove();
                     }
@@ -208,13 +204,26 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         }
     }
 
+    protected boolean checkAndRun(Supplier<Boolean> supplier){
+        final boolean ans = supplier.get();
+        if (ans) {
+            if (++this.invalidTick >= 100) {
+                HTLib.getLogger().warn("Custom Raid Removing : Missing raid component !");
+                this.remove();
+            }
+        } else {
+            this.invalidTick = 0;
+        }
+        return ans;
+    }
+
     /**
      * Spawn raiders when time met.
      * {@link #tick()}
      */
     protected void checkSpawn() {
         if (this.getLevel() instanceof ServerLevel) {
-            this.getSpawnComponents().forEach(spawnComponent -> {
+            this.getCurrentSpawns().forEach(spawnComponent -> {
                 spawnComponent.getSpawnEntities((ServerLevel) this.getLevel(), this, tick).forEach(raider -> {
                     joinRaid(this.currentWave, raider);
                 });
@@ -237,29 +246,32 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      * {@link #tick()}
      */
     protected void tickProgressBar() {
-        switch (this.getStatus()) {
-            case PREPARE -> {
-                this.progressBar.setName(this.getRaidComponent().getRaidTitle());
-                this.progressBar.setProgress(this.tick * 1.0F / this.getCurrentWave().getPrepareDuration());
-            }
-            case RUNNING -> {
-                this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(Component.translatable("event.minecraft.raid.raiders_remaining", this.getTotalRaidersAlive())));
-                if (this.getCurrentWave().getWaveDuration() == 0) {
-                    this.progressBar.setProgress(Mth.clamp(this.getProgressPercent(), 0.0F, 1.0F));
-                } else {
-                    this.progressBar.setProgress(Mth.clamp(1 - this.tick * 1.0F / this.getCurrentWave().getWaveDuration(), 0.0F, 1.0F));
+        if(this.getRaidComponent() == null) return;
+        this.getCurrentWave().ifPresent(wave -> {
+            switch (this.getStatus()) {
+                case PREPARE -> {
+                    this.progressBar.setName(this.getRaidComponent().getRaidTitle());
+                    this.progressBar.setProgress(this.tick * 1.0F / wave.getPrepareDuration());
+                }
+                case RUNNING -> {
+                    this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(Component.translatable("event.minecraft.raid.raiders_remaining", this.getTotalRaidersAlive())));
+                    if (wave.getWaveDuration() == 0) {
+                        this.progressBar.setProgress(Mth.clamp(this.getProgressPercent(), 0.0F, 1.0F));
+                    } else {
+                        this.progressBar.setProgress(Mth.clamp(1 - this.tick * 1.0F / wave.getWaveDuration(), 0.0F, 1.0F));
+                    }
+                }
+                case VICTORY -> {
+                    this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(this.getRaidComponent().getVictoryTitle()));
+                    this.progressBar.setProgress(1F);
+                }
+                case LOSS -> {
+                    this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(this.getRaidComponent().getLossTitle()));
+                    this.progressBar.setProgress(1F);
                 }
             }
-            case VICTORY -> {
-                this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(this.getRaidComponent().getVictoryTitle()));
-                this.progressBar.setProgress(1F);
-            }
-            case LOSS -> {
-                this.progressBar.setName(this.getRaidComponent().getRaidTitle().copy().append(" - ").append(this.getRaidComponent().getLossTitle()));
-                this.progressBar.setProgress(1F);
-            }
-        }
-        this.progressBar.setColor(this.getRaidComponent().getBarColor());
+            this.progressBar.setColor(this.getRaidComponent().getBarColor());
+        });
     }
 
     /**
@@ -377,15 +389,15 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     /**
      * run when prepare time is finished.
      */
-    protected void waveStart() {
+    protected void waveStart(IWaveComponent wave) {
         this.tick = 0;
         this.setStatus(Status.RUNNING);
         this.getPlayers().forEach(p -> {
             if (Objects.requireNonNull(this.getRaidComponent()).showRoundTitle()) {
                 PlayerHelper.sendTitleToPlayer(p, Component.translatable("raid.htlib.round", this.currentWave + 1).withStyle(ChatFormatting.DARK_RED));
             }
-            if (this.getCurrentWave().getWaveStartSound().isPresent()) {
-                PlayerHelper.playClientSound(p, this.getCurrentWave().getWaveStartSound().get());
+            if (wave.getWaveStartSound().isPresent()) {
+                PlayerHelper.playClientSound(p, wave.getWaveStartSound().get());
             } else if (this.getRaidComponent().getWaveStartSound().isPresent()) {
                 PlayerHelper.playClientSound(p, this.getRaidComponent().getWaveStartSound().get());
             }
@@ -408,15 +420,15 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     /**
      * {@link #tick()}
      */
-    protected void checkNextWave() {
-        if (this.getCurrentWave().getWaveDuration() == 0 || this.tick >= this.getCurrentWave().getWaveDuration()) {
+    protected void checkNextWave(IWaveComponent wave) {
+        if (wave.getWaveDuration() == 0 || this.tick >= wave.getWaveDuration()) {
             if (this.canNextWave()) {
                 this.nextWave();
             } else {
                 this.onLoss();
             }
         } else {
-            if (this.getCurrentWave().canSkip() && this.canNextWave() && this.getSpawnComponents().stream().allMatch(spawnComponent -> spawnComponent.finishedSpawn(this.tick))) {
+            if (wave.canSkip() && this.canNextWave() && this.getCurrentSpawns().stream().allMatch(spawnComponent -> spawnComponent.finishedSpawn(this.tick))) {
                 this.nextWave();
             }
         }
@@ -427,7 +439,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             this.onVictory();
         } else {
             this.tick = 0;
-            this.updateWaveAndSpawn();
+            this.updateWave(true);
             this.setStatus(Status.PREPARE);
             MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidWaveFinishEvent(this.getLevel(), this, this.currentWave));
         }
@@ -440,10 +452,10 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected void tickResult(IResultComponent result){
         if(this.getLevel() instanceof ServerLevel){
             result.apply(this, (ServerLevel) this.getLevel(), tick);
-            this.getDefenders().stream().forEach(entity -> {
+            this.getDefenders().forEach(entity -> {
                 result.applyToDefender(this, entity, tick);
             });
-            this.getRaiders().stream().forEach(entity -> {
+            this.getRaiders().forEach(entity -> {
                 result.applyToRaider(this, entity, tick);
             });
         }
@@ -566,37 +578,59 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return this.status;
     }
 
+    public void updateWave(boolean overwrite) {
+        if(this.getRaidComponent() != null){
+            if(overwrite || this.getCurrentWave().isEmpty()){
+                this.setCurrentWave(this.getRaidComponent().getCurrentWave(this, this.currentWave));
+            }
+            this.setDirty();
+        }
+    }
+
     /**
      * Get raid component by resource, use cache to speed up.
      */
     @Nullable
     public IRaidComponent getRaidComponent() {
-        return this.raidComponent != null ? this.raidComponent : (this.raidComponent = HTRaidComponents.getRaidComponent(this.raidLocation));
+        if(this.raidComponent == null){
+            CodecHelper.parse(HTRaidComponents.getDirectCodec(), this.raidTag)
+                    .result().ifPresent(c -> this.raidComponent = c);
+        }
+        return this.raidComponent;
     }
 
     @NotNull
-    public IWaveComponent getCurrentWave() {
-        return this.waveComponent != null ? this.waveComponent : (this.waveComponent = Objects.requireNonNull(this.getRaidComponent()).getCurrentWave(this, this.currentWave));
+    public Optional<IWaveComponent> getCurrentWave() {
+        return Optional.ofNullable(this.waveComponent);
+    }
+
+    public void setCurrentWave(@NotNull IWaveComponent wave) {
+        this.waveComponent = wave;
+        this.spawnComponents = wave.getWaveSpawns(this, this.currentWave);
     }
 
     @NotNull
-    public void updateWaveAndSpawn() {
-        this.waveComponent = Objects.requireNonNull(this.getRaidComponent()).getCurrentWave(this, this.currentWave);
-        this.spawnComponents = this.getCurrentWave().getWaveSpawns(this, this.currentWave);
-        this.setDirty();
+    public List<ISpawnComponent> getCurrentSpawns() {
+        return this.spawnComponents;
     }
 
-    @NotNull
-    public List<ISpawnComponent> getSpawnComponents() {
-        return this.spawnComponents != null ? this.spawnComponents : (this.spawnComponents = this.getCurrentWave().getWaveSpawns(this, this.currentWave));
+    public void setCurrentSpawns(List<ISpawnComponent> spawns) {
+        this.spawnComponents = spawns;
     }
 
     @Override
     public Function<ISpawnComponent, IPositionComponent> getPlaceComponent() {
         return spawnComponent -> {
-            return spawnComponent.getSpawnPlacement().isPresent() ? spawnComponent.getSpawnPlacement().get() :
-                    getCurrentWave().getSpawnPlacement().isPresent() ? getCurrentWave().getSpawnPlacement().get() :
-                            Objects.requireNonNull(getRaidComponent()).getSpawnPlacement();
+            if(spawnComponent.getSpawnPlacement().isPresent()) {
+                return spawnComponent.getSpawnPlacement().get();
+            } else if(getCurrentWave().isPresent()){
+                if(getCurrentWave().get().getSpawnPlacement().isPresent()) {
+                    return getCurrentWave().get().getSpawnPlacement().get();
+                } else if(getRaidComponent() != null && getRaidComponent().getSpawnPlacement().isPresent()){
+                    return getRaidComponent().getSpawnPlacement().get();
+                }
+            }
+            return HTPositionComponents.DEFAULT;
         };
     }
 
