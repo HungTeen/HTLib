@@ -1,10 +1,17 @@
 package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
+import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnType;
+import hungteen.htlib.common.registry.HTCodecRegistry;
+import hungteen.htlib.common.registry.HTRegistryManager;
+import hungteen.htlib.util.helper.HTLibHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Optional;
@@ -16,18 +23,47 @@ import java.util.Optional;
  **/
 public class HTSpawnComponents {
 
-//    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(ISpawnComponent.class, "custom_raid/spawns", HTSpawnComponents::getCodec, true);
+    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(HTLibHelper.prefix("spawn"), HTSpawnComponents::getDirectCodec, HTSpawnComponents::getDirectCodec);
 
+    public static final ResourceKey<ISpawnComponent> TEST_1 = create("test_1");
+    public static final ResourceKey<ISpawnComponent> TEST_2 = create("test_2");
+    public static final ResourceKey<ISpawnComponent> TEST_3 = create("test_3");
 
-//    public static final HTRegistryHolder<SpawnPlacement> DEFAULT = SPAWNS.innerRegister(
-//            HTLib.prefix("default"), new CenterAreaPlacement(
-//                    Vec3.ZERO, 0, 1, true, 0, true
-//            )
-//    );
+    public static void register(BootstapContext<ISpawnComponent> context) {
+        context.register(TEST_1, new OnceSpawn(
+                HTSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
+                10,
+                10
+        ));
+        context.register(TEST_2, new OnceSpawn(
+                HTSpawnComponents.builder().entityType(EntityType.SPIDER).build(),
+                10,
+                5
+        ));
+        context.register(TEST_3, new DurationSpawn(
+                HTSpawnComponents.builder().entityType(EntityType.SKELETON).build(),
+                100,
+                400,
+                100,
+                1,
+                0
+        ));
+    }
 
-
-    public static Codec<ISpawnComponent> getCodec(){
+    public static Codec<ISpawnComponent> getDirectCodec(){
         return HTSpawnTypes.registry().byNameCodec().dispatch(ISpawnComponent::getType, ISpawnType::codec);
+    }
+
+    public static Codec<Holder<ISpawnComponent>> getCodec(){
+        return registry().getHolderCodec(getDirectCodec());
+    }
+
+    public static ResourceKey<ISpawnComponent> create(String name) {
+        return registry().createKey(HTLibHelper.prefix(name));
+    }
+
+    public static IHTCodecRegistry<ISpawnComponent> registry() {
+        return SPAWNS;
     }
 
     public static SpawnSettingBuilder builder(){
@@ -40,10 +76,10 @@ public class HTSpawnComponents {
         private EntityType<?> entityType = EntityType.PIG;
         private CompoundTag nbt = new CompoundTag();
         private boolean enableDefaultSpawn = true;
-        private IPositionComponent placeComponent = null;
+        private Holder<IPositionComponent> placeComponent = null;
 
-        public SpawnComponent.SpawnSettings build() {
-            return new SpawnComponent.SpawnSettings(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
+        public SpawnComponent.SpawnSetting build() {
+            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
         }
 
         public SpawnSettingBuilder entityType(EntityType<?> type) {
@@ -61,7 +97,7 @@ public class HTSpawnComponents {
             return this;
         }
 
-        public SpawnSettingBuilder placement(IPositionComponent placeComponent){
+        public SpawnSettingBuilder placement(Holder<IPositionComponent> placeComponent){
             this.placeComponent = placeComponent;
             return this;
         }

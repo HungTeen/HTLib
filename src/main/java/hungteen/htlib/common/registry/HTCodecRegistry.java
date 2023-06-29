@@ -1,6 +1,7 @@
 package hungteen.htlib.common.registry;
 
 import com.mojang.serialization.Codec;
+import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DataPackRegistryEvent;
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
  * @program HTLib
  * @data 2023/6/28 11:10
  */
-public class HTCodecRegistry<V> extends HTRegistry<V> {
+public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistry<V> {
 
     private final Supplier<Codec<V>> codecSup;
     private final Supplier<Codec<V>> syncSup;
@@ -25,8 +26,8 @@ public class HTCodecRegistry<V> extends HTRegistry<V> {
         this.syncSup = syncSup;
     }
 
-    HTCodecRegistry(ResourceLocation registryName, Supplier<RegistryBuilder<V>> sup, Supplier<Codec<V>> codecSup, Supplier<Codec<V>> syncSup) {
-        super(registryName, sup);
+    HTCodecRegistry(ResourceLocation registryName, Supplier<RegistryBuilder<V>> builderSup, Supplier<Codec<V>> codecSup, Supplier<Codec<V>> syncSup) {
+        super(registryName, builderSup);
         this.codecSup = codecSup;
         this.syncSup = syncSup;
     }
@@ -44,9 +45,5 @@ public class HTCodecRegistry<V> extends HTRegistry<V> {
     private void addRegistry(DataPackRegistryEvent.NewRegistry event){
         event.dataPackRegistry(this.getRegistryKey(), this.codecSup.get(), this.syncSup.get());
     }
-
-//    public Codec<IRaidComponent> getCodec(){
-//        return .byNameCodec().dispatch(IRaidComponent::getType, IRaidComponentType::codec);
-//    }
 
 }

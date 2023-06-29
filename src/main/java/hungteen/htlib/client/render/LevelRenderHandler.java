@@ -40,6 +40,9 @@ public class LevelRenderHandler {
                 });
     }
 
+    /**
+     * {@link net.minecraft.client.renderer.LevelRenderer}
+     */
     private static void renderBorderFormation(DummyEntity entityIn, Camera camera) {
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         final double validDistance = ClientProxy.MC.options.getEffectiveRenderDistance() * 16;
@@ -138,8 +141,10 @@ public class LevelRenderHandler {
             RenderSystem.polygonOffset(0.0F, 0.0F);
             RenderSystem.disablePolygonOffset();
             RenderSystem.disableBlend();
+            RenderSystem.defaultBlendFunc();
             posestack.popPose();
             RenderSystem.applyModelViewMatrix();
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.depthMask(true);
         }
     }

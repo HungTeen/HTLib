@@ -18,8 +18,8 @@ public final class HTSimpleRegistry<T extends ISimpleEntry> extends HTRegistry<T
         super(registryName);
     }
 
-    HTSimpleRegistry(ResourceLocation registryName, Supplier<RegistryBuilder<T>> sup) {
-        super(registryName, sup);
+    HTSimpleRegistry(ResourceLocation registryName, Supplier<RegistryBuilder<T>> builderSup) {
+        super(registryName, builderSup);
     }
 
 }

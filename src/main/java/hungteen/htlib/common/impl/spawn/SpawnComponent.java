@@ -4,16 +4,18 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
-import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.util.helper.registry.EntityHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Optional;
@@ -25,10 +27,10 @@ import java.util.Optional;
  **/
 public abstract class SpawnComponent implements ISpawnComponent {
 
-    private final SpawnSettings spawnSettings;
+    private final SpawnSetting spawnSetting;
 
-    public SpawnComponent(SpawnSettings spawnSettings) {
-        this.spawnSettings = spawnSettings;
+    public SpawnComponent(SpawnSetting spawnSettings) {
+        this.spawnSetting = spawnSettings;
     }
 
     /**
@@ -46,8 +48,8 @@ public abstract class SpawnComponent implements ISpawnComponent {
             if (entity == null) {
                 HTLib.getLogger().error("Fail to create entity {}", this.getEntityType().toString());
             } else {
-                if (this.enableDefaultSpawn() && entity instanceof Mob) {
-                    ((Mob)entity).finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, (SpawnGroupData)null, (CompoundTag)null);
+                if (this.enableDefaultSpawn() && entity instanceof Mob mob) {
+                    ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
                 }
 
                 if (!level.tryAddFreshEntityWithPassengers(entity)) {
@@ -64,26 +66,26 @@ public abstract class SpawnComponent implements ISpawnComponent {
 
     @Override
     public Optional<IPositionComponent> getSpawnPlacement() {
-        return this.getSpawnSettings().placeComponent();
+        return this.getSpawnSetting().placeComponent().map(Holder::get);
     }
 
     public EntityType<?> getEntityType() {
-        return getSpawnSettings().entityType();
+        return getSpawnSetting().entityType();
     }
 
     public CompoundTag getEntityNBT(){
-        return getSpawnSettings().nbt();
+        return getSpawnSetting().nbt();
     }
 
     public boolean enableDefaultSpawn(){
-        return getSpawnSettings().enableDefaultSpawn();
+        return getSpawnSetting().enableDefaultSpawn();
     }
 
-    public SpawnSettings getSpawnSettings() {
-        return spawnSettings;
+    public SpawnSetting getSpawnSetting() {
+        return spawnSetting;
     }
 
-    public record SpawnSettings(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<IPositionComponent> placeComponent){
+    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<Holder<IPositionComponent>> placeComponent){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -92,12 +94,12 @@ public abstract class SpawnComponent implements ISpawnComponent {
          * spawnTick : 生成的时间，When to getSpawnEntities the entity.
          * spawnCount : 生成数量，How many entities to getSpawnEntities.
          */
-        public static final Codec<SpawnSettings> CODEC = RecordCodecBuilder.<SpawnSettings>mapCodec(instance -> instance.group(
-                ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSettings::entityType),
-                CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSettings::nbt),
-                Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSettings::enableDefaultSpawn),
-                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSettings::placeComponent)
-                ).apply(instance, SpawnSettings::new)).codec();
+        public static final Codec<SpawnSetting> CODEC = RecordCodecBuilder.<SpawnSetting>mapCodec(instance -> instance.group(
+                ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSetting::entityType),
+                CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
+                Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
+                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent)
+                ).apply(instance, SpawnSetting::new)).codec();
     }
 
 }

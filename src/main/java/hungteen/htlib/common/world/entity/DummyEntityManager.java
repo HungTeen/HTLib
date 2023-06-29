@@ -19,6 +19,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class DummyEntityManager extends SavedData {
         this.setDirty();
     }
 
+    @Nullable
     public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
         final BlockPos blockpos = MathHelper.toBlockPos(position);
         final Optional<? extends DummyEntityType<?>> opt = HTDummyEntities.getEntityType(location);
@@ -57,9 +59,15 @@ public class DummyEntityManager extends SavedData {
                     .result().ifPresent(nbt -> compoundtag.put("Position", nbt));
 
             DummyEntity dummyEntity = dummyEntityType.create(level, compoundtag);
-            if (dummyEntity != null && ! MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity))) {
-                DummyEntityManager.get(level).add(dummyEntity);
-            }
+            return addEntity(level, dummyEntity);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static DummyEntity addEntity(ServerLevel level, DummyEntity dummyEntity) {
+        if (dummyEntity != null && ! MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity))) {
+            DummyEntityManager.get(level).add(dummyEntity);
             return dummyEntity;
         }
         return null;
@@ -77,7 +85,7 @@ public class DummyEntityManager extends SavedData {
     /**
      * tick all raid in running.
      */
-    protected void tick() {
+    void tick() {
         final List<DummyEntity> removedEntity = new ArrayList<>();
         for (DummyEntity entity : this.entityMap.values()) {
             if(entity.isRemoved()){

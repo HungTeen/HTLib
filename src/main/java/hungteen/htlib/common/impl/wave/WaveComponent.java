@@ -17,42 +17,42 @@ import java.util.Optional;
  **/
 public abstract class WaveComponent implements IWaveComponent {
 
-    private final WaveSettings waveSettings;
+    private final WaveSetting waveSetting;
 
-    public WaveComponent(WaveSettings waveSettings) {
-        this.waveSettings = waveSettings;
+    public WaveComponent(WaveSetting waveSetting) {
+        this.waveSetting = waveSetting;
     }
 
     @Override
     public Optional<IPositionComponent> getSpawnPlacement() {
-        return getWaveSettings().spawnPlacement();
+        return getWaveSetting().spawnPlacement().map(Holder::get);
     }
 
     @Override
     public int getPrepareDuration() {
-        return getWaveSettings().prepareDuration();
+        return getWaveSetting().prepareDuration();
     }
 
     @Override
     public int getWaveDuration() {
-        return getWaveSettings().waveDuration();
+        return getWaveSetting().waveDuration();
     }
 
     @Override
     public boolean canSkip() {
-        return getWaveSettings().canSkip();
+        return getWaveSetting().canSkip();
     }
 
     @Override
     public Optional<SoundEvent> getWaveStartSound() {
-        return getWaveSettings().waveStartSound().map(Holder::get);
+        return getWaveSetting().waveStartSound().map(Holder::get);
     }
 
-    public WaveSettings getWaveSettings() {
-        return waveSettings;
+    public WaveSetting getWaveSetting() {
+        return waveSetting;
     }
 
-    public record WaveSettings(Optional<IPositionComponent> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
+    public record WaveSetting(Optional<Holder<IPositionComponent>> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -61,12 +61,12 @@ public abstract class WaveComponent implements IWaveComponent {
          * spawnTick : 生成的时间，When to getSpawnEntities the entity.
          * spawnCount : 生成数量，How many entities to getSpawnEntities.
          */
-        public static final Codec<WaveSettings> CODEC = RecordCodecBuilder.<WaveSettings>mapCodec(instance -> instance.group(
-                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(WaveSettings::spawnPlacement),
-                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 100).forGetter(WaveSettings::prepareDuration),
-                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(WaveSettings::waveDuration),
-                Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSettings::canSkip),
-                Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(WaveSettings::waveStartSound)
-        ).apply(instance, WaveSettings::new)).codec();
+        public static final Codec<WaveSetting> CODEC = RecordCodecBuilder.<WaveSetting>mapCodec(instance -> instance.group(
+                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(WaveSetting::spawnPlacement),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("prepare_duration", 100).forGetter(WaveSetting::prepareDuration),
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("wave_duration", 0).forGetter(WaveSetting::waveDuration),
+                Codec.BOOL.optionalFieldOf("can_skip_wave", true).forGetter(WaveSetting::canSkip),
+                Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(WaveSetting::waveStartSound)
+        ).apply(instance, WaveSetting::new)).codec();
     }
 }

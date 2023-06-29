@@ -38,8 +38,8 @@ public abstract class RaidComponent implements IRaidComponent {
     }
 
     @Override
-    public IPositionComponent getSpawnPlacement() {
-        return getRaidSettings().placeComponent();
+    public Optional<IPositionComponent> getSpawnPlacement() {
+        return getRaidSettings().placeComponent().map(Holder::get);
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class RaidComponent implements IRaidComponent {
 
     @Override
     public List<IResultComponent> getResultComponents() {
-        return getRaidSettings().resultComponents();
+        return getRaidSettings().resultComponents().stream().map(Holder::get).toList();
     }
 
     @Override
@@ -127,9 +127,9 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(IPositionComponent placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<IResultComponent> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
+    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
-                HTPositionComponents.getCodec().fieldOf("placement_type").forGetter(RaidSetting::placeComponent),
+                Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 
                 BorderSetting.CODEC.fieldOf("border_setting").forGetter(RaidSetting::borderSetting),
                 BarSetting.CODEC.fieldOf("bar_setting").forGetter(RaidSetting::barSetting),

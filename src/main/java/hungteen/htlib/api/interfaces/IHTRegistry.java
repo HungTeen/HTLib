@@ -100,6 +100,12 @@ public interface IHTRegistry<T> {
     Codec<T> byNameCodec();
 
     /**
+     * 获取帮助类。
+     * @return Helper instance.
+     */
+    IHTResourceHelper<T> helper();
+
+    /**
      * Get the registry name, 获取该注册的注册名。
      * @return registry name.
      */

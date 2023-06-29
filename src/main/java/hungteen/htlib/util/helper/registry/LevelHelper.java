@@ -1,5 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
+import hungteen.htlib.api.interfaces.IHTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
  */
 public class LevelHelper {
 
-    private static final ResourceHelper<DimensionType> DIMENSION_TYPE_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<DimensionType> DIMENSION_TYPE_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<DimensionType>> resourceKey() {
@@ -23,7 +24,7 @@ public class LevelHelper {
         }
     };
 
-    private static final ResourceHelper<LevelStem> LEVEL_STEM_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<LevelStem> LEVEL_STEM_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<LevelStem>> resourceKey() {
@@ -31,7 +32,7 @@ public class LevelHelper {
         }
     };
 
-    private static final ResourceHelper<Level> LEVEL_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<Level> LEVEL_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<Level>> resourceKey() {
@@ -39,7 +40,7 @@ public class LevelHelper {
         }
     };
 
-    private static final ResourceHelper<NoiseGeneratorSettings> NOISE_GEN_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<NoiseGeneratorSettings> NOISE_GEN_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<NoiseGeneratorSettings>> resourceKey() {
@@ -49,19 +50,19 @@ public class LevelHelper {
 
     /* Common Methods */
 
-    public static ResourceHelper<Level> get(){
+    public static IHTResourceHelper<Level> get(){
         return LEVEL_HELPER;
     }
 
-    public static ResourceHelper<DimensionType> type(){
+    public static IHTResourceHelper<DimensionType> type(){
         return DIMENSION_TYPE_HELPER;
     }
 
-    public static ResourceHelper<LevelStem> stem(){
+    public static IHTResourceHelper<LevelStem> stem(){
         return LEVEL_STEM_HELPER;
     }
 
-    public static ResourceHelper<NoiseGeneratorSettings> noise(){
+    public static IHTResourceHelper<NoiseGeneratorSettings> noise(){
         return NOISE_GEN_HELPER;
     }
 }

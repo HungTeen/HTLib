@@ -1,11 +1,10 @@
 package hungteen.htlib.common.registry;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.IHTRegistry;
-import hungteen.htlib.util.helper.registry.RegistryHelper;
+import hungteen.htlib.api.interfaces.IHTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -36,23 +35,18 @@ public class HTRegistry<T> implements IHTRegistry<T> {
     private final ResourceKey<Registry<T>> registryKey;
     private final HTRegistryHolder<T> registryHolder;
     private final Supplier<RegistryBuilder<?>> registryFactory;
-    private final RegistryHelper<T> registryHelper;
+    private final IHTResourceHelper<T> registryHelper;
     private boolean seenRegisterEvent = false;
 
     HTRegistry(ResourceLocation registryName) {
-        this(registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().disableSync().hasTags());
+        this(registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
     }
 
-    HTRegistry(ResourceLocation registryName, final Supplier<RegistryBuilder<T>> sup) {
+    HTRegistry(ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
         this.registryKey = ResourceKey.createRegistryKey(registryName);
         this.registryHolder = new HTRegistryHolder<>(this.registryKey);
-        this.registryFactory = () -> sup.get().setName(registryName);
-        this.registryHelper = new RegistryHelper<>() {
-            @Override
-            public Either<IForgeRegistry<T>, Registry<T>> getRegistry() {
-                return Either.left(HTRegistry.this.getRegistry());
-            }
-        };
+        this.registryFactory = () -> builderSup.get().setName(registryName);
+        this.registryHelper = HTRegistry.this::getRegistryKey;
     }
 
     @Override
@@ -137,7 +131,8 @@ public class HTRegistry<T> implements IHTRegistry<T> {
         return this.registryHolder.get();
     }
 
-    public RegistryHelper<T> helper() {
+    @Override
+    public IHTResourceHelper<T> helper() {
         return registryHelper;
     }
 

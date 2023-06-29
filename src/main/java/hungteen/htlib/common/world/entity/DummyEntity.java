@@ -34,10 +34,10 @@ public abstract class DummyEntity implements IDummyEntity {
     protected Vec3 position;
     private boolean isRemoved = false;
 
-    public DummyEntity(DummyEntityType<?> entityType, Level level, int entityID, Vec3 position) {
+    public DummyEntity(DummyEntityType<?> entityType, ServerLevel level, Vec3 position) {
         this.entityType = entityType;
-        this.entityID = entityID;
         this.level = level;
+        this.entityID = DummyEntityManager.get(level).getUniqueId();
         this.position = position;
     }
 

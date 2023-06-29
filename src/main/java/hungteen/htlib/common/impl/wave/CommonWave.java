@@ -6,6 +6,7 @@ import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IWaveType;
+import net.minecraft.core.Holder;
 
 import java.util.List;
 
@@ -24,23 +25,23 @@ public class CommonWave extends WaveComponent {
      * spawnComponents : 生成部件
      */
     public static final Codec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
-            WaveSettings.CODEC.fieldOf("setting").forGetter(CommonWave::getWaveSettings),
+            WaveSetting.CODEC.fieldOf("setting").forGetter(CommonWave::getWaveSetting),
             HTSpawnComponents.getCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
     ).apply(instance, CommonWave::new)).codec();
-    private final List<ISpawnComponent> spawnComponents;
+    private final List<Holder<ISpawnComponent>> spawnComponents;
 
-    public CommonWave(WaveSettings waveSettings, List<ISpawnComponent> spawnComponents) {
+    public CommonWave(WaveSetting waveSettings, List<Holder<ISpawnComponent>> spawnComponents) {
         super(waveSettings);
         this.spawnComponents = spawnComponents;
     }
 
-    public List<ISpawnComponent> getSpawnComponents() {
+    public List<Holder<ISpawnComponent>> getSpawnComponents() {
         return spawnComponents;
     }
 
     @Override
     public List<ISpawnComponent> getWaveSpawns(IRaid raid, int tick) {
-        return spawnComponents;
+        return spawnComponents.stream().map(Holder::get).toList();
     }
 
     @Override

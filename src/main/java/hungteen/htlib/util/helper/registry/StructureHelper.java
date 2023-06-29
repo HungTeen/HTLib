@@ -1,5 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
+import hungteen.htlib.api.interfaces.IHTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
  */
 public class StructureHelper {
 
-    private static final ResourceHelper<Structure> STRUCTURE_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<Structure> STRUCTURE_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<Structure>> resourceKey() {
@@ -23,7 +24,7 @@ public class StructureHelper {
         }
     };
 
-    private static final ResourceHelper<StructureSet> STRUCTURE_SET_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<StructureSet> STRUCTURE_SET_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<StructureSet>> resourceKey() {
@@ -31,7 +32,7 @@ public class StructureHelper {
         }
     };
 
-    private static final ResourceHelper<StructureTemplatePool> POOL_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<StructureTemplatePool> POOL_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<StructureTemplatePool>> resourceKey() {
@@ -39,7 +40,7 @@ public class StructureHelper {
         }
     };
 
-    private static final ResourceHelper<StructureProcessorList> PROCESSOR_LIST_HELPER = new ResourceHelper<>(){
+    private static final IHTResourceHelper<StructureProcessorList> PROCESSOR_LIST_HELPER = new IHTResourceHelper<>(){
 
         @Override
         public ResourceKey<? extends Registry<StructureProcessorList>> resourceKey() {
@@ -49,19 +50,19 @@ public class StructureHelper {
 
     /* Common Methods */
 
-    public static ResourceHelper<Structure> get(){
+    public static IHTResourceHelper<Structure> get(){
         return STRUCTURE_HELPER;
     }
 
-    public static ResourceHelper<StructureSet> set(){
+    public static IHTResourceHelper<StructureSet> set(){
         return STRUCTURE_SET_HELPER;
     }
 
-    public static ResourceHelper<StructureTemplatePool> pool(){
+    public static IHTResourceHelper<StructureTemplatePool> pool(){
         return POOL_HELPER;
     }
 
-    public static ResourceHelper<StructureProcessorList> processors(){
+    public static IHTResourceHelper<StructureProcessorList> processors(){
         return PROCESSOR_LIST_HELPER;
     }
 

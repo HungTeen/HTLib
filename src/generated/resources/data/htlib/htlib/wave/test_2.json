@@ -1,0 +1,11 @@
+{
+  "type": "htlib:common",
+  "setting": {
+    "can_skip_wave": false,
+    "wave_duration": 1200
+  },
+  "spawns": [
+    "htlib:test_2",
+    "htlib:test_3"
+  ]
+}

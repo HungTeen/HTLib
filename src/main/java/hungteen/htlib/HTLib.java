@@ -12,8 +12,13 @@ import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.position.HTPositionTypes;
+import hungteen.htlib.common.impl.raid.HTRaidComponents;
+import hungteen.htlib.common.impl.raid.HTRaidTypes;
+import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.impl.result.HTResultTypes;
+import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnTypes;
+import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.impl.wave.HTWaveTypes;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
@@ -62,10 +67,10 @@ public class HTLib {
 
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        forgeBus.addListener(EventPriority.NORMAL, DummyEntityManager::tick);
+        forgeBus.addListener(DummyEntityManager::tick);
         forgeBus.addListener(EventPriority.NORMAL, PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
-        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher()));
+        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
     }
 
     public void register(IEventBus modBus){
@@ -75,12 +80,17 @@ public class HTLib {
         HTCommandArgumentInfos.register(modBus);
 
         HTDummyEntities.registry().register(modBus);
+
         HTPositionTypes.registry().register(modBus);
         HTPositionComponents.registry().register(modBus);
         HTResultTypes.registry().register(modBus);
+        HTResultComponents.registry().register(modBus);
         HTSpawnTypes.registry().register(modBus);
+        HTSpawnComponents.registry().register(modBus);
         HTWaveTypes.registry().register(modBus);
-        HTResultTypes.registry().register(modBus);
+        HTWaveComponents.registry().register(modBus);
+        HTRaidTypes.registry().register(modBus);
+        HTRaidComponents.registry().register(modBus);
     }
 
     /**

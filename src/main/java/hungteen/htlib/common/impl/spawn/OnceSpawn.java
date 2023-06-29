@@ -25,14 +25,14 @@ public class OnceSpawn extends SpawnComponent {
      * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
     public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
-            SpawnSettings.CODEC.fieldOf("setting").forGetter(OnceSpawn::getSpawnSettings),
+            SpawnSetting.CODEC.fieldOf("setting").forGetter(OnceSpawn::getSpawnSetting),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_tick").forGetter(OnceSpawn::getSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
     ).apply(instance, OnceSpawn::new)).codec();
     private final int spawnTick;
     private final int spawnCount;
 
-    public OnceSpawn(SpawnSettings spawnSettings, int spawnTick, int spawnCount){
+    public OnceSpawn(SpawnSetting spawnSettings, int spawnTick, int spawnCount){
         super(spawnSettings);
         this.spawnTick = spawnTick;
         this.spawnCount = spawnCount;

@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.util.helper.registry.ResourceHelper;
+import hungteen.htlib.api.interfaces.IHTResourceHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
@@ -16,9 +16,9 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class HTTagsProvider<T> extends TagsProvider<T> {
 
-    private final ResourceHelper<T> helper;
+    private final IHTResourceHelper<T> helper;
 
-    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, ResourceHelper<T> helper, String modId, @Nullable ExistingFileHelper existingFileHelper) {
+    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, IHTResourceHelper<T> helper, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, helper.resourceKey(), provider, modId, existingFileHelper);
         this.helper = helper;
     }
@@ -31,7 +31,7 @@ public abstract class HTTagsProvider<T> extends TagsProvider<T> {
     /**
      * Directly support helper methods.
      */
-    public ResourceHelper<T> getHelper() {
+    public IHTResourceHelper<T> getHelper() {
         return helper;
     }
 }

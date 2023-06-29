@@ -14,5 +14,7 @@
   "sound.htlib.victory": "胜利",
   "sound.htlib.loss": "失败",
   "sound.htlib.reward": "奖励",
-  "sound.htlib.final_victory": "重大胜利"
+  "sound.htlib.final_victory": "重大胜利",
+
+  "command.htlib.dummy_entity.not_found": "未找到虚拟实体"
 }

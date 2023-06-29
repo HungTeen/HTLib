@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
+import hungteen.htlib.api.interfaces.IHTResourceHelper;
 import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Holder;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-11-09 13:12
  **/
-public abstract class RegistryHelper<T> extends ResourceHelper<T>{
+public abstract class RegistryHelper<T> implements IHTResourceHelper<T> {
 
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 

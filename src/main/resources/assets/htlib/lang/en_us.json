@@ -5,7 +5,7 @@
   "raid.htlib.title": "Raid",
   "raid.htlib.victory_title": "Victory",
   "raid.htlib.loss_title": "Loss",
-  "raid.htlib.too_far_away": "pls return back, or raid will be removed.",
+  "raid.htlib.too_far_away": "Pls return back, or raid will be removed.",
   "raid.htlib.round": "Round %d",
 
   "sound.htlib.prepare": "Preparing",
@@ -14,5 +14,7 @@
   "sound.htlib.victory": "Victory",
   "sound.htlib.loss": "Loss",
   "sound.htlib.reward": "Reward",
-  "sound.htlib.final_victory": "Final Victory"
+  "sound.htlib.final_victory": "Final Victory",
+
+  "command.htlib.dummy_entity.not_found": "Not Found Dummy Entity"
 }

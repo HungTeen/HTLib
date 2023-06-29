@@ -25,7 +25,7 @@ public class DurationSpawn extends SpawnComponent {
      * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
     public static final Codec<DurationSpawn> CODEC = RecordCodecBuilder.<DurationSpawn>mapCodec(instance -> instance.group(
-            SpawnSettings.CODEC.fieldOf("spawn_settings").forGetter(DurationSpawn::getSpawnSettings),
+            SpawnSetting.CODEC.fieldOf("spawn_settings").forGetter(DurationSpawn::getSpawnSetting),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0).forGetter(DurationSpawn::getStartSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationSpawn::getSpawnDuration),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationSpawn::getSpawnInterval),
@@ -38,7 +38,7 @@ public class DurationSpawn extends SpawnComponent {
     private final int eachSpawnCount;
     private final int spawnOffset;
 
-    public DurationSpawn(SpawnSettings spawnSettings, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
+    public DurationSpawn(SpawnSetting spawnSettings, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
         super(spawnSettings);
         this.startSpawnTick = startSpawnTick;
         this.spawnDuration = spawnDuration;

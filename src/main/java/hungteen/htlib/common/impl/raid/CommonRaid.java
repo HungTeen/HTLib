@@ -6,6 +6,7 @@ import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.IRaidType;
+import net.minecraft.core.Holder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -21,9 +22,9 @@ public class CommonRaid extends RaidComponent {
             RaidSetting.CODEC.fieldOf("setting").forGetter(CommonRaid::getRaidSettings),
             HTWaveComponents.getCodec().listOf().fieldOf("waves").forGetter(CommonRaid::getWaveComponents)
     ).apply(instance, CommonRaid::new)).codec();
-    private final List<IWaveComponent> waveComponents;
+    private final List<Holder<IWaveComponent>> waveComponents;
 
-    public CommonRaid(RaidSetting raidSettings, List<IWaveComponent> waveComponents) {
+    public CommonRaid(RaidSetting raidSettings, List<Holder<IWaveComponent>> waveComponents) {
         super(raidSettings);
         this.waveComponents = waveComponents;
     }
@@ -35,10 +36,10 @@ public class CommonRaid extends RaidComponent {
 
     @Override
     public @NotNull IWaveComponent getCurrentWave(IRaid raid, int currentWave) {
-        return this.waveComponents.get(currentWave);
+        return this.waveComponents.get(currentWave).get();
     }
 
-    public List<IWaveComponent> getWaveComponents(){
+    public List<Holder<IWaveComponent>> getWaveComponents(){
         return this.waveComponents;
     }
 
