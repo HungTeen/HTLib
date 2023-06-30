@@ -1,24 +1,15 @@
 package hungteen.htlib.util.helper.registry;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
-import hungteen.htlib.util.helper.JavaHelper;
-import hungteen.htlib.util.helper.StringHelper;
-import net.minecraft.core.Holder;
+import hungteen.htlib.api.interfaces.IHTRegistryHelper;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * 所有注册帮助类支持分组注册、便捷标签获取、简单注册流查询等方法。 <br>
@@ -30,7 +21,7 @@ import java.util.stream.Collectors;
  * @author: HungTeen
  * @create: 2022-11-09 13:12
  **/
-public abstract class RegistryHelper<T> implements IHTResourceHelper<T> {
+public abstract class RegistryHelper<T> implements IHTRegistryHelper<T> {
 
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 
@@ -80,92 +71,6 @@ public abstract class RegistryHelper<T> implements IHTResourceHelper<T> {
      */
     private Optional<GroupRegistration<T>> getRegistration(ResourceLocation group){
         return Optional.ofNullable(groups.getOrDefault(group, null));
-    }
-
-    /* Tag Methods */
-
-    public List<T> getTagList(TagKey<T> tagKey){
-        return getRegistry().map(
-                l -> Objects.requireNonNull(l.tags()).getTag(tagKey).stream().toList(),
-                r -> r.getTag(tagKey).map(ImmutableList::copyOf)
-                        .map(t -> t.stream().map(Holder::get).collect(Collectors.toList())).orElse(ImmutableList.of())
-                );
-    }
-
-    /* Common Methods */
-
-    /**
-     * 注册类的注册名。
-     */
-    @Override
-    public ResourceKey<? extends Registry<T>> resourceKey(){
-        return getRegistry().map(IForgeRegistry::getRegistryKey, Registry::key);
-    }
-
-    /**
-     * Get predicate registry objects.
-     */
-    public List<T> filterValues(Predicate<T> predicate) {
-        return getRegistry().map(IForgeRegistry::getValues, r -> r.stream().toList()).stream()
-                .filter(predicate)
-                .sorted(Comparator.comparing((object) -> Objects.requireNonNullElseGet(getKey(object), () -> StringHelper.EMPTY_LOCATION)))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get predicate registry objects with key.
-     */
-    public List<Map.Entry<ResourceKey<T>, T>> filterEntries(Predicate<T> predicate) {
-        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet).stream()
-                .filter(entry -> predicate.test(entry.getValue()))
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get all registered objects.
-     */
-    public Collection<T> values() {
-        return filterValues(JavaHelper::alwaysTrue);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public Collection<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
-        return filterEntries(JavaHelper::alwaysTrue);
-    }
-
-    /**
-     * Get all registered objects with keys.
-     */
-    public Collection<ResourceLocation> keys() {
-        return getRegistry().map(IForgeRegistry::getKeys, Registry::keySet);
-    }
-
-    /**
-     * Get registered objects by key.
-     */
-    public Optional<T> get(ResourceLocation location) {
-        return Optional.ofNullable(getRegistry().map(l -> l.getValue(location), r -> r.get(location)));
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public ResourceLocation getKey(T object) {
-        return getRegistry().map(l -> l.getKey(object), r -> r.getKey(object));
-    }
-
-    /**
-     * Get key of specific object.
-     */
-    public Optional<ResourceKey<T>> getResourceKey(T object) {
-        return getRegistry().map(l -> l.getResourceKey(object), r -> r.getResourceKey(object));
-    }
-
-    public Codec<T> getCodec(){
-        return getRegistry().map(IForgeRegistry::getCodec, Registry::byNameCodec);
     }
 
     /**

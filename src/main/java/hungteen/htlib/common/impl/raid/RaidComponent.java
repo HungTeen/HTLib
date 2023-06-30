@@ -151,7 +151,7 @@ public abstract class RaidComponent implements IRaidComponent {
                 Codec.BOOL.optionalFieldOf("block_inside", false).forGetter(BorderSetting::blockInside),
                 Codec.BOOL.optionalFieldOf("block_outside", false).forGetter(BorderSetting::blockOutside),
                 Codec.BOOL.optionalFieldOf("render_border", false).forGetter(BorderSetting::renderBorder),
-                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("border_color", ColorHelper.BORDER_AQUA).forGetter(BorderSetting::borderColor)
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("border_color", ColorHelper.BORDER_AQUA.rgb()).forGetter(BorderSetting::borderColor)
         ).apply(instance, BorderSetting::new)).codec();
     }
 

@@ -105,7 +105,7 @@ public abstract class DummyEntity implements IDummyEntity {
     }
 
     public int getBorderColor(){
-        return ColorHelper.RED;
+        return ColorHelper.RED.rgb();
     }
 
     /**

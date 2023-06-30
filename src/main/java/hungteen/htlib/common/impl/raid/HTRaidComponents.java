@@ -91,7 +91,7 @@ public class HTRaidComponents {
         private boolean blockInside = false;
         private boolean blockOutside = false;
         private boolean renderBorder = false;
-        private int borderColor = ColorHelper.BORDER_AQUA;
+        private int borderColor = ColorHelper.BORDER_AQUA.rgb();
         private int victoryDuration = 100;
         private int lossDuration = 100;
         private boolean showRoundTitle = true;
