@@ -1,6 +1,6 @@
 package hungteen.htlib.data.loot;
 
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.CompatHelper;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.item.Item;
@@ -22,7 +22,7 @@ public abstract class HTBlockLootGen extends BlockLootSubProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             switch (pair.getKey()) {

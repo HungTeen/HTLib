@@ -2,10 +2,11 @@ package hungteen.htlib.client;
 
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
-import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.entity.HTEntities;
+import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
@@ -43,8 +44,8 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerRendererLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        WoodIntegrations.getBoatTypes().forEach(type -> {
-            if(type != WoodIntegrations.IBoatType.DEFAULT){
+        BoatTypes.getBoatTypes().forEach(type -> {
+            if(type != IBoatType.DEFAULT){
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }

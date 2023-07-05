@@ -10,7 +10,9 @@ import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -84,6 +86,15 @@ public class BlockHelper {
             return false;
         } else {
             return player.distanceToSqr(MathHelper.toVec3(entity.getBlockPos())) <= 64;
+        }
+    }
+
+    /**
+     * Register flammable blocks, not thread safe.
+     */
+    public static void setFlammable(Block block, int spreadSpeed, int burnSpeed){
+        if(Blocks.FIRE instanceof FireBlock fire){
+            fire.setFlammable(block, spreadSpeed, burnSpeed);
         }
     }
 

@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -227,9 +227,9 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
         /* Must gen first to avoid crash. */
-        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.PLANKS).ifPresentOrElse(block -> {
+        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.PLANKS).ifPresentOrElse(block -> {
             gen(block, this::simpleBlock);
         }, () -> HTLib.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName()));
         woodIntegration.getWoodBlocks().forEach(pair -> {
@@ -273,13 +273,13 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
             }
         });
         /* Sign Blocks. */
-        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STANDING_SIGN).ifPresent(block1 -> {
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_SIGN).ifPresent(block2 -> {
+        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STANDING_SIGN).ifPresent(block1 -> {
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WALL_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) gen(b1, b2, this::sign);
             });
         });
-        woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.HANGING_SIGN).ifPresent(block1 -> {
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WALL_HANGING_SIGN).ifPresent(block2 -> {
+        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.HANGING_SIGN).ifPresent(block1 -> {
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WALL_HANGING_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) gen(b1, b2, this::hangingSign);
             });
         });

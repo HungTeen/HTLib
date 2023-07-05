@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
@@ -64,7 +64,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             if(pair.getKey().hasItem() && ! this.contains(block.asItem())){

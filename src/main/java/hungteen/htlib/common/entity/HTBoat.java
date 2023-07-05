@@ -1,6 +1,7 @@
 package hungteen.htlib.common.entity;
 
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -42,7 +43,7 @@ public class HTBoat extends Boat {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(BOAT_TYPE, WoodIntegrations.IBoatType.DEFAULT.getRegistryName());
+        entityData.define(BOAT_TYPE, IBoatType.DEFAULT.getRegistryName());
     }
 
     @Override
@@ -93,7 +94,7 @@ public class HTBoat extends Boat {
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         super.readAdditionalSaveData(compoundTag);
         if(compoundTag.contains("HTBoatType")){
-            this.setHTBoatType(WoodIntegrations.getBoatType(compoundTag.getString("HTBoatType")));
+            this.setHTBoatType(BoatTypes.getBoatType(compoundTag.getString("HTBoatType")));
         }
     }
 
@@ -103,11 +104,11 @@ public class HTBoat extends Boat {
         compoundTag.putString("HTBoatType", this.getHTBoatType().getRegistryName());
     }
 
-    public WoodIntegrations.IBoatType getHTBoatType() {
-        return WoodIntegrations.getBoatType(entityData.get(BOAT_TYPE));
+    public IBoatType getHTBoatType() {
+        return BoatTypes.getBoatType(entityData.get(BOAT_TYPE));
     }
 
-    public void setHTBoatType(WoodIntegrations.IBoatType type){
+    public void setHTBoatType(IBoatType type){
         entityData.set(BOAT_TYPE, type.getRegistryName());
     }
 

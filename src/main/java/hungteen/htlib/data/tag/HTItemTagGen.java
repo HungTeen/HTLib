@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -31,7 +31,7 @@ public abstract class HTItemTagGen extends HTHolderTagsProvider<Item> {
         this.blockTags = blockTagsProvider::getOrCreateRawBuilder;
     }
 
-    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
         this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
         this.copy(BlockTags.WOODEN_BUTTONS, ItemTags.WOODEN_BUTTONS);
         this.copy(BlockTags.BUTTONS, ItemTags.BUTTONS);
@@ -54,10 +54,10 @@ public abstract class HTItemTagGen extends HTHolderTagsProvider<Item> {
                 this.copy(blockTag, itemTag);
             });
         });
-        woodIntegration.getBoatItem(WoodIntegrations.BoatSuits.NORMAL).ifPresent(item -> {
+        woodIntegration.getBoatItem(TreeSuits.HTBoatStyles.NORMAL).ifPresent(item -> {
             this.tag(ItemTags.BOATS).add(item);
         });
-        woodIntegration.getBoatItem(WoodIntegrations.BoatSuits.CHEST).ifPresent(item -> {
+        woodIntegration.getBoatItem(TreeSuits.HTBoatStyles.CHEST).ifPresent(item -> {
             this.tag(ItemTags.CHEST_BOATS).add(item);
         });
     }

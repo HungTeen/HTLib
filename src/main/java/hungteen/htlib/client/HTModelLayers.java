@@ -1,6 +1,6 @@
 package hungteen.htlib.client;
 
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
 
@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceLocation;
  **/
 public class HTModelLayers {
 
-    public static ModelLayerLocation createBoatModelName(WoodIntegrations.IBoatType type) {
+    public static ModelLayerLocation createBoatModelName(IBoatType type) {
         return createLocation(type.getModID(), "boat/" + type.getName(), "main");
     }
 
-    public static ModelLayerLocation createChestBoatModelName(WoodIntegrations.IBoatType type) {
+    public static ModelLayerLocation createChestBoatModelName(IBoatType type) {
         return createLocation(type.getModID(), "chest_boat/" + type.getName(), "main");
     }
 

@@ -3,13 +3,13 @@ package hungteen.htlib;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.HTSounds;
-import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
 import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.entity.HTEntities;
+import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.position.HTPositionTypes;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
@@ -21,6 +21,7 @@ import hungteen.htlib.common.impl.spawn.HTSpawnTypes;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.impl.wave.HTWaveTypes;
 import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.common.registry.suit.HTSuitHandler;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.data.HTDataGenHandler;
@@ -59,16 +60,18 @@ public class HTLib {
         /* Mod Bus Events */
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         register(modBus);
-        modBus.addListener(EventPriority.NORMAL, HTLib::setUp);
-        modBus.addListener(EventPriority.NORMAL, HTLib::postRegister);
-        modBus.addListener(EventPriority.LOW, WoodIntegrations::register);
-        modBus.addListener(EventPriority.NORMAL, HTDataGenHandler::gatherData);
-        modBus.addListener(EventPriority.NORMAL, WoodIntegrations::fillInCreativeTab);
+        modBus.addListener(HTLib::setUp);
+        modBus.addListener(HTLib::postRegister);
+        modBus.addListener(EventPriority.LOW, HTSuitHandler::register);
+        modBus.addListener(HTSuitHandler::clear);
+        modBus.addListener(HTDataGenHandler::gatherData);
+        modBus.addListener(HTSuitHandler::fillInCreativeTab);
+        modBus.addListener(HTSuitHandler::clear);
 
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(DummyEntityManager::tick);
-        forgeBus.addListener(EventPriority.NORMAL, PlayerCapabilityManager::tick);
+        forgeBus.addListener(PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
         forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
     }
@@ -114,6 +117,10 @@ public class HTLib {
 
     public static void setUp(FMLCommonSetupEvent event) {
         NetworkHandler.init();
+        event.enqueueWork(() -> {
+            BoatTypes.register();
+            HTSuitHandler.setUp();
+        });
     }
 
     public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {

@@ -1,7 +1,7 @@
 package hungteen.htlib.common.blockentity;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -19,11 +19,11 @@ public class HTBlockEntities {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = BlockHelper.entity().createRegister(HTLib.id());
 
     public static final RegistryObject<BlockEntityType<HTSignBlockEntity>> SIGN = BLOCK_ENTITIES.register("sign", () -> BlockEntityType.Builder.of(
-            HTSignBlockEntity::new, WoodIntegrations.getSignBlocks().toArray(new Block[0])
+            HTSignBlockEntity::new, TreeSuits.getSignBlocks().toArray(new Block[0])
     ).build(null));
 
     public static final RegistryObject<BlockEntityType<HTHangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITIES.register("hanging_sign", () -> BlockEntityType.Builder.of(
-            HTHangingSignBlockEntity::new, WoodIntegrations.getHangingSignBlocks().toArray(new Block[0])
+            HTHangingSignBlockEntity::new, TreeSuits.getHangingSignBlocks().toArray(new Block[0])
     ).build(null));
 
     public static void register(IEventBus event){

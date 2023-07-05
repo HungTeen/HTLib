@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.common.WoodIntegrations;
+import hungteen.htlib.common.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -21,7 +21,7 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
         super(output, provider, BlockHelper.get(), modId, existingFileHelper);
     }
 
-    protected void woodIntegration(WoodIntegrations.WoodIntegration woodIntegration) {
+    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
         woodIntegration.getWoodBlocks().forEach(pair -> {
             Block block = pair.getValue();
             switch (pair.getKey()) {
@@ -43,10 +43,10 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
         });
         woodIntegration.getLogBlockTag().ifPresent(blockTag -> {
             this.tag(BlockTags.LOGS_THAT_BURN).addTag(blockTag);
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.LOG).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.WOOD).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(WoodIntegrations.WoodSuits.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.LOG).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WOOD).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
+            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
         });
     }
 }

@@ -6,8 +6,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import hungteen.htlib.client.HTModelLayers;
-import hungteen.htlib.common.WoodIntegrations;
 import hungteen.htlib.common.entity.HTBoat;
+import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.model.ListModel;
@@ -34,23 +35,23 @@ import java.util.Map;
  **/
 public class HTBoatRender extends EntityRenderer<HTBoat> {
 
-    private final Map<WoodIntegrations.IBoatType, Pair<ResourceLocation, ListModel<Boat>>> boatResources;
+    private final Map<IBoatType, Pair<ResourceLocation, ListModel<Boat>>> boatResources;
 
     public HTBoatRender(EntityRendererProvider.Context context, boolean hasChest) {
         super(context);
         this.shadowRadius = 0.8F;
-        this.boatResources = WoodIntegrations.getBoatTypes().stream().collect(ImmutableMap.toImmutableMap((type) -> {
+        this.boatResources = BoatTypes.getBoatTypes().stream().collect(ImmutableMap.toImmutableMap((type) -> {
             return type;
         }, (type) -> {
             return Pair.of(new ResourceLocation(type.getModID(), getTextureLocation(type, hasChest)), this.createBoatModel(context, type, hasChest));
         }));
     }
 
-    private static String getTextureLocation(WoodIntegrations.IBoatType type, boolean hasChest) {
+    private static String getTextureLocation(IBoatType type, boolean hasChest) {
         return "textures/entity/" + (hasChest ? "chest_" : "") + "boat/" + type.getName() + ".png";
     }
 
-    private ListModel<Boat> createBoatModel(EntityRendererProvider.Context context, WoodIntegrations.IBoatType boatType, boolean hasChest) {
+    private ListModel<Boat> createBoatModel(EntityRendererProvider.Context context, IBoatType boatType, boolean hasChest) {
         final ModelLayerLocation modellayerlocation = hasChest ? HTModelLayers.createChestBoatModelName(boatType) : HTModelLayers.createBoatModelName(boatType);
         final ModelPart modelpart = context.bakeLayer(modellayerlocation);
         return (ListModel<Boat>)(hasChest ? new ChestBoatModel(modelpart) : new BoatModel(modelpart));
