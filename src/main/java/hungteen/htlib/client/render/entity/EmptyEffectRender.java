@@ -13,24 +13,24 @@ import net.minecraft.world.entity.Entity;
  * @author: HungTeen
  * @create: 2022-10-07 22:42
  **/
-public class EmptyEffectRender extends EntityRenderer<Entity> {
+public class EmptyEffectRender<T extends Entity> extends EntityRenderer<T> {
 
     public EmptyEffectRender(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(Entity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+    public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
                        MultiBufferSource bufferIn, int packedLightIn) {
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override
-    protected void renderNameTag(Entity entity, Component component, PoseStack poseStack, MultiBufferSource multiBufferSource, int i) {
+    protected void renderNameTag(T entity, Component component, PoseStack poseStack, MultiBufferSource multiBufferSource, int i) {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Entity entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return null;
     }
 }

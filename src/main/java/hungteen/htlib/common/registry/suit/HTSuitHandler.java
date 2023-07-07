@@ -6,6 +6,8 @@ import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.registries.RegisterEvent;
@@ -37,6 +39,20 @@ public class HTSuitHandler {
     /**
      * {@link HTLib#HTLib()}
      */
+    public static void addAttributes(EntityAttributeCreationEvent event){
+        EntitySuits.getSuits().forEach(suit -> suit.addAttribute(event));
+    }
+
+    /**
+     * {@link HTLib#HTLib()}
+     */
+    public static void addSpawnPlacements(SpawnPlacementRegisterEvent event){
+        EntitySuits.getSuits().forEach(suit -> suit.addPlacement(event));
+    }
+
+    /**
+     * {@link HTLib#HTLib()}
+     */
     public static void fillInCreativeTab(CreativeModeTabEvent.BuildContents event){
         TreeSuits.getTreeSuits().forEach(wood -> wood.fillSuits(event));
     }
@@ -60,8 +76,14 @@ public class HTSuitHandler {
         });
     }
 
+    /**
+     * {@link HTLib#HTLib()}
+     */
     public static void clear(FMLLoadCompleteEvent event) {
-        StoneSuits.registry().getValues().forEach(StoneSuits.StoneSuit::clear);
-        TreeSuits.getTreeSuits().forEach(TreeSuits.TreeSuit::clear);
+        event.enqueueWork(() -> {
+            StoneSuits.registry().getValues().forEach(StoneSuits.StoneSuit::clear);
+            TreeSuits.getTreeSuits().forEach(TreeSuits.TreeSuit::clear);
+            EntitySuits.getSuits().forEach(EntitySuit::clear);
+        });
     }
 }

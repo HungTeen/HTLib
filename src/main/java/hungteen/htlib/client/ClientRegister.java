@@ -34,6 +34,7 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+//        EntityRenderSuit.getRenderSuits().forEach(suit -> suit.register(event));
         event.registerEntityRenderer(HTEntities.BOAT.get(), (c) -> new HTBoatRender(c, false));
         event.registerEntityRenderer(HTEntities.CHEST_BOAT.get(), (c) -> new HTBoatRender(c, true));
         event.registerEntityRenderer(HTEntities.SEAT.get(), EmptyEffectRender::new);

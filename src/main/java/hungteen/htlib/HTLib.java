@@ -66,6 +66,8 @@ public class HTLib {
         modBus.addListener(HTSuitHandler::clear);
         modBus.addListener(HTDataGenHandler::gatherData);
         modBus.addListener(HTSuitHandler::fillInCreativeTab);
+        modBus.addListener(HTSuitHandler::addAttributes);
+        modBus.addListener(HTSuitHandler::addSpawnPlacements);
         modBus.addListener(HTSuitHandler::clear);
 
         /* Forge Bus Events */
