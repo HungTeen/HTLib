@@ -1,7 +1,10 @@
-package hungteen.htlib.client;
+package hungteen.htlib.client.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import hungteen.htlib.client.ClientProxy;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
@@ -26,6 +29,14 @@ public class ClientHelper {
     public static void addWoodType(WoodType woodType){
         Sheets.addWoodType(woodType);
         Sheets.HANGING_SIGN_MATERIALS.put(woodType, Sheets.createHangingSignMaterial(woodType));
+    }
+
+    public static Minecraft mc(){
+        return ClientProxy.MC;
+    }
+
+    public static Font font(){
+        return mc().font;
     }
 
 }

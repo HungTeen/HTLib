@@ -1,8 +1,8 @@
 package hungteen.htlib.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,7 @@ public abstract class HTButton extends AbstractButton {
 
     @Deprecated
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partial) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float partial) {
         if (this.visible) {
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -44,9 +44,9 @@ public abstract class HTButton extends AbstractButton {
             final Pair<Integer,Integer> xy = this.getButtonUV();
             final Pair<Integer,Integer> xyOffset = this.getButtonUVOffset();
             if(this.isHovered){
-                this.blit(stack, this.getX(), this.getY(), xy.getFirst() + xyOffset.getFirst(), xy.getSecond() + xyOffset.getSecond(), width, height);
+                gui.blit(this.widgets, this.getX(), this.getY(), xy.getFirst() + xyOffset.getFirst(), xy.getSecond() + xyOffset.getSecond(), width, height);
             } else{
-                this.blit(stack, this.getX(), this.getY(), xy.getFirst(), xy.getSecond(), width, height);
+                gui.blit(this.widgets, this.getX(), this.getY(), xy.getFirst(), xy.getSecond(), width, height);
             }
         }
     }

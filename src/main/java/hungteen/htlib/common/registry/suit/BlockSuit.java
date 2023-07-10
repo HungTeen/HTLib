@@ -4,13 +4,14 @@ import hungteen.htlib.api.interfaces.ISimpleEntry;
 import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,11 +32,11 @@ public abstract class BlockSuit<T extends Enum<T>> implements ISimpleEntry {
         this.registryName = registryName;
     }
 
-    public void fillSuits(CreativeModeTabEvent.BuildContents event){
+    public void fillSuits(BuildCreativeModeTabContentsEvent event){
     }
 
-    protected void fillInTab(CreativeModeTabEvent.BuildContents event, CreativeModeTab tab, CreativeModeTab.TabVisibility visibility){
-        if(event.getTab() == tab){
+    protected void fillInTab(BuildCreativeModeTabContentsEvent event, ResourceKey<CreativeModeTab> tab, CreativeModeTab.TabVisibility visibility){
+        if(event.getTabKey().equals(tab)){
             getBlocks().forEach(block -> {
                 event.accept(new ItemStack(block), visibility);
             });

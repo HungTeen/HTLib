@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -225,8 +225,8 @@ public class TreeSuits {
         }
 
         @Override
-        public void fillSuits(CreativeModeTabEvent.BuildContents event) {
-            if(event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES){
+        public void fillSuits(BuildCreativeModeTabContentsEvent event) {
+            if(event.getTabKey().equals(CreativeModeTabs.TOOLS_AND_UTILITIES)){
                 for (TreeSuits.TreeSuit wood : TreeSuits.getTreeSuits()) {
                     wood.boatItems.forEach((suit, item) -> {
                         event.accept(new ItemStack(item), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);

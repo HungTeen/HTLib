@@ -2,6 +2,7 @@ package hungteen.htlib.client;
 
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
+import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.BoatTypes;

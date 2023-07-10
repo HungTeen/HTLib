@@ -65,7 +65,7 @@ public class SpawnParticlePacket {
             ctx.get().enqueueWork(()->{
                 ParticleType<?> particle = ForgeRegistries.PARTICLE_TYPES.getValue(new ResourceLocation(message.type));
                 if(particle instanceof SimpleParticleType){
-                    HTLib.PROXY.getPlayer().level.addParticle(((SimpleParticleType) particle).getType(), message.x, message.y, message.z, message.dx, message.dy, message.dz);
+                    HTLib.PROXY.getPlayer().level().addParticle(((SimpleParticleType) particle).getType(), message.x, message.y, message.z, message.dx, message.dy, message.dz);
                 }
             });
             ctx.get().setPacketHandled(true);

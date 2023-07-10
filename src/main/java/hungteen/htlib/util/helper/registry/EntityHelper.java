@@ -5,6 +5,7 @@ import hungteen.htlib.util.helper.MathHelper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.Registry;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -130,7 +131,7 @@ public class EntityHelper {
      * base predicate target method.
      */
     public static <T extends Entity> List<T> getPredicateEntityWithParts(@Nonnull Entity attacker, AABB aabb, Class<T> tClass, Predicate<T> predicate) {
-        return attacker.level.getEntitiesOfClass(tClass, aabb).stream().filter(target -> {
+        return attacker.level().getEntitiesOfClass(tClass, aabb).stream().filter(target -> {
             return !attacker.equals(target) && predicate.test(target);
         }).collect(Collectors.toList());
     }
@@ -153,6 +154,14 @@ public class EntityHelper {
     }
 
     /* Common Methods */
+
+    public static boolean isServer(Entity entity) {
+        return !entity.level().isClientSide();
+    }
+
+    public static boolean inDimension(Entity entity, ResourceKey<Level> dimension){
+        return entity.level().dimension().equals(dimension);
+    }
 
     public static RegistryHelper<EntityType<?>> get(){
         return ENTITY_HELPER;

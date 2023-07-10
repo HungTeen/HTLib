@@ -3,7 +3,7 @@ package hungteen.htlib.util.helper;
 import hungteen.htlib.util.records.HTColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 
 import java.util.Optional;
 
@@ -267,7 +267,7 @@ public class ColorHelper {
         return create(list[0], list[1], list[2], list[3]);
     }
 
-    public static HTColor create(MaterialColor color, MaterialColor.Brightness brightness){
+    public static HTColor create(MapColor color, MapColor.Brightness brightness){
         return create(color.calculateRGBColor(brightness));
     }
 

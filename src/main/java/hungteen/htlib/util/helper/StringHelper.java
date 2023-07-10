@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
 /**
  * @program: HTLib
@@ -193,6 +194,14 @@ public class StringHelper {
     }
 
     /* Misc Methods */
+
+    public static FormattedCharSequence format(String text){
+        return format(Component.literal(text));
+    }
+
+    public static FormattedCharSequence format(Component text){
+        return text.getVisualOrderText();
+    }
 
     /**
      * Support 1 to 255.

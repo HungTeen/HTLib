@@ -5,7 +5,7 @@ import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import hungteen.htlib.util.interfaces.IBoatType;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -53,7 +53,7 @@ public class HTSuitHandler {
     /**
      * {@link HTLib#HTLib()}
      */
-    public static void fillInCreativeTab(CreativeModeTabEvent.BuildContents event){
+    public static void fillInCreativeTab(BuildCreativeModeTabContentsEvent event){
         TreeSuits.getTreeSuits().forEach(wood -> wood.fillSuits(event));
     }
 

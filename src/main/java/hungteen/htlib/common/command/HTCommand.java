@@ -94,7 +94,7 @@ public class HTCommand {
         }
         final DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
         if (dummyEntity != null) {
-            sourceStack.sendSuccess(Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
+            sourceStack.sendSuccess(() -> Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
             return 1;
         }
         throw ERROR_FAILED.create();

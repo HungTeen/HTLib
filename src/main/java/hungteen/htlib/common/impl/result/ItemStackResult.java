@@ -51,7 +51,7 @@ public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemS
         rewards().forEach(itemStack -> {
             ItemStack stack = itemStack.copy();
             if (player.addItem(stack)) {
-                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
             } else {
                 ItemEntity itementity = player.drop(stack, false);
                 if (itementity != null) {

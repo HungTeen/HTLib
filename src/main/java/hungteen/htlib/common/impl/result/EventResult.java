@@ -36,14 +36,14 @@ public record EventResult(ResourceLocation id, boolean forLevel, boolean forDefe
     @Override
     public void applyToDefender(IRaid raid, Entity defender, int tick) {
         if(forDefender() && raid instanceof AbstractRaid){
-            MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidResultDefenderEvent(defender.level, (AbstractRaid) raid, id(), defender, tick));
+            MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidResultDefenderEvent(defender.level(), (AbstractRaid) raid, id(), defender, tick));
         }
     }
 
     @Override
     public void applyToRaider(IRaid raid, Entity raider, int tick) {
         if(forRaider() && raid instanceof AbstractRaid){
-            MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidResultRaiderEvent(raider.level, (AbstractRaid) raid, id(), raider, tick));
+            MinecraftForge.EVENT_BUS.post(new RaidEvent.RaidResultRaiderEvent(raider.level(), (AbstractRaid) raid, id(), raider, tick));
         }
     }
 

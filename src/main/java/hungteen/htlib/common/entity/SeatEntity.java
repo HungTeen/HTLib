@@ -63,7 +63,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     @Override
     public void tick() {
         super.tick();
-        if(! this.level.isClientSide){
+        if(EntityHelper.isServer(this)){
             if(this.isSeatInvalid()){
                 this.removeSeat();
             }
@@ -71,13 +71,13 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     }
 
     public boolean isSeatInvalid(){
-        return this.getPassengers().isEmpty() || (this.isRelyOnBlock() && this.level.isEmptyBlock(this.blockPosition()));
+        return this.getPassengers().isEmpty() || (this.isRelyOnBlock() && this.level().isEmptyBlock(this.blockPosition()));
     }
 
     public void removeSeat(){
         this.discard();
         if(this.isRelyOnBlock()){
-            this.level.updateNeighbourForOutputSignal(this.blockPosition(), this.level.getBlockState(this.blockPosition()).getBlock());
+            this.level().updateNeighbourForOutputSignal(this.blockPosition(), this.level().getBlockState(this.blockPosition()).getBlock());
         }
     }
 
@@ -94,8 +94,8 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    public void positionRider(Entity entity) {
-        super.positionRider(entity);
+    public void positionRider(Entity entity, Entity.MoveFunction moveFunction) {
+        super.positionRider(entity, moveFunction);
         this.clampRotation(entity);
     }
 
@@ -107,7 +107,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for(Vec3i vec3i : DISMOUNT_OFFSETS) {
             pos.set(this.blockPosition()).move(vec3i);
-            Vec3 vec3 = DismountHelper.findSafeDismountLocation(entity.getType(), this.level, pos, true);
+            Vec3 vec3 = DismountHelper.findSafeDismountLocation(entity.getType(), this.level(), pos, true);
             if (vec3 != null) {
                 return vec3;
             }

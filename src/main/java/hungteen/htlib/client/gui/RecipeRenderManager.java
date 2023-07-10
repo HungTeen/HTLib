@@ -2,12 +2,11 @@ package hungteen.htlib.client.gui;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +26,8 @@ public class RecipeRenderManager {
     private final List<RecipeIngredient> ingredients = Lists.newArrayList();
     private float time;
 
-    public void render(Minecraft mc, PoseStack stack, int guiLeft, int guiTop, float partialTicks) {
-        stack.pushPose();
+    public void render(Minecraft mc, GuiGraphics gui, int guiLeft, int guiTop, float partialTicks) {
+        gui.pose().pushPose();
         if (! Screen.hasControlDown()) {
             this.time += partialTicks;
         }
@@ -37,21 +36,20 @@ public class RecipeRenderManager {
             RecipeIngredient ingredient = this.ingredients.get(i);
             int x = ingredient.getX() + guiLeft;
             int y = ingredient.getY() + guiTop;
-            GuiComponent.fill(stack, x, y, x + 16, y + 16, 822018048);
+            gui.fill(x, y, x + 16, y + 16, 822018048);
             ItemStack itemstack = ingredient.getItem();
-            ItemRenderer itemrenderer = mc.getItemRenderer();
-            itemrenderer.renderAndDecorateItem(stack, itemstack, x, y);
+            gui.renderItem(itemstack, x, y);
             RenderSystem.depthFunc(516);
-            GuiComponent.fill(stack, x, y, x + 16, y + 16, 822083583);
+            gui.fill(x, y, x + 16, y + 16, 822083583);
             RenderSystem.depthFunc(515);
             if (i == 0) {
-                itemrenderer.renderGuiItemDecorations(stack, mc.font, itemstack, x, y);
+                gui.renderItemDecorations(mc.font, itemstack, x, y);
             }
         }
-        stack.popPose();
+        gui.pose().popPose();
     }
 
-    public void renderGhostRecipeTooltip(Minecraft mc, PoseStack stack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderGhostRecipeTooltip(Minecraft mc, GuiGraphics gui, Font font, int guiLeft, int guiTop, int mouseX, int mouseY) {
         ItemStack itemstack = null;
         for (int i = 0; i < this.size(); ++ i) {
             RecipeIngredient ingredient = this.get(i);
@@ -62,7 +60,7 @@ public class RecipeRenderManager {
             }
         }
         if (itemstack != null && mc.screen != null) {
-            mc.screen.renderComponentTooltip(stack, mc.screen.getTooltipFromItem(itemstack), mouseX, mouseY);
+            gui.renderComponentTooltip(font, Screen.getTooltipFromItem(mc, itemstack), mouseX, mouseY);
         }
     }
 

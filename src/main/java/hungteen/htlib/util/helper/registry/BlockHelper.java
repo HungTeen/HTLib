@@ -82,7 +82,7 @@ public class BlockHelper {
     }
 
     public static boolean stillValid(Player player, BlockEntity entity) {
-        if (player.level.getBlockEntity(entity.getBlockPos()) != entity) {
+        if (player.level().getBlockEntity(entity.getBlockPos()) != entity) {
             return false;
         } else {
             return player.distanceToSqr(MathHelper.toVec3(entity.getBlockPos())) <= 64;

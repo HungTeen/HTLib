@@ -14,6 +14,7 @@ import hungteen.htlib.common.world.entity.DummyEntityType;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
+import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.nbt.CompoundTag;
@@ -328,7 +329,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
             while (iterator.hasNext()) {
                 Entity raider = iterator.next();
-                if (raider.isAlive() && raider.level.dimension() == this.getLevel().dimension()) {
+                if (raider.isAlive() && EntityHelper.inDimension(raider, this.getLevel().dimension())) {
                     if (raider.tickCount > 600) {
                         if (((ServerLevel) this.getLevel()).getEntity(raider.getUUID()) == null) {
                             set.add(raider);

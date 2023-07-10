@@ -58,9 +58,9 @@ public class HTBoat extends Boat {
                     }
 
                     this.causeFallDamage(this.fallDistance, 1.0F, this.damageSources().fall());
-                    if (!this.level.isClientSide && !this.isRemoved()) {
+                    if (!this.level().isClientSide() && !this.isRemoved()) {
                         this.kill();
-                        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                             for(int i = 0; i < 3; ++i) {
                                 this.spawnAtLocation(this.getHTBoatType().getPlanks());
                             }
@@ -73,7 +73,7 @@ public class HTBoat extends Boat {
                 }
 
                 this.resetFallDistance();
-            } else if (!this.level.getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_38307_ < 0.0D) {
+            } else if (!this.level().getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && p_38307_ < 0.0D) {
                 this.fallDistance -= (float)p_38307_;
             }
 

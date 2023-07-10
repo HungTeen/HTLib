@@ -62,7 +62,7 @@ public class HTEntity extends Entity {
         float f1;
         if (this.isInWater()) {
             for (int i = 0; i < 4; ++i) {
-                this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3d.x * 0.25D, d1 - vec3d.y * 0.25D,
+                this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3d.x * 0.25D, d1 - vec3d.y * 0.25D,
                         d2 - vec3d.z * 0.25D, vec3d.x, vec3d.y, vec3d.z);
             }
             f1 = 0.8F;

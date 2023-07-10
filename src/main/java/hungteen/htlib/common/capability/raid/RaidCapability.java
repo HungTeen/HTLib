@@ -45,8 +45,8 @@ public class RaidCapability implements IRaidCapability {
             this.wave = tag.getInt("CurrentWave");
         }
         if(entity != null && tag.contains("RaidID")){
-            if (entity.level instanceof ServerLevel) {
-                DummyEntityManager.getDummyEntity((ServerLevel)entity.level, tag.getInt("RaidID")).ifPresent(dummyEntity -> {
+            if (entity.level() instanceof ServerLevel) {
+                DummyEntityManager.getDummyEntity((ServerLevel) entity.level(), tag.getInt("RaidID")).ifPresent(dummyEntity -> {
                     if(dummyEntity instanceof IRaid){
                         this.raid = (IRaid)dummyEntity;
                     }

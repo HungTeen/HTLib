@@ -24,16 +24,15 @@ public class MixinProjectileUtil {
     /**
      * 不能碰到边界之外。
      */
-    @Inject(method = "getHitResult(Lnet/minecraft/world/entity/Entity;Ljava/util/function/Predicate;)Lnet/minecraft/world/phys/HitResult;",
+    @Inject(method = "getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true
     )
-    private static void getHitResult(Entity entity, Predicate<Entity> predicate, CallbackInfoReturnable<HitResult> result) {
-        final AABB aabb = entity.getBoundingBox().expandTowards(entity.getDeltaMovement());
-        DummyEntityManager.getCollisionEntities(entity.level).forEach(dummyEntity -> {
+    private static void getEntityHitResult(Entity entity, Vec3 p_37289_, Vec3 p_37290_, AABB aabb, Predicate<Entity> p_37292_, double p_37293_, CallbackInfoReturnable<HitResult> result) {
+        DummyEntityManager.getCollisionEntities(entity.level()).forEach(dummyEntity -> {
             if(! dummyEntity.ignoreEntity(entity) && dummyEntity.requireBlockProjectile(entity, aabb)){
-                if (!entity.level.isClientSide){
+                if (!entity.level().isClientSide()){
                     dummyEntity.collideWith(entity);
                 }
                 result.setReturnValue(BlockHitResult.miss(entity.position(), entity.getDirection(), entity.blockPosition()));
@@ -50,9 +49,9 @@ public class MixinProjectileUtil {
             cancellable = true
     )
     private static void getEntityHitResult(Level level, Entity entity, Vec3 from, Vec3 to, AABB aabb, Predicate<Entity> predicate, float p_150182_, CallbackInfoReturnable<EntityHitResult> result) {
-        DummyEntityManager.getCollisionEntities(entity.level).forEach(dummyEntity -> {
+        DummyEntityManager.getCollisionEntities(entity.level()).forEach(dummyEntity -> {
             if(! dummyEntity.ignoreEntity(entity) && dummyEntity.requireBlockProjectile(entity, aabb)){
-                if (!entity.level.isClientSide){
+                if (!entity.level().isClientSide()){
                     dummyEntity.collideWith(entity);
                 }
                 result.setReturnValue(null);

@@ -38,7 +38,7 @@ public class MixinDismountHelper {
             cancellable = true
     )
     private static void canDismountTo(CollisionGetter collisionGetter, LivingEntity livingEntity, AABB aabb, CallbackInfoReturnable<Boolean> result) {
-        HTLib.PROXY.getDummyEntities(livingEntity.level).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+        HTLib.PROXY.getDummyEntities(livingEntity.level()).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
             if (dummyEntity.requireBlock(livingEntity, aabb)) {
                 result.setReturnValue(false);
             }

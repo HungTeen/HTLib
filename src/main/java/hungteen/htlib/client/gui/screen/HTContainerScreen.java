@@ -1,9 +1,8 @@
 package hungteen.htlib.client.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import hungteen.htlib.client.RenderHelper;
+import hungteen.htlib.client.util.RenderHelper;
 import hungteen.htlib.client.gui.widget.DisplayField;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -28,36 +28,35 @@ public class HTContainerScreen<T extends AbstractContainerMenu> extends Abstract
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        super.render(stack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float partialTicks) {
+        super.render(gui, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics gui, float partialTicks, int mouseX, int mouseY) {
     }
 
     @Override
-    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
     }
 
     @Override
-    protected void renderTooltip(PoseStack stack, int mouseX, int mouseY) {
-        super.renderTooltip(stack, mouseX, mouseY);
+    protected void renderTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+        super.renderTooltip(gui, mouseX, mouseY);
     }
 
-    protected void renderHelpTipIcons(PoseStack stack){
-        RenderSystem.setShaderTexture(0, WIDGETS);
-        stack.pushPose();
+    protected void renderHelpTipIcons(GuiGraphics gui){
+        RenderHelper.push(gui);
         this.helpTips.forEach(tip -> {
-            blit(stack, this.leftPos + tip.getX(), this.topPos + tip.getY(), tip.getTexX(), tip.getTexY(), tip.getWidth(), tip.getHeight());
+            gui.blit(WIDGETS, this.leftPos + tip.getX(), this.topPos + tip.getY(), tip.getTexX(), tip.getTexY(), tip.getWidth(), tip.getHeight());
         });
-        stack.popPose();
+        RenderHelper.pop(gui);
     }
 
-    protected void renderHelpTips(PoseStack stack, int mouseX, int mouseY){
+    protected void renderHelpTips(GuiGraphics gui, int mouseX, int mouseY){
         this.helpTips.forEach(tip -> {
             if (tip.isInField(mouseX - this.leftPos, mouseY - this.topPos)) {
-                this.minecraft.screen.renderComponentTooltip(stack, tip.getTexts(), mouseX, mouseY);
+                gui.renderTooltip(this.font, tip.getTexts(), Optional.empty(), mouseX, mouseY);
             }
         });
     }
