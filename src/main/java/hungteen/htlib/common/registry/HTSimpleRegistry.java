@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * @program HTLib
  * @data 2023/6/28 14:36
  */
-public final class HTSimpleRegistry<T extends ISimpleEntry> extends HTRegistry<T> implements IHTSimpleRegistry<T> {
+public final class HTSimpleRegistry<T extends ISimpleEntry> extends HTCommonRegistry<T> implements IHTSimpleRegistry<T> {
 
     HTSimpleRegistry(ResourceLocation registryName) {
         super(registryName);

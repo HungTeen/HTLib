@@ -17,12 +17,12 @@ public class HTRegistryManager {
     /**
      * do not create more than one registry for specific registry entityType.
      */
-    public static <T> HTRegistry<T> create(ResourceLocation registryName){
-        return new HTRegistry<>(registryName);
+    public static <T> HTCommonRegistry<T> createCommon(ResourceLocation registryName){
+        return new HTCommonRegistry<>(registryName);
     }
 
-    public static <T> HTRegistry<T> create(ResourceLocation registryName, Supplier<RegistryBuilder<T>> builderSup){
-        return new HTRegistry<>(registryName, builderSup);
+    public static <T> HTCommonRegistry<T> createCommon(ResourceLocation registryName, Supplier<RegistryBuilder<T>> builderSup){
+        return new HTCommonRegistry<>(registryName, builderSup);
     }
 
     /**
@@ -41,10 +41,6 @@ public class HTRegistryManager {
      */
     public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
         return new HTCodecRegistry<>(registryName, codecSup, syncSup);
-    }
-
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<RegistryBuilder<T>> builderSup, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
-        return new HTCodecRegistry<>(registryName, builderSup, codecSup, syncSup);
     }
 
 }

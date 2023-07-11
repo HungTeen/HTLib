@@ -5,8 +5,6 @@ import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DataPackRegistryEvent;
-import net.minecraftforge.registries.RegistryBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
@@ -24,17 +22,6 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
         super(registryName);
         this.codecSup = codecSup;
         this.syncSup = syncSup;
-    }
-
-    HTCodecRegistry(ResourceLocation registryName, Supplier<RegistryBuilder<V>> builderSup, Supplier<Codec<V>> codecSup, Supplier<Codec<V>> syncSup) {
-        super(registryName, builderSup);
-        this.codecSup = codecSup;
-        this.syncSup = syncSup;
-    }
-
-    @Override
-    public <I extends V> I register(ResourceLocation name, @NotNull I type) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.List;
  * @program HTLib
  * @data 2023/6/28 14:32
  */
-public interface IHTSimpleRegistry<T extends ISimpleEntry> extends IHTRegistry<T> {
+public interface IHTSimpleRegistry<T extends ISimpleEntry> extends IHTCommonRegistry<T> {
 
     /**
      * Single register. <br>
@@ -26,4 +26,5 @@ public interface IHTSimpleRegistry<T extends ISimpleEntry> extends IHTRegistry<T
     default <I extends T> void register(List<I> types){
         types.forEach(this::register);
     }
+
 }
