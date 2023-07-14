@@ -29,7 +29,7 @@ public abstract class HTRecipe<T extends Container> implements Recipe<T> {
 
     @Override
     public ItemStack assemble(T container, RegistryAccess access) {
-        return ItemStack.EMPTY;
+        return this.result.copy();
     }
 
     @Override

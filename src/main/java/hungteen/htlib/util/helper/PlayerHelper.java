@@ -6,15 +6,16 @@ import hungteen.htlib.common.network.PlaySoundPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
 
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -34,30 +35,30 @@ public class PlayerHelper {
     /**
      * Only use on client side !
      */
-    public static Player getClientPlayer() {
-        return HTLib.PROXY.getPlayer();
+    public static Optional<Player> getClientPlayer() {
+        return Optional.ofNullable(HTLib.PROXY.getPlayer());
     }
 
-    public static void playClientSound(Player player, SoundEvent ev) {
+    public static void playClientSound(Player player, @Nullable SoundEvent ev) {
         if(ev != null) {
             NetworkHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getLocation().toString()));
         }
     }
 
     public static void sendTitleToPlayer(Player player, Component text) {
-        if(player instanceof ServerPlayer) {
-            ((ServerPlayer) player).connection.send(new ClientboundSetTitleTextPacket(text));
+        if(player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.connection.send(new ClientboundSetTitleTextPacket(text));
         }
     }
 
     public static void sendSubTitleToPlayer(Player player, Component text) {
-        if(player instanceof ServerPlayer) {
+        if(player instanceof ServerPlayer serverPlayer) {
             sendTitleToPlayer(player, Component.empty());
-            ((ServerPlayer) player).connection.send(new ClientboundSetSubtitleTextPacket(text));
+            serverPlayer.connection.send(new ClientboundSetSubtitleTextPacket(text));
         }
     }
 
-    public static void sendMsgToAll(Level world, Component text) {
+    public static void sendMsgToAll(ServerLevel world, Component text) {
         getServerPlayers(world).forEach(player -> {
             sendMsgTo(player, text);
         });
@@ -80,8 +81,8 @@ public class PlayerHelper {
     /**
      * get all players in the server.
      */
-    public static List<ServerPlayer> getServerPlayers(Level world){
-        return Objects.requireNonNull(world.getServer()).getPlayerList().getPlayers();
+    public static List<ServerPlayer> getServerPlayers(ServerLevel world){
+        return world.getServer().getPlayerList().getPlayers();
     }
 
     /**

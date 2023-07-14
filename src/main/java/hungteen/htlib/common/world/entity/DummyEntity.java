@@ -71,9 +71,11 @@ public abstract class DummyEntity implements IDummyEntity {
      * sync data to client side.
      */
     public void sync(CompoundTag tag){
-        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-            NetworkHandler.sendToClient(player, new DummyEntityPacket(this, tag));
-        });
+        if(this.level instanceof ServerLevel serverLevel) {
+            PlayerHelper.getServerPlayers(serverLevel).forEach(player -> {
+                NetworkHandler.sendToClient(player, new DummyEntityPacket(this, tag));
+            });
+        }
     }
 
     public void tick(){

@@ -51,6 +51,10 @@ public abstract class HTRecipeBuilder implements RecipeBuilder {
         return this.group == null ? StringHelper.EMPTY_STRING : this.group;
     }
 
+    public Advancement.Builder getAdvancement() {
+        return advancement;
+    }
+
     public abstract FinishedRecipe createFinishedRecipe(ResourceLocation recipe);
 
     @Override

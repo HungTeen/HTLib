@@ -14,13 +14,13 @@ import org.jetbrains.annotations.Nullable;
 public abstract class HTFinishedRecipe implements FinishedRecipe {
 
     private final ResourceLocation id;
-    private final Advancement.Builder advancement;
-    private final ResourceLocation advancementId;
+    private final Advancement.Builder builder;
+    private final ResourceLocation advancement;
 
-    public HTFinishedRecipe(ResourceLocation id, Advancement.Builder advancement, ResourceLocation advancementId) {
+    public HTFinishedRecipe(ResourceLocation id, Advancement.Builder builder, ResourceLocation advancement) {
         this.id = id;
+        this.builder = builder;
         this.advancement = advancement;
-        this.advancementId = advancementId;
     }
 
     @Override
@@ -35,12 +35,12 @@ public abstract class HTFinishedRecipe implements FinishedRecipe {
     @Nullable
     @Override
     public JsonObject serializeAdvancement() {
-        return this.advancement.serializeToJson();
+        return this.builder.serializeToJson();
     }
 
     @Nullable
     @Override
     public ResourceLocation getAdvancementId() {
-        return this.advancementId;
+        return this.advancement;
     }
 }

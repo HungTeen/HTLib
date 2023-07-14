@@ -16,6 +16,8 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.List;
+
 /**
  * @author PangTeen
  * @program HTLib
@@ -43,12 +45,27 @@ public class RecipeHelper {
         return ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
     }
 
-    public static void writeResultItem(JsonObject jsonObject, Item result, int count){
-        JsonObject jsonobject = new JsonObject();
-        jsonobject.addProperty("item", ItemHelper.get().getKey(result).toString());
+    public static void writeResultItem(JsonObject jsonObject, Item result, int count) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("item", ItemHelper.get().getKey(result).toString());
         if (count > 1) {
-            jsonobject.addProperty("count", count);
+            obj.addProperty("count", count);
         }
+        jsonObject.add("result", obj);
+    }
+
+    public static void writeGroup(JsonObject jsonObject, String group){
+        if (!group.isEmpty()) {
+            jsonObject.addProperty("group", group);
+        }
+    }
+
+    public static String readGroup(JsonObject jsonObject){
+        return GsonHelper.getAsString(jsonObject, "group", "");
+    }
+
+    public static NonNullList<Ingredient> readIngredients(JsonObject jsonObject) {
+        return RecipeHelper.readIngredients(GsonHelper.getAsJsonArray(jsonObject, "ingredients"));
     }
 
     public static NonNullList<Ingredient> readIngredients(JsonArray jsonArray) {
@@ -59,11 +76,13 @@ public class RecipeHelper {
         return ingredients;
     }
 
-    public static void writeIngredients(JsonObject jsonObject, NonNullList<Ingredient> ingredients){
+    public static void writeIngredients(JsonObject jsonObject, List<Ingredient> ingredients) {
         JsonArray jsonarray = new JsonArray();
+
         for (Ingredient ingredient : ingredients) {
             jsonarray.add(ingredient.toJson());
         }
+
         jsonObject.add("ingredients", jsonarray);
     }
 
