@@ -3,6 +3,5 @@
   "setting": {
     "entity_type": "minecraft:creeper"
   },
-  "spawn_count": 10,
-  "spawn_tick": 10
+  "spawn_count": 10
 }

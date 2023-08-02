@@ -26,35 +26,32 @@ public class DurationSpawn extends SpawnComponent {
      */
     public static final Codec<DurationSpawn> CODEC = RecordCodecBuilder.<DurationSpawn>mapCodec(instance -> instance.group(
             SpawnSetting.CODEC.fieldOf("spawn_settings").forGetter(DurationSpawn::getSpawnSetting),
-            Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0).forGetter(DurationSpawn::getStartSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationSpawn::getSpawnDuration),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationSpawn::getSpawnInterval),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("each_spawn_count").forGetter(DurationSpawn::getEachSpawnCount),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("spawn_offset", 0).forGetter(DurationSpawn::getSpawnOffset)
     ).apply(instance, DurationSpawn::new)).codec();
-    private final int startSpawnTick;
     private final int spawnDuration;
     private final int spawnInterval;
     private final int eachSpawnCount;
     private final int spawnOffset;
 
-    public DurationSpawn(SpawnSetting spawnSettings, int startSpawnTick, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
+    public DurationSpawn(SpawnSetting spawnSettings, int spawnDuration, int spawnInterval, int eachSpawnCount, int spawnOffset){
         super(spawnSettings);
-        this.startSpawnTick = startSpawnTick;
         this.spawnDuration = spawnDuration;
         this.spawnInterval = spawnInterval;
         this.eachSpawnCount = eachSpawnCount;
         this.spawnOffset = spawnOffset;
     }
 
-    private boolean canSpawn(int tick) {
-        return tick >= this.getStartSpawnTick() + this.getSpawnOffset() && ! this.finishedSpawn(tick) && (tick - this.getStartSpawnTick()) % this.getSpawnInterval() == this.getSpawnOffset();
+    private boolean canSpawn(int tick, int startTick) {
+        return tick >= startTick + this.getSpawnOffset() && ! this.finishedSpawn(tick, startTick) && (tick - startTick) % this.getSpawnInterval() == this.getSpawnOffset();
     }
 
     @Override
-    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick) {
         List<Entity> entities = new ArrayList<>();
-        if(canSpawn(tick)){
+        if(canSpawn(tick, startTick)){
             for(int i = 0; i < this.getEachSpawnCount(); ++ i){
                 this.spawnEntity(level, raid).ifPresent(entities::add);
             }
@@ -63,17 +60,13 @@ public class DurationSpawn extends SpawnComponent {
     }
 
     @Override
-    public boolean finishedSpawn(int tick) {
-        return tick > this.getStartSpawnTick() + this.getSpawnDuration();
+    public boolean finishedSpawn(int tick, int startTick) {
+        return tick > startTick + this.getSpawnDuration();
     }
 
     @Override
     public ISpawnType<?> getType() {
         return HTSpawnTypes.DURATION;
-    }
-
-    public int getStartSpawnTick() {
-        return startSpawnTick;
     }
 
     public int getSpawnDuration() {

@@ -1,5 +1,6 @@
 package hungteen.htlib.common.impl.wave;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.api.interfaces.raid.IPositionComponent;
@@ -15,9 +16,9 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.valueproviders.ConstantInt;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +41,11 @@ public class HTWaveComponents {
         final Holder<ISpawnComponent> testSpawn3 = spawns.getOrThrow(HTSpawnComponents.TEST_3);
         context.register(TEST_1, new CommonWave(
                 HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
-                List.of(testSpawn1)
+                List.of(Pair.of(ConstantInt.of(10), testSpawn1))
         ));
         context.register(TEST_2, new CommonWave(
                 HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
-                Arrays.asList(testSpawn2, testSpawn3)
+                List.of(Pair.of(ConstantInt.of(10), testSpawn2), Pair.of(ConstantInt.of(100), testSpawn3))
         ));
 
     }

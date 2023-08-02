@@ -20,6 +20,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @program: HTLib
@@ -47,6 +48,11 @@ public abstract class DummyEntity implements IDummyEntity {
         this.entityID = tag.getInt("DummyEntityID");
     }
 
+    /**
+     * Use to construct instance and packet sync. <br>
+     * {@link DummyEntityType#create(Level, CompoundTag)} and {@link DummyEntityPacket.Handler#onMessage(DummyEntityPacket, Supplier)}.
+     * @param tag
+     */
     public void load(CompoundTag tag) {
         if(tag.contains("Position")){
             Vec3.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("Position"))

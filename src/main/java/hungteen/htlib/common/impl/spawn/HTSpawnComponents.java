@@ -1,5 +1,6 @@
 package hungteen.htlib.common.impl.spawn;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.api.interfaces.raid.IPositionComponent;
@@ -12,6 +13,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Optional;
@@ -32,17 +35,14 @@ public class HTSpawnComponents {
     public static void register(BootstapContext<ISpawnComponent> context) {
         context.register(TEST_1, new OnceSpawn(
                 HTSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
-                10,
                 10
         ));
         context.register(TEST_2, new OnceSpawn(
                 HTSpawnComponents.builder().entityType(EntityType.SPIDER).build(),
-                10,
                 5
         ));
         context.register(TEST_3, new DurationSpawn(
                 HTSpawnComponents.builder().entityType(EntityType.SKELETON).build(),
-                100,
                 400,
                 100,
                 1,
@@ -56,6 +56,20 @@ public class HTSpawnComponents {
 
     public static Codec<Holder<ISpawnComponent>> getCodec(){
         return registry().getHolderCodec(getDirectCodec());
+    }
+
+    public static Codec<Pair<Integer, ISpawnComponent>> pairDirectCodec(){
+        return Codec.mapPair(
+                Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0),
+                getDirectCodec().fieldOf("spawn")
+        ).codec();
+    }
+
+    public static Codec<Pair<IntProvider, Holder<ISpawnComponent>>> pairCodec(){
+        return Codec.mapPair(
+                IntProvider.codec(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", ConstantInt.of(0)),
+                getCodec().fieldOf("spawn")
+        ).codec();
     }
 
     public static ResourceKey<ISpawnComponent> create(String name) {
@@ -76,10 +90,11 @@ public class HTSpawnComponents {
         private EntityType<?> entityType = EntityType.PIG;
         private CompoundTag nbt = new CompoundTag();
         private boolean enableDefaultSpawn = true;
+        private boolean persist = true;
         private Holder<IPositionComponent> placeComponent = null;
 
         public SpawnComponent.SpawnSetting build() {
-            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, Optional.ofNullable(placeComponent));
+            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent));
         }
 
         public SpawnSettingBuilder entityType(EntityType<?> type) {
@@ -94,6 +109,11 @@ public class HTSpawnComponents {
 
         public SpawnSettingBuilder enableDefaultSpawn(boolean flag){
             this.enableDefaultSpawn = flag;
+            return this;
+        }
+
+        public SpawnSettingBuilder persist(boolean flag){
+            this.persist = flag;
             return this;
         }
 

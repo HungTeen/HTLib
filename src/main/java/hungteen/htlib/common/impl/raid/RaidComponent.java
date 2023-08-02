@@ -2,14 +2,14 @@ package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.IRaidComponent;
+import hungteen.htlib.api.interfaces.raid.IResultComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.world.raid.AbstractRaid;
-import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
-import hungteen.htlib.api.interfaces.raid.IRaidComponent;
+import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.ColorHelper;
-import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
@@ -166,10 +166,10 @@ public abstract class RaidComponent implements IRaidComponent {
 
     protected record BarSetting(MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle) {
         public static final Codec<BarSetting> CODEC = RecordCodecBuilder.<BarSetting>mapCodec(instance -> instance.group(
-                StringHelper.CODEC.optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(BarSetting::raidTitle),
+                CodecHelper.componentCodec().optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(BarSetting::raidTitle),
                 BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(BarSetting::raidColor),
-                StringHelper.CODEC.optionalFieldOf("victory_title", AbstractRaid.RAID_VICTORY_TITLE).forGetter(BarSetting::victoryTitle),
-                StringHelper.CODEC.optionalFieldOf("loss_title", AbstractRaid.RAID_LOSS_TITLE).forGetter(BarSetting::lossTitle)
+                CodecHelper.componentCodec().optionalFieldOf("victory_title", AbstractRaid.RAID_VICTORY_TITLE).forGetter(BarSetting::victoryTitle),
+                CodecHelper.componentCodec().optionalFieldOf("loss_title", AbstractRaid.RAID_LOSS_TITLE).forGetter(BarSetting::lossTitle)
         ).apply(instance, BarSetting::new)).codec();
     }
 }

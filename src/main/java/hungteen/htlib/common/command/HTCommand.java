@@ -69,7 +69,6 @@ public class HTCommand {
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("type", ResourceArgument.resource(context, HTRaidComponents.registry().getRegistryKey()))
-//                                        .suggests(ALL_CUSTOM_RAIDS)
                                         .then(Commands.argument("position", Vec3Argument.vec3())
                                                 .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), ResourceArgument.getResource(ctx, "type", HTRaidComponents.registry().getRegistryKey()), Vec3Argument.getVec3(ctx, "position")))
                                         )

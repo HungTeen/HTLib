@@ -26,26 +26,19 @@ public class OnceSpawn extends SpawnComponent {
      */
     public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
             SpawnSetting.CODEC.fieldOf("setting").forGetter(OnceSpawn::getSpawnSetting),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_tick").forGetter(OnceSpawn::getSpawnTick),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
     ).apply(instance, OnceSpawn::new)).codec();
-    private final int spawnTick;
     private final int spawnCount;
 
-    public OnceSpawn(SpawnSetting spawnSettings, int spawnTick, int spawnCount){
+    public OnceSpawn(SpawnSetting spawnSettings, int spawnCount){
         super(spawnSettings);
-        this.spawnTick = spawnTick;
         this.spawnCount = spawnCount;
     }
 
-    private boolean canSpawn(int tick) {
-        return tick == this.getSpawnTick();
-    }
-
     @Override
-    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick) {
         List<Entity> entities = new ArrayList<>();
-        if(canSpawn(tick)){
+        if(tick == startTick){
             for(int i = 0; i < this.getSpawnCount(); ++ i){
                 this.spawnEntity(level, raid).ifPresent(entities::add);
             }
@@ -54,17 +47,13 @@ public class OnceSpawn extends SpawnComponent {
     }
 
     @Override
-    public boolean finishedSpawn(int tick) {
-        return tick > this.getSpawnTick();
+    public boolean finishedSpawn(int tick, int startTick) {
+        return tick > startTick;
     }
 
     @Override
     public ISpawnType<?> getType() {
         return HTSpawnTypes.ONCE;
-    }
-
-    public int getSpawnTick() {
-        return spawnTick;
     }
 
     public int getSpawnCount() {

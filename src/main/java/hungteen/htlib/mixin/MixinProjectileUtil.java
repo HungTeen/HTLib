@@ -35,7 +35,7 @@ public class MixinProjectileUtil {
                 if (!entity.level().isClientSide()){
                     dummyEntity.collideWith(entity);
                 }
-                result.setReturnValue(BlockHitResult.miss(entity.position(), entity.getDirection(), entity.blockPosition()));
+                result.setReturnValue(null);
             }
         });
     }

@@ -17,17 +17,19 @@ public interface ISpawnComponent {
      * Get spawned entities.
      * @param level Check level.
      * @param raid Current raid.
-     * @param tick current tick.
+     * @param tick Current tick.
+     * @param startTick Start tick.
      * @return List of spawned entities.
      */
-    List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick);
+    List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick);
 
     /**
      * Check for skipping this wave.
-     * @param tick current tick.
-     * @return true means can skip.
+     * @param tick Current tick.
+     * @param startTick Start spawn tick.
+     * @return True means can skip.
      */
-    boolean finishedSpawn(int tick);
+    boolean finishedSpawn(int tick, int startTick);
 
     /**
      * Get the method to place the upcoming getSpawnEntities entity.

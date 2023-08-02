@@ -52,6 +52,10 @@ public abstract class SpawnComponent implements ISpawnComponent {
                     ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
                 }
 
+                if(getSpawnSetting().persist()&& entity instanceof Mob mob) {
+                    mob.setPersistenceRequired();
+                }
+
                 if (!level.tryAddFreshEntityWithPassengers(entity)) {
                     HTLib.getLogger().warn("Error duplicate UUID");
                 } else {
@@ -85,7 +89,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return spawnSetting;
     }
 
-    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, Optional<Holder<IPositionComponent>> placeComponent){
+    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<IPositionComponent>> placeComponent){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -98,6 +102,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSetting::entityType),
                 CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
                 Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
+                Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
                 Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent)
                 ).apply(instance, SpawnSetting::new)).codec();
     }

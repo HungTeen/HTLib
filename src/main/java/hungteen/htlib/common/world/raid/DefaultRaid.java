@@ -29,7 +29,6 @@ public class DefaultRaid extends AbstractRaid {
 
     public DefaultRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag tag) {
         super(dummyEntityType, level, tag);
-        this.load(tag);
     }
 
     @Override

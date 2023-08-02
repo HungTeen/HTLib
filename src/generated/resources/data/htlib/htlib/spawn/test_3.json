@@ -5,6 +5,5 @@
   "spawn_interval": 100,
   "spawn_settings": {
     "entity_type": "minecraft:skeleton"
-  },
-  "start_tick": 100
+  }
 }

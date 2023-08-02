@@ -1,6 +1,8 @@
 package hungteen.htlib.api.interfaces.raid;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +16,12 @@ public interface IWaveComponent {
 
     /**
      * Get the wave getSpawnEntities list.
-     * @param raid Current raid.
-     * @param tick Current tick.
+     *
+     * @param raid        Current raid.
+     * @param currentWave Current wave.
      * @return List of wave getSpawnEntities.
      */
-    List<ISpawnComponent> getWaveSpawns(IRaid raid, int tick);
+    List<Pair<Integer, ISpawnComponent>> getWaveSpawns(IRaid raid, int currentWave, RandomSource random);
 
     /**
      * How long before the wave start.

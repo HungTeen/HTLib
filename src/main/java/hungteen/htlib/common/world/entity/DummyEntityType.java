@@ -6,8 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @program: HTLib
@@ -24,9 +23,10 @@ public final class DummyEntityType<T extends DummyEntity> implements ISimpleEntr
         this.factory = factory;
     }
 
-    @Nullable
     public T create(Level level, CompoundTag tag) {
-        return this.factory.create(this, level, tag);
+        T dummyEntity = this.factory.create(this, level, tag);
+        dummyEntity.load(tag);
+        return dummyEntity;
     }
 
     @Override
@@ -50,6 +50,8 @@ public final class DummyEntityType<T extends DummyEntity> implements ISimpleEntr
     }
 
     public interface Factory<T extends DummyEntity> {
+
+        @NotNull
         T create(DummyEntityType<T> entityType, Level level, CompoundTag tag);
     }
 }

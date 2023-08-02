@@ -5,7 +5,13 @@
     "wave_duration": 1200
   },
   "spawns": [
-    "htlib:test_2",
-    "htlib:test_3"
+    {
+      "spawn": "htlib:test_2",
+      "start_tick": 10
+    },
+    {
+      "spawn": "htlib:test_3",
+      "start_tick": 100
+    }
   ]
 }

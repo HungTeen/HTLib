@@ -47,6 +47,9 @@ public class DummyEntityManager extends SavedData {
         this.setDirty();
     }
 
+    /**
+     * Usually called by command, generic usage.
+     */
     @Nullable
     public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
         final BlockPos blockpos = MathHelper.toBlockPos(position);
@@ -64,8 +67,11 @@ public class DummyEntityManager extends SavedData {
         return null;
     }
 
+    /**
+     * Specific usage.
+     */
     @Nullable
-    public static DummyEntity addEntity(ServerLevel level, DummyEntity dummyEntity) {
+    public static <T extends DummyEntity> T addEntity(ServerLevel level, T dummyEntity) {
         if (dummyEntity != null && ! MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity))) {
             DummyEntityManager.get(level).add(dummyEntity);
             return dummyEntity;
