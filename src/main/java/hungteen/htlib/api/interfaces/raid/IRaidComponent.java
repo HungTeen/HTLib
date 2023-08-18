@@ -111,6 +111,12 @@ public interface IRaidComponent {
     boolean showRoundTitle();
 
     /**
+     * Should send raid warn when stopped.
+     * @return true to send.
+     */
+    boolean sendRaidWarn();
+
+    /**
      * Get result components.
      * @return Result list.
      */

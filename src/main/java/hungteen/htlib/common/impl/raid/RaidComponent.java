@@ -83,6 +83,11 @@ public abstract class RaidComponent implements IRaidComponent {
     }
 
     @Override
+    public boolean sendRaidWarn() {
+        return getRaidSettings().sendRaidWarn();
+    }
+
+    @Override
     public List<IResultComponent> getResultComponents() {
         return getRaidSettings().resultComponents().stream().map(Holder::get).toList();
     }
@@ -127,7 +132,7 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle) {
+    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 
@@ -139,8 +144,8 @@ public abstract class RaidComponent implements IRaidComponent {
 
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("victory_duration", 100).forGetter(RaidSetting::victoryDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("loss_duration", 100).forGetter(RaidSetting::lossDuration),
-                Codec.BOOL.optionalFieldOf("show_wave_title", true).forGetter(RaidSetting::showRoundTitle)
-
+                Codec.BOOL.optionalFieldOf("show_wave_title", true).forGetter(RaidSetting::showRoundTitle),
+                Codec.BOOL.optionalFieldOf("send_raid_warn", true).forGetter(RaidSetting::sendRaidWarn)
 
         ).apply(instance, RaidSetting::new)).codec();
     }

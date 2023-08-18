@@ -95,6 +95,7 @@ public class HTRaidComponents {
         private int victoryDuration = 100;
         private int lossDuration = 100;
         private boolean showRoundTitle = true;
+        private boolean sendRaidWarn = true;
         private MutableComponent raidTitle = AbstractRaid.RAID_TITLE;
         private BossEvent.BossBarColor raidColor = BossEvent.BossBarColor.RED;
         private MutableComponent victoryTitle = AbstractRaid.RAID_VICTORY_TITLE;
@@ -151,6 +152,11 @@ public class HTRaidComponents {
 
         public RaidSettingBuilder showRoundTitle(boolean showRoundTitle) {
             this.showRoundTitle = showRoundTitle;
+            return this;
+        }
+
+        public RaidSettingBuilder sendRaidWarn(boolean sendRaidWarn) {
+            this.sendRaidWarn = sendRaidWarn;
             return this;
         }
 
@@ -219,7 +225,8 @@ public class HTRaidComponents {
                     this.resultComponents,
                     this.victoryDuration,
                     this.lossDuration,
-                    this.showRoundTitle
+                    this.showRoundTitle,
+                    this.sendRaidWarn
             );
         }
 

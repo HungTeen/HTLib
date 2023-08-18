@@ -154,57 +154,73 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 return;
             }
             // Assert Raid Component.
-            if(this.checkValidAndRun(() -> this.getRaidComponent() == null)) return;
+            if(this.checkInvalidAndRun(() -> this.getRaidComponent() == null)) return;
             // Init Wave.
             if(this.getCurrentWave().isEmpty() && this.currentWave == 0){
                 this.updateWave(false);
             }
             // Assert Wave Component.
-            if(this.checkValidAndRun(this.getCurrentWave()::isEmpty)) return;
-            final IWaveComponent wave = this.getCurrentWave().get();
-            if (this.tick % 20 == 0 || this.stopTick % 10 == 5) {
-                this.updatePlayers();
-                this.updateRaiders();
-            }
-            this.tickProgressBar();
+            if(this.checkInvalidAndRun(this.getCurrentWave()::isEmpty)) return;
+            this.validTick(Objects.requireNonNull(this.getRaidComponent()), this.getCurrentWave().get());
+        }
+    }
 
-            if (this.stopped()) {
-                // TODO 配置文件
-                if (++ this.stopTick >= 200) {
-                    this.remove();
-                }
-                return;
-            }
+    public void validTick(@NotNull IRaidComponent raid, @NotNull IWaveComponent wave){
+        if (this.tick % 20 == 0 || this.stopTick % 10 == 5) {
+            this.updatePlayers();
+            this.updateRaiders();
+        }
+        this.tickProgressBar();
 
-            if (!this.firstTick) {
-                this.firstTick = true;
-                this.getPlayers().forEach(p -> {
-                    Objects.requireNonNull(this.getRaidComponent()).getRaidStartSound().ifPresent(sound -> PlayerHelper.playClientSound(p, sound));
+        if (this.needStop()) {
+            // TODO 配置文件
+            if(this.stopTick == 1 && raid.sendRaidWarn()){
+                this.getDefenders().stream().filter(Player.class::isInstance).map(Player.class::cast).forEach(player -> {
+                    PlayerHelper.sendMsgTo(player, RAID_WARN);
                 });
             }
+            if (++ this.stopTick >= 200) {
+                this.remove();
+            }
+            return;
+        } else {
+            if(this.stopTick > 0){
+                this.stopTick = 0;
+            }
+        }
 
-            switch (this.getStatus()) {
-                case PREPARE -> {
-                    if (++ this.tick >= wave.getPrepareDuration()) {
-                        this.waveStart(wave);
-                    }
+        this.workTick(raid, wave);
+    }
+
+    public void workTick(@NotNull IRaidComponent raid, @NotNull IWaveComponent wave){
+        if (!this.firstTick) {
+            this.firstTick = true;
+            this.getPlayers().forEach(p -> {
+                raid.getRaidStartSound().ifPresent(sound -> PlayerHelper.playClientSound(p, sound));
+            });
+        }
+
+        switch (this.getStatus()) {
+            case PREPARE -> {
+                if (++ this.tick >= wave.getPrepareDuration()) {
+                    this.waveStart(wave);
                 }
-                case RUNNING -> {
-                    this.checkNextWave(wave);
-                    this.checkSpawn();
-                    ++ this.tick;
+            }
+            case RUNNING -> {
+                this.checkNextWave(wave);
+                this.checkSpawn();
+                ++ this.tick;
+            }
+            case LOSS -> {
+                raid.getResultComponents().forEach(this::tickResult);
+                if (++ this.tick >= raid.getLossDuration()) {
+                    this.remove();
                 }
-                case LOSS -> {
-                    Objects.requireNonNull(this.getRaidComponent()).getResultComponents().forEach(this::tickResult);
-                    if (++ this.tick >= this.getRaidComponent().getLossDuration()) {
-                        this.remove();
-                    }
-                }
-                case VICTORY -> {
-                    Objects.requireNonNull(this.getRaidComponent()).getResultComponents().forEach(this::tickResult);
-                    if (++ this.tick >= this.getRaidComponent().getVictoryDuration()) {
-                        this.remove();
-                    }
+            }
+            case VICTORY -> {
+                raid.getResultComponents().forEach(this::tickResult);
+                if (++ this.tick >= raid.getVictoryDuration()) {
+                    this.remove();
                 }
             }
         }
@@ -213,7 +229,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     /**
      * 此袭击无效，表现在袭击组件非法。
      */
-    protected boolean checkValidAndRun(Supplier<Boolean> supplier){
+    protected boolean checkInvalidAndRun(Supplier<Boolean> supplier){
         final boolean ans = supplier.get();
         if (ans) {
             if (++ this.invalidTick >= 100) {
@@ -320,18 +336,10 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 }
             });
         }
+    }
 
-        /* No player nearby */
-        if (this.progressBar.getPlayers().isEmpty()) {
-            if (!this.stopped()) {
-                ++this.stopTick;
-                this.getDefenders().stream().filter(Player.class::isInstance).map(Player.class::cast).forEach(player -> {
-                    PlayerHelper.sendMsgTo(player, RAID_WARN);
-                });
-            }
-        } else {
-            this.stopTick = 0;
-        }
+    protected boolean needStop(){
+        return this.progressBar.getPlayers().isEmpty();
     }
 
     protected void updateRaiders() {
@@ -566,10 +574,6 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     public int getTotalRound(){
         return this.getRaidComponent() == null ? 0 : this.getRaidComponent().getWaveCount(this);
-    }
-
-    public boolean stopped() {
-        return this.stopped;
     }
 
     public boolean isRunning() {

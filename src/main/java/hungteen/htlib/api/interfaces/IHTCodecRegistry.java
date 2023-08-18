@@ -11,6 +11,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,19 +52,27 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
     }
 
     /**
-     * Get entry by key, 根据key获取注册项。
-     *
+     * Get holder by key, 根据key获取注册项。
      * @param key the resource key to query.
-     * @return empty if no key is find, otherwise return entry with the given key.
+     * @return throw error if no key is find, otherwise return entry with the given key.
      */
     default Holder.Reference<V> getHolder(Level level, ResourceKey<V> key){
         return lookup(level).getOrThrow(key);
     }
 
     /**
-     * Get entry by key, 根据key获取注册项。
+     * Get holder by key, 根据key获取注册项。
      * @param key the resource key to query.
      * @return empty if no key is find, otherwise return entry with the given key.
+     */
+    default Optional<Holder.Reference<V>> getOptHolder(Level level, ResourceKey<V> key){
+        return lookup(level).get(key);
+    }
+
+    /**
+     * Get entry by key, 根据key获取注册项。
+     * @param key the resource key to query.
+     * @return throw error if no key is find, otherwise return entry with the given key.
      */
     default V getValue(Level level, ResourceKey<V> key){
         return getHolder(level, key).get();
@@ -74,8 +83,26 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
      * @param key the resource key to query.
      * @return empty if no key is find, otherwise return entry with the given key.
      */
+    default Optional<V> getOptValue(Level level, ResourceKey<V> key){
+        return getOptHolder(level, key).map(Holder::get);
+    }
+
+    /**
+     * Get holder set by key, 根据key获取注册项。
+     * @param key the resource key to query.
+     * @return throw error if no key is find, otherwise return entry with the given key.
+     */
     default HolderSet.Named<V> getHolderSet(Level level, TagKey<V> key){
         return lookup(level).getOrThrow(key);
+    }
+
+    /**
+     * Get holder set by key, 根据key获取注册项。
+     * @param key the resource key to query.
+     * @return empty if no key is find, otherwise return entry with the given key.
+     */
+    default Optional<HolderSet.Named<V>> getOptHolderSet(Level level, TagKey<V> key){
+        return lookup(level).get(key);
     }
 
 }
