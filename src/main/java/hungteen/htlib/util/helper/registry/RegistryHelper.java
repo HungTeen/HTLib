@@ -1,11 +1,8 @@
 package hungteen.htlib.util.helper.registry;
 
-import com.mojang.datafixers.util.Either;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.IHTRegistryHelper;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.*;
@@ -24,12 +21,6 @@ import java.util.function.Supplier;
 public abstract class RegistryHelper<T> implements IHTRegistryHelper<T> {
 
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
-
-    /**
-     * 决定注册帮助类的类型，有些注册forge有，有些原版才有。
-     * @return ForgeRegistry.
-     */
-    public abstract Either<IForgeRegistry<T>, Registry<T>> getRegistry();
 
     /* Group Registration Methods */
 

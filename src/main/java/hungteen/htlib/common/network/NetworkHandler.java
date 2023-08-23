@@ -29,7 +29,6 @@ public class NetworkHandler {
                 .simpleChannel();
 
         CHANNEL.registerMessage(getId(), PlaySoundPacket.class, PlaySoundPacket::encode, PlaySoundPacket::new, PlaySoundPacket.Handler::onMessage);
-        CHANNEL.registerMessage(getId(), SpawnParticlePacket.class, SpawnParticlePacket::encode, SpawnParticlePacket::new, SpawnParticlePacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), DummyEntityPacket.class, DummyEntityPacket::encode, DummyEntityPacket::new, DummyEntityPacket.Handler::onMessage);
 
     }

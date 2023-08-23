@@ -5,8 +5,12 @@ import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -45,6 +49,19 @@ public class ItemHelper {
 
     public static ResourceLocation itemTexture(Item item, String suffix) {
         return StringHelper.itemTexture(get().getKey(item), suffix);
+    }
+
+    public static double getItemBonusDamage(ItemStack stack, EquipmentSlot... slots){
+        double damage = 0F;
+        for (EquipmentSlot slot : slots) {
+            for (AttributeModifier modifier : stack.getAttributeModifiers(slot).get(Attributes.ATTACK_DAMAGE)) {
+                if (modifier.getId() == Item.BASE_ATTACK_DAMAGE_UUID) {
+                    damage += modifier.getAmount();
+                    break;
+                }
+            }
+        }
+        return damage;
     }
 
     /* Common Methods */

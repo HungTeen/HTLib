@@ -7,6 +7,7 @@ import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -31,6 +32,23 @@ public interface IHTRegistryHelper<T> extends IHTResourceHelper<T>{
     @Override
     default ResourceKey<? extends Registry<T>> resourceKey(){
         return getRegistry().map(IForgeRegistry::getRegistryKey, Registry::key);
+    }
+
+    /* Packet Related Methods */
+
+    default void write(FriendlyByteBuf buf, T type){
+        getRegistry().ifLeft(l -> {
+            buf.writeRegistryIdUnsafe(l, type);
+        }).ifRight(r -> {
+            buf.writeId(r, type);
+        });
+    }
+
+    default T read(FriendlyByteBuf buf){
+        return getRegistry().map(
+                buf::readRegistryIdUnsafe,
+                buf::readById
+        );
     }
 
     /* Tag Methods */
