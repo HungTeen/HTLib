@@ -21,7 +21,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
@@ -65,16 +64,16 @@ public class HTCommand {
                                 )
                         )
                 )
-                .then(Commands.literal("raid")
-                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
-                                .suggests(ALL_DUMMY_ENTITIES)
-                                .then(Commands.argument("type", ResourceArgument.resource(context, HTRaidComponents.registry().getRegistryKey()))
-                                        .then(Commands.argument("position", Vec3Argument.vec3())
-                                                .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), ResourceArgument.getResource(ctx, "type", HTRaidComponents.registry().getRegistryKey()), Vec3Argument.getVec3(ctx, "position")))
-                                        )
-                                )
-                        )
-                )
+//                .then(Commands.literal("raid")
+//                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
+//                                .suggests(ALL_DUMMY_ENTITIES)
+//                                .then(Commands.argument("type", ResourceArgument.resource(context, HTRaidComponents.registry().getRegistryKey()))
+//                                        .then(Commands.argument("position", Vec3Argument.vec3())
+//                                                .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), ResourceArgument.getResource(ctx, "type", HTRaidComponents.registry().getRegistryKey()), Vec3Argument.getVec3(ctx, "position")))
+//                                        )
+//                                )
+//                        )
+//                )
         );
         builder.then(Commands.literal("seat")
                 .then(Commands.argument("target", EntityArgument.entity())

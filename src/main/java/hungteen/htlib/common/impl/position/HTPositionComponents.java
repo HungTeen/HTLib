@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class HTPositionComponents {
 
-    public static final HTCodecRegistry<IPositionComponent> PLACEMENTS = HTRegistryManager.create(HTLibHelper.prefix("position"), HTPositionComponents::getDirectCodec, HTPositionComponents::getDirectCodec);
+    private static final HTCodecRegistry<IPositionComponent> PLACEMENTS = HTRegistryManager.create(HTLibHelper.prefix("position"), IPositionComponent.class, HTPositionComponents::getDirectCodec, false);
 
     public static final IPositionComponent DEFAULT = new CenterAreaPosition(
             Vec3.ZERO, 0, 1, true, 0, true

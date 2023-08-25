@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 public class HTRaidComponents {
 
-    private static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), HTRaidComponents::getDirectCodec, HTRaidComponents::getDirectCodec);
+    private static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), IRaidComponent.class, HTRaidComponents::getDirectCodec, false);
 
     public static final ResourceKey<IRaidComponent> TEST = create("test");
 

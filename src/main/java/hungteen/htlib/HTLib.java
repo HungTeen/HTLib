@@ -21,6 +21,7 @@ import hungteen.htlib.common.impl.spawn.HTSpawnTypes;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.impl.wave.HTWaveTypes;
 import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.suit.HTSuitHandler;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
@@ -75,7 +76,8 @@ public class HTLib {
         forgeBus.addListener(DummyEntityManager::tick);
         forgeBus.addListener(PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
-        forgeBus.addListener(EventPriority.NORMAL, false, RegisterCommandsEvent.class, event -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
+        forgeBus.addListener(HTRegistryManager::syncToClient);
+        forgeBus.addListener((RegisterCommandsEvent event) -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
     }
 
     public void register(IEventBus modBus){

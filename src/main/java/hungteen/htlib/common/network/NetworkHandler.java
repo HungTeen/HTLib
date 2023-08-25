@@ -30,7 +30,7 @@ public class NetworkHandler {
 
         CHANNEL.registerMessage(getId(), PlaySoundPacket.class, PlaySoundPacket::encode, PlaySoundPacket::new, PlaySoundPacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), DummyEntityPacket.class, DummyEntityPacket::encode, DummyEntityPacket::new, DummyEntityPacket.Handler::onMessage);
-
+        CHANNEL.registerMessage(getId(), SyncDatapackPacket.class, SyncDatapackPacket::encode, SyncDatapackPacket::new, SyncDatapackPacket.Handler::onMessage);
     }
 
     public static <MSG> void sendToServer(MSG msg){

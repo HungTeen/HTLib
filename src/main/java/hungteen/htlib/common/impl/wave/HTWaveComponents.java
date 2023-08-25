@@ -29,7 +29,7 @@ import java.util.Optional;
  **/
 public class HTWaveComponents {
 
-    public static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(HTLibHelper.prefix("wave"), HTWaveComponents::getDirectCodec, HTWaveComponents::getDirectCodec);
+    private static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(HTLibHelper.prefix("wave"), IWaveComponent.class, HTWaveComponents::getDirectCodec, false);
 
     public static final ResourceKey<IWaveComponent> TEST_1 = create("test_1");
     public static final ResourceKey<IWaveComponent> TEST_2 = create("test_2");

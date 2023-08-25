@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
      * Get all registered entries, 获取所有注册项。
      * @return all kinds of entries registered.
      */
-    default Collection<V> getValues(Level level){
+    default List<V> getValues(Level level){
         return lookup(level).listElements().map(Holder::get).toList();
     }
 

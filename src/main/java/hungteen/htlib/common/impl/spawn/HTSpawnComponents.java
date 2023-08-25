@@ -26,7 +26,7 @@ import java.util.Optional;
  **/
 public class HTSpawnComponents {
 
-    public static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(HTLibHelper.prefix("spawn"), HTSpawnComponents::getDirectCodec, HTSpawnComponents::getDirectCodec);
+    private static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(HTLibHelper.prefix("spawn"), ISpawnComponent.class, HTSpawnComponents::getDirectCodec, false);
 
     public static final ResourceKey<ISpawnComponent> TEST_1 = create("test_1");
     public static final ResourceKey<ISpawnComponent> TEST_2 = create("test_2");

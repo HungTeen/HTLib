@@ -24,7 +24,7 @@ import java.util.List;
  **/
 public class HTResultComponents {
 
-    public static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(HTLibHelper.prefix("result"), HTResultComponents::getDirectCodec, HTResultComponents::getDirectCodec);
+    private static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(HTLibHelper.prefix("result"), IResultComponent.class, HTResultComponents::getDirectCodec, false);
 
     public static final ResourceKey<IResultComponent> TEST = create("test");
 
