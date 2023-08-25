@@ -27,14 +27,14 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-28 23:32
  **/
-public class HTWaveComponents {
+public interface HTWaveComponents {
 
-    private static final HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(HTLibHelper.prefix("wave"), IWaveComponent.class, HTWaveComponents::getDirectCodec, false);
+    HTCodecRegistry<IWaveComponent> WAVES = HTRegistryManager.create(HTLibHelper.prefix("wave"), HTWaveComponents::getDirectCodec);
 
-    public static final ResourceKey<IWaveComponent> TEST_1 = create("test_1");
-    public static final ResourceKey<IWaveComponent> TEST_2 = create("test_2");
+    ResourceKey<IWaveComponent> TEST_1 = create("test_1");
+    ResourceKey<IWaveComponent> TEST_2 = create("test_2");
 
-    public static void register(BootstapContext<IWaveComponent> context) {
+    static void register(BootstapContext<IWaveComponent> context) {
         final HolderGetter<ISpawnComponent> spawns = HTSpawnComponents.registry().helper().lookup(context);
         final Holder<ISpawnComponent> testSpawn1 = spawns.getOrThrow(HTSpawnComponents.TEST_1);
         final Holder<ISpawnComponent> testSpawn2 = spawns.getOrThrow(HTSpawnComponents.TEST_2);
@@ -50,27 +50,27 @@ public class HTWaveComponents {
 
     }
 
-    public static Codec<IWaveComponent> getDirectCodec(){
+    static Codec<IWaveComponent> getDirectCodec(){
         return HTWaveTypes.registry().byNameCodec().dispatch(IWaveComponent::getType, IWaveType::codec);
     }
 
-    public static Codec<Holder<IWaveComponent>> getCodec(){
+    static Codec<Holder<IWaveComponent>> getCodec(){
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    public static WaveSettingBuilder builder(){
+    static WaveSettingBuilder builder(){
         return new WaveSettingBuilder();
     }
 
-    public static ResourceKey<IWaveComponent> create(String name) {
+    static ResourceKey<IWaveComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    public static IHTCodecRegistry<IWaveComponent> registry() {
+    static IHTCodecRegistry<IWaveComponent> registry() {
         return WAVES;
     }
 
-    public static class WaveSettingBuilder {
+    class WaveSettingBuilder {
 
         private Optional<Holder<IPositionComponent>> spawnPlacement = Optional.empty();
         private int prepareDuration = 100;

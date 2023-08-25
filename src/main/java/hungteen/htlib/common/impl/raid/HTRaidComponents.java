@@ -29,13 +29,13 @@ import java.util.Optional;
  * @program HTLib
  * @data 2022/11/18 10:37
  */
-public class HTRaidComponents {
+public interface HTRaidComponents {
 
-    private static final HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), IRaidComponent.class, HTRaidComponents::getDirectCodec, false);
+    HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), HTRaidComponents::getDirectCodec);
 
-    public static final ResourceKey<IRaidComponent> TEST = create("test");
+    ResourceKey<IRaidComponent> TEST = create("test");
 
-    public static void register(BootstapContext<IRaidComponent> context) {
+    static void register(BootstapContext<IRaidComponent> context) {
         final HolderGetter<IResultComponent> results = HTResultComponents.registry().helper().lookup(context);
         final HolderGetter<IWaveComponent> waves = HTWaveComponents.registry().helper().lookup(context);
         final Holder<IResultComponent> testResult = results.getOrThrow(HTResultComponents.TEST);
@@ -64,27 +64,27 @@ public class HTRaidComponents {
         ));
     }
 
-    public static Codec<IRaidComponent> getDirectCodec() {
+    static Codec<IRaidComponent> getDirectCodec() {
         return HTRaidTypes.registry().byNameCodec().dispatch(IRaidComponent::getType, IRaidType::codec);
     }
 
-    public static Codec<Holder<IRaidComponent>> getCodec() {
+    static Codec<Holder<IRaidComponent>> getCodec() {
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    public static ResourceKey<IRaidComponent> create(String name) {
+    static ResourceKey<IRaidComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    public static IHTCodecRegistry<IRaidComponent> registry() {
+    static IHTCodecRegistry<IRaidComponent> registry() {
         return RAIDS;
     }
 
-    public static RaidSettingBuilder builder() {
+    static RaidSettingBuilder builder() {
         return new RaidSettingBuilder();
     }
 
-    public static class RaidSettingBuilder {
+    class RaidSettingBuilder {
         private Holder<IPositionComponent> positionComponent;
         private final List<Holder<IResultComponent>> resultComponents = new ArrayList<>();
         private double raidRange = 40;

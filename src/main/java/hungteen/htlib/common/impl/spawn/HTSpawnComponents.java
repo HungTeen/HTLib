@@ -24,15 +24,15 @@ import java.util.Optional;
  * @author: HungTeen
  * @create: 2022-11-27 18:57
  **/
-public class HTSpawnComponents {
+public interface HTSpawnComponents {
 
-    private static final HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(HTLibHelper.prefix("spawn"), ISpawnComponent.class, HTSpawnComponents::getDirectCodec, false);
+    HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.create(HTLibHelper.prefix("spawn"), HTSpawnComponents::getDirectCodec);
 
-    public static final ResourceKey<ISpawnComponent> TEST_1 = create("test_1");
-    public static final ResourceKey<ISpawnComponent> TEST_2 = create("test_2");
-    public static final ResourceKey<ISpawnComponent> TEST_3 = create("test_3");
+    ResourceKey<ISpawnComponent> TEST_1 = create("test_1");
+    ResourceKey<ISpawnComponent> TEST_2 = create("test_2");
+    ResourceKey<ISpawnComponent> TEST_3 = create("test_3");
 
-    public static void register(BootstapContext<ISpawnComponent> context) {
+    static void register(BootstapContext<ISpawnComponent> context) {
         context.register(TEST_1, new OnceSpawn(
                 HTSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
                 10
@@ -50,42 +50,42 @@ public class HTSpawnComponents {
         ));
     }
 
-    public static Codec<ISpawnComponent> getDirectCodec(){
+    static Codec<ISpawnComponent> getDirectCodec(){
         return HTSpawnTypes.registry().byNameCodec().dispatch(ISpawnComponent::getType, ISpawnType::codec);
     }
 
-    public static Codec<Holder<ISpawnComponent>> getCodec(){
+    static Codec<Holder<ISpawnComponent>> getCodec(){
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    public static Codec<Pair<Integer, ISpawnComponent>> pairDirectCodec(){
+    static Codec<Pair<Integer, ISpawnComponent>> pairDirectCodec(){
         return Codec.mapPair(
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0),
                 getDirectCodec().fieldOf("spawn")
         ).codec();
     }
 
-    public static Codec<Pair<IntProvider, Holder<ISpawnComponent>>> pairCodec(){
+    static Codec<Pair<IntProvider, Holder<ISpawnComponent>>> pairCodec(){
         return Codec.mapPair(
                 IntProvider.codec(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", ConstantInt.of(0)),
                 getCodec().fieldOf("spawn")
         ).codec();
     }
 
-    public static ResourceKey<ISpawnComponent> create(String name) {
+    static ResourceKey<ISpawnComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    public static IHTCodecRegistry<ISpawnComponent> registry() {
+    static IHTCodecRegistry<ISpawnComponent> registry() {
         return SPAWNS;
     }
 
-    public static SpawnSettingBuilder builder(){
+    static SpawnSettingBuilder builder(){
         return new SpawnSettingBuilder();
     }
 
 
-    public static class SpawnSettingBuilder {
+    class SpawnSettingBuilder {
 
         private EntityType<?> entityType = EntityType.PIG;
         private CompoundTag nbt = new CompoundTag();

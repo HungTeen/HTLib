@@ -40,7 +40,15 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
      * @return all kinds of entries registered.
      */
     default List<V> getValues(Level level){
-        return lookup(level).listElements().map(Holder::get).toList();
+        return customSync() ? getClientValues() : lookup(level).listElements().map(Holder::get).toList();
+    }
+
+    /**
+     * 获取客户端数据。
+     * @return client values.
+     */
+    default List<V> getClientValues(){
+        return List.of();
     }
 
     /**
@@ -48,7 +56,15 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
      * @return all keys of registered entries.
      */
     default Set<ResourceKey<V>> getKeys(Level level){
-        return lookup(level).listElementIds().collect(Collectors.toSet());
+        return customSync() ? getClientKeys() : lookup(level).listElementIds().collect(Collectors.toSet());
+    }
+
+    /**
+     * 获取客户端Key。
+     * @return client keys.
+     */
+    default Set<ResourceKey<V>> getClientKeys(){
+        return Set.of();
     }
 
     /**
@@ -84,7 +100,15 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
      * @return empty if no key is find, otherwise return entry with the given key.
      */
     default Optional<V> getOptValue(Level level, ResourceKey<V> key){
-        return getOptHolder(level, key).map(Holder::get);
+        return customSync() ? getClientOptValue(key) : getOptHolder(level, key).map(Holder::get);
+    }
+
+    /**
+     * 根据Key获取客户端数据。
+     * @return client data.
+     */
+    default Optional<V> getClientOptValue(ResourceKey<V> key){
+        return Optional.empty();
     }
 
     /**
@@ -105,4 +129,31 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
         return lookup(level).get(key);
     }
 
+    /**
+     * Sync data from server to client if value is present.
+     * @return Sync codec.
+     */
+    default Optional<Codec<V>> getSyncCodec(){
+        return Optional.empty();
+    }
+
+    /**
+     * 是否使用原版方式同步数据。
+     * @return true if using default method to sync data.
+     */
+    boolean defaultSync();
+
+    /**
+     * 是否使用HTLib方式同步数据。
+     * @return true if using HTLib's method to sync data.
+     */
+    boolean customSync();
+
+    /**
+     * Whether this registry need sync data.
+     * @return true if needed.
+     */
+    default boolean requireSync(){
+        return getSyncCodec().isPresent();
+    }
 }

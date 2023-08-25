@@ -8,12 +8,18 @@ import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SyncDatapackPacket;
 import hungteen.htlib.util.helper.CodecHelper;
+import hungteen.htlib.util.helper.JavaHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DataPackRegistryEvent;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -23,18 +29,16 @@ import java.util.function.Supplier;
  */
 public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistry<V> {
 
-    private final BiMap<ResourceLocation, V> syncMap = HashBiMap.create();
+    private final BiMap<ResourceKey<V>, V> syncMap = HashBiMap.create();
     private final Class<V> registryClass;
     private final Supplier<Codec<V>> codecSup;
     private final Supplier<Codec<V>> syncSup;
-    private final boolean defaultSync;
 
-    HTCodecRegistry(Class<V> registryClass, ResourceLocation registryName, Supplier<Codec<V>> codecSup, Supplier<Codec<V>> syncSup, boolean defaultSync) {
+    HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup, @Nullable Class<V> registryClass) {
         super(registryName);
-        this.registryClass = registryClass;
         this.codecSup = codecSup;
         this.syncSup = syncSup;
-        this.defaultSync = defaultSync;
+        this.registryClass = registryClass;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     }
 
     public void syncToClient(ServerPlayer player) {
-        if(! this.defaultSync && this.syncSup != null){
+        if(this.customSync()){
             this.getKeys(player.level()).forEach(key -> {
                 this.getOptValue(player.level(), key).flatMap(value -> CodecHelper.encodeNbt(this.syncSup.get(), value)
                         .resultOrPartial(msg -> HTLib.getLogger().warn("HTCodecRegistry : + msg"))).ifPresent(tag -> {
@@ -55,14 +59,15 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
         }
     }
 
-    public void syncRegister(ResourceLocation key, Object value){
-        if(this.customSync()){
-            if (containKey(key)) {
-                HTLib.getLogger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), key);
-            } else if (!this.getRegistryClass().isInstance(value)) {
-                HTLib.getLogger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), key);
+    public void syncRegister(ResourceLocation name, Object value){
+        final ResourceKey<V> key = ResourceKey.create(this.getRegistryKey(), name);
+        if(this.customSync() && this.getRegistryClass().isPresent()){
+            if (syncMap.containsKey(key)) {
+                HTLib.getLogger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), name);
+            } else if (!this.getRegistryClass().get().isInstance(value)) {
+                HTLib.getLogger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
             }
-            syncMap.put(key, this.getRegistryClass().cast(value));
+            syncMap.put(key, this.getRegistryClass().get().cast(value));
         }
     }
 
@@ -77,24 +82,38 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
         }
     }
 
+    @Override
+    public Optional<Codec<V>> getSyncCodec(){
+        return this.syncSup == null ? Optional.empty() : Optional.ofNullable(this.syncSup.get());
+    }
+
+    @Override
     public boolean customSync(){
-        return this.syncSup != null && ! this.defaultSync;
+        return this.requireSync() && this.getRegistryClass().isPresent();
     }
 
+    @Override
     public boolean defaultSync(){
-        return this.syncSup != null && this.defaultSync;
+        return this.requireSync() && this.getRegistryClass().isEmpty();
     }
 
-    public Class<V> getRegistryClass() {
-        return registryClass;
+    @Override
+    public List<V> getClientValues() {
+        return this.syncMap.values().stream().toList();
     }
 
-    public boolean containKey(ResourceLocation name) {
-        return syncMap.containsKey(name);
+    @Override
+    public Set<ResourceKey<V>> getClientKeys() {
+        return this.syncMap.keySet();
     }
 
-    public Codec<V> getSyncCodec(){
-        return this.syncSup == null ? null : this.syncSup.get();
+    @Override
+    public Optional<V> getClientOptValue(ResourceKey<V> key) {
+        return JavaHelper.getOpt(this.syncMap, key);
+    }
+
+    public Optional<Class<V>> getRegistryClass() {
+        return Optional.ofNullable(registryClass);
     }
 
 }

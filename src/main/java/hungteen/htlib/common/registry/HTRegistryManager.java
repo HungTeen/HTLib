@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.ISimpleEntry;
+import hungteen.htlib.util.helper.JavaHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -31,6 +32,10 @@ public class HTRegistryManager {
         if(event.getPlayer() == null){
             HTRegistryManager.getRegistries().forEach(registry -> {
                 event.getPlayerList().getPlayers().forEach(registry::syncToClient);
+            });
+        } else {
+            HTRegistryManager.getRegistries().forEach(registry -> {
+                registry.syncToClient(event.getPlayer());
             });
         }
     }
@@ -60,34 +65,37 @@ public class HTRegistryManager {
     /**
      * Do not sync.
      */
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Class<T> clazz, Supplier<Codec<T>> codecSup){
-        return create(registryName, clazz, codecSup, null);
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup){
+        return create(registryName, codecSup, null, null);
     }
 
     /**
-     * Sync.
+     * 使用HTLib的方法同步数据。
      */
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Class<T> clazz, Supplier<Codec<T>> codecSup, boolean defaultSync){
-        return create(registryName, clazz, codecSup, codecSup, defaultSync);
-    }
-
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Class<T> clazz, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
-        return create(registryName, clazz, codecSup, syncSup, true);
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Class<T> clazz){
+        return create(registryName, codecSup, codecSup, clazz);
     }
 
     /**
-     * do not create more than one registry for specific registry entityType.
+     * 使用原版的方法同步数据。
+     */
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
+        return create(registryName, codecSup, syncSup, null);
+    }
+
+    /**
+     * Do not create more than one registry for specific registry entityType.
      * @param syncSup 用于数据包的同步。
-     * @param defaultSync 是否采用原版的同步方法。
+     * @param clazz 有clazz说明采用HTLib的方法同步数据，而非采用原版的同步方法。
      */
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Class<T> clazz, Supplier<Codec<T>> codecSup, @Nullable Supplier<Codec<T>> syncSup, boolean defaultSync){
-        final HTCodecRegistry<T> codecRegistry = new HTCodecRegistry<>(clazz, registryName, codecSup, syncSup, defaultSync);
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, @Nullable Supplier<Codec<T>> syncSup, Class<T> clazz){
+        final HTCodecRegistry<T> codecRegistry = new HTCodecRegistry<>(registryName, codecSup, syncSup, clazz);
         CODEC_REGISTRIES.put(registryName, codecRegistry);
         return codecRegistry;
     }
 
     public static Optional<HTCodecRegistry<?>> get(ResourceLocation registryName){
-        return Optional.ofNullable(CODEC_REGISTRIES.getOrDefault(registryName, null));
+        return JavaHelper.getOpt(CODEC_REGISTRIES, registryName);
     }
 
     public static List<HTCodecRegistry<?>> getRegistries(){

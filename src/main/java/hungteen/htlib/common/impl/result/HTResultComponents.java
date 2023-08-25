@@ -22,32 +22,32 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-12-04 09:47
  **/
-public class HTResultComponents {
+public interface HTResultComponents {
 
-    private static final HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(HTLibHelper.prefix("result"), IResultComponent.class, HTResultComponents::getDirectCodec, false);
+    HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(HTLibHelper.prefix("result"), HTResultComponents::getDirectCodec);
 
-    public static final ResourceKey<IResultComponent> TEST = create("test");
+    ResourceKey<IResultComponent> TEST = create("test");
 
-    public static void register(BootstapContext<IResultComponent> context) {
+    static void register(BootstapContext<IResultComponent> context) {
         context.register(TEST, new ItemStackResult(
                 true, false,
                 List.of(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
         ));
     }
 
-    public static Codec<IResultComponent> getDirectCodec() {
+    static Codec<IResultComponent> getDirectCodec() {
         return HTResultTypes.registry().byNameCodec().dispatch(IResultComponent::getType, IResultType::codec);
     }
 
-    public static Codec<Holder<IResultComponent>> getCodec() {
+    static Codec<Holder<IResultComponent>> getCodec() {
         return RegistryFileCodec.create(registry().getRegistryKey(), getDirectCodec());
     }
 
-    public static ResourceKey<IResultComponent> create(String name) {
+    static ResourceKey<IResultComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    public static IHTRegistry<IResultComponent> registry() {
+    static IHTRegistry<IResultComponent> registry() {
         return RESULTS;
     }
 

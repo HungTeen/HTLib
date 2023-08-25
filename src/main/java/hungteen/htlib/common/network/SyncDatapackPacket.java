@@ -43,11 +43,11 @@ public class SyncDatapackPacket {
         public static void onMessage(SyncDatapackPacket message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 HTRegistryManager.get(new ResourceLocation(message.type)).ifPresent(registry -> {
-                    CodecHelper.parse(registry.getSyncCodec(), message.data)
-                            .resultOrPartial(msg -> HTLib.getLogger().warn("HTLib sync datapack : " + msg))
-                            .ifPresent(value -> {
-                                registry.syncRegister(message.location, value);
-                            });
+                    registry.getSyncCodec().flatMap(codec -> CodecHelper.parse(codec, message.data)
+                            .resultOrPartial(msg -> HTLib.getLogger().warn("HTLib sync datapack : " + msg))).ifPresent(value -> {
+                        registry.syncRegister(message.location, value);
+                    });
+
                 });
             });
             ctx.get().setPacketHandled(true);

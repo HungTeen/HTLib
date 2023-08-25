@@ -2,7 +2,9 @@ package hungteen.htlib.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
@@ -13,6 +15,7 @@ import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.util.helper.CodecHelper;
+import hungteen.htlib.util.helper.CommandHelper;
 import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.commands.CommandBuildContext;
@@ -21,6 +24,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
@@ -40,6 +44,9 @@ import net.minecraft.world.phys.Vec3;
  **/
 public class HTCommand {
 
+    private static final DynamicCommandExceptionType ERROR_INVALID_FEATURE = new DynamicCommandExceptionType((msg) -> {
+        return Component.translatable("commands.place.feature.invalid", msg);
+    });
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
 //    private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
@@ -64,16 +71,16 @@ public class HTCommand {
                                 )
                         )
                 )
-//                .then(Commands.literal("raid")
-//                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
-//                                .suggests(ALL_DUMMY_ENTITIES)
-//                                .then(Commands.argument("type", ResourceArgument.resource(context, HTRaidComponents.registry().getRegistryKey()))
-//                                        .then(Commands.argument("position", Vec3Argument.vec3())
-//                                                .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), ResourceArgument.getResource(ctx, "type", HTRaidComponents.registry().getRegistryKey()), Vec3Argument.getVec3(ctx, "position")))
-//                                        )
-//                                )
-//                        )
-//                )
+                .then(Commands.literal("raid")
+                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
+                                .suggests(ALL_DUMMY_ENTITIES)
+                                .then(Commands.argument("type", ResourceKeyArgument.key(HTRaidComponents.registry().getRegistryKey()))
+                                        .then(Commands.argument("position", Vec3Argument.vec3())
+                                                .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), getRaid(ctx, "type"), Vec3Argument.getVec3(ctx, "position")))
+                                        )
+                                )
+                        )
+                )
         );
         builder.then(Commands.literal("seat")
                 .then(Commands.argument("target", EntityArgument.entity())
@@ -83,6 +90,10 @@ public class HTCommand {
                 )
         );
         dispatcher.register(builder);
+    }
+
+    private static Holder<IRaidComponent> getRaid(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        return CommandHelper.getHolder(context, HTRaidComponents.registry().getRegistryKey(), name, ERROR_INVALID_FEATURE);
     }
 
     public static int createDummyEntity(CommandSourceStack sourceStack, ResourceLocation location, Vec3 position, CompoundTag tag) throws CommandSyntaxException {
