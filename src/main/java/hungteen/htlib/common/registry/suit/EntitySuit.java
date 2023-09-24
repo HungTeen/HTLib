@@ -7,10 +7,7 @@ import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -27,21 +24,27 @@ import java.util.function.Supplier;
  * @program HTLib
  * @data 2023/7/7 11:25
  */
-public class EntitySuit<T extends Mob> implements ISimpleEntry {
+public class EntitySuit<T extends Entity> implements ISimpleEntry {
 
     private final ResourceLocation registryName;
     private final Supplier<EntityType.Builder<T>> entityTypeBuilder;
     private EntityType<T> entityType;
     private AttributeSupplier attributeSupplier;
     private Pair<Integer, Integer> colors;
+    private boolean isLiving;
     private boolean hasSpawnEgg;
     private PlacementData<T> placementData;
 
-    public EntitySuit(ResourceLocation registryName, Supplier<EntityType.Builder<T>> entityTypeBuilder) {
+    public EntitySuit(ResourceLocation registryName, Supplier<EntityType.Builder<T>> entityTypeBuilder, boolean isLiving, boolean hasSpawnEgg) {
         this.registryName = registryName;
         this.entityTypeBuilder = entityTypeBuilder;
-        this.hasSpawnEgg = true;
-        this.placementData = new PlacementData<>(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules, SpawnPlacementRegisterEvent.Operation.OR);
+        this.isLiving = isLiving;
+        this.hasSpawnEgg = hasSpawnEgg;
+        if (this.isLiving) {
+            this.placementData = new PlacementData<>(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, source) -> {
+                return Mob.checkMobSpawnRules((EntityType<? extends Mob>) type, level, spawnType, pos, source);
+            }, SpawnPlacementRegisterEvent.Operation.OR);
+        }
     }
 
     public void register(RegisterEvent event) {
@@ -51,16 +54,18 @@ public class EntitySuit<T extends Mob> implements ISimpleEntry {
         }
         if (ItemHelper.get().matchEvent(event) && hasSpawnEgg && colors != null) {
             ItemHelper.get().register(event, StringHelper.suffix(this.registryName, "spawn_egg"), () -> {
-                return new ForgeSpawnEggItem(() -> this.entityType, colors.getFirst(), colors.getSecond(), new Item.Properties());
+                return new ForgeSpawnEggItem(() -> {
+                    return (EntityType<? extends Mob>) this.entityType;
+                }, colors.getFirst(), colors.getSecond(), new Item.Properties());
             });
         }
     }
 
     public void addAttribute(EntityAttributeCreationEvent ev) {
         if (this.attributeSupplier != null) {
-            ev.put(entityType, attributeSupplier);
-        } else {
-            ev.put(entityType, Mob.createMobAttributes().build());
+            ev.put((EntityType<? extends LivingEntity>) entityType, attributeSupplier);
+        } else if (this.isLiving) {
+            ev.put((EntityType<? extends LivingEntity>) entityType, Mob.createMobAttributes().build());
             HTLib.getLogger().warn("{} has no attribute, HTLib will make one for you.", registryName);
         }
     }
@@ -68,9 +73,8 @@ public class EntitySuit<T extends Mob> implements ISimpleEntry {
     public void addPlacement(SpawnPlacementRegisterEvent ev) {
         if (placementData != null) {
             ev.register(entityType, placementData.placement, placementData.heightMap, placementData.predicate, placementData.operation);
-        } else {
-            ev.register(entityType, Mob::checkMobSpawnRules);
-            HTLib.getLogger().warn("{} has no spawn placement, HTLib will make one for you.", registryName);
+        } else if (this.isLiving) {
+            HTLib.getLogger().warn("{} has no spawn placement.", registryName);
         }
     }
 
@@ -88,36 +92,36 @@ public class EntitySuit<T extends Mob> implements ISimpleEntry {
         this.colors = Pair.of(background, highlight);
     }
 
-    public void setSpawnEgg(boolean has){
+    public void setSpawnEgg(boolean has) {
         this.hasSpawnEgg = has;
     }
 
     public void setHeightMap(Heightmap.Types heightMap) {
-        if(this.placementData != null){
+        if (this.placementData != null) {
             this.placementData.heightMap = heightMap;
         }
     }
 
     public void setPlacement(SpawnPlacements.Type placement) {
-        if(this.placementData != null) {
+        if (this.placementData != null) {
             this.placementData.placement = placement;
         }
     }
 
     public void setOperation(SpawnPlacementRegisterEvent.Operation operation) {
-        if(this.placementData != null) {
+        if (this.placementData != null) {
             this.placementData.operation = operation;
         }
     }
 
     public void setPredicate(SpawnPlacements.SpawnPredicate<T> predicate) {
-        if(this.placementData != null) {
+        if (this.placementData != null) {
             this.placementData.predicate = predicate;
         }
     }
 
     @NotNull
-    public EntityType<T> getType() {
+    public EntityType<T> get() {
         if (entityType == null)
             throw new IllegalStateException("You are not allowed to call this method before entity registration !");
         return entityType;

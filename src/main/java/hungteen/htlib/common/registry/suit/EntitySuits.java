@@ -5,8 +5,8 @@ import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.HTSimpleRegistry;
 import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -29,7 +29,7 @@ public class EntitySuits {
         return SUITS;
     }
 
-    public static <T extends Mob> EntitySuit<T> register(EntitySuit<T> suit) {
+    public static <T extends Entity> EntitySuit<T> register(EntitySuit<T> suit) {
         return registry().register(suit);
     }
 
@@ -37,16 +37,20 @@ public class EntitySuits {
         return registry().getValues();
     }
 
-    public static <T extends Mob> Builder<T> builder(ResourceLocation name, Supplier<EntityType.Builder<T>> entityTypeBuilder){
-        return new Builder<>(name, entityTypeBuilder);
+    public static <T extends Entity> Builder<T> nonLiving(ResourceLocation name, Supplier<EntityType.Builder<T>> entityTypeBuilder){
+        return new Builder<>(name, entityTypeBuilder, false, false);
     }
 
-    public static class Builder<T extends Mob> {
+    public static <T extends Entity> Builder<T> living(ResourceLocation name, Supplier<EntityType.Builder<T>> entityTypeBuilder){
+        return new Builder<>(name, entityTypeBuilder, true, true);
+    }
+
+    public static class Builder<T extends Entity> {
 
         private final EntitySuit<T> suit;
 
-        public Builder(ResourceLocation registryName, Supplier<EntityType.Builder<T>> entityTypeBuilder) {
-            this.suit = new EntitySuit<>(registryName, entityTypeBuilder);
+        public Builder(ResourceLocation registryName, Supplier<EntityType.Builder<T>> entityTypeBuilder, boolean isLiving, boolean hasSpawnEgg) {
+            this.suit = new EntitySuit<>(registryName, entityTypeBuilder, isLiving, hasSpawnEgg);
         }
 
         public Builder<T> attribute(AttributeSupplier supplier){

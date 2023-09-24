@@ -60,10 +60,6 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>> {
         spawnParticles(level, particle, x, y, z, amount, dst, dst, speed, speed);
     }
 
-    public static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speed) {
-        spawnParticles(level, particle, x, y, z, amount, dstXZ, dstY, speed, speed, speed);
-    }
-
     public static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speedXZ, double speedY) {
         spawnParticles(level, particle, x, y, z, amount, dstXZ, dstY, speedXZ, speedY, speedXZ);
     }
@@ -83,8 +79,12 @@ public class ParticleHelper extends RegistryHelper<ParticleType<?>> {
         level.sendParticles(particle, x, y, z, amount, 0, 0, 0, speed);
     }
 
-    public static void spawnParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, int amount, double dstX, double dstY, double dstZ, double speed) {
-        level.sendParticles(particle, x, y, z, amount, dstX, dstY, dstZ, speed);
+    public static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speed) {
+        if(level instanceof ServerLevel serverLevel){
+            serverLevel.sendParticles(particle, x, y, z, amount, dstXZ, dstY, dstXZ, speed);
+        } else{
+            spawnParticles(level, particle, x, y, z, amount, dstXZ, dstY, speed, speed, speed);
+        }
     }
 
     public static <T extends ParticleOptions> T readParticle(FriendlyByteBuf buf, ParticleType<T> type) {

@@ -1,5 +1,6 @@
 package hungteen.htlib.common.entity;
 
+import hungteen.htlib.util.helper.registry.ParticleHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -55,24 +56,20 @@ public class HTEntity extends Entity {
     }
 
     protected void tickMove() {
-        Vec3 vec3d = this.getDeltaMovement();
-        double d0 = this.getX() + vec3d.x;
-        double d1 = this.getY() + vec3d.y;
-        double d2 = this.getZ() + vec3d.z;
-        float f1;
+        this.tickMove(1F, 0.8F);
+    }
+
+    protected void tickMove(float motionFactor, float motionFactorInWater) {
+        final Vec3 curSpeed = this.getDeltaMovement();
+        final Vec3 nextTickPos = this.position().add(curSpeed);
         if (this.isInWater()) {
-            for (int i = 0; i < 4; ++i) {
-                this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3d.x * 0.25D, d1 - vec3d.y * 0.25D,
-                        d2 - vec3d.z * 0.25D, vec3d.x, vec3d.y, vec3d.z);
-            }
-            f1 = 0.8F;
+            ParticleHelper.spawnParticles(level(), ParticleTypes.BUBBLE, nextTickPos.subtract(curSpeed.scale(0.25)), 4, curSpeed);
+            this.setDeltaMovement(curSpeed.scale(motionFactorInWater));
         } else {
-            f1 = 1F;
+            this.setDeltaMovement(curSpeed.scale(motionFactor));
         }
-        this.setDeltaMovement(vec3d.scale((double) f1));
         if (! this.isNoGravity()) {
-            Vec3 vec3d1 = this.getDeltaMovement();
-            this.setDeltaMovement(vec3d1.x, vec3d1.y - (double) this.getGravityVelocity(), vec3d1.z);
+            this.setDeltaMovement(this.getDeltaMovement().subtract(0, this.getGravityVelocity(), 0));
         }
         this.move(MoverType.SELF, this.getDeltaMovement());
     }

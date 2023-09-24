@@ -28,35 +28,52 @@ public abstract class HTAdvancementGen extends ForgeAdvancementProvider {
         this.modId = modId;
     }
 
-    protected Advancement.Builder task(Advancement parent, ItemLike displayItem, String title) {
-        return advancement(parent, displayItem, title, FrameType.TASK, true);
-    }
+    public static abstract class HTAdvancementBuilder implements AdvancementGenerator {
 
-    protected Advancement.Builder challenge(Advancement parent, ItemLike displayItem, String title) {
-        return advancement(parent, displayItem, title, FrameType.CHALLENGE, true);
-    }
+        private final String modId;
 
-    protected Advancement.Builder goal(Advancement parent, ItemLike displayItem, String title) {
-        return advancement(parent, displayItem, title, FrameType.GOAL, true);
-    }
+        protected HTAdvancementBuilder(String modId) {
+            this.modId = modId;
+        }
 
-    protected Advancement.Builder root(ItemLike displayItem, String title, ResourceLocation location) {
-        return advancement(null, displayItem, title, location, FrameType.TASK, true);
-    }
+        protected Advancement.Builder task(Advancement parent, ItemLike displayItem, String title) {
+            return advancement(parent, displayItem, title, FrameType.TASK, true);
+        }
 
-    protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, FrameType type, boolean displayChat) {
-        return advancement(parent, displayItem, title, null, type, displayChat);
-    }
+        protected Advancement.Builder challenge(Advancement parent, ItemLike displayItem, String title) {
+            return advancement(parent, displayItem, title, FrameType.CHALLENGE, true);
+        }
 
-    protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean displayChat) {
-        return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, true, displayChat, false);
-    }
+        protected Advancement.Builder goal(Advancement parent, ItemLike displayItem, String title) {
+            return advancement(parent, displayItem, title, FrameType.GOAL, true);
+        }
 
-    protected MutableComponent title(String name) {
-        return Component.translatable("advancements." + this.modId + "." + name + ".title");
-    }
+        protected Advancement.Builder root(ItemLike displayItem, String title, ResourceLocation location) {
+            return advancement(null, displayItem, title, location, FrameType.TASK, true);
+        }
 
-    protected MutableComponent desc(String name) {
-        return Component.translatable("advancements." + this.modId + "." + name + ".desc");
+        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, FrameType type, boolean displayChat) {
+            return advancement(parent, displayItem, title, null, type, displayChat);
+        }
+
+        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean displayChat) {
+            return advancement(parent, displayItem, title, location, type, true, displayChat, false);
+        }
+
+        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean showToast, boolean displayChat, boolean hidden) {
+            return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, showToast, displayChat, hidden);
+        }
+
+        protected MutableComponent title(String name) {
+            return Component.translatable("advancements." + this.getModId() + "." + name + ".title");
+        }
+
+        protected MutableComponent desc(String name) {
+            return Component.translatable("advancements." + this.getModId() + "." + name + ".desc");
+        }
+
+        protected String getModId() {
+            return this.modId;
+        }
     }
 }

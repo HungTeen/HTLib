@@ -1,7 +1,9 @@
 package hungteen.htlib.util.helper;
 
+import hungteen.htlib.util.records.HTColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -189,6 +191,14 @@ public class StringHelper {
 
     public static MutableComponent keyBindLang(String modId, String path, Object... args){
         return lang("key", modId, path, args);
+    }
+
+    public static Style style(){
+        return Style.EMPTY;
+    }
+
+    public static Style colorStyle(HTColor color){
+        return style().withColor(color.rgb());
     }
 
     /* Misc Methods */
