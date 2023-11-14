@@ -4,6 +4,7 @@ import hungteen.htlib.util.records.HTColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -55,6 +56,10 @@ public class StringHelper {
 
     public static boolean in(ResourceLocation location, String modId) {
         return location.getNamespace().equals(modId);
+    }
+
+    public static <T> boolean in(ResourceKey<T> resourceKey, String modId) {
+        return in(resourceKey.location(), modId);
     }
 
     @Deprecated(forRemoval = true, since = "1.0.0")

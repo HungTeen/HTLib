@@ -3,8 +3,6 @@ package hungteen.htlib.api.interfaces;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.util.helper.JavaHelper;
-import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -64,44 +62,56 @@ public interface IHTRegistryHelper<T> extends IHTResourceHelper<T>{
     /* Common Methods */
 
     /**
-     * Get predicate registry objects.
-     */
-    default List<T> filterValues(Predicate<T> predicate) {
-        return getRegistry().map(IForgeRegistry::getValues, r -> r.stream().toList()).stream()
-                .filter(predicate)
-                .sorted(Comparator.comparing((object) -> Objects.requireNonNullElseGet(getKey(object), () -> StringHelper.EMPTY_LOCATION)))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get predicate registry objects with key.
-     */
-    default List<Map.Entry<ResourceKey<T>, T>> filterEntries(Predicate<T> predicate) {
-        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet).stream()
-                .filter(entry -> predicate.test(entry.getValue()))
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Get all registered objects.
      */
-    default Collection<T> values() {
-        return filterValues(JavaHelper::alwaysTrue);
+    default List<T> values() {
+        return getRegistry().map(l -> l.getValues().stream().toList(), r -> r.stream().toList());
     }
 
     /**
      * Get all registered objects with keys.
      */
-    default Collection<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
-        return filterEntries(JavaHelper::alwaysTrue);
+    @Deprecated(forRemoval = true, since = "1.1.0")
+    default Set<Map.Entry<ResourceKey<T>, T>> getWithKeys() {
+        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet);
     }
 
-    /**
-     * Get all registered objects with keys.
-     */
-    default Collection<ResourceLocation> keys() {
+    default Set<ResourceLocation> keys() {
         return getRegistry().map(IForgeRegistry::getKeys, Registry::keySet);
+    }
+
+    default Set<Map.Entry<ResourceKey<T>, T>> entries() {
+        return getRegistry().map(IForgeRegistry::getEntries, Registry::entrySet);
+    }
+
+    default List<ResourceKey<T>> filterKeys(Predicate<T> predicate) {
+        return filterEntries(predicate).stream().map(Map.Entry::getKey).toList();
+    }
+
+    default List<ResourceKey<T>> filterKeys(Predicate<ResourceKey<T>> keyPredicate, Predicate<T> valuePredicate) {
+        return filterEntries(keyPredicate, valuePredicate).stream().map(Map.Entry::getKey).toList();
+    }
+
+    default List<T> filterValues(Predicate<T> predicate) {
+        return filterEntries(predicate).stream().map(Map.Entry::getValue).toList();
+    }
+
+    default List<T> filterValues(Predicate<ResourceKey<T>> keyPredicate, Predicate<T> valuePredicate) {
+        return filterEntries(keyPredicate, valuePredicate).stream().map(Map.Entry::getValue).toList();
+    }
+
+    default List<Map.Entry<ResourceKey<T>, T>> filterEntries(Predicate<T> valuePredicate) {
+        return filterEntries(key -> true, valuePredicate);
+    }
+
+    default List<Map.Entry<ResourceKey<T>, T>> filterEntries(Predicate<ResourceKey<T>> keyPredicate, Predicate<T> valuePredicate) {
+        return entries(keyPredicate, valuePredicate).stream().toList();
+    }
+
+    default Set<Map.Entry<ResourceKey<T>, T>> entries(Predicate<ResourceKey<T>> keyPredicate, Predicate<T> valuePredicate) {
+        return entries().stream()
+                .filter(entry -> keyPredicate.test(entry.getKey()) && valuePredicate.test(entry.getValue()))
+                .collect(Collectors.toSet());
     }
 
     /**
