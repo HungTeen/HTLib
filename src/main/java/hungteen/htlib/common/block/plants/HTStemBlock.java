@@ -18,66 +18,81 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
+ * Copy from {@link StemBlock}}.
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 22:38
- *
- * Copy from {@link StemBlock}}.
  **/
 public abstract class HTStemBlock extends BushBlock implements BonemealableBlock {
 
-    public static final int MAX_AGE = 7;
-    public static final IntegerProperty AGE = BlockStateProperties.AGE_7;
     private final Supplier<Item> seedSupplier;
 
     public HTStemBlock(Supplier<Item> seedSupplier, BlockBehaviour.Properties properties) {
         super(properties);
         this.seedSupplier = seedSupplier;
-        this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(getAgeProperty(), 0));
     }
 
     @Override
     public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
-        if (!serverLevel.isAreaLoaded(blockPos, 1)){
-            return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+        // Forge: prevent loading unloaded chunks when checking neighbor's light.
+        if (!serverLevel.isAreaLoaded(blockPos, 1)) {
+            return;
         }
         if (serverLevel.getRawBrightness(blockPos, 0) >= 9) {
-            final float f = CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
-            if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(serverLevel, blockPos, blockState, random.nextInt((int) (25.0F / f) + 1) == 0)) {
-                final int i = blockState.getValue(AGE);
-                if (i < 7) {
-                    serverLevel.setBlock(blockPos, blockState.setValue(AGE, i + 1), 2);
+            final float f = getGrowSpeed(serverLevel, blockState, blockPos);
+            if (f > 0 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(serverLevel, blockPos, blockState, random.nextInt((int) (25.0F / f) + 1) == 0)) {
+                final int age = getAge(blockState);
+                if (age < getMaxAge()) {
+                    serverLevel.setBlock(blockPos, setAge(blockState, age + 1), 2);
                 } else {
-                    final Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-                    final BlockPos blockpos = blockPos.relative(direction);
-                    final BlockState blockstate = serverLevel.getBlockState(blockpos.below());
-                    final Block block = blockstate.getBlock();
-                    if (serverLevel.isEmptyBlock(blockpos) && (blockstate.canSustainPlant(serverLevel, blockpos.below(), Direction.UP, this) || block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
-                        final HTStemGrownBlock resultFruit = getResultFruit(random);
-                        serverLevel.setBlockAndUpdate(blockpos, BlockHelper.setProperty(resultFruit.defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
-                        serverLevel.setBlockAndUpdate(blockPos, BlockHelper.setProperty(resultFruit.getAttachedStem().defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
-                    }
+                    grow(serverLevel, blockState, blockPos, random);
                 }
                 net.minecraftforge.common.ForgeHooks.onCropsGrowPost(serverLevel, blockPos, blockState);
             }
         }
     }
 
-    protected abstract HTStemGrownBlock getResultFruit(RandomSource random);
-
-    BlockState setAge(BlockState state, int age){
-        return state.setValue(AGE, age);
+    public void grow(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos, RandomSource random) {
+        final Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+        final BlockPos blockpos = blockPos.relative(direction);
+        final BlockState blockstate = serverLevel.getBlockState(blockpos.below());
+        final Block block = blockstate.getBlock();
+        if (serverLevel.isEmptyBlock(blockpos) && (blockstate.canSustainPlant(serverLevel, blockpos.below(), Direction.UP, this) || block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
+            getResultFruit(random).ifPresent(resultFruit -> {
+                serverLevel.setBlockAndUpdate(blockpos, BlockHelper.setProperty(resultFruit.defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
+                serverLevel.setBlockAndUpdate(blockPos, BlockHelper.setProperty(resultFruit.getAttachedStem().defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
+            });
+        }
     }
 
-    protected int getAge(BlockState state){
-        return state.getValue(AGE);
+    protected float getGrowSpeed(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos) {
+        return CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
     }
 
-    protected int getMaxAge(){
-        return MAX_AGE;
+    protected Optional<HTStemGrownBlock> getResultFruit(RandomSource random) {
+        return Optional.empty();
+    }
+
+    public abstract IntegerProperty getAgeProperty();
+
+    public abstract int getMaxAge();
+
+    public BlockState maxAgeState(){
+        return setAge(defaultBlockState(), getMaxAge());
+    }
+
+    public BlockState setAge(BlockState state, int age) {
+        return state.setValue(getAgeProperty(), age);
+    }
+
+    protected int getAge(BlockState state) {
+        return state.getValue(getAgeProperty());
     }
 
     @Override
@@ -111,7 +126,7 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_57040_) {
-        p_57040_.add(AGE);
+        p_57040_.add(getAgeProperty());
     }
 
     //FORGE START

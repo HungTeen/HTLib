@@ -17,6 +17,7 @@ import net.minecraft.world.phys.HitResult;
 import java.util.function.Supplier;
 
 /**
+ * Copy from {@link AttachedStemBlock}}.
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-07 10:03
@@ -34,10 +35,10 @@ public abstract class HTAttachedStemBlock extends BushBlock {
 
     @Override
     public BlockState updateShape(BlockState blockState, Direction direction, BlockState nearbyState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos pos) {
-        return direction == blockState.getValue(FACING) && ! isGrownFruit(nearbyState) ? getStemState() : super.updateShape(blockState, direction, nearbyState, levelAccessor, blockPos, pos);
+        return direction == blockState.getValue(FACING) && ! isGrownFruit(blockState, nearbyState) ? getStemState() : super.updateShape(blockState, direction, nearbyState, levelAccessor, blockPos, pos);
     }
 
-    protected abstract boolean isGrownFruit(BlockState blockState);
+    protected abstract boolean isGrownFruit(BlockState selfState, BlockState nearbyState);
 
     protected abstract BlockState getStemState();
 

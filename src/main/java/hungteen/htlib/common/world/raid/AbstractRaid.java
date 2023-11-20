@@ -513,7 +513,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         });
         this.getDefenders().stream().filter(ServerPlayer.class::isInstance).filter(Predicate.not(Entity::isSpectator)).map(ServerPlayer.class::cast).forEach(serverPlayer -> {
                 serverPlayer.awardStat(Stats.RAID_WIN);
-                CriteriaTriggers.RAID_WIN.trigger(serverPlayer);
+//                CriteriaTriggers.RAID_WIN.trigger(serverPlayer);
                 //TODO 自己的Trigger
 //            ChallengeTrigger.INSTANCE.trigger(p, this.raidLocation.toString());
         });
