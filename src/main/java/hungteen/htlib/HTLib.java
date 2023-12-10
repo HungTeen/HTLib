@@ -2,6 +2,7 @@ package hungteen.htlib;
 
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.client.ClientProxy;
+import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
@@ -121,6 +122,7 @@ public class HTLib {
 
     public static void setUp(FMLCommonSetupEvent event) {
         NetworkHandler.init();
+        HTResourceManager.init();
         event.enqueueWork(() -> {
             BoatTypes.register();
             HTSuitHandler.setUp();

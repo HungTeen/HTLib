@@ -39,6 +39,10 @@ public class StringHelper {
         return new ResourceLocation(modId, name);
     }
 
+    public static String resString(String modId, String name) {
+        return new ResourceLocation(modId, name).toString();
+    }
+
     @Deprecated(forRemoval = true, since = "1.0.0")
     public static ResourceLocation mcPrefix(String name) {
         return mc().prefix(name);

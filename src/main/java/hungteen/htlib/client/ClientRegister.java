@@ -3,6 +3,7 @@ package hungteen.htlib.client;
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
+import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.BoatTypes;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -51,6 +53,13 @@ public class ClientRegister {
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }
+        });
+    }
+
+    @SubscribeEvent
+    public static void registerBakeModels(ModelEvent.RegisterAdditional event){
+        HTResourceManager.getExtraModels().forEach(model -> {
+            event.register(ClientHelper.getModelLocation(model));
         });
     }
 

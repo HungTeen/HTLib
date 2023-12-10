@@ -4,9 +4,12 @@ import hungteen.htlib.api.interfaces.IHTRegistryHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -24,10 +27,20 @@ public interface IModIDHelper {
 
     String getModID();
 
+    /* Mod Loader */
+
+    default Optional<ModContainer> getModContainer(){
+        return ModList.get().getModObjectById(getModID());
+    }
+
     /* ResourceLocation Related */
 
     default ResourceLocation prefix(String name) {
         return StringHelper.res(getModID(), name);
+    }
+
+    default String prefixName(String name) {
+        return StringHelper.resString(getModID(), name);
     }
 
     default boolean in(ResourceLocation resourceLocation) {

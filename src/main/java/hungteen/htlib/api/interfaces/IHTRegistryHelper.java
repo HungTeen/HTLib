@@ -139,4 +139,8 @@ public interface IHTRegistryHelper<T> extends IHTResourceHelper<T>{
         return getRegistry().map(IForgeRegistry::getCodec, Registry::byNameCodec);
     }
 
+    default Codec<TagKey<T>> getTagCodec(){
+        return TagKey.codec(resourceKey());
+    }
+
 }

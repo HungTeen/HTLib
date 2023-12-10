@@ -9,6 +9,7 @@ import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SyncDatapackPacket;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.JavaHelper;
+import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +35,12 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     private final Supplier<Codec<V>> codecSup;
     private final Supplier<Codec<V>> syncSup;
 
+    /**
+     * @param registryName 注册名，决定了数据的路径。
+     * @param codecSup 序列化格式。
+     * @param syncSup 同步格式。
+     * @param registryClass 数据类。
+     */
     HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup, @Nullable Class<V> registryClass) {
         super(registryName);
         this.codecSup = codecSup;
