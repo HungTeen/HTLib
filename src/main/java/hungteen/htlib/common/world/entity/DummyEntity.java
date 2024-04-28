@@ -53,7 +53,7 @@ public abstract class DummyEntity implements IDummyEntity {
                     .result().ifPresent(vec -> this.position = vec);
         }
         if(tag.contains("Removed")){
-            this.isRemoved = tag.getBoolean("isRemoved");
+            this.isRemoved = tag.getBoolean("Removed");
         }
     }
 
@@ -265,6 +265,10 @@ public abstract class DummyEntity implements IDummyEntity {
     @Override
     public boolean isRemoved() {
         return isRemoved;
+    }
+
+    public void remove(){
+        this.setRemoved();
     }
 
     @Override

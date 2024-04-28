@@ -29,6 +29,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * @program: HTLib
  * @author: HungTeen
@@ -47,8 +50,8 @@ public class HTCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("htlib").requires((ctx) -> ctx.hasPermission(2));
-        builder.then(Commands.literal("create")
-                .then(Commands.literal("dummy")
+        builder.then(Commands.literal("dummy")
+                .then(Commands.literal("create")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("position", Vec3Argument.vec3())
@@ -60,7 +63,21 @@ public class HTCommand {
                                 )
                         )
                 )
-                .then(Commands.literal("raid")
+                .then(Commands.literal("remove")
+                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
+                                .suggests(ALL_DUMMY_ENTITIES)
+                                .then(Commands.literal("nearby")
+                                        .then(Commands.argument("position", Vec3Argument.vec3())
+                                                .executes(context -> removeNearbyDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position")))
+                                        ))
+                                .then(Commands.literal("all")
+                                        .executes(context -> removeAllDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity")))
+                                )
+                        )
+                )
+        );
+        builder.then(Commands.literal("raid")
+                .then(Commands.literal("create")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("type", ResourceLocationArgument.id())
@@ -95,14 +112,27 @@ public class HTCommand {
         throw ERROR_FAILED.create();
     }
 
+    public static int removeNearbyDummyEntity(CommandSourceStack sourceStack, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        List<DummyEntity> list = DummyEntityManager.getDummyEntities(sourceStack.getLevel(), dummyType, position, 1).toList();
+        DummyEntityManager.markRemoveEntities(list);
+        return list.size();
+    }
+
+    public static int removeAllDummyEntity(CommandSourceStack source, ResourceLocation dummyType) {
+        List<DummyEntity> list = DummyEntityManager.getDummyEntities(source.getLevel(), dummyType).toList();
+        DummyEntityManager.markRemoveEntities(list);
+        return list.size();
+    }
+
     public static int createRaid(CommandSourceStack sourceStack, ResourceLocation dummyType, ResourceLocation location, Vec3 position) throws CommandSyntaxException {
         final CompoundTag tag = new CompoundTag();
         tag.putString("RaidLocation", location.toString());
         return createDummyEntity(sourceStack, dummyType, position, tag);
     }
 
+
     public static int seat(CommandSourceStack sourceStack, Entity entity, Vec3 position) {
-        if(entity instanceof LivingEntity livingEntity){
+        if (entity instanceof LivingEntity livingEntity) {
             SeatEntity.seatAt(sourceStack.getLevel(), livingEntity, MathHelper.toBlockPos(position), 0, entity.getYRot(), 120, false);
         }
         return 1;

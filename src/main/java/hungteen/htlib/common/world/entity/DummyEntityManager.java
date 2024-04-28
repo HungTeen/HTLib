@@ -20,10 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -119,6 +116,17 @@ public class DummyEntityManager extends SavedData {
         return get(serverLevel).entityMap.values().stream().toList();
     }
 
+    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType) {
+        return DummyEntityManager.getDummyEntities(serverLevel).stream()
+                .filter(dummyEntity -> dummyEntity.getEntityType().getLocation().equals(entityType));
+    }
+
+    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType, Vec3 position, int limit) {
+        return DummyEntityManager.getDummyEntities(serverLevel, entityType)
+                .sorted(Comparator.comparingDouble(dummyEntity -> dummyEntity.getPosition().distanceTo(position)))
+                .limit(limit);
+    }
+
     public static Stream<DummyEntity> getCollisionEntities(Level level){
         return HTLib.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
     }
@@ -133,6 +141,10 @@ public class DummyEntityManager extends SavedData {
 
     public static void removeEntity(ServerLevel level, DummyEntity dummyEntity){
         get(level).remove(dummyEntity);
+    }
+
+    public static void markRemoveEntities(List<DummyEntity> dummyEntities){
+        dummyEntities.forEach(DummyEntity::remove);
     }
 
     /**

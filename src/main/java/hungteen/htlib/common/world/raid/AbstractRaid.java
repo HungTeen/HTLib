@@ -495,6 +495,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     /**
      * Remove from world.
      */
+    @Override
     public void remove() {
         this.setRemoved();
         this.progressBar.removeAllPlayers();
