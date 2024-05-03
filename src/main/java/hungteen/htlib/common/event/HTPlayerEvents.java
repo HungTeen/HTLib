@@ -3,7 +3,6 @@ package hungteen.htlib.common.event;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -22,9 +21,16 @@ public class HTPlayerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event){
-        if(event.getEntity().level instanceof ServerLevel && event.getEntity() instanceof ServerPlayer){
-            PlayerCapabilityManager.syncToClient(event.getEntity());
-            DummyEntityManager.get((ServerLevel) event.getEntity().level).syncToClient((ServerPlayer) event.getEntity());
+        if(event.getEntity() instanceof ServerPlayer serverPlayer){
+            PlayerCapabilityManager.syncToClient(serverPlayer);
+            DummyEntityManager.get(serverPlayer.getLevel()).initialize(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void logout(PlayerEvent.PlayerLoggedOutEvent event){
+        if(event.getEntity() instanceof ServerPlayer serverPlayer){
+            DummyEntityManager.get(serverPlayer.getLevel()).finalize(serverPlayer);
         }
     }
 

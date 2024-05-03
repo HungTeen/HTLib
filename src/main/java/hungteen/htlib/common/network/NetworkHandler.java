@@ -39,6 +39,10 @@ public class NetworkHandler {
         CHANNEL.sendToServer(msg);
     }
 
+    public static <MSG> void sendToClient(MSG msg){
+        CHANNEL.send(PacketDistributor.ALL.noArg(), msg);
+    }
+
     public static <MSG> void sendToClient(ServerPlayer serverPlayer, MSG msg){
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), msg);
     }

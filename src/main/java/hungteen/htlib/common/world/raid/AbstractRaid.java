@@ -5,12 +5,11 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.event.events.RaidEvent;
-import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.common.world.entity.DummyEntityManager;
-import hungteen.htlib.common.world.entity.DummyEntityType;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
+import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityType;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.ChatFormatting;
@@ -132,16 +131,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     /**
      * Check if the specified raid can continue ticking.
-     *
      * @return true if the raid can tick.
      */
     public boolean canTick() {
         return this.getLevel().hasChunkAt(MathHelper.toBlockPos(this.position));
     }
 
-    /**
-     * {@link DummyEntityManager#tick()}
-     */
     @Override
     public void tick() {
         if (!this.isRemoved() && this.canTick()) {
@@ -497,7 +492,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      */
     @Override
     public void remove() {
-        this.setRemoved();
+        super.remove();
         this.progressBar.removeAllPlayers();
 //        this.raiders.forEach(Entity::discard);
     }

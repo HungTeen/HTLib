@@ -21,9 +21,13 @@ import java.util.function.Supplier;
 public class DummyEntityPacket {
 
     private final Operation operation;
-    private final int entityID;
+    private int entityID;
     private ResourceLocation entityType;
     private CompoundTag entityNBT;
+
+    public DummyEntityPacket() {
+        this.operation = Operation.CLEAR;
+    }
 
     public DummyEntityPacket(DummyEntity dummyEntity, CompoundTag nbt) {
         this(Operation.UPDATE, dummyEntity);
@@ -41,23 +45,27 @@ public class DummyEntityPacket {
 
     public DummyEntityPacket(FriendlyByteBuf buffer) {
         this.operation = Operation.values()[buffer.readInt()];
-        this.entityID = buffer.readInt();
-        if(this.operation == Operation.CREATE){
-            this.entityType = new ResourceLocation(buffer.readUtf());
-            this.entityNBT = buffer.readNbt();
-        } else if(this.operation == Operation.UPDATE){
-            this.entityNBT = buffer.readNbt();
+        if(this.operation != Operation.CLEAR){
+            this.entityID = buffer.readInt();
+            if(this.operation == Operation.CREATE){
+                this.entityType = new ResourceLocation(buffer.readUtf());
+                this.entityNBT = buffer.readNbt();
+            } else if(this.operation == Operation.UPDATE){
+                this.entityNBT = buffer.readNbt();
+            }
         }
     }
 
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeInt(this.operation.ordinal());
-        buffer.writeInt(this.entityID);
-        if(this.operation == Operation.CREATE){
-            buffer.writeUtf(this.entityType.toString());
-            buffer.writeNbt(this.entityNBT);
-        } else if(this.operation == Operation.UPDATE){
-            buffer.writeNbt(this.entityNBT);
+        if(this.operation != Operation.CLEAR){
+            buffer.writeInt(this.entityID);
+            if(this.operation == Operation.CREATE){
+                buffer.writeUtf(this.entityType.toString());
+                buffer.writeNbt(this.entityNBT);
+            } else if(this.operation == Operation.UPDATE){
+                buffer.writeNbt(this.entityNBT);
+            }
         }
     }
 
@@ -81,6 +89,8 @@ public class DummyEntityPacket {
                     HTLib.PROXY.getDummyEntity(message.entityID).ifPresent(dummyEntity -> {
                         dummyEntity.load(message.entityNBT);
                     });
+                } else if(message.operation == Operation.CLEAR){
+                    HTLib.PROXY.clearDummyEntities();
                 }
             });
             ctx.get().setPacketHandled(true);
@@ -91,7 +101,10 @@ public class DummyEntityPacket {
 
         CREATE,
         REMOVE,
-        UPDATE
+        UPDATE,
+        CLEAR,
+
+        ;
 
     }
 

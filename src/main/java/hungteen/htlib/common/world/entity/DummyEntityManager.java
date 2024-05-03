@@ -6,7 +6,6 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
-import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -92,16 +91,24 @@ public class DummyEntityManager extends SavedData {
         }
     }
 
-    public void syncToClient(ServerPlayer player){
+    /**
+     * 玩家进入世界初始化同步。
+     */
+    public void initialize(ServerPlayer player){
         this.entityMap.forEach((id, entity) -> {
             NetworkHandler.sendToClient(player, new DummyEntityPacket(DummyEntityPacket.Operation.CREATE, entity));
         });
     }
 
+    /**
+     * 玩家退出世界清除同步。
+     */
+    public void finalize(ServerPlayer player){
+        NetworkHandler.sendToClient(player, new DummyEntityPacket());
+    }
+
     public void sync(boolean add, DummyEntity dummyEntity){
-        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-            NetworkHandler.sendToClient(player, new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
-        });
+        NetworkHandler.sendToClient(new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
     }
 
     public static void setDirty(ServerLevel level){
@@ -117,12 +124,12 @@ public class DummyEntityManager extends SavedData {
     }
 
     public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType) {
-        return DummyEntityManager.getDummyEntities(serverLevel).stream()
+        return getDummyEntities(serverLevel).stream()
                 .filter(dummyEntity -> dummyEntity.getEntityType().getLocation().equals(entityType));
     }
 
     public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType, Vec3 position, int limit) {
-        return DummyEntityManager.getDummyEntities(serverLevel, entityType)
+        return getDummyEntities(serverLevel, entityType)
                 .sorted(Comparator.comparingDouble(dummyEntity -> dummyEntity.getPosition().distanceTo(position)))
                 .limit(limit);
     }

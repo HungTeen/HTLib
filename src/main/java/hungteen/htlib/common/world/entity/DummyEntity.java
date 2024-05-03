@@ -5,7 +5,6 @@ import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -71,9 +70,7 @@ public abstract class DummyEntity implements IDummyEntity {
      * sync data to client side.
      */
     public void sync(CompoundTag tag){
-        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-            NetworkHandler.sendToClient(player, new DummyEntityPacket(this, tag));
-        });
+        NetworkHandler.sendToClient(new DummyEntityPacket(this, tag));
     }
 
     public void tick(){
