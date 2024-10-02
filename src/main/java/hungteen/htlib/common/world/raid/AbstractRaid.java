@@ -17,7 +17,6 @@ import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -212,13 +211,13 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 ++ this.tick;
             }
             case LOSS -> {
-                raid.getResultComponents().forEach(this::tickResult);
+                raid.getLossResults().forEach(this::tickResult);
                 if (++ this.tick >= raid.getLossDuration()) {
                     this.remove();
                 }
             }
             case VICTORY -> {
-                raid.getResultComponents().forEach(this::tickResult);
+                raid.getVictoryResults().forEach(this::tickResult);
                 if (++ this.tick >= raid.getVictoryDuration()) {
                     this.remove();
                 }
@@ -535,7 +534,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      * Remove from world.
      */
     public void remove() {
-        this.setRemoved();
+        super.remove();
         this.progressBar.removeAllPlayers();
     }
 
@@ -626,9 +625,13 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return Optional.ofNullable(this.waveComponent);
     }
 
-    public void setCurrentWave(@NotNull IWaveComponent wave) {
+    public void setCurrentWave(IWaveComponent wave) {
         this.waveComponent = wave;
-        this.spawnComponents = wave.getWaveSpawns(this, this.currentWave, this.getLevel().getRandom());
+        if(wave != null){
+            this.spawnComponents = wave.getWaveSpawns(this, this.currentWave, this.getLevel().getRandom());
+        } else {
+            this.spawnComponents = null;
+        }
     }
 
     @NotNull

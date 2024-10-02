@@ -31,35 +31,47 @@ import java.util.Optional;
  */
 public interface HTRaidComponents {
 
-    HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), HTRaidComponents::getDirectCodec);
+    HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.create(HTLibHelper.prefix("raid"), HTRaidComponents::getDirectCodec, true);
 
     ResourceKey<IRaidComponent> TEST = create("test");
+    ResourceKey<IRaidComponent> COMMON = create("common");
 
     static void register(BootstapContext<IRaidComponent> context) {
         final HolderGetter<IResultComponent> results = HTResultComponents.registry().helper().lookup(context);
         final HolderGetter<IWaveComponent> waves = HTWaveComponents.registry().helper().lookup(context);
-        final Holder<IResultComponent> testResult = results.getOrThrow(HTResultComponents.TEST);
-        final Holder<IWaveComponent> testWave1 = waves.getOrThrow(HTWaveComponents.TEST_1);
-        final Holder<IWaveComponent> testWave2 = waves.getOrThrow(HTWaveComponents.TEST_2);
-        final Optional<Holder<SoundEvent>> raidStartSound = HTSounds.PREPARE.getHolder();
-        final Optional<Holder<SoundEvent>> waveStartSound = HTSounds.HUGE_WAVE.getHolder();
-        final Optional<Holder<SoundEvent>> victorySound = HTSounds.VICTORY.getHolder();
-        final Optional<Holder<SoundEvent>> lossSound = HTSounds.LOSS.getHolder();
         context.register(TEST, new CommonRaid(
+                builder()
+                        .blockInside(false)
+                        .blockOutside(false)
+                        .renderBorder(false)
+                        .victoryResult(results.getOrThrow(HTResultComponents.TEST))
+                        .color(BossEvent.BossBarColor.BLUE)
+                        .raidSound(HTSounds.PREPARE.getHolder())
+                        .waveSound(HTSounds.HUGE_WAVE.getHolder())
+                        .victorySound(HTSounds.VICTORY.getHolder())
+                        .lossSound(HTSounds.LOSS.getHolder())
+                        .build(),
+                Arrays.asList(
+                        waves.getOrThrow(HTWaveComponents.TEST_1),
+                        waves.getOrThrow(HTWaveComponents.TEST_2)
+                )
+        ));
+        context.register(COMMON, new CommonRaid(
                 builder()
                         .blockInside(true)
                         .blockOutside(true)
                         .renderBorder(true)
-                        .result(testResult)
-                        .color(BossEvent.BossBarColor.BLUE)
-                        .raidSound(raidStartSound)
-                        .waveSound(waveStartSound)
-                        .victorySound(victorySound)
-                        .lossSound(lossSound)
+                        .victoryResult(results.getOrThrow(HTResultComponents.COMMON_FUNCTION))
+                        .color(BossEvent.BossBarColor.RED)
+                        .raidSound(HTSounds.PREPARE.getHolder())
+                        .waveSound(HTSounds.HUGE_WAVE.getHolder())
+                        .victorySound(HTSounds.VICTORY.getHolder())
+                        .lossSound(HTSounds.LOSS.getHolder())
                         .build(),
                 Arrays.asList(
-                        testWave1,
-                        testWave2
+                        waves.getOrThrow(HTWaveComponents.COMMON_WAVE_1),
+                        waves.getOrThrow(HTWaveComponents.COMMON_WAVE_2),
+                        waves.getOrThrow(HTWaveComponents.COMMON_WAVE_3)
                 )
         ));
     }
@@ -86,7 +98,8 @@ public interface HTRaidComponents {
 
     class RaidSettingBuilder {
         private Holder<IPositionComponent> positionComponent;
-        private final List<Holder<IResultComponent>> resultComponents = new ArrayList<>();
+        private final List<Holder<IResultComponent>> victoryResults = new ArrayList<>();
+        private final List<Holder<IResultComponent>> lossResults = new ArrayList<>();
         private double raidRange = 40;
         private boolean blockInside = false;
         private boolean blockOutside = false;
@@ -110,8 +123,13 @@ public interface HTRaidComponents {
             return this;
         }
 
-        public RaidSettingBuilder result(Holder<IResultComponent> resultComponent) {
-            this.resultComponents.add(resultComponent);
+        public RaidSettingBuilder victoryResult(Holder<IResultComponent> resultComponent) {
+            this.victoryResults.add(resultComponent);
+            return this;
+        }
+
+        public RaidSettingBuilder lossResult(Holder<IResultComponent> resultComponent) {
+            this.lossResults.add(resultComponent);
             return this;
         }
 
@@ -222,7 +240,8 @@ public interface HTRaidComponents {
                             this.victorySound,
                             this.lossSound
                     ),
-                    this.resultComponents,
+                    this.victoryResults,
+                    this.lossResults,
                     this.victoryDuration,
                     this.lossDuration,
                     this.showRoundTitle,

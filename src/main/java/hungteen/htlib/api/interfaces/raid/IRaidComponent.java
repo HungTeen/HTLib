@@ -3,7 +3,6 @@ package hungteen.htlib.api.interfaces.raid;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.BossEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +27,6 @@ public interface IRaidComponent {
      * @param currentWave Current wave.
      * @return Wave component.
      */
-    @NotNull
     IWaveComponent getCurrentWave(IRaid raid, int currentWave);
 
     /**
@@ -117,10 +115,16 @@ public interface IRaidComponent {
     boolean sendRaidWarn();
 
     /**
-     * Get result components.
+     * Get victory result components.
      * @return Result list.
      */
-    List<IResultComponent> getResultComponents();
+    List<IResultComponent> getVictoryResults();
+
+    /**
+     * Get loss result components.
+     * @return Result list.
+     */
+    List<IResultComponent> getLossResults();
 
     /**
      * Get the sound when raid start.

@@ -27,11 +27,17 @@ public interface HTResultComponents {
     HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.create(HTLibHelper.prefix("result"), HTResultComponents::getDirectCodec);
 
     ResourceKey<IResultComponent> TEST = create("test");
+    ResourceKey<IResultComponent> COMMON_FUNCTION = create("common_function");
 
     static void register(BootstapContext<IResultComponent> context) {
         context.register(TEST, new ItemStackResult(
                 true, false,
                 List.of(new ItemStack(Items.ACACIA_BOAT, 3, new CompoundTag()))
+        ));
+        context.register(COMMON_FUNCTION, new FunctionResult(
+                List.of(),
+                List.of(HTLibHelper.get().prefix("test")),
+                List.of()
         ));
     }
 

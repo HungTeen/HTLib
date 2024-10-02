@@ -7,7 +7,6 @@ import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -22,10 +21,7 @@ import net.minecraftforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -110,16 +106,24 @@ public class DummyEntityManager extends SavedData {
         }
     }
 
-    public void syncToClient(ServerPlayer player){
+    /**
+     * 玩家进入世界初始化同步。
+     */
+    public void initialize(ServerPlayer player){
         this.entityMap.forEach((id, entity) -> {
             NetworkHandler.sendToClient(player, new DummyEntityPacket(DummyEntityPacket.Operation.CREATE, entity));
         });
     }
 
+    /**
+     * 玩家退出世界清除同步。
+     */
+    public void finalize(ServerPlayer player){
+        NetworkHandler.sendToClient(player, new DummyEntityPacket());
+    }
+
     public void sync(boolean add, DummyEntity dummyEntity){
-        PlayerHelper.getServerPlayers(this.level).forEach(player -> {
-            NetworkHandler.sendToClient(player, new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
-        });
+        NetworkHandler.sendToClient(new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
     }
 
     public static void setDirty(ServerLevel level){
@@ -132,6 +136,17 @@ public class DummyEntityManager extends SavedData {
 
     public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
         return get(serverLevel).entityMap.values().stream().toList();
+    }
+
+    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType) {
+        return DummyEntityManager.getDummyEntities(serverLevel).stream()
+                .filter(dummyEntity -> dummyEntity.getEntityType().getLocation().equals(entityType));
+    }
+
+    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType, Vec3 position, int limit) {
+        return DummyEntityManager.getDummyEntities(serverLevel, entityType)
+                .sorted(Comparator.comparingDouble(dummyEntity -> dummyEntity.getPosition().distanceTo(position)))
+                .limit(limit);
     }
 
     public static Stream<DummyEntity> getCollisionEntities(Level level){
@@ -148,6 +163,10 @@ public class DummyEntityManager extends SavedData {
 
     public static void removeEntity(ServerLevel level, DummyEntity dummyEntity){
         get(level).remove(dummyEntity);
+    }
+
+    public static void markRemoveEntities(List<DummyEntity> dummyEntities){
+        dummyEntities.forEach(DummyEntity::remove);
     }
 
     /**

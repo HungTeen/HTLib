@@ -7,6 +7,7 @@ import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveType;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.registry.HTCodecRegistry;
 import hungteen.htlib.common.registry.HTRegistryManager;
@@ -33,21 +34,57 @@ public interface HTWaveComponents {
 
     ResourceKey<IWaveComponent> TEST_1 = create("test_1");
     ResourceKey<IWaveComponent> TEST_2 = create("test_2");
+    ResourceKey<IWaveComponent> COMMON_WAVE_1 = create("common_wave_1");
+    ResourceKey<IWaveComponent> COMMON_WAVE_2 = create("common_wave_2");
+    ResourceKey<IWaveComponent> COMMON_WAVE_3 = create("common_wave_3");
 
     static void register(BootstapContext<IWaveComponent> context) {
         final HolderGetter<ISpawnComponent> spawns = HTSpawnComponents.registry().helper().lookup(context);
-        final Holder<ISpawnComponent> testSpawn1 = spawns.getOrThrow(HTSpawnComponents.TEST_1);
-        final Holder<ISpawnComponent> testSpawn2 = spawns.getOrThrow(HTSpawnComponents.TEST_2);
-        final Holder<ISpawnComponent> testSpawn3 = spawns.getOrThrow(HTSpawnComponents.TEST_3);
+        final HolderGetter<IPositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
+        final Holder<ISpawnComponent> creeperSpawns = spawns.getOrThrow(HTSpawnComponents.CREEPER_4_8);
+        final Holder<ISpawnComponent> poweredCreeperSpawns = spawns.getOrThrow(HTSpawnComponents.POWERED_CREEPER_3_5);
+        final Holder<ISpawnComponent> spiderSpawns = spawns.getOrThrow(HTSpawnComponents.SPIDER_5);
+        final Holder<ISpawnComponent> skeletonSpawns = spawns.getOrThrow(HTSpawnComponents.LONG_TERM_SKELETON);
+        final Holder<ISpawnComponent> witherSkeletonSpawns = spawns.getOrThrow(HTSpawnComponents.WITHER_SKELETON);
+        final Holder<ISpawnComponent> diamondZombieSpawns = spawns.getOrThrow(HTSpawnComponents.DIAMOND_ZOMBIE_3_6);
         context.register(TEST_1, new CommonWave(
-                HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
-                List.of(Pair.of(ConstantInt.of(10), testSpawn1))
+                HTWaveComponents.builder().prepare(100).wave(800).skip(false)
+                        .placement(positions.getOrThrow(HTPositionComponents.TEST)).build(),
+                List.of(Pair.of(ConstantInt.of(10), creeperSpawns))
         ));
         context.register(TEST_2, new CommonWave(
-                HTWaveComponents.builder().prepare(100).wave(1200).skip(false).build(),
-                List.of(Pair.of(ConstantInt.of(10), testSpawn2), Pair.of(ConstantInt.of(100), testSpawn3))
+                HTWaveComponents.builder().prepare(100).wave(800).skip(false)
+                        .placement(positions.getOrThrow(HTPositionComponents.TEST)).build(),
+                List.of(
+                        Pair.of(ConstantInt.of(10), spiderSpawns),
+                        Pair.of(ConstantInt.of(100), skeletonSpawns)
+                )
         ));
-
+        context.register(COMMON_WAVE_1, new CommonWave(
+                HTWaveComponents.builder().prepare(60).wave(600).skip(true)
+                        .placement(positions.getOrThrow(HTPositionComponents.COMMON)).build(),
+                List.of(
+                        Pair.of(ConstantInt.of(10), poweredCreeperSpawns)
+                )
+        ));
+        context.register(COMMON_WAVE_2, new CommonWave(
+                HTWaveComponents.builder().prepare(60).wave(1200).skip(true)
+                        .placement(positions.getOrThrow(HTPositionComponents.COMMON)).build(),
+                List.of(
+                        Pair.of(ConstantInt.of(100), skeletonSpawns),
+                        Pair.of(ConstantInt.of(300), witherSkeletonSpawns),
+                        Pair.of(ConstantInt.of(600), witherSkeletonSpawns)
+                )
+        ));
+        context.register(COMMON_WAVE_3, new CommonWave(
+                HTWaveComponents.builder().prepare(60).wave(1800).skip(true)
+                        .placement(positions.getOrThrow(HTPositionComponents.COMMON)).build(),
+                List.of(
+                        Pair.of(ConstantInt.of(50), witherSkeletonSpawns),
+                        Pair.of(ConstantInt.of(200), diamondZombieSpawns),
+                        Pair.of(ConstantInt.of(500), creeperSpawns)
+                )
+        ));
     }
 
     static Codec<IWaveComponent> getDirectCodec(){

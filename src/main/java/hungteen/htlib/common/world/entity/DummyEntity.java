@@ -275,6 +275,10 @@ public abstract class DummyEntity implements IDummyEntity {
         return isRemoved;
     }
 
+    public void remove(){
+        this.setRemoved();
+    }
+
     @Override
     public void setDirty(){
         if(this.getLevel() instanceof ServerLevel){

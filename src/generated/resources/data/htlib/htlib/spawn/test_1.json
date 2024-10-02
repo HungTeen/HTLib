@@ -1,7 +1,0 @@
-{
-  "type": "htlib:once",
-  "setting": {
-    "entity_type": "minecraft:creeper"
-  },
-  "spawn_count": 10
-}

@@ -1,0 +1,14 @@
+{
+  "type": "htlib:common",
+  "setting": {
+    "prepare_duration": 60,
+    "spawn_placement": "htlib:common",
+    "wave_duration": 600
+  },
+  "spawns": [
+    {
+      "spawn": "htlib:powered_creeper_3_5",
+      "start_tick": 10
+    }
+  ]
+}

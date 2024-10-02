@@ -88,8 +88,13 @@ public abstract class RaidComponent implements IRaidComponent {
     }
 
     @Override
-    public List<IResultComponent> getResultComponents() {
-        return getRaidSettings().resultComponents().stream().map(Holder::get).toList();
+    public List<IResultComponent> getVictoryResults() {
+        return getRaidSettings().victoryResults().stream().map(Holder::get).toList();
+    }
+
+    @Override
+    public List<IResultComponent> getLossResults() {
+        return getRaidSettings().lossResults().stream().map(Holder::get).toList();
     }
 
     @Override
@@ -132,7 +137,7 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> resultComponents, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
+    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 
@@ -140,7 +145,8 @@ public abstract class RaidComponent implements IRaidComponent {
                 BarSetting.CODEC.fieldOf("bar_setting").forGetter(RaidSetting::barSetting),
                 SoundSetting.CODEC.fieldOf("sound_setting").forGetter(RaidSetting::soundSetting),
 
-                HTResultComponents.getCodec().listOf().optionalFieldOf("results", List.of()).forGetter(RaidSetting::resultComponents),
+                HTResultComponents.getCodec().listOf().optionalFieldOf("victory_results", List.of()).forGetter(RaidSetting::victoryResults),
+                HTResultComponents.getCodec().listOf().optionalFieldOf("loss_results", List.of()).forGetter(RaidSetting::lossResults),
 
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("victory_duration", 100).forGetter(RaidSetting::victoryDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("loss_duration", 100).forGetter(RaidSetting::lossDuration),

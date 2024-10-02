@@ -1,0 +1,45 @@
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:zombie",
+    "nbt": {
+      "ArmorItems": [
+        {
+          "Count": 1,
+          "id": "minecraft:diamond_boots",
+          "tag": {
+            "Damage": 0
+          }
+        },
+        {
+          "Count": 1,
+          "id": "minecraft:diamond_leggings",
+          "tag": {
+            "Damage": 0
+          }
+        },
+        {
+          "Count": 1,
+          "id": "minecraft:diamond_chestplate",
+          "tag": {
+            "Damage": 0
+          }
+        },
+        {
+          "Count": 1,
+          "id": "minecraft:diamond_helmet",
+          "tag": {
+            "Damage": 0
+          }
+        }
+      ]
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 6,
+      "min_inclusive": 3
+    }
+  }
+}

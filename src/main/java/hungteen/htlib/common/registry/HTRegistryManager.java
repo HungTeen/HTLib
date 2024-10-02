@@ -66,30 +66,38 @@ public class HTRegistryManager {
      * Do not sync.
      */
     public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup){
-        return create(registryName, codecSup, null, null);
+        return create(registryName, codecSup, null, null, false);
+    }
+
+    /**
+     * Do not sync.
+     */
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, boolean requireCache){
+        return create(registryName, codecSup, null, null, requireCache);
     }
 
     /**
      * 使用HTLib的方法同步数据。
      */
     public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Class<T> clazz){
-        return create(registryName, codecSup, codecSup, clazz);
+        return create(registryName, codecSup, codecSup, clazz, false);
     }
 
     /**
      * 使用原版的方法同步数据。
      */
     public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, Supplier<Codec<T>> syncSup){
-        return create(registryName, codecSup, syncSup, null);
+        return create(registryName, codecSup, syncSup, null, false);
     }
 
     /**
      * Do not create more than one registry for specific registry entityType.
      * @param syncSup 用于数据包的同步。
      * @param clazz 有clazz说明采用HTLib的方法同步数据，而非采用原版的同步方法。
+     * @param requireCache 是否需要缓存数据（服务端）。
      */
-    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, @Nullable Supplier<Codec<T>> syncSup, Class<T> clazz){
-        final HTCodecRegistry<T> codecRegistry = new HTCodecRegistry<>(registryName, codecSup, syncSup, clazz);
+    public static <T> HTCodecRegistry<T> create(ResourceLocation registryName, Supplier<Codec<T>> codecSup, @Nullable Supplier<Codec<T>> syncSup, Class<T> clazz, boolean requireCache){
+        final HTCodecRegistry<T> codecRegistry = new HTCodecRegistry<>(registryName, codecSup, syncSup, clazz, requireCache);
         CODEC_REGISTRIES.put(registryName, codecRegistry);
         return codecRegistry;
     }

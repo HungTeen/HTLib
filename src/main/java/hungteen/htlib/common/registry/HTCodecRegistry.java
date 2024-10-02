@@ -2,6 +2,7 @@ package hungteen.htlib.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.IHTCodecRegistry;
@@ -9,7 +10,6 @@ import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SyncDatapackPacket;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.JavaHelper;
-import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +31,11 @@ import java.util.function.Supplier;
 public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistry<V> {
 
     private final BiMap<ResourceKey<V>, V> syncMap = HashBiMap.create();
+    private List<ResourceLocation> cacheIds = Lists.newArrayList();
     private final Class<V> registryClass;
     private final Supplier<Codec<V>> codecSup;
     private final Supplier<Codec<V>> syncSup;
+    private final boolean requireCache;
 
     /**
      * @param registryName 注册名，决定了数据的路径。
@@ -41,11 +43,12 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
      * @param syncSup 同步格式。
      * @param registryClass 数据类。
      */
-    HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup, @Nullable Class<V> registryClass) {
+    HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup, @Nullable Class<V> registryClass, boolean requireCache) {
         super(registryName);
         this.codecSup = codecSup;
         this.syncSup = syncSup;
         this.registryClass = registryClass;
+        this.requireCache = requireCache;
     }
 
     @Override
@@ -63,6 +66,9 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
                     }
                 });
             });
+        }
+        if(requireCache()){
+            this.cacheIds = this.getKeys(player.level()).stream().map(ResourceKey::location).toList();
         }
     }
 
@@ -105,6 +111,11 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     }
 
     @Override
+    public boolean requireCache() {
+        return requireCache;
+    }
+
+    @Override
     public List<V> getClientValues() {
         return this.syncMap.values().stream().toList();
     }
@@ -112,6 +123,11 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     @Override
     public Set<ResourceKey<V>> getClientKeys() {
         return this.syncMap.keySet();
+    }
+
+    @Override
+    public List<ResourceLocation> getCachedKeys() {
+        return this.cacheIds;
     }
 
     @Override

@@ -23,9 +23,16 @@ public class HTPlayerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event){
-        if(event.getEntity().level() instanceof ServerLevel && event.getEntity() instanceof ServerPlayer){
+        if(event.getEntity().level() instanceof ServerLevel serverLevel&& event.getEntity() instanceof ServerPlayer serverPlayer){
             PlayerCapabilityManager.syncToClient(event.getEntity());
-            DummyEntityManager.get((ServerLevel) event.getEntity().level()).syncToClient((ServerPlayer) event.getEntity());
+            DummyEntityManager.get(serverLevel).initialize(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void logout(PlayerEvent.PlayerLoggedOutEvent event){
+        if(event.getEntity() instanceof ServerPlayer serverPlayer){
+            DummyEntityManager.get(serverPlayer.serverLevel()).finalize(serverPlayer);
         }
     }
 

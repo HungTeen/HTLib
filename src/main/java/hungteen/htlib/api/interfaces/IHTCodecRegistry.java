@@ -7,6 +7,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 
@@ -66,6 +67,11 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
     default Set<ResourceKey<V>> getClientKeys(){
         return Set.of();
     }
+
+    /**
+     * 获取缓存的 Key。
+     */
+    List<ResourceLocation> getCachedKeys();
 
     /**
      * Get holder by key, 根据key获取注册项。
@@ -156,4 +162,11 @@ public interface IHTCodecRegistry<V> extends IHTRegistry<V>{
     default boolean requireSync(){
         return getSyncCodec().isPresent();
     }
+
+    /**
+     * Whether this registry need cache data.
+     * @return true if needed.
+     */
+    boolean requireCache();
+
 }

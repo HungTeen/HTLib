@@ -26,10 +26,14 @@ public interface HTPositionComponents {
     );
 
     ResourceKey<IPositionComponent> TEST = create("test");
+    ResourceKey<IPositionComponent> COMMON = create("common");
 
     static void register(BootstapContext<IPositionComponent> context) {
         context.register(TEST, new CenterAreaPosition(
                 Vec3.ZERO, 0, 1, true, 0, true
+        ));
+        context.register(COMMON, new CenterAreaPosition(
+                Vec3.ZERO, 0, 10, true, 0, false
         ));
     }
 

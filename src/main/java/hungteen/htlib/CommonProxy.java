@@ -40,4 +40,8 @@ public class CommonProxy {
     public Player getPlayer(){
         return null;
     }
+
+    public void clearDummyEntities() {
+
+    }
 }

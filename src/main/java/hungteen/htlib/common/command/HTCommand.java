@@ -24,7 +24,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
@@ -36,6 +36,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /**
  * @program: HTLib
@@ -49,34 +51,53 @@ public class HTCommand {
     });
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
-//    private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
-//        return SharedSuggestionProvider.suggestResource(HTRaidComponents.getIds(), builder);
-//    });
+    private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
+//        Optional<HolderLookup.RegistryLookup<IRaidComponent>> raids = commandContext.getSource().registryAccess().lookup(HTRaidComponents.registry().getRegistryKey());
+//        if(raids.isPresent()){
+//            return SharedSuggestionProvider.suggestResource(raids.get().listElementIds().map(ResourceKey::location), builder);
+//        }
+        return SharedSuggestionProvider.suggestResource(HTRaidComponents.registry().getCachedKeys(), builder);
+    });
     private static final SuggestionProvider<CommandSourceStack> ALL_DUMMY_ENTITIES = SuggestionProviders.register(HTLibHelper.prefix("all_dummy_entities"), (commandContext, builder) -> {
         return SharedSuggestionProvider.suggestResource(HTDummyEntities.getIds(), builder);
     });
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("htlib").requires((ctx) -> ctx.hasPermission(2));
-        builder.then(Commands.literal("create")
-                .then(Commands.literal("dummy")
+        builder.then(Commands.literal("dummy")
+                .then(Commands.literal("create")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("position", Vec3Argument.vec3())
-                                        .executes(ctx -> createDummyEntity(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), Vec3Argument.getVec3(ctx, "position"), new CompoundTag()))
+                                        .executes(context -> createDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position"), new CompoundTag()))
                                         .then(Commands.argument("nbt", CompoundTagArgument.compoundTag())
-                                                .executes(ctx -> createDummyEntity(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), Vec3Argument.getVec3(ctx, "position"), CompoundTagArgument.getCompoundTag(ctx, "nbt")))
+                                                .executes(context -> createDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position"), CompoundTagArgument.getCompoundTag(context, "nbt")))
 
                                         )
                                 )
                         )
                 )
-                .then(Commands.literal("raid")
+                .then(Commands.literal("remove")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
-                                .then(Commands.argument("type", ResourceKeyArgument.key(HTRaidComponents.registry().getRegistryKey()))
+                                .then(Commands.literal("nearby")
                                         .then(Commands.argument("position", Vec3Argument.vec3())
-                                                .executes(ctx -> createRaid(ctx.getSource(), DummyEntityArgument.getDummyEntity(ctx, "dummy_entity"), getRaid(ctx, "type"), Vec3Argument.getVec3(ctx, "position")))
+                                                .executes(context -> removeNearbyDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position")))
+                                        ))
+                                .then(Commands.literal("all")
+                                        .executes(context -> removeAllDummyEntity(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity")))
+                                )
+                        )
+                )
+        );
+        builder.then(Commands.literal("raid")
+                .then(Commands.literal("create")
+                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
+                                .suggests(ALL_DUMMY_ENTITIES)
+                                .then(Commands.argument("type", ResourceLocationArgument.id())
+                                        .suggests(ALL_CUSTOM_RAIDS)
+                                        .then(Commands.argument("position", Vec3Argument.vec3())
+                                                .executes(context -> createRaid(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), ResourceLocationArgument.getId(context, "type"), Vec3Argument.getVec3(context, "position")))
                                         )
                                 )
                         )
@@ -109,9 +130,22 @@ public class HTCommand {
         throw ERROR_FAILED.create();
     }
 
-    public static int createRaid(CommandSourceStack sourceStack, ResourceLocation dummyType, Holder<IRaidComponent> raid, Vec3 position) throws CommandSyntaxException {
+    public static int removeNearbyDummyEntity(CommandSourceStack sourceStack, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        List<DummyEntity> list = DummyEntityManager.getDummyEntities(sourceStack.getLevel(), dummyType, position, 1).toList();
+        DummyEntityManager.markRemoveEntities(list);
+        return list.size();
+    }
+
+    public static int removeAllDummyEntity(CommandSourceStack source, ResourceLocation dummyType) {
+        List<DummyEntity> list = DummyEntityManager.getDummyEntities(source.getLevel(), dummyType).toList();
+        DummyEntityManager.markRemoveEntities(list);
+        return list.size();
+    }
+
+    public static int createRaid(CommandSourceStack sourceStack, ResourceLocation dummyType, ResourceLocation raidId, Vec3 position) throws CommandSyntaxException {
         final CompoundTag nbt = new CompoundTag();
-        CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), raid.get())
+        IRaidComponent raidComponent = HTRaidComponents.registry().getValue(sourceStack.getLevel(), HTRaidComponents.registry().createKey(raidId));
+        CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), raidComponent)
                 .result().ifPresent(tag -> {
                     nbt.put(AbstractRaid.RAID_TAG, tag);
                 });

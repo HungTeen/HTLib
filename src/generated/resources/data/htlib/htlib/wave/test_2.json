@@ -2,15 +2,16 @@
   "type": "htlib:common",
   "setting": {
     "can_skip_wave": false,
+    "spawn_placement": "htlib:test",
     "wave_duration": 1200
   },
   "spawns": [
     {
-      "spawn": "htlib:test_2",
+      "spawn": "htlib:spider_5",
       "start_tick": 10
     },
     {
-      "spawn": "htlib:test_3",
+      "spawn": "htlib:long_term_skeleton",
       "start_tick": 100
     }
   ]

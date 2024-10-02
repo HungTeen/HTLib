@@ -2,11 +2,12 @@
   "type": "htlib:common",
   "setting": {
     "can_skip_wave": false,
+    "spawn_placement": "htlib:test",
     "wave_duration": 1200
   },
   "spawns": [
     {
-      "spawn": "htlib:test_1",
+      "spawn": "htlib:creeper_4_8",
       "start_tick": 10
     }
   ]

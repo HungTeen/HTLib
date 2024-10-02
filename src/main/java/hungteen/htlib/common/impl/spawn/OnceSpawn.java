@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnType;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ public class OnceSpawn extends SpawnComponent {
      */
     public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
             SpawnSetting.CODEC.fieldOf("setting").forGetter(OnceSpawn::getSpawnSetting),
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
+            IntProvider.POSITIVE_CODEC.fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
     ).apply(instance, OnceSpawn::new)).codec();
-    private final int spawnCount;
+    private final IntProvider spawnCount;
 
-    public OnceSpawn(SpawnSetting spawnSettings, int spawnCount){
+    public OnceSpawn(SpawnSetting spawnSettings, IntProvider spawnCount){
         super(spawnSettings);
         this.spawnCount = spawnCount;
     }
@@ -39,7 +40,8 @@ public class OnceSpawn extends SpawnComponent {
     public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick) {
         List<Entity> entities = new ArrayList<>();
         if(tick == startTick){
-            for(int i = 0; i < this.getSpawnCount(); ++ i){
+            final int spawnCount = getSpawnCount().sample(level.random);
+            for(int i = 0; i < spawnCount; ++ i){
                 this.spawnEntity(level, raid).ifPresent(entities::add);
             }
         }
@@ -56,7 +58,7 @@ public class OnceSpawn extends SpawnComponent {
         return HTSpawnTypes.ONCE;
     }
 
-    public int getSpawnCount() {
+    public IntProvider getSpawnCount() {
         return spawnCount;
     }
 }

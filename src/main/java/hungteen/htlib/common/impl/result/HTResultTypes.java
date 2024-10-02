@@ -21,6 +21,7 @@ public class HTResultTypes {
     public static final IResultType<ItemStackResult> ITEM_STACK = register(new ResultType<>("item_stack", ItemStackResult.CODEC));
     public static final IResultType<ChestResult> CHEST = register(new ResultType<>("chest", ChestResult.CODEC));
     public static final IResultType<EventResult> EVENT = register(new ResultType<>("event", EventResult.CODEC));
+    public static final IResultType<FunctionResult> FUNCTION = register(new ResultType<>("function", FunctionResult.CODEC));
 
     public static <T extends IResultComponent> IResultType<T> register(IResultType<T> type){
         return registry().register(type);
