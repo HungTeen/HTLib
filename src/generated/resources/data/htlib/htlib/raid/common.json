@@ -14,10 +14,13 @@
       "wave_start_sound": "htlib:huge_wave"
     },
     "victory_results": [
-      "htlib:common_function"
+      "htlib:common_function",
+      "htlib:command_function"
     ]
   },
   "waves": [
-    "htlib:common_wave_1"
+    "htlib:common_wave_1",
+    "htlib:common_wave_2",
+    "htlib:common_wave_3"
   ]
 }

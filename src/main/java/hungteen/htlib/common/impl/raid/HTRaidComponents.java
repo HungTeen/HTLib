@@ -62,6 +62,7 @@ public interface HTRaidComponents {
                         .blockOutside(true)
                         .renderBorder(true)
                         .victoryResult(results.getOrThrow(HTResultComponents.COMMON_FUNCTION))
+                        .victoryResult(results.getOrThrow(HTResultComponents.COMMAND_FUNCTION))
                         .color(BossEvent.BossBarColor.RED)
                         .raidSound(HTSounds.PREPARE.getHolder())
                         .waveSound(HTSounds.HUGE_WAVE.getHolder())

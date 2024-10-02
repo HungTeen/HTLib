@@ -3,7 +3,7 @@
   "setting": {
     "can_skip_wave": false,
     "spawn_placement": "htlib:test",
-    "wave_duration": 1200
+    "wave_duration": 800
   },
   "spawns": [
     {

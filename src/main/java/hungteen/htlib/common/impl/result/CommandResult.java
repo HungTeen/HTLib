@@ -8,46 +8,47 @@ import hungteen.htlib.api.interfaces.raid.IResultType;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
-import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec2;
 
+import java.util.Optional;
+
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-12-03 22:49
  **/
-public record CommandResult(String globalCommand, String defenderCommand, String raiderCommand) implements IResultComponent, CommandSource {
+public record CommandResult(Optional<String> globalCommand, Optional<String> defenderCommand, Optional<String> raiderCommand) implements IResultComponent, CommandSource {
 
     public static final Codec<CommandResult> CODEC = RecordCodecBuilder.<CommandResult>mapCodec(instance -> instance.group(
-            Codec.STRING.optionalFieldOf("global_command", "").forGetter(CommandResult::globalCommand),
-            Codec.STRING.optionalFieldOf("defender_command", "").forGetter(CommandResult::defenderCommand),
-            Codec.STRING.optionalFieldOf("raider_command", "").forGetter(CommandResult::raiderCommand)
+            Codec.optionalField("global_command", Codec.STRING).forGetter(CommandResult::globalCommand),
+            Codec.optionalField("defender_command", Codec.STRING).forGetter(CommandResult::defenderCommand),
+            Codec.optionalField("raider_command", Codec.STRING).forGetter(CommandResult::raiderCommand)
     ).apply(instance, CommandResult::new)).codec();
 
     @Override
     public void apply(IRaid raid, ServerLevel level, int tick) {
-        executeCommandTo(level, raid, null, globalCommand());
+        if(tick == 0)
+            globalCommand().ifPresent(command -> executeCommandTo(level, raid, null, command));
     }
 
     @Override
     public void applyToDefender(IRaid raid, Entity defender, int tick) {
-        if(raid.getLevel() instanceof ServerLevel level){
-            executeCommandTo(level, raid, defender, defenderCommand());
+        if(raid.getLevel() instanceof ServerLevel level && tick == 0){
+            defenderCommand().ifPresent(command -> executeCommandTo(level, raid, defender, command));
         }
     }
 
     @Override
     public void applyToRaider(IRaid raid, Entity raider, int tick) {
-        if(raid.getLevel() instanceof ServerLevel level){
-            executeCommandTo(level, raid, raider, raiderCommand());
+        if(raid.getLevel() instanceof ServerLevel level && tick == 0){
+            raiderCommand().ifPresent(command -> executeCommandTo(level, raid, raider, command));
         }
     }
 

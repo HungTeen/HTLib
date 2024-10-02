@@ -16,6 +16,7 @@
     ]
   },
   "waves": [
-    "htlib:test_1"
+    "htlib:test_1",
+    "htlib:test_2"
   ]
 }

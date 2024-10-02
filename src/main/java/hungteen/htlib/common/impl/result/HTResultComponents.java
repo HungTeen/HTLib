@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -28,6 +29,7 @@ public interface HTResultComponents {
 
     ResourceKey<IResultComponent> TEST = create("test");
     ResourceKey<IResultComponent> COMMON_FUNCTION = create("common_function");
+    ResourceKey<IResultComponent> COMMAND_FUNCTION = create("command_function");
 
     static void register(BootstapContext<IResultComponent> context) {
         context.register(TEST, new ItemStackResult(
@@ -38,6 +40,9 @@ public interface HTResultComponents {
                 List.of(),
                 List.of(HTLibHelper.get().prefix("test")),
                 List.of()
+        ));
+        context.register(COMMAND_FUNCTION, new CommandResult(
+                Optional.empty(), Optional.of("give @s apple 1"), Optional.empty()
         ));
     }
 
