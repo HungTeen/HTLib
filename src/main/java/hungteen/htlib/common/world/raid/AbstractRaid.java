@@ -13,6 +13,7 @@ import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityType;
 import hungteen.htlib.util.helper.CodecHelper;
+import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
@@ -296,6 +297,11 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             }
             this.progressBar.setColor(this.getRaidComponent().getBarColor());
         });
+    }
+
+    @Override
+    public Component getTitle() {
+        return JavaHelper.ifNull(this.getRaidComponent(), IRaidComponent::getRaidTitle, Component.empty());
     }
 
     protected MutableComponent getRunningTitle(MutableComponent title){

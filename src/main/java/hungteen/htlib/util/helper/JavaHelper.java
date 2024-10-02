@@ -2,6 +2,7 @@ package hungteen.htlib.util.helper;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -22,6 +23,10 @@ public class JavaHelper {
 
     public static <T> Predicate<T> not(Predicate<T> predicate){
         return t -> !predicate.test(t);
+    }
+
+    public static <T, R> R ifNull(T object, Function<T, R> func, R defaultValue){
+        return object == null ? defaultValue : func.apply(object);
     }
 
 }

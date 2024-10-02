@@ -1,6 +1,7 @@
 package hungteen.htlib.api.interfaces.raid;
 
 import hungteen.htlib.api.interfaces.IDummyEntity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
 import java.util.function.Function;
@@ -22,6 +23,8 @@ public interface IRaid extends IDummyEntity {
     boolean isDefeated();
 
     boolean isLost();
+
+    Component getTitle();
 
     /**
      * Get getSpawnEntities placement by priority.
