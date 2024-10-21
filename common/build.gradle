@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.spongepowered.gradle.vanilla'
+}
+
+base {
+    archivesName = "${mod_name}-common"
+}
+version = "${minecraft_version}-${mod_version}"
+
+minecraft {
+    version(minecraft_version)
+}
+
+repositories {
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+
+    maven {
+        name = "Jared" // Patchouli and JEI
+        url = "https://maven.blamejared.com/"
+    }
+}
+
+dependencies {
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    // Exclude datagenerator .cache directory
+    exclude '.cache'
+}
+
+// Example configuration to allow publishing using the maven-publish plugin
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            groupId project.group
+//            artifactId project.archivesBaseName
+//            version project.version
+//            from components.java
+//        }
+//    }
+//    repositories {
+//        maven {
+//            url "file://${project.projectDir}/repo"
+//        }
+//    }
+//}
