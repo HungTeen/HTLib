@@ -1,6 +1,6 @@
 package hungteen.htlib.common.command;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
@@ -16,7 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
  **/
 public class HTCommandArgumentInfos {
 
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, HTLib.MOD_ID);
+    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, HTLibForgeInitializer.MOD_ID);
 
     public static final RegistryObject<ArgumentTypeInfo<?, ?>> DUMMY_ENTITY = ARGUMENT_TYPES.register("dummy_entity", () -> {
         return ArgumentTypeInfos.registerByClass(DummyEntityArgument.class, SingletonArgumentInfo.contextFree(DummyEntityArgument::id));

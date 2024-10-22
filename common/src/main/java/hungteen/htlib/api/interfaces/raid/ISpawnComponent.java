@@ -35,7 +35,7 @@ public interface ISpawnComponent {
      * Get the method to place the upcoming getSpawnEntities entity.
      * @return placement method.
      */
-    Optional<IPositionComponent> getSpawnPlacement();
+    Optional<PositionComponent> getSpawnPlacement();
 
     /**
      * Get Serializer.

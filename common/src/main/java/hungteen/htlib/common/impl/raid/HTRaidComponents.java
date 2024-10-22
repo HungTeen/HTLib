@@ -1,7 +1,7 @@
 package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTCodecRegistry;
+import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.impl.result.HTResultComponents;
@@ -98,7 +98,7 @@ public interface HTRaidComponents {
     }
 
     class RaidSettingBuilder {
-        private Holder<IPositionComponent> positionComponent;
+        private Holder<PositionComponent> positionComponent;
         private final List<Holder<IResultComponent>> victoryResults = new ArrayList<>();
         private final List<Holder<IResultComponent>> lossResults = new ArrayList<>();
         private double raidRange = 40;
@@ -119,7 +119,7 @@ public interface HTRaidComponents {
         private Optional<Holder<SoundEvent>> victorySound = Optional.empty();
         private Optional<Holder<SoundEvent>> lossSound = Optional.empty();
 
-        public RaidSettingBuilder place(Holder<IPositionComponent> positionComponent) {
+        public RaidSettingBuilder place(Holder<PositionComponent> positionComponent) {
             this.positionComponent = positionComponent;
             return this;
         }

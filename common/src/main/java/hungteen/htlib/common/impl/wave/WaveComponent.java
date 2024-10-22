@@ -2,7 +2,7 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import net.minecraft.core.Holder;
@@ -24,7 +24,7 @@ public abstract class WaveComponent implements IWaveComponent {
     }
 
     @Override
-    public Optional<IPositionComponent> getSpawnPlacement() {
+    public Optional<PositionComponent> getSpawnPlacement() {
         return getWaveSetting().spawnPlacement().map(Holder::get);
     }
 
@@ -52,7 +52,7 @@ public abstract class WaveComponent implements IWaveComponent {
         return waveSetting;
     }
 
-    public record WaveSetting(Optional<Holder<IPositionComponent>> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
+    public record WaveSetting(Optional<Holder<PositionComponent>> spawnPlacement, int prepareDuration, int waveDuration, boolean canSkip, Optional<Holder<SoundEvent>> waveStartSound){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

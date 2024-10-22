@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
-import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.HTLibForgeInitializer;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -231,7 +231,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         /* Must gen first to avoid crash. */
         woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.PLANKS).ifPresentOrElse(block -> {
             gen(block, this::simpleBlock);
-        }, () -> HTLib.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName()));
+        }, () -> HTLibForgeInitializer.getLogger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName()));
         woodIntegration.getWoodBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             switch (pair.getKey()) {
@@ -290,7 +290,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
      */
     protected <T extends Block> void gen(T block, Consumer<T> consumer) {
         if (this.contains(block)) {
-            HTLib.getLogger().warn("Already gen {} before !", key(block));
+            HTLibForgeInitializer.getLogger().warn("Already gen {} before !", key(block));
             return;
         }
         consumer.accept(block);
@@ -302,7 +302,7 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
      */
     protected <T extends Block, K extends Block> void gen(T block1, K block2, BiConsumer<T, K> consumer) {
         if (this.contains(block1) || this.contains(block2)) {
-            HTLib.getLogger().warn("Already gen block state of {} or {} before !", key(block1), key(block2));
+            HTLibForgeInitializer.getLogger().warn("Already gen block state of {} or {} before !", key(block1), key(block2));
             return;
         }
         consumer.accept(block1, block2);

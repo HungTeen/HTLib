@@ -1,6 +1,6 @@
 package hungteen.htlib.common;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,7 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
  **/
 public class HTSounds {
 
-    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, HTLib.MOD_ID);
+    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, HTLibForgeInitializer.MOD_ID);
 
     public static final RegistryObject<SoundEvent> PREPARE = register("prepare");
     public static final RegistryObject<SoundEvent> HUGE_WAVE = register("huge_wave");

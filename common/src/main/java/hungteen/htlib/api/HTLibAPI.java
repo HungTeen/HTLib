@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
 /**
+ * HTLib 对外提供的 API 接口，不依赖于平台，只有一个有效实现。
  * @author PangTeen
  * @program HTLib
  * @data 2022/11/22 8:56

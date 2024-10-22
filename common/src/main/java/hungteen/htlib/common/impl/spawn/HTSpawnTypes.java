@@ -1,11 +1,10 @@
 package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTSimpleRegistry;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.SpawnType;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.api.registry.HTSimpleRegistry;
+import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.util.helper.HTLibHelper;
 
 /**
@@ -13,22 +12,22 @@ import hungteen.htlib.util.helper.HTLibHelper;
  * @program HTLib
  * @data 2023/6/28 16:05
  */
-public class HTSpawnTypes {
+public interface HTSpawnTypes {
 
-    private static final HTSimpleRegistry<SpawnType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("spawn_type"));
+     HTSimpleRegistry<SpawnType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("spawn_type"));
 
-    public static final SpawnType<OnceSpawn> ONCE = register(new WaveSpawn<>("once",  OnceSpawn.CODEC));
-    public static final SpawnType<DurationSpawn> DURATION = register(new WaveSpawn<>("duration",  DurationSpawn.CODEC));
+    SpawnType<OnceSpawn> ONCE = register(new SpawnTypeImpl<>("once",  OnceSpawn.CODEC));
+    SpawnType<DurationSpawn> DURATION = register(new SpawnTypeImpl<>("duration",  DurationSpawn.CODEC));
 
-    public static <T extends ISpawnComponent> SpawnType<T> register(SpawnType<T> type){
+    static <T extends ISpawnComponent> SpawnType<T> register(SpawnType<T> type){
         return registry().register(type);
     }
 
-    public static HTSimpleRegistry<SpawnType<?>> registry(){
+    static HTSimpleRegistry<SpawnType<?>> registry(){
         return TYPES;
     }
 
-    record WaveSpawn<P extends ISpawnComponent>(String name, Codec<P> codec) implements SpawnType<P> {
+    record SpawnTypeImpl<P extends ISpawnComponent>(String name, Codec<P> codec) implements SpawnType<P> {
 
         @Override
         public String getName() {

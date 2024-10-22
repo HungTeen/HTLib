@@ -2,8 +2,8 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTCodecRegistry;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.registry.HTCodecRegistry;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
 import hungteen.htlib.api.interfaces.raid.WaveType;
@@ -40,7 +40,7 @@ public interface HTWaveComponents {
 
     static void register(BootstapContext<IWaveComponent> context) {
         final HolderGetter<ISpawnComponent> spawns = HTSpawnComponents.registry().helper().lookup(context);
-        final HolderGetter<IPositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
+        final HolderGetter<PositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
         final Holder<ISpawnComponent> creeperSpawns = spawns.getOrThrow(HTSpawnComponents.CREEPER_4_8);
         final Holder<ISpawnComponent> poweredCreeperSpawns = spawns.getOrThrow(HTSpawnComponents.POWERED_CREEPER_3_5);
         final Holder<ISpawnComponent> spiderSpawns = spawns.getOrThrow(HTSpawnComponents.SPIDER_5);
@@ -109,7 +109,7 @@ public interface HTWaveComponents {
 
     class WaveSettingBuilder {
 
-        private Optional<Holder<IPositionComponent>> spawnPlacement = Optional.empty();
+        private Optional<Holder<PositionComponent>> spawnPlacement = Optional.empty();
         private int prepareDuration = 100;
         private int waveDuration = 0;
         private boolean canSkip = true;
@@ -119,7 +119,7 @@ public interface HTWaveComponents {
             return new WaveComponent.WaveSetting(spawnPlacement, prepareDuration, waveDuration, canSkip, waveStartSound);
         }
 
-        public WaveSettingBuilder placement(@NotNull Holder<IPositionComponent> spawnPlacement){
+        public WaveSettingBuilder placement(@NotNull Holder<PositionComponent> spawnPlacement){
             this.spawnPlacement = Optional.of(spawnPlacement);
             return this;
         }

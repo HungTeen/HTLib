@@ -1,8 +1,9 @@
 package hungteen.htlib.common.world.entity;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTSimpleRegistry;
-import hungteen.htlib.common.registry.HTRegistryManager;
+import hungteen.htlib.api.registry.HTSimpleRegistry;
+import hungteen.htlib.common.impl.registry.HTRegistryManager;
+import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
 import hungteen.htlib.common.world.raid.DefaultRaid;
 import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -15,29 +16,29 @@ import java.util.stream.Stream;
  * @author: HungTeen
  * @create: 2022-11-27 23:09
  **/
-public class HTDummyEntities {
+public interface HTDummyEntities {
 
-    private static final hungteen.htlib.common.registry.HTSimpleRegistry<DummyEntityType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("dummy_entity"));
+    HTSimpleRegistryImpl<DummyEntityType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("dummy_entity"));
 
-    public static final DummyEntityType<DefaultRaid> DEFAULT_RAID = register(new DummyEntityType<>(HTLibHelper.prefix("default_raid"), DefaultRaid::new));
+    DummyEntityType<DefaultRaid> DEFAULT_RAID = register(new DummyEntityType<>(HTLibHelper.prefix("default_raid"), DefaultRaid::new));
 
-    public static Optional<? extends DummyEntityType<?>> getEntityType(ResourceLocation location){
+    static Optional<? extends DummyEntityType<?>> getEntityType(ResourceLocation location){
         return registry().getValue(location);
     }
 
-    public static Stream<ResourceLocation> getIds(){
+    static Stream<ResourceLocation> getIds(){
         return registry().getKeys().stream();
     }
 
-    public static Codec<DummyEntityType<?>> getCodec(){
+    static Codec<DummyEntityType<?>> getCodec(){
         return registry().byNameCodec();
     }
 
-    public static <T extends DummyEntity> DummyEntityType<T> register(DummyEntityType<T> type){
+    static <T extends DummyEntity> DummyEntityType<T> register(DummyEntityType<T> type){
         return registry().register(type);
     }
 
-    public static HTSimpleRegistry<DummyEntityType<?>> registry(){
+    static HTSimpleRegistry<DummyEntityType<?>> registry(){
         return TYPES;
     }
 }

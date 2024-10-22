@@ -1,10 +1,10 @@
 package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTSimpleRegistry;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
+import hungteen.htlib.api.interfaces.raid.PositionType;
+import hungteen.htlib.api.registry.HTSimpleRegistry;
+import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.util.helper.HTLibHelper;
 
 /**
@@ -12,22 +12,26 @@ import hungteen.htlib.util.helper.HTLibHelper;
  * @program HTLib
  * @data 2023/6/28 15:51
  */
-public class HTPositionTypes {
+public interface HTPositionTypes {
 
-    private static final HTSimpleRegistry<hungteen.htlib.api.interfaces.raid.PositionType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("position_type"));
+     HTSimpleRegistry<PositionType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("position_type"));
 
-    public static final hungteen.htlib.api.interfaces.raid.PositionType<CenterAreaPosition> CENTER_AREA = register(new PositionType<>("center_area",  CenterAreaPosition.CODEC));
-    public static final hungteen.htlib.api.interfaces.raid.PositionType<AbsoluteAreaPosition> ABSOLUTE_AREA = register(new PositionType<>("absolute_area",  AbsoluteAreaPosition.CODEC));
+    PositionType<CenterAreaPosition> CENTER_AREA = register("center_area",  CenterAreaPosition.CODEC);
+    PositionType<AbsoluteAreaPosition> ABSOLUTE_AREA = register("absolute_area",  AbsoluteAreaPosition.CODEC);
 
-    public static <T extends IPositionComponent> hungteen.htlib.api.interfaces.raid.PositionType<T> register(hungteen.htlib.api.interfaces.raid.PositionType<T> type){
+    static <T extends PositionComponent> PositionType<T> register(PositionType<T> type){
         return registry().register(type);
     }
 
-    public static HTSimpleRegistry<hungteen.htlib.api.interfaces.raid.PositionType<?>> registry(){
+    private static <T extends PositionComponent> PositionType<T> register(String name, Codec<T> codec){
+        return register(new PositionTypeImpl<>(name, codec));
+    }
+
+    static HTSimpleRegistry<PositionType<?>> registry(){
         return TYPES;
     }
 
-    record PositionType<P extends IPositionComponent>(String name, Codec<P> codec) implements hungteen.htlib.api.interfaces.raid.PositionType<P> {
+    record PositionTypeImpl<P extends PositionComponent>(String name, Codec<P> codec) implements PositionType<P> {
 
         @Override
         public String getName() {

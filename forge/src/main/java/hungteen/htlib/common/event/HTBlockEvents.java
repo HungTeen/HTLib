@@ -1,6 +1,6 @@
 package hungteen.htlib.common.event;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
  * @author: HungTeen
  * @create: 2022-10-07 08:59
  **/
-@Mod.EventBusSubscriber(modid = HTLib.MOD_ID)
+@Mod.EventBusSubscriber(modid = HTLibForgeInitializer.MOD_ID)
 public class HTBlockEvents {
 
     @SubscribeEvent

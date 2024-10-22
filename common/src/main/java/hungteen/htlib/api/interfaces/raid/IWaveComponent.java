@@ -39,7 +39,7 @@ public interface IWaveComponent {
      * Determines the wave getSpawnEntities placement entityType.
      * @return The less high priority getSpawnEntities placement.
      */
-    Optional<IPositionComponent> getSpawnPlacement();
+    Optional<PositionComponent> getSpawnPlacement();
 
     /**
      * Sound when wave starts.

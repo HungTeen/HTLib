@@ -1,6 +1,6 @@
 package hungteen.htlib.data.loot;
 
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.CompatHelper;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.item.Item;

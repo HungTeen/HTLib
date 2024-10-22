@@ -3,7 +3,7 @@ package hungteen.htlib.client.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.Util;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.Mod;
  * @author: HungTeen
  * @create: 2022-12-02 12:43
  **/
-@Mod.EventBusSubscriber(modid = HTLib.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = HTLibForgeInitializer.MOD_ID, value = Dist.CLIENT)
 public class LevelRenderHandler {
 
     private static final ResourceLocation FORCEFIELD_LOCATION = new ResourceLocation("textures/misc/forcefield.png");
@@ -35,7 +35,7 @@ public class LevelRenderHandler {
     }
 
     public static void renderFormations(RenderLevelStageEvent event){
-        HTLib.PROXY.getDummyEntities().stream().filter(DummyEntity::renderBorder).forEach(entity -> {
+        HTLibForgeInitializer.PROXY.getDummyEntities().stream().filter(DummyEntity::renderBorder).forEach(entity -> {
                     renderBorderFormation(entity, event.getCamera());
                 });
     }

@@ -3,7 +3,7 @@ package hungteen.htlib.common.impl.spawn;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
@@ -46,7 +46,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 return e;
             });
             if (entity == null) {
-                HTLib.getLogger().error("Fail to create entity {}", this.getEntityType().toString());
+                HTLib.getLogger().error("Fail to codec entity {}", this.getEntityType().toString());
             } else {
                 if (this.enableDefaultSpawn() && entity instanceof Mob mob) {
                     ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
@@ -69,7 +69,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
     }
 
     @Override
-    public Optional<IPositionComponent> getSpawnPlacement() {
+    public Optional<PositionComponent> getSpawnPlacement() {
         return this.getSpawnSetting().placeComponent().map(Holder::get);
     }
 
@@ -89,7 +89,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return spawnSetting;
     }
 
-    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<IPositionComponent>> placeComponent){
+    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<PositionComponent>> placeComponent){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.

@@ -2,7 +2,7 @@ package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
 import hungteen.htlib.common.network.DummyEntityPacket;
 import hungteen.htlib.common.network.NetworkHandler;
@@ -76,7 +76,7 @@ public class DummyEntityManager extends SavedData {
     }
 
     /**
-     * {@link HTLib#HTLib()}
+     * {@link HTLibForgeInitializer#HTLib()}
      */
     public static void tick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel) {
@@ -150,7 +150,7 @@ public class DummyEntityManager extends SavedData {
     }
 
     public static Stream<DummyEntity> getCollisionEntities(Level level){
-        return HTLib.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
+        return HTLibForgeInitializer.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
     }
 
     public static <T extends DummyEntity> T createEntity(ServerLevel level, Function<Integer, T> function){

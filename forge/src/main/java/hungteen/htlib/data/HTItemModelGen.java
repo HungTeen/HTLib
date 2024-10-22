@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
-import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.HTLibForgeInitializer;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
@@ -112,7 +112,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
 
     protected <T extends Block> void gen(T block, Consumer<T> consumer){
         if(this.contains(block.asItem())){
-            HTLib.getLogger().warn("Already gen item model of {} before !", key(block));
+            HTLibForgeInitializer.getLogger().warn("Already gen item model of {} before !", key(block));
         } else {
             consumer.accept(block);
             this.add(block.asItem());
@@ -121,7 +121,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
 
     protected <T extends Item> void gen(T item, Consumer<T> consumer){
         if(this.contains(item)){
-            HTLib.getLogger().warn("Already gen item model of {} before !", key(item));
+            HTLibForgeInitializer.getLogger().warn("Already gen item model of {} before !", key(item));
         } else {
             consumer.accept(item);
             this.add(item);

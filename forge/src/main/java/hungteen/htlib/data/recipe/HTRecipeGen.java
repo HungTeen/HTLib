@@ -1,6 +1,6 @@
 package hungteen.htlib.data.recipe;
 
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;

@@ -1,6 +1,6 @@
 package hungteen.htlib.api.interfaces.raid;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import hungteen.htlib.api.registry.SimpleEntry;
 
 /**
@@ -8,12 +8,12 @@ import hungteen.htlib.api.registry.SimpleEntry;
  * @program HTLib
  * @data 2022/11/24 10:48
  */
-public interface PositionType<P extends IPositionComponent> extends SimpleEntry {
+public interface PositionType<P extends PositionComponent> extends SimpleEntry {
 
     /**
      * Get the method to codec placement.
      * @return Codec method.
      */
-    Codec<P> codec();
+    MapCodec<P> codec();
 
 }

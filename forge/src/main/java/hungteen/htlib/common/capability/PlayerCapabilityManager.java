@@ -1,6 +1,6 @@
 package hungteen.htlib.common.capability;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.api.interfaces.IPlayerDataManager;
 import hungteen.htlib.common.capability.player.IHTPlayerCapability;
 import hungteen.htlib.util.helper.PlayerHelper;
@@ -26,7 +26,7 @@ public class PlayerCapabilityManager {
     public static Set<Capability<? extends IHTPlayerCapability<? extends IPlayerDataManager>>> PLAYER_CAPABILITIES = new HashSet<>();
 
     /**
-     * {@link HTLib#HTLib()}
+     * {@link HTLibForgeInitializer#HTLib()}
      */
     public static void tick(TickEvent.PlayerTickEvent event){
         // Server side only.
@@ -59,7 +59,7 @@ public class PlayerCapabilityManager {
      */
     public static <T extends IPlayerDataManager, K extends IHTPlayerCapability<T>> void register(Capability<K> capability){
         if(PLAYER_CAPABILITIES.contains(capability)){
-            HTLib.getLogger().warn("Registering duplicated capability : " + capability.getName());
+            HTLibForgeInitializer.getLogger().warn("Registering duplicated capability : " + capability.getName());
         } else {
             PLAYER_CAPABILITIES.add(capability);
         }

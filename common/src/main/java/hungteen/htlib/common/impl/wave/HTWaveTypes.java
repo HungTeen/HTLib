@@ -1,10 +1,10 @@
 package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTSimpleRegistry;
 import hungteen.htlib.api.interfaces.raid.IWaveComponent;
-import hungteen.htlib.common.registry.HTRegistryManager;
-import hungteen.htlib.common.registry.HTSimpleRegistry;
+import hungteen.htlib.api.interfaces.raid.WaveType;
+import hungteen.htlib.api.registry.HTSimpleRegistry;
+import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.util.helper.HTLibHelper;
 
 /**
@@ -12,21 +12,21 @@ import hungteen.htlib.util.helper.HTLibHelper;
  * @program HTLib
  * @data 2023/6/28 16:10
  */
-public class HTWaveTypes {
+public interface HTWaveTypes {
 
-    private static final HTSimpleRegistry<hungteen.htlib.api.interfaces.raid.WaveType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("wave_type"));
+    HTSimpleRegistry<WaveType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("wave_type"));
 
-    public static final hungteen.htlib.api.interfaces.raid.WaveType<CommonWave> COMMON = register(new WaveType<>("common", CommonWave.CODEC));
+    WaveType<CommonWave> COMMON = register(new WaveTypeImpl<>("common", CommonWave.CODEC));
 
-    public static <T extends IWaveComponent> hungteen.htlib.api.interfaces.raid.WaveType<T> register(hungteen.htlib.api.interfaces.raid.WaveType<T> type) {
+    static <T extends IWaveComponent> WaveType<T> register(WaveType<T> type) {
         return registry().register(type);
     }
 
-    public static HTSimpleRegistry<hungteen.htlib.api.interfaces.raid.WaveType<?>> registry() {
+    static HTSimpleRegistry<WaveType<?>> registry() {
         return TYPES;
     }
 
-    record WaveType<P extends IWaveComponent>(String name, Codec<P> codec) implements hungteen.htlib.api.interfaces.raid.WaveType<P> {
+    record WaveTypeImpl<P extends IWaveComponent>(String name, Codec<P> codec) implements WaveType<P> {
 
         @Override
         public String getName() {

@@ -1,14 +1,13 @@
 package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTCodecRegistry;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.PositionType;
-import hungteen.htlib.common.registry.HTCodecRegistry;
-import hungteen.htlib.common.registry.HTRegistryManager;
+import hungteen.htlib.api.registry.HTCodecRegistry;
+import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.core.Holder;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,16 +18,16 @@ import net.minecraft.world.phys.Vec3;
  */
 public interface HTPositionComponents {
 
-    HTCodecRegistry<IPositionComponent> PLACEMENTS = HTRegistryManager.create(HTLibHelper.prefix("position"), HTPositionComponents::getDirectCodec);
+    HTCodecRegistry<PositionComponent> PLACEMENTS = HTRegistryManager.codec(HTLibHelper.prefix("position"), HTPositionComponents::getDirectCodec);
 
-    IPositionComponent DEFAULT = new CenterAreaPosition(
+    PositionComponent DEFAULT = new CenterAreaPosition(
             Vec3.ZERO, 0, 1, true, 0, true
     );
 
-    ResourceKey<IPositionComponent> TEST = create("test");
-    ResourceKey<IPositionComponent> COMMON = create("common");
+    ResourceKey<PositionComponent> TEST = create("test");
+    ResourceKey<PositionComponent> COMMON = create("common");
 
-    static void register(BootstapContext<IPositionComponent> context) {
+    static void register(BootstrapContext<PositionComponent> context) {
         context.register(TEST, new CenterAreaPosition(
                 Vec3.ZERO, 0, 1, true, 0, true
         ));
@@ -37,19 +36,19 @@ public interface HTPositionComponents {
         ));
     }
 
-    static Codec<IPositionComponent> getDirectCodec() {
-        return HTPositionTypes.registry().byNameCodec().dispatch(IPositionComponent::getType, PositionType::codec);
+    static Codec<PositionComponent> getDirectCodec() {
+        return HTPositionTypes.registry().byNameCodec().dispatch(PositionComponent::getType, PositionType::codec);
     }
 
-    static Codec<Holder<IPositionComponent>> getCodec() {
+    static Codec<Holder<PositionComponent>> getCodec() {
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    static ResourceKey<IPositionComponent> create(String name) {
+    static ResourceKey<PositionComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    static HTCodecRegistry<IPositionComponent> registry() {
+    static HTCodecRegistry<PositionComponent> registry() {
         return PLACEMENTS;
     }
 

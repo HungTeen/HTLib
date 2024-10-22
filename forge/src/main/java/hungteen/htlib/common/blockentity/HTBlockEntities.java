@@ -1,7 +1,7 @@
 package hungteen.htlib.common.blockentity;
 
-import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.HTLibForgeInitializer;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -16,7 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
  */
 public class HTBlockEntities {
 
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = BlockHelper.entity().createRegister(HTLib.id());
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = BlockHelper.entity().createRegister(HTLibForgeInitializer.id());
 
     public static final RegistryObject<BlockEntityType<HTSignBlockEntity>> SIGN = BLOCK_ENTITIES.register("sign", () -> BlockEntityType.Builder.of(
             HTSignBlockEntity::new, TreeSuits.getSignBlocks().toArray(new Block[0])

@@ -1,14 +1,11 @@
 package hungteen.htlib.common;
 
 import com.google.gson.*;
-import com.mojang.datafixers.util.Pair;
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.util.helper.VanillaHelper;
-import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 
 import java.io.*;
@@ -18,7 +15,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -63,7 +59,7 @@ public class HTResourceManager {
                             try (InputStream stream = Files.newInputStream(mod.getModInfo().getOwningFile().getFile().findResource(assetPath))) {
                                 loadModel(bookId, stream, false);
                             } catch (Exception e) {
-                                HTLib.getLogger().error("Failed to load book {} defined by mod {}, skipping",
+                                HTLibForgeInitializer.getLogger().error("Failed to load book {} defined by mod {}, skipping",
                                         bookId, mod.getModId(), e);
                             }
                         });
@@ -82,13 +78,13 @@ public class HTResourceManager {
 //            }
 //        });
 
-        ModList.get().getModContainerById(HTLib.id()).ifPresent(self -> {
+        ModList.get().getModContainerById(HTLibForgeInitializer.id()).ifPresent(self -> {
             findFiles(Collections.singletonList(loadDir.toPath()), "", Files::exists, (path, file) -> {
                 return collectJson(VanillaHelper.get().getModID(), path, file, (assetPath, bookId) -> {
                     try (FileInputStream stream = new FileInputStream(file.toFile())) {
                         loadModel(bookId, stream, false);
                     } catch (Exception e) {
-                        HTLib.getLogger().error("Failed to load book {} defined by external, skipping",
+                        HTLibForgeInitializer.getLogger().error("Failed to load book {} defined by external, skipping",
                                 bookId, e);
                     }
                 });
@@ -126,7 +122,7 @@ public class HTResourceManager {
             String bookName = relPath.substring(0, relPath.indexOf(".")); // 去掉后缀。
 
             if (bookName.contains("/")) {
-                HTLib.getLogger().warn("Ignored book.json @ {}", file);
+                HTLibForgeInitializer.getLogger().warn("Ignored book.json @ {}", file);
                 return true;
             }
 

@@ -2,8 +2,8 @@ package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTCodecRegistry;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.registry.HTCodecRegistry;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.SpawnType;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
@@ -44,7 +44,7 @@ public interface HTSpawnComponents {
     ResourceKey<ISpawnComponent> DIAMOND_ZOMBIE_3_6 = create("diamond_zombie_3_6");
 
     static void register(BootstapContext<ISpawnComponent> context) {
-        final HolderGetter<IPositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
+        final HolderGetter<PositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
         context.register(CREEPER_4_8, new OnceSpawn(
                 HTSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
                 UniformInt.of(4, 8)
@@ -129,7 +129,7 @@ public interface HTSpawnComponents {
         private CompoundTag nbt = new CompoundTag();
         private boolean enableDefaultSpawn = true;
         private boolean persist = true;
-        private Holder<IPositionComponent> placeComponent = null;
+        private Holder<PositionComponent> placeComponent = null;
 
         public SpawnComponent.SpawnSetting build() {
             return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent));
@@ -155,7 +155,7 @@ public interface HTSpawnComponents {
             return this;
         }
 
-        public SpawnSettingBuilder placement(Holder<IPositionComponent> placeComponent) {
+        public SpawnSettingBuilder placement(Holder<PositionComponent> placeComponent) {
             this.placeComponent = placeComponent;
             return this;
         }

@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
-import hungteen.htlib.HTLib;
-import hungteen.htlib.common.registry.suit.TreeSuits;
+import hungteen.htlib.HTLibForgeInitializer;
+import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.helper.registry.ItemHelper;
@@ -68,7 +68,7 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
      */
     protected <T extends Block> void gen(T block, Consumer<T> consumer) {
         if (this.contains(block)) {
-            HTLib.getLogger().warn("Already gen {} before !", key(block));
+            HTLibForgeInitializer.getLogger().warn("Already gen {} before !", key(block));
             return;
         }
         consumer.accept(block);

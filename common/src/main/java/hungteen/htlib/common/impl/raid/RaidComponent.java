@@ -2,7 +2,7 @@ package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IPositionComponent;
+import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
@@ -38,7 +38,7 @@ public abstract class RaidComponent implements IRaidComponent {
     }
 
     @Override
-    public Optional<IPositionComponent> getSpawnPlacement() {
+    public Optional<PositionComponent> getSpawnPlacement() {
         return getRaidSettings().placeComponent().map(Holder::get);
     }
 
@@ -137,7 +137,7 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
+    protected record RaidSetting(Optional<Holder<PositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 

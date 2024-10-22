@@ -1,6 +1,6 @@
 package hungteen.htlib.common.network;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import net.minecraft.nbt.CompoundTag;
@@ -78,19 +78,19 @@ public class DummyEntityPacket {
                         Optional<Level> world = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
                         DummyEntity dummyEntity = world.map(w -> type.create(w, message.entityNBT)).orElse(null);
                         if (dummyEntity != null) {
-                            HTLib.PROXY.addDummyEntity(dummyEntity);
+                            HTLibForgeInitializer.PROXY.addDummyEntity(dummyEntity);
                         } else {
-                            HTLib.getLogger().error("Fail to sync Dummy Entity on client side");
+                            HTLibForgeInitializer.getLogger().error("Fail to sync Dummy Entity on client side");
                         }
                     });
                 } else if (message.operation == Operation.REMOVE) {
-                    HTLib.PROXY.removeDummyEntity(message.entityID);
+                    HTLibForgeInitializer.PROXY.removeDummyEntity(message.entityID);
                 } else if (message.operation == Operation.UPDATE) {
-                    HTLib.PROXY.getDummyEntity(message.entityID).ifPresent(dummyEntity -> {
+                    HTLibForgeInitializer.PROXY.getDummyEntity(message.entityID).ifPresent(dummyEntity -> {
                         dummyEntity.load(message.entityNBT);
                     });
                 } else if (message.operation == Operation.CLEAR) {
-                    HTLib.PROXY.clearDummyEntities();
+                    HTLibForgeInitializer.PROXY.clearDummyEntities();
                 }
             });
             ctx.get().setPacketHandled(true);

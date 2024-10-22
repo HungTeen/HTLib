@@ -54,7 +54,7 @@ public class HTCommand {
     private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
 //        Optional<HolderLookup.RegistryLookup<IRaidComponent>> raids = commandContext.getSource().registryAccess().lookup(HTRaidComponents.registry().getRegistryKey());
 //        if(raids.isPresent()){
-//            return SharedSuggestionProvider.suggestResource(raids.get().listElementIds().map(ResourceKey::location), builder);
+//            return SharedSuggestionProvider.suggestResource(raids.getCodecRegistry().listElementIds().map(ResourceKey::location), builder);
 //        }
         return SharedSuggestionProvider.suggestResource(HTRaidComponents.registry().getCachedKeys(), builder);
     });
@@ -65,7 +65,7 @@ public class HTCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("htlib").requires((ctx) -> ctx.hasPermission(2));
         builder.then(Commands.literal("dummy")
-                .then(Commands.literal("create")
+                .then(Commands.literal("codec")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("position", Vec3Argument.vec3())
@@ -91,7 +91,7 @@ public class HTCommand {
                 )
         );
         builder.then(Commands.literal("raid")
-                .then(Commands.literal("create")
+                .then(Commands.literal("codec")
                         .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
                                 .suggests(ALL_DUMMY_ENTITIES)
                                 .then(Commands.argument("type", ResourceLocationArgument.id())

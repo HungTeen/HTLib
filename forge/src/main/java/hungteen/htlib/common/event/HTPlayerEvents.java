@@ -1,6 +1,6 @@
 package hungteen.htlib.common.event;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.util.helper.registry.EntityHelper;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
  * @author: HungTeen
  * @create: 2022-12-03 21:07
  **/
-@Mod.EventBusSubscriber(modid = HTLib.MOD_ID)
+@Mod.EventBusSubscriber(modid = HTLibForgeInitializer.MOD_ID)
 public class HTPlayerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

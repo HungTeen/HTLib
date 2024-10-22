@@ -34,7 +34,7 @@ public interface IRaidComponent {
      *
      * @return The least high priority getSpawnEntities placement.
      */
-    Optional<IPositionComponent> getSpawnPlacement();
+    Optional<PositionComponent> getSpawnPlacement();
 
     /**
      * Get the raid bar title.

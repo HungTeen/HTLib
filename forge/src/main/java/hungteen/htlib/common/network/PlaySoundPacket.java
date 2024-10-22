@@ -1,6 +1,6 @@
 package hungteen.htlib.common.network;
 
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -34,8 +34,8 @@ public class PlaySoundPacket {
         public static void onMessage(PlaySoundPacket message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(()->{
                 SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(message.type));
-                if(sound != null && HTLib.PROXY.getPlayer() != null) {
-                    HTLib.PROXY.getPlayer().playSound(sound, 1F, 1F);
+                if(sound != null && HTLibForgeInitializer.PROXY.getPlayer() != null) {
+                    HTLibForgeInitializer.PROXY.getPlayer().playSound(sound, 1F, 1F);
                 }
             });
             ctx.get().setPacketHandled(true);

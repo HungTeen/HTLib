@@ -25,7 +25,7 @@ public final class EntityRenderSuit<T extends Entity> {
 //            event.registerEntityRenderer(getEntityType(), rendererProvider);
 //        } else {
 //            event.registerEntityRenderer(getEntityType(), EmptyEffectRender::new);
-//            HTLib.getLogger().warn("{} has no spawn placement, HTLib will make one for you.", EntityHelper.get().getKey(getEntityType()).toString());
+//            HTLib.getLogger().warn("{} has no spawn placement, HTLib will make one for you.", EntityHelper.getCodecRegistry().getKey(getEntityType()).toString());
 //        }
 //    }
 //
@@ -56,7 +56,7 @@ public final class EntityRenderSuit<T extends Entity> {
 //    }
 //
 //    public EntityType<T> getEntityType() {
-//        return entityType.get();
+//        return entityType.getCodecRegistry();
 //    }
 
 }

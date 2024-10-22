@@ -2,7 +2,7 @@ package hungteen.htlib.common.world.raid;
 
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
-import hungteen.htlib.HTLib;
+import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.event.events.RaidEvent;
@@ -233,7 +233,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         final boolean ans = supplier.get();
         if (ans) {
             if (++ this.invalidTick >= 100) {
-                HTLib.getLogger().warn("Custom Raid Removing : Missing raid component !");
+                HTLibForgeInitializer.getLogger().warn("Custom Raid Removing : Missing raid component !");
                 this.remove();
             }
         } else {
@@ -650,7 +650,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @Override
-    public Function<ISpawnComponent, IPositionComponent> getPlaceComponent() {
+    public Function<ISpawnComponent, PositionComponent> getPlaceComponent() {
         return spawnComponent -> {
             if(spawnComponent.getSpawnPlacement().isPresent()) {
                 return spawnComponent.getSpawnPlacement().get();
