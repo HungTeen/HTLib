@@ -74,7 +74,7 @@ public record CommandResult(Optional<String> globalCommand, Optional<String> def
 
     @Override
     public ResultType<?> getType() {
-        return HTResultTypes.COMMAND;
+        return HTLibResultTypes.COMMAND;
     }
 
     @Override

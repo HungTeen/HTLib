@@ -49,6 +49,6 @@ public record EventResult(ResourceLocation id, boolean forLevel, boolean forDefe
 
     @Override
     public ResultType<?> getType() {
-        return HTResultTypes.EVENT;
+        return HTLibResultTypes.EVENT;
     }
 }

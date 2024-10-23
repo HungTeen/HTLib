@@ -1,7 +1,7 @@
 package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +69,7 @@ public abstract class HTCustomRegistryImpl<T> extends HTRegistryImpl<T> implemen
     }
 
     @Override
-    public IHTResourceHelper<T> helper() {
+    public HTResourceHelper<T> helper() {
         return registryHelper;
     }
 

@@ -55,7 +55,7 @@ public class OnceSpawn extends SpawnComponent {
 
     @Override
     public SpawnType<?> getType() {
-        return HTSpawnTypes.ONCE;
+        return HTLibSpawnTypes.ONCE;
     }
 
     public IntProvider getSpawnCount() {

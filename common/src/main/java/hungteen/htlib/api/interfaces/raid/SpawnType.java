@@ -1,6 +1,6 @@
 package hungteen.htlib.api.interfaces.raid;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import hungteen.htlib.api.registry.SimpleEntry;
 
 /**
@@ -14,6 +14,6 @@ public interface SpawnType<P extends ISpawnComponent> extends SimpleEntry {
      * Get the method to codec spawn component.
      * @return Spawn codec.
      */
-    Codec<P> codec();
+    MapCodec<P> codec();
 
 }

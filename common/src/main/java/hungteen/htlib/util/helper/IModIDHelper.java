@@ -1,6 +1,6 @@
 package hungteen.htlib.util.helper;
 
-import hungteen.htlib.api.interfaces.IHTRegistryHelper;
+import hungteen.htlib.api.interfaces.HTRegistryHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -52,15 +52,15 @@ public interface IModIDHelper {
 
     /* Registry Related */
 
-    default <T> List<ResourceKey<T>> filterKeys(IHTRegistryHelper<T> helper, Predicate<T> predicate) {
+    default <T> List<ResourceKey<T>> filterKeys(HTRegistryHelper<T> helper, Predicate<T> predicate) {
         return helper.filterKeys(this::isIn, predicate);
     }
 
-    default <T> List<T> filterValues(IHTRegistryHelper<T> helper, Predicate<T> predicate) {
+    default <T> List<T> filterValues(HTRegistryHelper<T> helper, Predicate<T> predicate) {
         return helper.filterEntries(this::isIn, predicate).stream().map(Map.Entry::getValue).toList();
     }
 
-    default <T> Set<Map.Entry<ResourceKey<T>, T>> filterEntries(IHTRegistryHelper<T> helper, Predicate<T> predicate) {
+    default <T> Set<Map.Entry<ResourceKey<T>, T>> filterEntries(HTRegistryHelper<T> helper, Predicate<T> predicate) {
         return helper.entries(this::isIn, predicate);
     }
 

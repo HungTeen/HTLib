@@ -64,6 +64,6 @@ public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemS
 
     @Override
     public ResultType<?> getType() {
-        return HTResultTypes.ITEM_STACK;
+        return HTLibResultTypes.ITEM_STACK;
     }
 }

@@ -2,14 +2,16 @@ package hungteen.htlib.common.item;
 
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
+import hungteen.htlib.common.entity.HasHTBoatType;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.interfaces.IBoatType;
+import hungteen.htlib.util.interfaces.BoatType;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -32,10 +34,10 @@ import java.util.function.Predicate;
 public class HTBoatItem extends Item {
 
     private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
-    private final IBoatType type;
+    private final BoatType type;
     private final boolean hasChest;
 
-    public HTBoatItem(Item.Properties properties, IBoatType type, boolean hasChest) {
+    public HTBoatItem(Item.Properties properties, BoatType type, boolean hasChest) {
         super(properties);
         this.type = type;
         this.hasChest = hasChest;
@@ -63,8 +65,9 @@ public class HTBoatItem extends Item {
             }
 
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                HTBoat boat = hasChest ? new HTChestBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z) : new HTBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
-                boat.setHTBoatType(this.type);
+                Boat boat = hasChest ? new HTChestBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z) : new HTBoat(level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
+                HasHTBoatType htBoat = (HasHTBoatType) boat;
+                htBoat.setHTBoatType(this.type);
                 boat.setYRot(player.getYRot());
                 if (!level.noCollision(boat, boat.getBoundingBox())) {
                     return InteractionResultHolder.fail(itemstack);

@@ -1,6 +1,6 @@
 package hungteen.htlib.api.registry;
 
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +32,7 @@ public interface HTRegistry<T> {
      * 获取帮助类。
      * @return Helper instance.
      */
-    IHTResourceHelper<T> helper();
+    HTResourceHelper<T> helper();
 
     /**
      * Get the registry name, 获取该注册的注册名。

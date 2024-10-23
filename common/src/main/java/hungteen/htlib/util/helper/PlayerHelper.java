@@ -2,7 +2,7 @@ package hungteen.htlib.util.helper;
 
 import hungteen.htlib.HTLib;
 import hungteen.htlib.common.network.NetworkHandler;
-import hungteen.htlib.common.network.PlaySoundPacket;
+import hungteen.htlib.common.network.packets.PlaySoundPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;

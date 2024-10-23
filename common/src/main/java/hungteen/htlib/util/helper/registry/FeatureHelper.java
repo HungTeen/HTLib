@@ -1,7 +1,7 @@
 package hungteen.htlib.util.helper.registry;
 
 import com.mojang.datafixers.util.Either;
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -24,19 +24,19 @@ public class FeatureHelper {
         }
     };
 
-    private static final IHTResourceHelper<ConfiguredFeature<?, ?>> CONFIGURED_HELPER = () -> Registries.CONFIGURED_FEATURE;
+    private static final HTResourceHelper<ConfiguredFeature<?, ?>> CONFIGURED_HELPER = () -> Registries.CONFIGURED_FEATURE;
 
-    private static final IHTResourceHelper<PlacedFeature> PLACED_HELPER = () -> Registries.PLACED_FEATURE;
+    private static final HTResourceHelper<PlacedFeature> PLACED_HELPER = () -> Registries.PLACED_FEATURE;
 
     public static RegistryHelper<Feature<?>> get(){
         return HELPER;
     }
 
-    public static IHTResourceHelper<ConfiguredFeature<?, ?>> config(){
+    public static HTResourceHelper<ConfiguredFeature<?, ?>> config(){
         return CONFIGURED_HELPER;
     }
 
-    public static IHTResourceHelper<PlacedFeature> placed(){
+    public static HTResourceHelper<PlacedFeature> placed(){
         return PLACED_HELPER;
     }
 

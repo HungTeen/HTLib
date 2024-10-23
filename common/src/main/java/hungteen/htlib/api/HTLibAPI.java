@@ -25,6 +25,10 @@ public interface HTLibAPI {
         return INSTANCE;
     }
 
+    static String id() {
+        return MOD_ID;
+    }
+
     /**
      * @return the log instance for the mod.
      */

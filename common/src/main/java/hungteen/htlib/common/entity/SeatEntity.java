@@ -1,13 +1,15 @@
 package hungteen.htlib.common.entity;
 
 import com.google.common.collect.ImmutableList;
-import hungteen.htlib.util.helper.registry.EntityHelper;
 import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,7 +17,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ import java.util.List;
  * @program HTLib
  * @data 2023/3/3 11:04
  */
-public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
+public class SeatEntity extends HTEntity {
 
     private static final ImmutableList<Vec3i> DISMOUNT_HORIZONTAL_OFFSETS = ImmutableList.of(new Vec3i(0, 0, -1), new Vec3i(-1, 0, 0), new Vec3i(0, 0, 1), new Vec3i(1, 0, 0), new Vec3i(-1, 0, -1), new Vec3i(1, 0, -1), new Vec3i(-1, 0, 1), new Vec3i(1, 0, 1));
     private static final ImmutableList<Vec3i> DISMOUNT_OFFSETS = (new ImmutableList.Builder<Vec3i>()).addAll(DISMOUNT_HORIZONTAL_OFFSETS).addAll(DISMOUNT_HORIZONTAL_OFFSETS.stream().map(Vec3i::below).iterator()).addAll(DISMOUNT_HORIZONTAL_OFFSETS.stream().map(Vec3i::above).iterator()).add(new Vec3i(0, 1, 0)).build();
-    private float maxYRot = 120F;
+    private static final EntityDataAccessor<Float> MAX_Y_ROT = SynchedEntityData.defineId(SeatEntity.class, EntityDataSerializers.FLOAT);
     private boolean relyOnBlock = false;
 
     public SeatEntity(EntityType<?> type, Level world) {
@@ -37,10 +38,16 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     }
 
     public SeatEntity(Level world, Vec3 pos, float yRot, float maxYRot) {
-        this(HTEntities.SEAT.get(), world);
+        this(HTLibEntities.SEAT.get(), world);
         this.setPos(pos);
         this.setRot(yRot, 0);
-        this.maxYRot = maxYRot;
+        this.setSeatMaxYRot(maxYRot);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(MAX_Y_ROT, 120F);
     }
 
     public static boolean seatAt(Level level, LivingEntity entity, BlockPos seatPos, double yOffset, Direction direction, float maxYRot, boolean relyOnBlock){
@@ -134,7 +141,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
             this.setRelyOnBlock(tag.getBoolean("RelyOnBlock"));
         }
         if(tag.contains("SeatMaxYRot")){
-            this.maxYRot = tag.getFloat("SeatMaxYRot");
+            this.setSeatMaxYRot(tag.getFloat("SeatMaxYRot"));
         }
     }
 
@@ -142,7 +149,7 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("RelyOnBlock", this.isRelyOnBlock());
-        tag.putFloat("SeatMaxYRot", this.maxYRot);
+        tag.putFloat("SeatMaxYRot", this.getSeatMaxYRot());
     }
 
     public boolean isRelyOnBlock() {
@@ -154,21 +161,16 @@ public class SeatEntity extends HTEntity implements IEntityAdditionalSpawnData {
     }
 
     public float getSeatMaxYRot(){
-        return this.maxYRot;
+        return entityData.get(MAX_Y_ROT);
+    }
+
+    public void setSeatMaxYRot(float maxYRot){
+        entityData.set(MAX_Y_ROT, maxYRot);
     }
 
     @Override
-    public double getPassengersRidingOffset() {
-        return 0;
+    public Vec3 getPassengerRidingPosition(Entity entity) {
+        return Vec3.ZERO;
     }
 
-    @Override
-    public void writeSpawnData(FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeFloat(this.maxYRot);
-    }
-
-    @Override
-    public void readSpawnData(FriendlyByteBuf friendlyByteBuf) {
-        this.maxYRot = friendlyByteBuf.readFloat();
-    }
 }

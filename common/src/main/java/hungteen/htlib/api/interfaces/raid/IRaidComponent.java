@@ -27,7 +27,7 @@ public interface IRaidComponent {
      * @param currentWave Current wave.
      * @return Wave component.
      */
-    IWaveComponent getCurrentWave(IRaid raid, int currentWave);
+    WaveComponent getCurrentWave(IRaid raid, int currentWave);
 
     /**
      * Determines the wave getSpawnEntities placement entityType.

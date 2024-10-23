@@ -21,6 +21,11 @@ public class HTForgeVanillaRegistry<T> implements HTVanillaRegistry<T> {
     }
 
     @Override
+    public ResourceKey<? extends Registry<T>> registryKey() {
+        return deferredRegister.getRegistryKey();
+    }
+
+    @Override
     public <K extends T> Supplier<K> register(String name, Supplier<K> supplier) {
         return deferredRegister.register(name, supplier);
     }

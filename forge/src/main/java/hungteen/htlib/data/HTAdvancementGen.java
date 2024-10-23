@@ -1,13 +1,7 @@
 package hungteen.htlib.data;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.FrameType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeAdvancementProvider;
 
@@ -28,52 +22,52 @@ public abstract class HTAdvancementGen extends ForgeAdvancementProvider {
         this.modId = modId;
     }
 
-    public static abstract class HTAdvancementBuilder implements AdvancementGenerator {
-
-        private final String modId;
-
-        protected HTAdvancementBuilder(String modId) {
-            this.modId = modId;
-        }
-
-        protected Advancement.Builder task(Advancement parent, ItemLike displayItem, String title) {
-            return advancement(parent, displayItem, title, FrameType.TASK, true);
-        }
-
-        protected Advancement.Builder challenge(Advancement parent, ItemLike displayItem, String title) {
-            return advancement(parent, displayItem, title, FrameType.CHALLENGE, true);
-        }
-
-        protected Advancement.Builder goal(Advancement parent, ItemLike displayItem, String title) {
-            return advancement(parent, displayItem, title, FrameType.GOAL, true);
-        }
-
-        protected Advancement.Builder root(ItemLike displayItem, String title, ResourceLocation location) {
-            return advancement(null, displayItem, title, location, FrameType.TASK, true);
-        }
-
-        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, FrameType type, boolean displayChat) {
-            return advancement(parent, displayItem, title, null, type, displayChat);
-        }
-
-        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean displayChat) {
-            return advancement(parent, displayItem, title, location, type, true, displayChat, false);
-        }
-
-        protected Advancement.Builder advancement(Advancement parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean showToast, boolean displayChat, boolean hidden) {
-            return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, showToast, displayChat, hidden);
-        }
-
-        protected MutableComponent title(String name) {
-            return Component.translatable("advancements." + this.getModId() + "." + name + ".title");
-        }
-
-        protected MutableComponent desc(String name) {
-            return Component.translatable("advancements." + this.getModId() + "." + name + ".desc");
-        }
-
-        protected String getModId() {
-            return this.modId;
-        }
-    }
+//    public static abstract class HTAdvancementBuilder implements AdvancementGenerator {
+//
+//        private final String modId;
+//
+//        protected HTAdvancementBuilder(String modId) {
+//            this.modId = modId;
+//        }
+//
+//        protected Advancement.Builder task(AdvancementHolder parent, ItemLike displayItem, String title) {
+//            return advancement(parent, displayItem, title, FrameType.TASK, true);
+//        }
+//
+//        protected Advancement.Builder challenge(AdvancementHolder parent, ItemLike displayItem, String title) {
+//            return advancement(parent, displayItem, title, FrameType.CHALLENGE, true);
+//        }
+//
+//        protected Advancement.Builder goal(AdvancementHolder parent, ItemLike displayItem, String title) {
+//            return advancement(parent, displayItem, title, FrameType.GOAL, true);
+//        }
+//
+//        protected Advancement.Builder root(ItemLike displayItem, String title, ResourceLocation location) {
+//            return advancement(null, displayItem, title, location, FrameType.TASK, true);
+//        }
+//
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, FrameType type, boolean displayChat) {
+//            return advancement(parent, displayItem, title, null, type, displayChat);
+//        }
+//
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean displayChat) {
+//            return advancement(parent, displayItem, title, location, type, true, displayChat, false);
+//        }
+//
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean showToast, boolean displayChat, boolean hidden) {
+//            return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, showToast, displayChat, hidden);
+//        }
+//
+//        protected MutableComponent title(String name) {
+//            return Component.translatable("advancements." + this.getModId() + "." + name + ".title");
+//        }
+//
+//        protected MutableComponent desc(String name) {
+//            return Component.translatable("advancements." + this.getModId() + "." + name + ".desc");
+//        }
+//
+//        protected String getModId() {
+//            return this.modId;
+//        }
+//    }
 }

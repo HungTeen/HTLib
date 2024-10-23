@@ -43,7 +43,7 @@ public class AbsoluteAreaPosition extends PlaceComponent {
 
     @Override
     public PositionType<?> getType() {
-        return HTPositionTypes.ABSOLUTE_AREA;
+        return HTLibPositionTypes.ABSOLUTE_AREA;
     }
 
     public Vec3 getPosition() {

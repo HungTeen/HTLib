@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.network.NetworkHandler;
-import hungteen.htlib.common.network.SyncDatapackPacket;
+import hungteen.htlib.common.network.packets.SyncDatapackPacket;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.JavaHelper;
 import net.minecraft.nbt.CompoundTag;

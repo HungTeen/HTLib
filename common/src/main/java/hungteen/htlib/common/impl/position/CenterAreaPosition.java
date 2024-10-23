@@ -55,7 +55,7 @@ public class CenterAreaPosition extends PlaceComponent {
 
     @Override
     public PositionType<?> getType() {
-        return HTPositionTypes.CENTER_AREA;
+        return HTLibPositionTypes.CENTER_AREA;
     }
 
     public Vec3 getCenterOffset() {

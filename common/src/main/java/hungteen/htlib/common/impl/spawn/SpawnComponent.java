@@ -6,7 +6,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.common.impl.position.HTPositionComponents;
+import hungteen.htlib.common.impl.position.HTLibPositionComponents;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.core.Holder;
@@ -103,7 +103,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
                 Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
                 Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
-                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent)
+                Codec.optionalField("spawn_placement", HTLibPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent)
                 ).apply(instance, SpawnSetting::new)).codec();
     }
 

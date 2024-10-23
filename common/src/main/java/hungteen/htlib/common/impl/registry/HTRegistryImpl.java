@@ -1,6 +1,6 @@
 package hungteen.htlib.common.impl.registry;
 
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import hungteen.htlib.api.registry.HTRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +15,7 @@ public abstract class HTRegistryImpl<T> implements HTRegistry<T> {
 
     protected final ResourceKey<Registry<T>> registryKey;
 //    protected final HTRegistryHolder<T> registryHolder;
-    protected final IHTResourceHelper<T> registryHelper;
+    protected final HTResourceHelper<T> registryHelper;
 
 
     public HTRegistryImpl(ResourceLocation registryName) {
@@ -30,7 +30,7 @@ public abstract class HTRegistryImpl<T> implements HTRegistry<T> {
     }
 
     @Override
-    public IHTResourceHelper<T> helper() {
+    public HTResourceHelper<T> helper() {
         return registryHelper;
     }
 

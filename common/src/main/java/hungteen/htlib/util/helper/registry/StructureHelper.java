@@ -1,6 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
@@ -14,29 +14,29 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
  */
 public class StructureHelper {
 
-    private static final IHTResourceHelper<Structure> STRUCTURE_HELPER = () -> Registries.STRUCTURE;
+    private static final HTResourceHelper<Structure> STRUCTURE_HELPER = () -> Registries.STRUCTURE;
 
-    private static final IHTResourceHelper<StructureSet> STRUCTURE_SET_HELPER = () -> Registries.STRUCTURE_SET;
+    private static final HTResourceHelper<StructureSet> STRUCTURE_SET_HELPER = () -> Registries.STRUCTURE_SET;
 
-    private static final IHTResourceHelper<StructureTemplatePool> POOL_HELPER = () -> Registries.TEMPLATE_POOL;
+    private static final HTResourceHelper<StructureTemplatePool> POOL_HELPER = () -> Registries.TEMPLATE_POOL;
 
-    private static final IHTResourceHelper<StructureProcessorList> PROCESSOR_LIST_HELPER = () -> Registries.PROCESSOR_LIST;
+    private static final HTResourceHelper<StructureProcessorList> PROCESSOR_LIST_HELPER = () -> Registries.PROCESSOR_LIST;
 
     /* Common Methods */
 
-    public static IHTResourceHelper<Structure> get(){
+    public static HTResourceHelper<Structure> get(){
         return STRUCTURE_HELPER;
     }
 
-    public static IHTResourceHelper<StructureSet> set(){
+    public static HTResourceHelper<StructureSet> set(){
         return STRUCTURE_SET_HELPER;
     }
 
-    public static IHTResourceHelper<StructureTemplatePool> pool(){
+    public static HTResourceHelper<StructureTemplatePool> pool(){
         return POOL_HELPER;
     }
 
-    public static IHTResourceHelper<StructureProcessorList> processors(){
+    public static HTResourceHelper<StructureProcessorList> processors(){
         return PROCESSOR_LIST_HELPER;
     }
 

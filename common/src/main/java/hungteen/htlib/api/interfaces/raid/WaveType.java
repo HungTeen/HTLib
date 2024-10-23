@@ -1,6 +1,6 @@
 package hungteen.htlib.api.interfaces.raid;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import hungteen.htlib.api.registry.SimpleEntry;
 
 /**
@@ -8,12 +8,12 @@ import hungteen.htlib.api.registry.SimpleEntry;
  * @author: HungTeen
  * @create: 2022-11-27 20:21
  **/
-public interface WaveType<P extends IWaveComponent> extends SimpleEntry {
+public interface WaveType<P extends WaveComponent> extends SimpleEntry {
 
     /**
      * Get the method to codec wave.
      * @return Codec method.
      */
-    Codec<P> codec();
+    MapCodec<P> codec();
 
 }

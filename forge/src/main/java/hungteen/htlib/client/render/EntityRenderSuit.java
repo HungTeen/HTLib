@@ -20,7 +20,7 @@ public final class EntityRenderSuit<T extends Entity> {
 //        this.entityType = entityType;
 //    }
 //
-//    public void register(EntityRenderersEvent.RegisterRenderers event){
+//    public void initialize(EntityRenderersEvent.RegisterRenderers event){
 //        if(rendererProvider != null){
 //            event.registerEntityRenderer(getEntityType(), rendererProvider);
 //        } else {

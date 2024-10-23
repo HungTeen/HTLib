@@ -1,5 +1,6 @@
 package hungteen.htlib.api.registry;
 
+import hungteen.htlib.api.HTLibAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface HTSimpleRegistry<T extends SimpleEntry> extends HTCommonRegistr
      * Do nothing, just make the specific class being loaded.
      */
     default void initialize(){
+        HTLibAPI.logger().debug("Initialize simple registry: {}", getRegistryName());
     }
 
     /**

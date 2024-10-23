@@ -1,7 +1,7 @@
 package hungteen.htlib.util.helper.registry;
 
 import hungteen.htlib.HTLib;
-import hungteen.htlib.api.interfaces.IHTRegistryHelper;
+import hungteen.htlib.api.interfaces.HTRegistryHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * @author: HungTeen
  * @create: 2022-11-09 13:12
  **/
-public abstract class RegistryHelper<T> implements IHTRegistryHelper<T> {
+public abstract class RegistryHelper<T> implements HTRegistryHelper<T> {
 
     private final Map<ResourceLocation, GroupRegistration<T>> groups = Collections.synchronizedMap(new HashMap<>()); // 每个分组的注册项。
 

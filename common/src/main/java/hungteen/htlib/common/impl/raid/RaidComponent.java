@@ -5,8 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.PositionComponent;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
 import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.common.impl.position.HTPositionComponents;
-import hungteen.htlib.common.impl.result.HTResultComponents;
+import hungteen.htlib.common.impl.position.HTLibPositionComponents;
+import hungteen.htlib.common.impl.result.HTLibResultComponents;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.ColorHelper;
@@ -139,14 +139,14 @@ public abstract class RaidComponent implements IRaidComponent {
 
     protected record RaidSetting(Optional<Holder<PositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
-                Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
+                Codec.optionalField("placement_type", HTLibPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 
                 BorderSetting.CODEC.fieldOf("border_setting").forGetter(RaidSetting::borderSetting),
                 BarSetting.CODEC.fieldOf("bar_setting").forGetter(RaidSetting::barSetting),
                 SoundSetting.CODEC.fieldOf("sound_setting").forGetter(RaidSetting::soundSetting),
 
-                HTResultComponents.getCodec().listOf().optionalFieldOf("victory_results", List.of()).forGetter(RaidSetting::victoryResults),
-                HTResultComponents.getCodec().listOf().optionalFieldOf("loss_results", List.of()).forGetter(RaidSetting::lossResults),
+                HTLibResultComponents.getCodec().listOf().optionalFieldOf("victory_results", List.of()).forGetter(RaidSetting::victoryResults),
+                HTLibResultComponents.getCodec().listOf().optionalFieldOf("loss_results", List.of()).forGetter(RaidSetting::lossResults),
 
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("victory_duration", 100).forGetter(RaidSetting::victoryDuration),
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("loss_duration", 100).forGetter(RaidSetting::lossDuration),

@@ -1,5 +1,6 @@
 package hungteen.htlib.common.impl.registry;
 
+import hungteen.htlib.api.HTLibAPI;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
@@ -11,6 +12,15 @@ import java.util.function.Supplier;
  * @create: 2024/10/22 22:44
  **/
 public interface HTVanillaRegistry<T> {
+
+    /**
+     * Do nothing, just make the specific class being loaded.
+     */
+    default void initialize(){
+        HTLibAPI.logger().debug("Initialize vanilla registry {}", registryKey().location());
+    }
+
+    ResourceKey<? extends Registry<T>> registryKey();
 
     /**
      * 注册一个条目。

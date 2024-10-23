@@ -52,6 +52,6 @@ public record ChestResult(boolean forLoss, boolean forVictory, boolean onGround,
 
     @Override
     public ResultType<?> getType() {
-        return HTResultTypes.CHEST;
+        return HTLibResultTypes.CHEST;
     }
 }

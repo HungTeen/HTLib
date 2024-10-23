@@ -63,7 +63,7 @@ public record FunctionResult(List<ResourceLocation> globalFunctions, List<Resour
 
     @Override
     public ResultType<?> getType() {
-        return HTResultTypes.FUNCTION;
+        return HTLibResultTypes.FUNCTION;
     }
 
 }

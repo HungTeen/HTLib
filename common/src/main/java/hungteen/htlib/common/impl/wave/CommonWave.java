@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.api.interfaces.raid.WaveType;
-import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
+import hungteen.htlib.common.impl.spawn.HTLibSpawnComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -18,7 +18,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-29 09:14
  **/
-public class CommonWave extends WaveComponent {
+public class CommonWave extends WaveComponentImpl {
 
     /**
      * spawnPlacement : 放置类型
@@ -29,7 +29,7 @@ public class CommonWave extends WaveComponent {
      */
     public static final Codec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
             WaveSetting.CODEC.fieldOf("setting").forGetter(CommonWave::getWaveSetting),
-            HTSpawnComponents.pairCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
+            HTLibSpawnComponents.pairCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
     ).apply(instance, CommonWave::new)).codec();
     private final List<Pair<IntProvider, Holder<ISpawnComponent>>> spawnComponents;
 
@@ -49,6 +49,6 @@ public class CommonWave extends WaveComponent {
 
     @Override
     public WaveType<?> getType() {
-        return HTWaveTypes.COMMON;
+        return HTLibWaveTypes.COMMON;
     }
 }

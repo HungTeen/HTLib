@@ -1,6 +1,6 @@
 package hungteen.htlib.util.helper.registry;
 
-import hungteen.htlib.api.interfaces.IHTResourceHelper;
+import hungteen.htlib.api.interfaces.HTResourceHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -17,9 +17,9 @@ import javax.annotation.Nullable;
  * @program HTLib
  * @data 2023/8/23 9:47
  */
-public class DamageHelper implements IHTResourceHelper<DamageType>{
+public class DamageHelper implements HTResourceHelper<DamageType> {
 
-    private static final IHTResourceHelper<DamageType> HELPER = new DamageHelper();
+    private static final HTResourceHelper<DamageType> HELPER = new DamageHelper();
 
     public static DamageSource source(Entity entity, ResourceKey<DamageType> key, Entity causingEntity){
         return new DamageSource(type(entity, key), causingEntity);
@@ -45,7 +45,7 @@ public class DamageHelper implements IHTResourceHelper<DamageType>{
         return entity.damageSources().damageTypes;
     }
 
-    public static IHTResourceHelper<DamageType> get(){
+    public static HTResourceHelper<DamageType> get(){
         return HELPER;
     }
 
