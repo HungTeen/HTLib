@@ -3,8 +3,8 @@ package hungteen.htlib.common.impl;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
-import hungteen.htlib.util.helper.HTLibHelper;
-import hungteen.htlib.util.interfaces.BoatType;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
+import hungteen.htlib.util.BoatType;
 import net.minecraft.world.level.block.DispenserBlock;
 
 import java.util.Collection;

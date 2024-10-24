@@ -2,7 +2,7 @@ package hungteen.htlib.common;
 
 import com.google.gson.*;
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.util.helper.VanillaHelper;
+import hungteen.htlib.util.helper.impl.VanillaHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.GsonHelper;

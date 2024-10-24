@@ -3,7 +3,7 @@ package hungteen.htlib.common.event;
 import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.world.raid.DefaultRaid;
-import hungteen.htlib.util.helper.registry.EntityHelper;
+import hungteen.htlib.util.helper.impl.EntityHelper;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

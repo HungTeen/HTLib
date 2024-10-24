@@ -1,7 +1,7 @@
 package hungteen.htlib.mixin;
 
-import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.client.ClientProxy;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.phys.AABB;
@@ -51,7 +51,7 @@ public interface MixinCollisionGetter {
             return true;
         } else {
             AtomicBoolean hasCollision = new AtomicBoolean(false);
-            HTLibForgeInitializer.PROXY.getDummyEntities(entity.level()).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+            ClientProxy.getDummyEntities(entity.level()).stream().filter(DummyEntityImpl::hasCollision).forEach(dummyEntity -> {
                 if (! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb) && dummyEntity.getCollisionShapes(entity).isPresent()) {
                     if (Shapes.joinIsNotEmpty(dummyEntity.getCollisionShapes(entity).get(), Shapes.create(aabb), BooleanOp.AND)) {
                         hasCollision.set(true);

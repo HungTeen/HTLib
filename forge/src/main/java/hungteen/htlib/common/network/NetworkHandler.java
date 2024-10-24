@@ -4,7 +4,7 @@ import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.network.packets.DummyEntityPacket;
 import hungteen.htlib.common.network.packets.PlaySoundPacket;
 import hungteen.htlib.common.network.packets.SyncDatapackPacket;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;

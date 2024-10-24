@@ -2,8 +2,8 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.PositionComponent;
-import hungteen.htlib.api.interfaces.raid.WaveComponent;
+import hungteen.htlib.api.raid.PositionComponent;
+import hungteen.htlib.api.raid.WaveComponent;
 import hungteen.htlib.common.impl.position.HTLibPositionComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;

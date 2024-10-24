@@ -1,6 +1,6 @@
 package hungteen.htlib.common.blockentity;
 
-import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

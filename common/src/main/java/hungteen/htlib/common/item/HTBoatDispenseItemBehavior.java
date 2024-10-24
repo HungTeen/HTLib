@@ -2,8 +2,8 @@ package hungteen.htlib.common.item;
 
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
-import hungteen.htlib.common.entity.HasHTBoatType;
-import hungteen.htlib.util.interfaces.BoatType;
+import hungteen.htlib.util.HasHTBoatType;
+import hungteen.htlib.util.BoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;

@@ -1,6 +1,7 @@
 package hungteen.htlib.api;
 
 import com.mojang.logging.LogUtils;
+import hungteen.htlib.api.util.ServiceUtil;
 import org.slf4j.Logger;
 
 /**

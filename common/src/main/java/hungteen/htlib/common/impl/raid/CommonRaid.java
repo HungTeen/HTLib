@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.raid;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.WaveComponent;
+import hungteen.htlib.api.raid.HTRaid;
+import hungteen.htlib.api.raid.RaidType;
+import hungteen.htlib.api.raid.WaveComponent;
 import hungteen.htlib.common.impl.wave.HTLibWaveComponents;
-import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.RaidType;
 import net.minecraft.core.Holder;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +16,12 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-28 23:37
  **/
-public class CommonRaid extends RaidComponent {
+public class CommonRaid extends RaidComponentImpl {
 
-    public static final Codec<CommonRaid> CODEC = RecordCodecBuilder.<CommonRaid>mapCodec(instance -> instance.group(
+    public static final MapCodec<CommonRaid> CODEC = RecordCodecBuilder.<CommonRaid>mapCodec(instance -> instance.group(
             RaidSetting.CODEC.fieldOf("setting").forGetter(CommonRaid::getRaidSettings),
             HTLibWaveComponents.getCodec().listOf().fieldOf("waves").forGetter(CommonRaid::getWaveComponents)
-    ).apply(instance, CommonRaid::new)).codec();
+    ).apply(instance, CommonRaid::new));
     private final List<Holder<WaveComponent>> waveComponents;
 
     public CommonRaid(RaidSetting raidSettings, List<Holder<WaveComponent>> waveComponents) {
@@ -30,13 +30,13 @@ public class CommonRaid extends RaidComponent {
     }
 
     @Override
-    public int getWaveCount(IRaid raid) {
+    public int getWaveCount(HTRaid raid) {
         return this.waveComponents.size();
     }
 
     @Override
-    public @NotNull WaveComponent getCurrentWave(IRaid raid, int currentWave) {
-        return this.waveComponents.get(currentWave).get();
+    public @NotNull WaveComponent getCurrentWave(HTRaid raid, int currentWave) {
+        return this.waveComponents.get(currentWave).value();
     }
 
     public List<Holder<WaveComponent>> getWaveComponents(){

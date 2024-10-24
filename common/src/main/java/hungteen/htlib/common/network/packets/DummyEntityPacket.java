@@ -3,7 +3,7 @@ package hungteen.htlib.common.network.packets;
 import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.common.network.HTPlayToClientPayload;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import hungteen.htlib.common.world.entity.HTLibDummyEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,12 +31,12 @@ public class DummyEntityPacket implements HTPlayToClientPayload {
         this.operation = Operation.CLEAR;
     }
 
-    public DummyEntityPacket(DummyEntity dummyEntity, CompoundTag nbt) {
+    public DummyEntityPacket(DummyEntityImpl dummyEntity, CompoundTag nbt) {
         this(Operation.UPDATE, dummyEntity);
         this.entityNBT = nbt;
     }
 
-    public DummyEntityPacket(Operation operation, DummyEntity dummyEntity) {
+    public DummyEntityPacket(Operation operation, DummyEntityImpl dummyEntity) {
         this.operation = operation;
         this.entityID = dummyEntity.getEntityID();
         if (this.operation == Operation.CREATE) {
@@ -76,7 +76,7 @@ public class DummyEntityPacket implements HTPlayToClientPayload {
         switch (operation){
             case CREATE -> {
                 HTLibDummyEntities.getEntityType(entityType).ifPresent(type -> {
-                    DummyEntity dummyEntity = type.create(context.player().level(), entityNBT);
+                    DummyEntityImpl dummyEntity = type.create(context.player().level(), entityNBT);
                     ClientProxy.addDummyEntity(dummyEntity);
                 });
             }

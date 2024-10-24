@@ -1,6 +1,6 @@
 package hungteen.htlib.client;
 
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -14,9 +14,9 @@ import java.util.Optional;
  **/
 public class ClientProxy {
 
-    private static final HashMap<Integer, DummyEntity> DUMMY_ENTITY_MAP = new HashMap<>();
+    private static final HashMap<Integer, DummyEntityImpl> DUMMY_ENTITY_MAP = new HashMap<>();
 
-    public static void addDummyEntity(DummyEntity entity) {
+    public static void addDummyEntity(DummyEntityImpl entity) {
         DUMMY_ENTITY_MAP.putIfAbsent(entity.getEntityID(), entity);
     }
 
@@ -24,17 +24,17 @@ public class ClientProxy {
         DUMMY_ENTITY_MAP.remove(entityID);
     }
 
-    public static List<DummyEntity> getDummyEntities() {
+    public static List<DummyEntityImpl> getDummyEntities() {
         return DUMMY_ENTITY_MAP.values().stream().toList();
     }
 
-    public static List<DummyEntity> getDummyEntities(Level level) {
+    public static List<DummyEntityImpl> getDummyEntities(Level level) {
         return DUMMY_ENTITY_MAP.values().stream()
                 .filter(entity -> entity.getLevel().equals(level))
                 .toList();
     }
 
-    public static Optional<DummyEntity> getDummyEntity(int id) {
+    public static Optional<DummyEntityImpl> getDummyEntity(int id) {
         return Optional.ofNullable(DUMMY_ENTITY_MAP.getOrDefault(id, null));
     }
 

@@ -2,7 +2,7 @@ package hungteen.htlib.mixin;
 
 import com.google.common.collect.ImmutableList;
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -38,7 +38,7 @@ public abstract class MixinEntity {
     )
     private static void collideBoundingBox(@Nullable Entity entity, Vec3 vec3, AABB aabb, Level level, List<VoxelShape> voxelShapes, CallbackInfoReturnable<Vec3> result, ImmutableList.Builder<VoxelShape> builder) {
         if(entity != null){
-            HTLibForgeInitializer.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+            HTLibForgeInitializer.PROXY.getDummyEntities(level).stream().filter(DummyEntityImpl::hasCollision).forEach(dummyEntity -> {
                 if(! dummyEntity.ignoreEntity(entity) && dummyEntity.isCloseToBorder(entity, aabb.expandTowards(vec3))){
                     if(! level.isClientSide){
                         dummyEntity.collideWith(entity);

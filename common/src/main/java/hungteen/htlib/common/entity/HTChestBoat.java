@@ -1,7 +1,8 @@
 package hungteen.htlib.common.entity;
 
 import hungteen.htlib.common.impl.BoatTypes;
-import hungteen.htlib.util.interfaces.BoatType;
+import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HasHTBoatType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * @author: HungTeen
  * @create: 2022-11-08 19:45
  **/
-public class HTChestBoat extends ChestBoat implements HasHTBoatType{
+public class HTChestBoat extends ChestBoat implements HasHTBoatType {
 
     private static final EntityDataAccessor<String> BOAT_TYPE = SynchedEntityData.defineId(HTChestBoat.class, EntityDataSerializers.STRING);
 

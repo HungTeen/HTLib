@@ -1,7 +1,7 @@
 package hungteen.htlib.common.event;
 
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;

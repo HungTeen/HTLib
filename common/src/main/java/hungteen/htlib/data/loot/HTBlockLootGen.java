@@ -1,7 +1,6 @@
 package hungteen.htlib.data.loot;
 
 import hungteen.htlib.common.impl.registry.suit.TreeSuits;
-import hungteen.htlib.util.helper.CompatHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;

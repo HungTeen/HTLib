@@ -3,7 +3,7 @@ package hungteen.htlib.common.impl.registry.suit;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;

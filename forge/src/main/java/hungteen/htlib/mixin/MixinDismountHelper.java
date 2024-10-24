@@ -1,7 +1,7 @@
 package hungteen.htlib.mixin;
 
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
@@ -38,7 +38,7 @@ public class MixinDismountHelper {
             cancellable = true
     )
     private static void canDismountTo(CollisionGetter collisionGetter, LivingEntity livingEntity, AABB aabb, CallbackInfoReturnable<Boolean> result) {
-        HTLibForgeInitializer.PROXY.getDummyEntities(livingEntity.level()).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+        HTLibForgeInitializer.PROXY.getDummyEntities(livingEntity.level()).stream().filter(DummyEntityImpl::hasCollision).forEach(dummyEntity -> {
             if (dummyEntity.requireBlock(livingEntity, aabb)) {
                 result.setReturnValue(false);
             }
@@ -92,7 +92,7 @@ public class MixinDismountHelper {
 
                 if (collisionGetter instanceof Level) {
                     AtomicBoolean blocked = new AtomicBoolean(false);
-                    DummyEntityManager.getCollisionEntities((Level) collisionGetter).filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+                    DummyEntityManager.getCollisionEntities((Level) collisionGetter).filter(DummyEntityImpl::hasCollision).forEach(dummyEntity -> {
                         if (dummyEntity.requireBlock(blockPos, aabb)) {
                             blocked.set(true);
                         }

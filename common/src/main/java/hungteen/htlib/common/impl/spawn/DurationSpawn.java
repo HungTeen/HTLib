@@ -1,9 +1,10 @@
 package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.SpawnType;
+import hungteen.htlib.api.raid.HTRaid;
+import hungteen.htlib.api.raid.SpawnType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-27 17:56
  **/
-public class DurationSpawn extends SpawnComponent {
+public class DurationSpawn extends SpawnComponentImpl {
 
     /**
      * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -24,13 +25,14 @@ public class DurationSpawn extends SpawnComponent {
      * spawnTick : 生成的时间，When to getSpawnEntities the entity.
      * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
-    public static final Codec<DurationSpawn> CODEC = RecordCodecBuilder.<DurationSpawn>mapCodec(instance -> instance.group(
+    public static final MapCodec<DurationSpawn> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SpawnSetting.CODEC.fieldOf("spawn_settings").forGetter(DurationSpawn::getSpawnSetting),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("duration").forGetter(DurationSpawn::getSpawnDuration),
             Codec.intRange(1, Integer.MAX_VALUE).fieldOf("spawn_interval").forGetter(DurationSpawn::getSpawnInterval),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("each_spawn_count").forGetter(DurationSpawn::getEachSpawnCount),
             Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("spawn_offset", 0).forGetter(DurationSpawn::getSpawnOffset)
-    ).apply(instance, DurationSpawn::new)).codec();
+    ).apply(instance, DurationSpawn::new));
+
     private final int spawnDuration;
     private final int spawnInterval;
     private final int eachSpawnCount;
@@ -49,7 +51,7 @@ public class DurationSpawn extends SpawnComponent {
     }
 
     @Override
-    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, HTRaid raid, int tick, int startTick) {
         List<Entity> entities = new ArrayList<>();
         if(canSpawn(tick, startTick)){
             for(int i = 0; i < this.getEachSpawnCount(); ++ i){

@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.wave;
 
-import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.WaveComponent;
-import hungteen.htlib.api.interfaces.raid.WaveType;
+import com.mojang.serialization.MapCodec;
+import hungteen.htlib.api.raid.WaveComponent;
+import hungteen.htlib.api.raid.WaveType;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 
 /**
  * @author PangTeen
@@ -26,7 +26,7 @@ public interface HTLibWaveTypes {
         return TYPES;
     }
 
-    record WaveTypeImpl<P extends WaveComponent>(String name, Codec<P> codec) implements WaveType<P> {
+    record WaveTypeImpl<P extends WaveComponent>(String name, MapCodec<P> codec) implements WaveType<P> {
 
         @Override
         public String getName() {

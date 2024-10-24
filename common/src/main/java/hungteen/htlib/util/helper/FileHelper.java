@@ -10,9 +10,9 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-12-30 20:58
  **/
-public class FileHelper {
+public interface FileHelper {
 
-    public static List<File> getAllFiles(File root, FileFilter filter) {
+    static List<File> getAllFiles(File root, FileFilter filter) {
         final List<File> files = new ArrayList<>();
         // getCodecRegistry the folder list
         final File[] array = root.listFiles();

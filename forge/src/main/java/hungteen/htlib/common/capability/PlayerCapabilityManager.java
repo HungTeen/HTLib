@@ -1,7 +1,7 @@
 package hungteen.htlib.common.capability;
 
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.api.interfaces.IPlayerDataManager;
+import hungteen.htlib.api.util.IPlayerDataManager;
 import hungteen.htlib.common.capability.player.IHTPlayerCapability;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.world.entity.player.Player;

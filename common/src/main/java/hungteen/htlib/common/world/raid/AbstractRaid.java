@@ -3,20 +3,20 @@ package hungteen.htlib.common.world.raid;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.api.interfaces.raid.*;
+import hungteen.htlib.api.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.event.events.RaidEvent;
 import hungteen.htlib.common.impl.position.HTLibPositionComponents;
 import hungteen.htlib.common.impl.raid.HTLibRaidComponents;
 import hungteen.htlib.common.impl.spawn.HTLibSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTLibWaveComponents;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import hungteen.htlib.common.world.entity.DummyEntityType;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.JavaHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
-import hungteen.htlib.util.helper.registry.EntityHelper;
+import hungteen.htlib.util.helper.impl.EntityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -50,7 +50,7 @@ import java.util.function.Supplier;
  * <p>
  * Look at {@link net.minecraft.world.entity.raid.Raid}
  **/
-public abstract class AbstractRaid extends DummyEntity implements IRaid {
+public abstract class AbstractRaid extends DummyEntityImpl implements HTRaid {
 
     public static final String RAID_TAG = "RaidTag";
     public static final MutableComponent RAID_TITLE = Component.translatable("raid.htlib.title");
@@ -59,9 +59,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     public static final MutableComponent RAID_WARN = Component.translatable("raid.htlib.too_far_away").withStyle(ChatFormatting.RED);
     private final ServerBossEvent progressBar = new ServerBossEvent(RAID_TITLE, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
     protected CompoundTag raidTag = new CompoundTag();
-    protected IRaidComponent raidComponent;
+    protected RaidComponent raidComponent;
     protected WaveComponent waveComponent;
-    protected List<Pair<Integer, ISpawnComponent>> spawnComponents = List.of();
+    protected List<Pair<Integer, SpawnComponent>> spawnComponents = List.of();
     protected Status status = Status.PREPARE;
     protected final Set<Entity> raiderSet = Sets.newHashSet();
     protected int tick = 0;
@@ -71,7 +71,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected boolean stopped = false;
     protected int stopTick = 0;
 
-    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, Vec3 position, IRaidComponent raidComponent) {
+    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, Vec3 position, RaidComponent raidComponent) {
         super(dummyEntityType, serverLevel, position);
         CodecHelper.encodeNbt(HTLibRaidComponents.getDirectCodec(), raidComponent)
                 .result().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).ifPresent(tag -> this.raidTag = tag);
@@ -165,7 +165,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         }
     }
 
-    public void validTick(@NotNull IRaidComponent raid, @NotNull WaveComponent wave){
+    public void validTick(@NotNull RaidComponent raid, @NotNull WaveComponent wave){
         if (this.tick % 20 == 0 || this.stopTick % 10 == 5) {
             this.updatePlayers();
             this.updateRaiders();
@@ -192,7 +192,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         this.workTick(raid, wave);
     }
 
-    public void workTick(@NotNull IRaidComponent raid, @NotNull WaveComponent wave){
+    public void workTick(@NotNull RaidComponent raid, @NotNull WaveComponent wave){
         if (!this.firstTick) {
             this.firstTick = true;
             this.getPlayers().forEach(p -> {
@@ -301,7 +301,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     @Override
     public Component getTitle() {
-        return JavaHelper.ifNull(this.getRaidComponent(), IRaidComponent::getRaidTitle, Component.empty());
+        return JavaHelper.ifNull(this.getRaidComponent(), RaidComponent::getRaidTitle, Component.empty());
     }
 
     protected MutableComponent getRunningTitle(MutableComponent title){
@@ -481,7 +481,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     /**
      * {@link #tick()}
      */
-    protected void tickResult(IResultComponent result){
+    protected void tickResult(ResultComponent result){
         if(this.getLevel() instanceof ServerLevel){
             result.apply(this, (ServerLevel) this.getLevel(), tick);
             this.getDefenders().forEach(entity -> {
@@ -618,7 +618,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      * Get raid component by resource, use cache to speed up.
      */
     @Nullable
-    public IRaidComponent getRaidComponent() {
+    public RaidComponent getRaidComponent() {
         if(this.raidComponent == null){
             CodecHelper.parse(HTLibRaidComponents.getDirectCodec(), this.raidTag)
                     .result().ifPresent(c -> this.raidComponent = c);
@@ -641,16 +641,16 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     @NotNull
-    public List<Pair<Integer, ISpawnComponent>> getCurrentSpawns() {
+    public List<Pair<Integer, SpawnComponent>> getCurrentSpawns() {
         return this.spawnComponents;
     }
 
-    public void setCurrentSpawns(List<Pair<Integer, ISpawnComponent>> spawns) {
+    public void setCurrentSpawns(List<Pair<Integer, SpawnComponent>> spawns) {
         this.spawnComponents = spawns;
     }
 
     @Override
-    public Function<ISpawnComponent, PositionComponent> getPlaceComponent() {
+    public Function<SpawnComponent, PositionComponent> getPlaceComponent() {
         return spawnComponent -> {
             if(spawnComponent.getSpawnPlacement().isPresent()) {
                 return spawnComponent.getSpawnPlacement().get();

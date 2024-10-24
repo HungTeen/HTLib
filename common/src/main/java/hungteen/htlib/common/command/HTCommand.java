@@ -7,16 +7,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import hungteen.htlib.api.interfaces.raid.IRaidComponent;
+import hungteen.htlib.api.raid.RaidComponent;
 import hungteen.htlib.common.entity.SeatEntity;
 import hungteen.htlib.common.impl.raid.HTLibRaidComponents;
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTLibDummyEntities;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.CommandHelper;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -113,7 +113,7 @@ public class HTCommand {
         dispatcher.register(builder);
     }
 
-    private static Holder<IRaidComponent> getRaid(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+    private static Holder<RaidComponent> getRaid(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         return CommandHelper.getHolder(context, HTLibRaidComponents.registry().getRegistryKey(), name, ERROR_INVALID_FEATURE);
     }
 
@@ -122,7 +122,7 @@ public class HTCommand {
         if (!Level.isInSpawnableBounds(blockpos)) {
             throw INVALID_POSITION.create();
         }
-        final DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
+        final DummyEntityImpl dummyEntity = DummyEntityManager.createDummyEntity(sourceStack.getLevel(), location, position, tag);
         if (dummyEntity != null) {
             sourceStack.sendSuccess(() -> Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
             return 1;
@@ -131,20 +131,20 @@ public class HTCommand {
     }
 
     public static int removeNearbyDummyEntity(CommandSourceStack sourceStack, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
-        List<DummyEntity> list = DummyEntityManager.getDummyEntities(sourceStack.getLevel(), dummyType, position, 1).toList();
+        List<DummyEntityImpl> list = DummyEntityManager.getDummyEntities(sourceStack.getLevel(), dummyType, position, 1).toList();
         DummyEntityManager.markRemoveEntities(list);
         return list.size();
     }
 
     public static int removeAllDummyEntity(CommandSourceStack source, ResourceLocation dummyType) {
-        List<DummyEntity> list = DummyEntityManager.getDummyEntities(source.getLevel(), dummyType).toList();
+        List<DummyEntityImpl> list = DummyEntityManager.getDummyEntities(source.getLevel(), dummyType).toList();
         DummyEntityManager.markRemoveEntities(list);
         return list.size();
     }
 
     public static int createRaid(CommandSourceStack sourceStack, ResourceLocation dummyType, ResourceLocation raidId, Vec3 position) throws CommandSyntaxException {
         final CompoundTag nbt = new CompoundTag();
-        IRaidComponent raidComponent = HTLibRaidComponents.registry().getValue(sourceStack.getLevel(), HTLibRaidComponents.registry().createKey(raidId));
+        RaidComponent raidComponent = HTLibRaidComponents.registry().getValue(sourceStack.getLevel(), HTLibRaidComponents.registry().createKey(raidId));
         CodecHelper.encodeNbt(HTLibRaidComponents.getDirectCodec(), raidComponent)
                 .result().ifPresent(tag -> {
                     nbt.put(AbstractRaid.RAID_TAG, tag);

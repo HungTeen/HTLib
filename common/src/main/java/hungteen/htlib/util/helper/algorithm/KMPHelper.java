@@ -13,7 +13,7 @@ public class KMPHelper {
         String preFixStr = subStr.substring(0, length - 1);
         String suffFixStr = subStr.substring(1);
 
-        while (preFixStr.length() > 0 && suffFixStr.length() > 0) {
+        while (!preFixStr.isEmpty() && !suffFixStr.isEmpty()) {
             if (preFixStr.equals(suffFixStr)) {
                 return preFixStr.length();
             }
@@ -22,7 +22,7 @@ public class KMPHelper {
                 break;
             }
             preFixStr = preFixStr.substring(0, preFixStr.length() - 1);
-            suffFixStr = suffFixStr.substring(1, suffFixStr.length());
+            suffFixStr = suffFixStr.substring(1);
         }
 
         return 0;

@@ -1,7 +1,7 @@
 package hungteen.htlib.common.capability.raid;
 
 import hungteen.htlib.common.world.entity.DummyEntityManager;
-import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.api.raid.HTRaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -20,7 +20,7 @@ public class RaidCapability implements IRaidCapability {
 
     public static Capability<IRaidCapability> RAID_CAP = CapabilityManager.get(new CapabilityToken<>() {});
     private Entity entity;
-    private IRaid raid = null;
+    private HTRaid raid = null;
     private int wave = 0;
 
     public static Optional<IRaidCapability> getRaid(Entity entity){
@@ -47,8 +47,8 @@ public class RaidCapability implements IRaidCapability {
         if(entity != null && tag.contains("RaidID")){
             if (entity.level() instanceof ServerLevel) {
                 DummyEntityManager.getDummyEntity((ServerLevel) entity.level(), tag.getInt("RaidID")).ifPresent(dummyEntity -> {
-                    if(dummyEntity instanceof IRaid){
-                        this.raid = (IRaid)dummyEntity;
+                    if(dummyEntity instanceof HTRaid){
+                        this.raid = (HTRaid)dummyEntity;
                     }
                 });
             }
@@ -68,12 +68,12 @@ public class RaidCapability implements IRaidCapability {
     }
 
     @Override
-    public void setRaid(IRaid raid) {
+    public void setRaid(HTRaid raid) {
         this.raid = raid;
     }
 
     @Override
-    public IRaid getRaid() {
+    public HTRaid getRaid() {
         return this.raid;
     }
 

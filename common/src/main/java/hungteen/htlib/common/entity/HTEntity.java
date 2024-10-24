@@ -1,6 +1,6 @@
 package hungteen.htlib.common.entity;
 
-import hungteen.htlib.util.helper.registry.ParticleHelper;
+import hungteen.htlib.util.helper.impl.ParticleHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;

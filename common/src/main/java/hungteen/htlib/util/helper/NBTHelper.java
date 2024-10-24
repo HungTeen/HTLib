@@ -1,7 +1,7 @@
 package hungteen.htlib.util.helper;
 
 import com.mojang.datafixers.util.Pair;
-import hungteen.htlib.util.helper.registry.EntityHelper;
+import hungteen.htlib.util.helper.impl.EntityHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -15,9 +15,9 @@ import java.util.Objects;
  * @author: PangTeen
  * @create: 2024/10/2 16:43
  **/
-public class NBTHelper {
+public interface NBTHelper {
 
-    public static CompoundTag attributeTags(List<Pair<Attribute, Double>> attributes) {
+    static CompoundTag attributeTags(List<Pair<Attribute, Double>> attributes) {
         CompoundTag tag = new CompoundTag();
         {
             ListTag listtag = new ListTag();
@@ -32,7 +32,7 @@ public class NBTHelper {
         return tag;
     }
 
-    public static CompoundTag creeperTag(boolean powered, int radius, int swell) {
+    static CompoundTag creeperTag(boolean powered, int radius, int swell) {
         CompoundTag tag = create();
         tag.putBoolean("powered", powered);
         tag.putInt("ExplosionRadius", radius);
@@ -40,36 +40,37 @@ public class NBTHelper {
         return tag;
     }
 
-    public static CompoundTag armorTag(List<ItemStack> armors) {
+    static CompoundTag armorTag(List<ItemStack> armors) {
         CompoundTag tag = create();
         ListTag listtag = new ListTag();
+// TODO Armor tag
 
-        for(ItemStack itemstack : armors) {
-            CompoundTag compoundtag = new CompoundTag();
-            if (!itemstack.isEmpty()) {
-                itemstack.save(compoundtag);
-            }
-
-            listtag.add(compoundtag);
-        }
+//        for(ItemStack itemstack : armors) {
+//            CompoundTag compoundtag = new CompoundTag();
+//            if (!itemstack.isEmpty()) {
+//                itemstack.save(compoundtag);
+//            }
+//
+//            listtag.add(compoundtag);
+//        }
 
         tag.put("ArmorItems", listtag);
         return tag;
     }
 
-    public static CompoundTag healthTag(float health) {
+    static CompoundTag healthTag(float health) {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("Health", health);
         return tag;
     }
 
-    public static CompoundTag onFireTag(short tick) {
+    static CompoundTag onFireTag(short tick) {
         CompoundTag tag = new CompoundTag();
         tag.putShort("Fire", tick);
         return tag;
     }
 
-    public static CompoundTag merge(CompoundTag ... tags){
+    static CompoundTag merge(CompoundTag... tags){
         CompoundTag tag = create();
         for (CompoundTag compoundTag : tags) {
             tag.merge(compoundTag);
@@ -77,7 +78,7 @@ public class NBTHelper {
         return tag;
     }
 
-    public static CompoundTag create(){
+    static CompoundTag create(){
         return new CompoundTag();
     }
 

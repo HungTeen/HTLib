@@ -30,11 +30,11 @@ public class SimpleWeightedList<T> extends WeightedList<WeightedEntry.Wrapper<T>
     }
 
     public Optional<T> getItem(RandomSource rand) {
-        return this.getRandomItem(rand).map(WeightedEntry.Wrapper::getData);
+        return this.getRandomItem(rand).map(WeightedEntry.Wrapper::data);
     }
 
     public List<T> getItems(RandomSource rand, int count, boolean different) {
-        return this.getRandomItems(rand, count, different).stream().map(WeightedEntry.Wrapper::getData).toList();
+        return this.getRandomItems(rand, count, different).stream().map(WeightedEntry.Wrapper::data).toList();
     }
 
     public static <T> Codec<SimpleWeightedList<T>> wrappedCodecAllowingEmpty(Codec<T> codec) {

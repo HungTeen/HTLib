@@ -5,7 +5,7 @@ import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
 import hungteen.htlib.common.world.raid.DefaultRaid;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
@@ -34,7 +34,7 @@ public interface HTLibDummyEntities {
         return registry().byNameCodec();
     }
 
-    static <T extends DummyEntity> DummyEntityType<T> register(DummyEntityType<T> type){
+    static <T extends DummyEntityImpl> DummyEntityType<T> register(DummyEntityType<T> type){
         return registry().register(type);
     }
 

@@ -1,8 +1,9 @@
 package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.PositionType;
+import hungteen.htlib.api.raid.PositionType;
 import hungteen.htlib.util.helper.WorldHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
  * @program HTLib
  * @data 2022/11/18 10:38
  */
-public class CenterAreaPosition extends PlaceComponent {
+public class CenterAreaPosition extends PositionComponentImpl {
 
     /**
      * getCenterOffset 中心点偏移，默认为不偏移。offset to the origin point, default to (0, 0, 0).
@@ -22,14 +23,14 @@ public class CenterAreaPosition extends PlaceComponent {
      * getHeightOffset 不放置在地表，则使原坐标高度偏移。place at the specific height offset.
      * isCircle 默认是圆心，否则是方形。default is circle, or it will be square.
      */
-    public static final Codec<CenterAreaPosition> CODEC = RecordCodecBuilder.<CenterAreaPosition>mapCodec(instance -> instance.group(
+    public static final MapCodec<CenterAreaPosition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(CenterAreaPosition::getCenterOffset),
             Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(CenterAreaPosition::getExcludeRadius),
             Codec.DOUBLE.fieldOf("radius").forGetter(CenterAreaPosition::getRadius),
             Codec.BOOL.fieldOf("on_surface").forGetter(CenterAreaPosition::onSurface),
             Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(CenterAreaPosition::getHeightOffset),
             Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(CenterAreaPosition::isCircle)
-    ).apply(instance, CenterAreaPosition::new)).codec();
+    ).apply(instance, CenterAreaPosition::new));
     private final Vec3 centerOffset;
     private final boolean onSurface;
     private final double heightOffset;

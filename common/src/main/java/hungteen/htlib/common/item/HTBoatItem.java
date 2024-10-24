@@ -2,9 +2,9 @@ package hungteen.htlib.common.item;
 
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
-import hungteen.htlib.common.entity.HasHTBoatType;
+import hungteen.htlib.util.HasHTBoatType;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.interfaces.BoatType;
+import hungteen.htlib.util.BoatType;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

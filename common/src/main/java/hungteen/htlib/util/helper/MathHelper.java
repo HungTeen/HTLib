@@ -10,9 +10,9 @@ import net.minecraft.world.phys.Vec3;
  * @author: HungTeen
  * @create: 2022-10-02 16:58
  **/
-public class MathHelper {
+public interface MathHelper {
 
-    public static Vec3 rotate(Vec3 vec, double horizontalDegree, double verticalDegree) {
+    static Vec3 rotate(Vec3 vec, double horizontalDegree, double verticalDegree) {
         final double horizontalRadians = Math.toRadians(horizontalDegree);
         final double verticalRadians = Math.toRadians(verticalDegree);
         final double horizontalLength = Math.sqrt(vec.x() * vec.x() + vec.z() * vec.z());
@@ -25,25 +25,25 @@ public class MathHelper {
         return new Vec3(x / horizontalLength * xz, y, z / horizontalLength * xz);
     }
 
-    public static double smooth(double from, double to, int tick, int cd){
+    static double smooth(double from, double to, int tick, int cd){
         return smooth(from, to, cd == 0 ? 1F : tick * 1F / cd);
     }
 
-    public static double smooth(double from, double to, double percent){
+    static double smooth(double from, double to, double percent){
         return from + (to - from) * percent;
     }
 
     /**
      * getCodecRegistry expand collide box.
      */
-    public static AABB getAABB(Vec3 pos, double radius, double height) {
+    static AABB getAABB(Vec3 pos, double radius, double height) {
         return new AABB(pos.x() - radius, pos.y() - height, pos.z() - radius, pos.x() + radius, pos.y() + height, pos.z() + radius);
     }
 
     /**
      * use for render bar.
      */
-    public static int getBarLen(int num, int maxNum, int maxLen) {
+    static int getBarLen(int num, int maxNum, int maxLen) {
         if(maxNum != 0){
             final int percent = num * maxLen / maxNum;
             if(percent <= 0 && num != 0) {
@@ -56,26 +56,26 @@ public class MathHelper {
         return 0;
     }
 
-    public static boolean isInArea(int x, int y, int posX, int posY, int xLen, int yLen){
+    static boolean isInArea(int x, int y, int posX, int posY, int xLen, int yLen){
         return x >= posX && x <= posX + xLen && y >= posY && y <= posY + yLen;
     }
 
     /**
      * vector from a to b.
      */
-    public static Vec3 subHorizontal(Vec3 from, Vec3 to) {
+    static Vec3 subHorizontal(Vec3 from, Vec3 to) {
         return new Vec3(to.x - from.x, 0, to.z - from.z);
     }
 
-    public static Vec3 toVec3(BlockPos pos) {
+    static Vec3 toVec3(BlockPos pos) {
         return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
-    public static BlockPos toBlockPos(Vec3 vec) {
+    static BlockPos toBlockPos(Vec3 vec) {
         return BlockPos.containing(vec);
     }
 
-    public static AABB getBlockAABB(BlockPos pos) {
+    static AABB getBlockAABB(BlockPos pos) {
         return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
     }
 }

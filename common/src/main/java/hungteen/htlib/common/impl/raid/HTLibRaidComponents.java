@@ -1,14 +1,14 @@
 package hungteen.htlib.common.impl.raid;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.*;
+import hungteen.htlib.api.raid.*;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.result.HTLibResultComponents;
 import hungteen.htlib.common.impl.wave.HTLibWaveComponents;
 import hungteen.htlib.common.world.raid.AbstractRaid;
 import hungteen.htlib.util.helper.ColorHelper;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -29,13 +29,13 @@ import java.util.Optional;
  */
 public interface HTLibRaidComponents {
 
-    HTCodecRegistry<IRaidComponent> RAIDS = HTRegistryManager.codec(HTLibHelper.prefix("raid"), HTLibRaidComponents::getDirectCodec, true);
+    HTCodecRegistry<RaidComponent> RAIDS = HTRegistryManager.codec(HTLibHelper.prefix("raid"), HTLibRaidComponents::getDirectCodec, true);
 
-    ResourceKey<IRaidComponent> TEST = create("test");
-    ResourceKey<IRaidComponent> COMMON = create("common");
+    ResourceKey<RaidComponent> TEST = create("test");
+    ResourceKey<RaidComponent> COMMON = create("common");
 
-    static void register(BootstrapContext<IRaidComponent> context) {
-        final HolderGetter<IResultComponent> results = HTLibResultComponents.registry().helper().lookup(context);
+    static void register(BootstrapContext<RaidComponent> context) {
+        final HolderGetter<ResultComponent> results = HTLibResultComponents.registry().helper().lookup(context);
         final HolderGetter<WaveComponent> waves = HTLibWaveComponents.registry().helper().lookup(context);
         context.register(TEST, new CommonRaid(
                 builder()
@@ -75,19 +75,19 @@ public interface HTLibRaidComponents {
         ));
     }
 
-    static Codec<IRaidComponent> getDirectCodec() {
-        return HTLibRaidTypes.registry().byNameCodec().dispatch(IRaidComponent::getType, RaidType::codec);
+    static Codec<RaidComponent> getDirectCodec() {
+        return HTLibRaidTypes.registry().byNameCodec().dispatch(RaidComponent::getType, RaidType::codec);
     }
 
-    static Codec<Holder<IRaidComponent>> getCodec() {
+    static Codec<Holder<RaidComponent>> getCodec() {
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    static ResourceKey<IRaidComponent> create(String name) {
+    static ResourceKey<RaidComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    static HTCodecRegistry<IRaidComponent> registry() {
+    static HTCodecRegistry<RaidComponent> registry() {
         return RAIDS;
     }
 
@@ -97,8 +97,8 @@ public interface HTLibRaidComponents {
 
     class RaidSettingBuilder {
         private Holder<PositionComponent> positionComponent;
-        private final List<Holder<IResultComponent>> victoryResults = new ArrayList<>();
-        private final List<Holder<IResultComponent>> lossResults = new ArrayList<>();
+        private final List<Holder<ResultComponent>> victoryResults = new ArrayList<>();
+        private final List<Holder<ResultComponent>> lossResults = new ArrayList<>();
         private double raidRange = 40;
         private boolean blockInside = false;
         private boolean blockOutside = false;
@@ -122,12 +122,12 @@ public interface HTLibRaidComponents {
             return this;
         }
 
-        public RaidSettingBuilder victoryResult(Holder<IResultComponent> resultComponent) {
+        public RaidSettingBuilder victoryResult(Holder<ResultComponent> resultComponent) {
             this.victoryResults.add(resultComponent);
             return this;
         }
 
-        public RaidSettingBuilder lossResult(Holder<IResultComponent> resultComponent) {
+        public RaidSettingBuilder lossResult(Holder<ResultComponent> resultComponent) {
             this.lossResults.add(resultComponent);
             return this;
         }
@@ -217,23 +217,23 @@ public interface HTLibRaidComponents {
             return this;
         }
 
-        public RaidComponent.RaidSetting build() {
-            return new RaidComponent.RaidSetting(
+        public RaidComponentImpl.RaidSetting build() {
+            return new RaidComponentImpl.RaidSetting(
                     Optional.ofNullable(this.positionComponent),
-                    new RaidComponent.BorderSetting(
+                    new RaidComponentImpl.BorderSetting(
                             this.raidRange,
                             this.blockInside,
                             this.blockOutside,
                             this.renderBorder,
                             this.borderColor
                     ),
-                    new RaidComponent.BarSetting(
+                    new RaidComponentImpl.BarSetting(
                             this.raidTitle,
                             this.raidColor,
                             this.victoryTitle,
                             this.lossTitle
                     ),
-                    new RaidComponent.SoundSetting(
+                    new RaidComponentImpl.SoundSetting(
                             this.raidStartSound,
                             this.waveStartSound,
                             this.victorySound,

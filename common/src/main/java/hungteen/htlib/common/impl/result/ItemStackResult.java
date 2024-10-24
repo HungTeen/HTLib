@@ -1,10 +1,11 @@
 package hungteen.htlib.common.impl.result;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.ResultType;
+import hungteen.htlib.api.raid.HTRaid;
+import hungteen.htlib.api.raid.ResultComponent;
+import hungteen.htlib.api.raid.ResultType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,28 +21,28 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-12-03 22:43
  **/
-public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemStack> rewards) implements IResultComponent {
+public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemStack> rewards) implements ResultComponent {
 
-    public static final Codec<ItemStackResult> CODEC = RecordCodecBuilder.<ItemStackResult>mapCodec(instance -> instance.group(
+    public static final MapCodec<ItemStackResult> CODEC = RecordCodecBuilder.<ItemStackResult>mapCodec(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("for_defender", true).forGetter(ItemStackResult::forDefender),
             Codec.BOOL.optionalFieldOf("for_raider", false).forGetter(ItemStackResult::forRaider),
             ItemStack.CODEC.listOf().fieldOf("rewards").forGetter(ItemStackResult::rewards)
-    ).apply(instance, ItemStackResult::new)).codec();
+    ).apply(instance, ItemStackResult::new));
 
     @Override
-    public void apply(IRaid raid, ServerLevel level, int tick) {
+    public void apply(HTRaid raid, ServerLevel level, int tick) {
 
     }
 
     @Override
-    public void applyToDefender(IRaid raid, Entity defender, int tick) {
+    public void applyToDefender(HTRaid raid, Entity defender, int tick) {
         if(forDefender() && tick == 0 && defender instanceof Player){
             this.giveRewardTo((Player) defender);
         }
     }
 
     @Override
-    public void applyToRaider(IRaid raid, Entity raider, int tick) {
+    public void applyToRaider(HTRaid raid, Entity raider, int tick) {
         if(forRaider() && tick == 0 && raider instanceof Player){
             this.giveRewardTo((Player) raider);
         }
@@ -56,7 +57,7 @@ public record ItemStackResult(boolean forDefender, boolean forRaider, List<ItemS
                 ItemEntity itementity = player.drop(stack, false);
                 if (itementity != null) {
                     itementity.setNoPickUpDelay();
-                    itementity.setThrower(player.getUUID());
+                    itementity.setThrower(player);
                 }
             }
         });

@@ -3,7 +3,7 @@ package hungteen.htlib.data;
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.util.helper.StringHelper;
-import hungteen.htlib.util.helper.registry.BlockHelper;
+import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;

@@ -1,40 +1,40 @@
 package hungteen.htlib.util.helper;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
+import java.time.Month;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 23:08
  **/
-public class DateHelper {
+public interface DateHelper {
 
-    public static boolean isHalloween(){
-        return getMonth() == 10 && getDay() == 31;
+    static boolean isHalloween(){
+        return getMonth() == Month.OCTOBER && getDay() == 31;
     }
 
-    public static boolean isNewYear(){
-        return getMonth() == 1 && getDay() == 1;
+    static boolean isNewYear(){
+        return getMonth() == Month.JANUARY && getDay() == 1;
     }
 
-    public static boolean isChristmasDay(){
-        return getMonth() == 12 && getDay() == 25;
+    static boolean isChristmasDay(){
+        return getMonth() == Month.DECEMBER && getDay() == 25;
     }
 
-    private static int getDay(){
-        return getDate().get(ChronoField.DAY_OF_MONTH);
+    static int getDay(){
+        return getDate().getDayOfMonth();
     }
 
-    private static int getMonth(){
-        return getDate().get(ChronoField.MONTH_OF_YEAR);
+    static Month getMonth(){
+        return getDate().getMonth();
     }
 
-    private static int getYear(){
-        return getDate().get(ChronoField.YEAR);
+    static int getYear(){
+        return getDate().getYear();
     }
 
-    private static LocalDate getDate(){
+    static LocalDate getDate(){
         return LocalDate.now();
     }
 

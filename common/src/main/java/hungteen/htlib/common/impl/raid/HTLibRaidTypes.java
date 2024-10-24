@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.raid;
 
-import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.IRaidComponent;
-import hungteen.htlib.api.interfaces.raid.RaidType;
+import com.mojang.serialization.MapCodec;
+import hungteen.htlib.api.raid.RaidComponent;
+import hungteen.htlib.api.raid.RaidType;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 
 /**
  * @author PangTeen
@@ -14,11 +14,11 @@ import hungteen.htlib.util.helper.HTLibHelper;
  */
 public interface HTLibRaidTypes {
 
-    HTSimpleRegistry<RaidType<?>> TYPES = HTRegistryManager.createSimple(HTLibHelper.prefix("raid_type"));
+    HTSimpleRegistry<RaidType<?>> TYPES = HTRegistryManager.simple(HTLibHelper.prefix("raid_type"));
 
     RaidType<CommonRaid> COMMON = register(new RaidTypeImpl<>("common", CommonRaid.CODEC));
 
-    static <T extends IRaidComponent> RaidType<T> register(RaidType<T> type) {
+    static <T extends RaidComponent> RaidType<T> register(RaidType<T> type) {
         return registry().register(type);
     }
 
@@ -26,7 +26,7 @@ public interface HTLibRaidTypes {
         return TYPES;
     }
 
-    record RaidTypeImpl<P extends IRaidComponent>(String name, Codec<P> codec) implements RaidType<P> {
+    record RaidTypeImpl<P extends RaidComponent>(String name, MapCodec<P> codec) implements RaidType<P> {
 
         @Override
         public String getName() {

@@ -3,7 +3,7 @@ package hungteen.htlib.common.event;
 import hungteen.htlib.HTLibForgeInitializer;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
-import hungteen.htlib.util.helper.registry.EntityHelper;
+import hungteen.htlib.util.helper.impl.EntityHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;

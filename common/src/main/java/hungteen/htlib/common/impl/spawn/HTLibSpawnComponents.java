@@ -2,13 +2,13 @@ package hungteen.htlib.common.impl.spawn;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.api.interfaces.raid.PositionComponent;
-import hungteen.htlib.api.interfaces.raid.SpawnType;
+import hungteen.htlib.api.raid.SpawnComponent;
+import hungteen.htlib.api.raid.PositionComponent;
+import hungteen.htlib.api.raid.SpawnType;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.impl.position.HTLibPositionComponents;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import hungteen.htlib.util.helper.NBTHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -33,16 +33,16 @@ import java.util.Optional;
  **/
 public interface HTLibSpawnComponents {
 
-    HTCodecRegistry<ISpawnComponent> SPAWNS = HTRegistryManager.codec(HTLibHelper.prefix("spawn"), HTLibSpawnComponents::getDirectCodec);
+    HTCodecRegistry<SpawnComponent> SPAWNS = HTRegistryManager.codec(HTLibHelper.prefix("spawn"), HTLibSpawnComponents::getDirectCodec);
 
-    ResourceKey<ISpawnComponent> CREEPER_4_8 = create("creeper_4_8");
-    ResourceKey<ISpawnComponent> POWERED_CREEPER_3_5 = create("powered_creeper_3_5");
-    ResourceKey<ISpawnComponent> SPIDER_5 = create("spider_5");
-    ResourceKey<ISpawnComponent> LONG_TERM_SKELETON = create("long_term_skeleton");
-    ResourceKey<ISpawnComponent> WITHER_SKELETON = create("wither_skeleton");
-    ResourceKey<ISpawnComponent> DIAMOND_ZOMBIE_3_6 = create("diamond_zombie_3_6");
+    ResourceKey<SpawnComponent> CREEPER_4_8 = create("creeper_4_8");
+    ResourceKey<SpawnComponent> POWERED_CREEPER_3_5 = create("powered_creeper_3_5");
+    ResourceKey<SpawnComponent> SPIDER_5 = create("spider_5");
+    ResourceKey<SpawnComponent> LONG_TERM_SKELETON = create("long_term_skeleton");
+    ResourceKey<SpawnComponent> WITHER_SKELETON = create("wither_skeleton");
+    ResourceKey<SpawnComponent> DIAMOND_ZOMBIE_3_6 = create("diamond_zombie_3_6");
 
-    static void register(BootstrapContext<ISpawnComponent> context) {
+    static void register(BootstrapContext<SpawnComponent> context) {
         final HolderGetter<PositionComponent> positions = HTLibPositionComponents.registry().helper().lookup(context);
         context.register(CREEPER_4_8, new OnceSpawn(
                 HTLibSpawnComponents.builder().entityType(EntityType.CREEPER).build(),
@@ -87,33 +87,33 @@ public interface HTLibSpawnComponents {
         ));
     }
 
-    static Codec<ISpawnComponent> getDirectCodec() {
-        return HTLibSpawnTypes.registry().byNameCodec().dispatch(ISpawnComponent::getType, SpawnType::codec);
+    static Codec<SpawnComponent> getDirectCodec() {
+        return HTLibSpawnTypes.registry().byNameCodec().dispatch(SpawnComponent::getType, SpawnType::codec);
     }
 
-    static Codec<Holder<ISpawnComponent>> getCodec() {
+    static Codec<Holder<SpawnComponent>> getCodec() {
         return registry().getHolderCodec(getDirectCodec());
     }
 
-    static Codec<Pair<Integer, ISpawnComponent>> pairDirectCodec() {
+    static Codec<Pair<Integer, SpawnComponent>> pairDirectCodec() {
         return Codec.mapPair(
                 Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", 0),
                 getDirectCodec().fieldOf("spawn")
         ).codec();
     }
 
-    static Codec<Pair<IntProvider, Holder<ISpawnComponent>>> pairCodec() {
+    static Codec<Pair<IntProvider, Holder<SpawnComponent>>> pairCodec() {
         return Codec.mapPair(
                 IntProvider.codec(0, Integer.MAX_VALUE).optionalFieldOf("start_tick", ConstantInt.of(0)),
                 getCodec().fieldOf("spawn")
         ).codec();
     }
 
-    static ResourceKey<ISpawnComponent> create(String name) {
+    static ResourceKey<SpawnComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    static HTCodecRegistry<ISpawnComponent> registry() {
+    static HTCodecRegistry<SpawnComponent> registry() {
         return SPAWNS;
     }
 
@@ -130,8 +130,8 @@ public interface HTLibSpawnComponents {
         private boolean persist = true;
         private Holder<PositionComponent> placeComponent = null;
 
-        public SpawnComponent.SpawnSetting build() {
-            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent));
+        public SpawnComponentImpl.SpawnSetting build() {
+            return new SpawnComponentImpl.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent));
         }
 
         public SpawnSettingBuilder entityType(EntityType<?> type) {

@@ -1,6 +1,6 @@
 package hungteen.htlib.common.event.events;
 
-import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityImpl;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -13,9 +13,9 @@ import net.minecraftforge.eventbus.api.Event;
 public abstract class DummyEntityEvent extends Event {
 
     private final Level level;
-    private final DummyEntity dummyEntity;
+    private final DummyEntityImpl dummyEntity;
 
-    public DummyEntityEvent(Level level, DummyEntity dummyEntity) {
+    public DummyEntityEvent(Level level, DummyEntityImpl dummyEntity) {
         this.level = level;
         this.dummyEntity = dummyEntity;
     }
@@ -24,13 +24,13 @@ public abstract class DummyEntityEvent extends Event {
         return level;
     }
 
-    public DummyEntity getDummyEntity() {
+    public DummyEntityImpl getDummyEntity() {
         return dummyEntity;
     }
 
     @Cancelable
     public static class DummyEntitySpawnEvent extends DummyEntityEvent {
-        public DummyEntitySpawnEvent(Level level, DummyEntity dummyEntity) {
+        public DummyEntitySpawnEvent(Level level, DummyEntityImpl dummyEntity) {
             super(level, dummyEntity);
         }
     }

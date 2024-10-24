@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.position;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.PositionComponent;
-import hungteen.htlib.api.interfaces.raid.PositionType;
+import hungteen.htlib.api.raid.PositionComponent;
+import hungteen.htlib.api.raid.PositionType;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;

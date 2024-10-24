@@ -25,7 +25,7 @@ import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTLibDummyEntities;
 import hungteen.htlib.data.HTDataGenHandler;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;

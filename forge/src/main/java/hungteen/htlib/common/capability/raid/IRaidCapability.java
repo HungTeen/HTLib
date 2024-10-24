@@ -1,6 +1,6 @@
 package hungteen.htlib.common.capability.raid;
 
-import hungteen.htlib.api.interfaces.raid.IRaid;
+import hungteen.htlib.api.raid.HTRaid;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 /**
@@ -13,9 +13,9 @@ public interface IRaidCapability {
 
     boolean isRaider();
 
-    void setRaid(IRaid raid);
+    void setRaid(HTRaid raid);
 
-    IRaid getRaid();
+    HTRaid getRaid();
 
     void setWave(int wave);
 

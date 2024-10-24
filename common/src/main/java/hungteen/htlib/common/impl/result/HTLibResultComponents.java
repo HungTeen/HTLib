@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.result;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.IResultComponent;
-import hungteen.htlib.api.interfaces.raid.ResultType;
+import hungteen.htlib.api.raid.ResultComponent;
+import hungteen.htlib.api.raid.ResultType;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.RegistryFileCodec;
@@ -23,13 +23,13 @@ import java.util.Optional;
  **/
 public interface HTLibResultComponents {
 
-    HTCodecRegistry<IResultComponent> RESULTS = HTRegistryManager.codec(HTLibHelper.prefix("result"), HTLibResultComponents::getDirectCodec);
+    HTCodecRegistry<ResultComponent> RESULTS = HTRegistryManager.codec(HTLibHelper.prefix("result"), HTLibResultComponents::getDirectCodec);
 
-    ResourceKey<IResultComponent> TEST = create("test");
-    ResourceKey<IResultComponent> COMMON_FUNCTION = create("common_function");
-    ResourceKey<IResultComponent> COMMAND_FUNCTION = create("command_function");
+    ResourceKey<ResultComponent> TEST = create("test");
+    ResourceKey<ResultComponent> COMMON_FUNCTION = create("common_function");
+    ResourceKey<ResultComponent> COMMAND_FUNCTION = create("command_function");
 
-    static void register(BootstrapContext<IResultComponent> context) {
+    static void register(BootstrapContext<ResultComponent> context) {
         context.register(TEST, new ItemStackResult(
                 true, false,
                 List.of(new ItemStack(Items.ACACIA_BOAT, 3))
@@ -44,19 +44,19 @@ public interface HTLibResultComponents {
         ));
     }
 
-    static Codec<IResultComponent> getDirectCodec() {
-        return HTLibResultTypes.registry().byNameCodec().dispatch(IResultComponent::getType, ResultType::codec);
+    static Codec<ResultComponent> getDirectCodec() {
+        return HTLibResultTypes.registry().byNameCodec().dispatch(ResultComponent::getType, ResultType::codec);
     }
 
-    static Codec<Holder<IResultComponent>> getCodec() {
+    static Codec<Holder<ResultComponent>> getCodec() {
         return RegistryFileCodec.create(registry().getRegistryKey(), getDirectCodec());
     }
 
-    static ResourceKey<IResultComponent> create(String name) {
+    static ResourceKey<ResultComponent> create(String name) {
         return registry().createKey(HTLibHelper.prefix(name));
     }
 
-    static HTCodecRegistry<IResultComponent> registry() {
+    static HTCodecRegistry<ResultComponent> registry() {
         return RESULTS;
     }
 

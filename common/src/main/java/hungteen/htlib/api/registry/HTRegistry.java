@@ -1,6 +1,6 @@
 package hungteen.htlib.api.registry;
 
-import hungteen.htlib.api.interfaces.HTResourceHelper;
+import hungteen.htlib.api.util.helper.HTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

@@ -1,7 +1,8 @@
 package hungteen.htlib.common.entity;
 
 import hungteen.htlib.common.impl.BoatTypes;
-import hungteen.htlib.util.interfaces.BoatType;
+import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HasHTBoatType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

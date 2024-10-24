@@ -1,7 +1,7 @@
 package hungteen.htlib.api;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.HTRegistryHelper;
+import hungteen.htlib.api.util.helper.HTRegistryHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

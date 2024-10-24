@@ -1,11 +1,11 @@
 package hungteen.htlib.common.impl.wave;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.api.interfaces.raid.WaveType;
+import hungteen.htlib.api.raid.HTRaid;
+import hungteen.htlib.api.raid.SpawnComponent;
+import hungteen.htlib.api.raid.WaveType;
 import hungteen.htlib.common.impl.spawn.HTLibSpawnComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
@@ -27,24 +27,25 @@ public class CommonWave extends WaveComponentImpl {
      * canSkip : 完成后是否能跳过额外时间
      * spawnComponents : 生成部件
      */
-    public static final Codec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
+    public static final MapCodec<CommonWave> CODEC = RecordCodecBuilder.<CommonWave>mapCodec(instance -> instance.group(
             WaveSetting.CODEC.fieldOf("setting").forGetter(CommonWave::getWaveSetting),
             HTLibSpawnComponents.pairCodec().listOf().fieldOf("spawns").forGetter(CommonWave::getSpawnComponents)
-    ).apply(instance, CommonWave::new)).codec();
-    private final List<Pair<IntProvider, Holder<ISpawnComponent>>> spawnComponents;
+    ).apply(instance, CommonWave::new));
 
-    public CommonWave(WaveSetting waveSettings, List<Pair<IntProvider, Holder<ISpawnComponent>>> spawnComponents) {
+    private final List<Pair<IntProvider, Holder<SpawnComponent>>> spawnComponents;
+
+    public CommonWave(WaveSetting waveSettings, List<Pair<IntProvider, Holder<SpawnComponent>>> spawnComponents) {
         super(waveSettings);
         this.spawnComponents = spawnComponents;
     }
 
-    public List<Pair<IntProvider, Holder<ISpawnComponent>>> getSpawnComponents() {
+    public List<Pair<IntProvider, Holder<SpawnComponent>>> getSpawnComponents() {
         return spawnComponents;
     }
 
     @Override
-    public List<Pair<Integer, ISpawnComponent>> getWaveSpawns(IRaid raid, int currentWave, RandomSource random) {
-        return spawnComponents.stream().map(p -> Pair.of(p.getFirst().sample(random), p.getSecond().get())).toList();
+    public List<Pair<Integer, SpawnComponent>> getWaveSpawns(HTRaid raid, int currentWave, RandomSource random) {
+        return spawnComponents.stream().map(p -> Pair.of(p.getFirst().sample(random), p.getSecond().value())).toList();
     }
 
     @Override

@@ -2,15 +2,15 @@ package hungteen.htlib.common.impl.wave;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
-import hungteen.htlib.api.interfaces.raid.WaveComponent;
-import hungteen.htlib.api.interfaces.raid.PositionComponent;
-import hungteen.htlib.api.interfaces.raid.WaveType;
+import hungteen.htlib.api.raid.SpawnComponent;
+import hungteen.htlib.api.raid.WaveComponent;
+import hungteen.htlib.api.raid.PositionComponent;
+import hungteen.htlib.api.raid.WaveType;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.common.impl.position.HTLibPositionComponents;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.spawn.HTLibSpawnComponents;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -38,14 +38,14 @@ public interface HTLibWaveComponents {
     ResourceKey<WaveComponent> COMMON_WAVE_3 = create("common_wave_3");
 
     static void register(BootstrapContext<WaveComponent> context) {
-        final HolderGetter<ISpawnComponent> spawns = HTLibSpawnComponents.registry().helper().lookup(context);
+        final HolderGetter<SpawnComponent> spawns = HTLibSpawnComponents.registry().helper().lookup(context);
         final HolderGetter<PositionComponent> positions = HTLibPositionComponents.registry().helper().lookup(context);
-        final Holder<ISpawnComponent> creeperSpawns = spawns.getOrThrow(HTLibSpawnComponents.CREEPER_4_8);
-        final Holder<ISpawnComponent> poweredCreeperSpawns = spawns.getOrThrow(HTLibSpawnComponents.POWERED_CREEPER_3_5);
-        final Holder<ISpawnComponent> spiderSpawns = spawns.getOrThrow(HTLibSpawnComponents.SPIDER_5);
-        final Holder<ISpawnComponent> skeletonSpawns = spawns.getOrThrow(HTLibSpawnComponents.LONG_TERM_SKELETON);
-        final Holder<ISpawnComponent> witherSkeletonSpawns = spawns.getOrThrow(HTLibSpawnComponents.WITHER_SKELETON);
-        final Holder<ISpawnComponent> diamondZombieSpawns = spawns.getOrThrow(HTLibSpawnComponents.DIAMOND_ZOMBIE_3_6);
+        final Holder<SpawnComponent> creeperSpawns = spawns.getOrThrow(HTLibSpawnComponents.CREEPER_4_8);
+        final Holder<SpawnComponent> poweredCreeperSpawns = spawns.getOrThrow(HTLibSpawnComponents.POWERED_CREEPER_3_5);
+        final Holder<SpawnComponent> spiderSpawns = spawns.getOrThrow(HTLibSpawnComponents.SPIDER_5);
+        final Holder<SpawnComponent> skeletonSpawns = spawns.getOrThrow(HTLibSpawnComponents.LONG_TERM_SKELETON);
+        final Holder<SpawnComponent> witherSkeletonSpawns = spawns.getOrThrow(HTLibSpawnComponents.WITHER_SKELETON);
+        final Holder<SpawnComponent> diamondZombieSpawns = spawns.getOrThrow(HTLibSpawnComponents.DIAMOND_ZOMBIE_3_6);
         context.register(TEST_1, new CommonWave(
                 HTLibWaveComponents.builder().prepare(100).wave(800).skip(false)
                         .placement(positions.getOrThrow(HTLibPositionComponents.TEST)).build(),

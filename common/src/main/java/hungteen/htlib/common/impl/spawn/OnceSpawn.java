@@ -1,9 +1,9 @@
 package hungteen.htlib.common.impl.spawn;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import hungteen.htlib.api.interfaces.raid.IRaid;
-import hungteen.htlib.api.interfaces.raid.SpawnType;
+import hungteen.htlib.api.raid.HTRaid;
+import hungteen.htlib.api.raid.SpawnType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-11-27 17:56
  **/
-public class OnceSpawn extends SpawnComponent {
+public class OnceSpawn extends SpawnComponentImpl {
 
     /**
      * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -25,10 +25,10 @@ public class OnceSpawn extends SpawnComponent {
      * spawnTick : 生成的时间，When to getSpawnEntities the entity.
      * spawnCount : 生成数量，How many entities to getSpawnEntities.
      */
-    public static final Codec<OnceSpawn> CODEC = RecordCodecBuilder.<OnceSpawn>mapCodec(instance -> instance.group(
+    public static final MapCodec<OnceSpawn> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SpawnSetting.CODEC.fieldOf("setting").forGetter(OnceSpawn::getSpawnSetting),
             IntProvider.POSITIVE_CODEC.fieldOf("spawn_count").forGetter(OnceSpawn::getSpawnCount)
-    ).apply(instance, OnceSpawn::new)).codec();
+    ).apply(instance, OnceSpawn::new));
     private final IntProvider spawnCount;
 
     public OnceSpawn(SpawnSetting spawnSettings, IntProvider spawnCount){
@@ -37,7 +37,7 @@ public class OnceSpawn extends SpawnComponent {
     }
 
     @Override
-    public List<Entity> getSpawnEntities(ServerLevel level, IRaid raid, int tick, int startTick) {
+    public List<Entity> getSpawnEntities(ServerLevel level, HTRaid raid, int tick, int startTick) {
         List<Entity> entities = new ArrayList<>();
         if(tick == startTick){
             final int spawnCount = getSpawnCount().sample(level.random);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @author: HungTeen
  * @create: 2022-11-27 22:34
  **/
-public final class DummyEntityType<T extends DummyEntity> implements SimpleEntry {
+public final class DummyEntityType<T extends DummyEntityImpl> implements SimpleEntry {
 
     private final ResourceLocation location;
     private final Factory<T> factory;
@@ -49,7 +49,7 @@ public final class DummyEntityType<T extends DummyEntity> implements SimpleEntry
         return location;
     }
 
-    public interface Factory<T extends DummyEntity> {
+    public interface Factory<T extends DummyEntityImpl> {
 
         @NotNull
         T create(DummyEntityType<T> entityType, Level level, CompoundTag tag);

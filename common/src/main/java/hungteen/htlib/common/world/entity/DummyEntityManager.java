@@ -31,7 +31,7 @@ public class DummyEntityManager extends SavedData {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String FORMATION_FILE_ID = "dummy_entities";
     private final ServerLevel level;
-    private final Map<Integer, DummyEntity> entityMap = Maps.newHashMap();
+    private final Map<Integer, DummyEntityImpl> entityMap = Maps.newHashMap();
     private int currentEntityID = 1;
 
     public DummyEntityManager(ServerLevel level) {
@@ -43,7 +43,7 @@ public class DummyEntityManager extends SavedData {
      * Usually called by command, generic usage.
      */
     @Nullable
-    public static DummyEntity createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
+    public static DummyEntityImpl createDummyEntity(ServerLevel level, ResourceLocation location, Vec3 position, CompoundTag tag) {
         final BlockPos blockpos = MathHelper.toBlockPos(position);
         final Optional<? extends DummyEntityType<?>> opt = HTLibDummyEntities.getEntityType(location);
         if(Level.isInSpawnableBounds(blockpos) && opt.isPresent()){
@@ -53,7 +53,7 @@ public class DummyEntityManager extends SavedData {
             Vec3.CODEC.encodeStart(NbtOps.INSTANCE, position)
                     .result().ifPresent(nbt -> compoundtag.put("Position", nbt));
 
-            DummyEntity dummyEntity = dummyEntityType.create(level, compoundtag);
+            DummyEntityImpl dummyEntity = dummyEntityType.create(level, compoundtag);
             return addEntity(level, dummyEntity);
         }
         return null;
@@ -63,7 +63,7 @@ public class DummyEntityManager extends SavedData {
      * Specific usage.
      */
     @Nullable
-    public static <T extends DummyEntity> T addEntity(ServerLevel level, T dummyEntity) {
+    public static <T extends DummyEntityImpl> T addEntity(ServerLevel level, T dummyEntity) {
         if (dummyEntity != null && ! MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity))) {
             DummyEntityManager.get(level).add(dummyEntity);
             return dummyEntity;
@@ -84,8 +84,8 @@ public class DummyEntityManager extends SavedData {
      * tick all raid in running.
      */
     void tick() {
-        final List<DummyEntity> removedEntity = new ArrayList<>();
-        for (DummyEntity entity : this.entityMap.values()) {
+        final List<DummyEntityImpl> removedEntity = new ArrayList<>();
+        for (DummyEntityImpl entity : this.entityMap.values()) {
             if(entity.isRemoved()){
                 removedEntity.add(entity);
             } else{
@@ -118,7 +118,7 @@ public class DummyEntityManager extends SavedData {
         NetworkHandler.sendToClient(player, new DummyEntityPacket());
     }
 
-    public void sync(boolean add, DummyEntity dummyEntity){
+    public void sync(boolean add, DummyEntityImpl dummyEntity){
         NetworkHandler.sendToClient(new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
     }
 
@@ -126,30 +126,30 @@ public class DummyEntityManager extends SavedData {
         get(level).setDirty();
     }
 
-    public static Optional<DummyEntity> getDummyEntity(ServerLevel level, int id){
+    public static Optional<DummyEntityImpl> getDummyEntity(ServerLevel level, int id){
         return Optional.ofNullable(get(level).entityMap.getOrDefault(id, null));
     }
 
-    public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
+    public static List<DummyEntityImpl> getDummyEntities(ServerLevel serverLevel) {
         return get(serverLevel).entityMap.values().stream().toList();
     }
 
-    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType) {
+    public static Stream<DummyEntityImpl> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType) {
         return DummyEntityManager.getDummyEntities(serverLevel).stream()
                 .filter(dummyEntity -> dummyEntity.getEntityType().getLocation().equals(entityType));
     }
 
-    public static Stream<DummyEntity> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType, Vec3 position, int limit) {
+    public static Stream<DummyEntityImpl> getDummyEntities(ServerLevel serverLevel, ResourceLocation entityType, Vec3 position, int limit) {
         return DummyEntityManager.getDummyEntities(serverLevel, entityType)
                 .sorted(Comparator.comparingDouble(dummyEntity -> dummyEntity.getPosition().distanceTo(position)))
                 .limit(limit);
     }
 
-    public static Stream<DummyEntity> getCollisionEntities(Level level){
-        return HTLibForgeInitializer.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
+    public static Stream<DummyEntityImpl> getCollisionEntities(Level level){
+        return HTLibForgeInitializer.PROXY.getDummyEntities(level).stream().filter(DummyEntityImpl::hasCollision);
     }
 
-    public static <T extends DummyEntity> T createEntity(ServerLevel level, Function<Integer, T> function){
+    public static <T extends DummyEntityImpl> T createEntity(ServerLevel level, Function<Integer, T> function){
         DummyEntityManager manager = get(level);
         final int entityID = manager.getUniqueId();
         T entity = function.apply(entityID);
@@ -157,12 +157,12 @@ public class DummyEntityManager extends SavedData {
         return entity;
     }
 
-    public static void removeEntity(ServerLevel level, DummyEntity dummyEntity){
+    public static void removeEntity(ServerLevel level, DummyEntityImpl dummyEntity){
         get(level).remove(dummyEntity);
     }
 
-    public static void markRemoveEntities(List<DummyEntity> dummyEntities){
-        dummyEntities.forEach(DummyEntity::remove);
+    public static void markRemoveEntities(List<DummyEntityImpl> dummyEntities){
+        dummyEntities.forEach(DummyEntityImpl::remove);
     }
 
     /**
@@ -170,15 +170,15 @@ public class DummyEntityManager extends SavedData {
      * Note : Can not use isAlive to check, because EntityJoinLevelEvent is before that. <br>
      * Note : entityId is not sync to the Level currently, thats why ignore checking. <br>
      */
-    public void add(DummyEntity dummyEntity){
+    public void add(DummyEntityImpl dummyEntity){
         add(dummyEntity, true);
     }
 
-    public void remove(DummyEntity dummyEntity){
+    public void remove(DummyEntityImpl dummyEntity){
         remove(dummyEntity, true);
     }
 
-    private void add(DummyEntity entity, boolean sync){
+    private void add(DummyEntityImpl entity, boolean sync){
         this.entityMap.put(entity.getEntityID(), entity);
         this.setDirty();
         if(sync) {
@@ -186,7 +186,7 @@ public class DummyEntityManager extends SavedData {
         }
     }
 
-    private void remove(DummyEntity entity, boolean sync){
+    private void remove(DummyEntityImpl entity, boolean sync){
         this.entityMap.remove(entity.getEntityID());
         this.setDirty();
         if(sync){
@@ -218,7 +218,7 @@ public class DummyEntityManager extends SavedData {
                             .resultOrPartial(LOGGER::error)
                             .ifPresent(entityType -> {
                                 final CompoundTag nbt = tag.getCompound("DummyEntityTag_" + num);
-                                final DummyEntity dummyEntity = entityType.create(level, nbt);
+                                final DummyEntityImpl dummyEntity = entityType.create(level, nbt);
                                 manager.add(dummyEntity, true);
                             });
                 }
@@ -229,11 +229,11 @@ public class DummyEntityManager extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        final List<DummyEntity> list = getDummyEntities(this.level);
+        final List<DummyEntityImpl> list = getDummyEntities(this.level);
         tag.putInt("CurrentEntityID", this.currentEntityID);
         tag.putInt("DummyEntityCount", list.size());
         for(int i = 0; i < list.size(); ++ i){
-            final DummyEntity entity = list.get(i);
+            final DummyEntityImpl entity = list.get(i);
             final int num = i;
             HTLibDummyEntities.getCodec()
                     .encodeStart(NbtOps.INSTANCE, entity.getEntityType())

@@ -3,7 +3,7 @@ package hungteen.htlib.common;
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
-import hungteen.htlib.util.helper.HTLibHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 
