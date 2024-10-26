@@ -1,14 +1,11 @@
 package hungteen.htlib.common;
 
-import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.common.impl.registry.suit.EntitySuit;
 import hungteen.htlib.common.impl.registry.suit.EntitySuits;
 import hungteen.htlib.common.impl.registry.suit.StoneSuits;
 import hungteen.htlib.common.impl.registry.suit.TreeSuits;
 import hungteen.htlib.common.item.HTBoatItem;
 import hungteen.htlib.util.helper.StringHelper;
-import hungteen.htlib.util.helper.impl.BlockHelper;
-import hungteen.htlib.util.BoatType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CreativeModeTab;
@@ -55,15 +52,15 @@ public class HTSuitHandler {
             });
 
         }
-        if (ForgeRegistries.ITEMS.getRegistryKey().equals(event.getRegistryKey())) {
-            BoatTypes.registerBoatType(BoatType.DEFAULT);
-            TreeSuits.getTreeSuits().forEach(wood -> {
-                BlockHelper.registerWoodType(wood.getWoodType());
-                if (wood.getBoatSetting().isEnabled()) {
-                    BoatTypes.registerBoatType(wood.getBoatSetting().getBoatType());
-                }
-            });
-        }
+//        if (ForgeRegistries.ITEMS.getRegistryKey().equals(event.getRegistryKey())) {
+//            BoatTypes.registerBoatType(BoatType.DEFAULT);
+//            TreeSuits.getTreeSuits().forEach(wood -> {
+//                BlockHelper.registerWoodType(wood.getWoodType());
+//                if (wood.getBoatSetting().isEnabled()) {
+//                    BoatTypes.registerBoatType(wood.getBoatSetting().getBoatType());
+//                }
+//            });
+//        }
         if (ForgeRegistries.ITEMS.getRegistryKey().equals(event.getRegistryKey())) {
             TreeSuits.registry().getValues().forEach(suit -> {
                 if (suit.getBoatSetting().isEnabled()) {
@@ -106,18 +103,18 @@ public class HTSuitHandler {
 
     public static void setUp() {
         /* Register Stripped Action */
-        TreeSuits.getTreeSuits().forEach(wood -> {
-            wood.getBlockOpt(TreeSuits.HTWoodTypes.WOOD).ifPresent(block1 -> {
-                wood.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_WOOD).ifPresent(block2 -> {
-                    BlockHelper.registerAxeStrip(block1, block2);
-                });
-            });
-            wood.getBlockOpt(TreeSuits.HTWoodTypes.LOG).ifPresent(block1 -> {
-                wood.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_LOG).ifPresent(block2 -> {
-                    BlockHelper.registerAxeStrip(block1, block2);
-                });
-            });
-        });
+//        TreeSuits.getTreeSuits().forEach(wood -> {
+//            wood.getBlockOpt(TreeSuits.HTWoodTypes.WOOD).ifPresent(block1 -> {
+//                wood.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_WOOD).ifPresent(block2 -> {
+//                    BlockHelper.registerAxeStrip(block1, block2);
+//                });
+//            });
+//            wood.getBlockOpt(TreeSuits.HTWoodTypes.LOG).ifPresent(block1 -> {
+//                wood.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_LOG).ifPresent(block2 -> {
+//                    BlockHelper.registerAxeStrip(block1, block2);
+//                });
+//            });
+//        });
     }
 
     public static void clear(FMLLoadCompleteEvent event) {

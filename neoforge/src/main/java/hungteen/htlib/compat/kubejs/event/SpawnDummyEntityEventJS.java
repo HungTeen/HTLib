@@ -2,7 +2,7 @@ package hungteen.htlib.compat.kubejs.event;
 
 import dev.latvian.mods.kubejs.level.LevelEventJS;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
-import hungteen.htlib.common.world.entity.DummyEntityImpl;
+import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -19,7 +19,7 @@ public class SpawnDummyEntityEventJS extends LevelEventJS {
         this.event = event;
     }
 
-    public DummyEntityImpl getDummyEntity() {
+    public DummyEntity getDummyEntity() {
         return event.getDummyEntity();
     }
 

@@ -7,10 +7,7 @@ import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -23,7 +20,7 @@ import java.util.function.Supplier;
  */
 public class EntitySuits {
 
-    private static final HTSimpleRegistryImpl<EntitySuit<?>> SUITS = HTRegistryManager.createSimple(HTLibHelper.prefix("entity_suit"));
+    private static final HTSimpleRegistryImpl<EntitySuit<?>> SUITS = HTRegistryManager.simple(HTLibHelper.prefix("entity_suit"));
 
     public static HTSimpleRegistry<EntitySuit<?>> registry() {
         return SUITS;
@@ -68,25 +65,25 @@ public class EntitySuits {
             return this;
         }
 
-        public Builder<T> heightMap(Heightmap.Types type){
-            suit.setHeightMap(type);
-            return this;
-        }
-
-        public Builder<T> spawn(SpawnPlacements.Type type){
-            suit.setPlacement(type);
-            return this;
-        }
-
-        public Builder<T> predict(SpawnPlacements.SpawnPredicate<T> predicate){
-            suit.setPredicate(predicate);
-            return this;
-        }
-
-        public Builder<T> op(SpawnPlacementRegisterEvent.Operation operation){
-            suit.setOperation(operation);
-            return this;
-        }
+//        public Builder<T> heightMap(Heightmap.Types type){
+//            suit.setHeightMap(type);
+//            return this;
+//        }
+//
+//        public Builder<T> spawn(SpawnPlacements.Type type){
+//            suit.setPlacement(type);
+//            return this;
+//        }
+//
+//        public Builder<T> predict(SpawnPlacements.SpawnPredicate<T> predicate){
+//            suit.setPredicate(predicate);
+//            return this;
+//        }
+//
+//        public Builder<T> op(SpawnPlacementRegisterEvent.Operation operation){
+//            suit.setOperation(operation);
+//            return this;
+//        }
 
         public EntitySuit<T> build() {
             return suit;

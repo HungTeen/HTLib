@@ -1,7 +1,8 @@
 package hungteen.htlib.common.capability.player;
 
-import hungteen.htlib.api.util.IPlayerDataManager;
+import hungteen.htlib.platform.IPlayerDataManager;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -38,12 +39,12 @@ public abstract class HTPlayerCapProvider<T extends IPlayerDataManager> implemen
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return playerCap.get().saveToNBT();
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         playerCap.get().loadFromNBT(nbt);
     }
 }

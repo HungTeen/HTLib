@@ -1,8 +1,9 @@
 package hungteen.htlib.common.capability;
 
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.api.util.IPlayerDataManager;
+import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.capability.player.IHTPlayerCapability;
+import hungteen.htlib.platform.IPlayerDataManager;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -26,7 +27,7 @@ public class PlayerCapabilityManager {
     public static Set<Capability<? extends IHTPlayerCapability<? extends IPlayerDataManager>>> PLAYER_CAPABILITIES = new HashSet<>();
 
     /**
-     * {@link HTLibForgeInitializer#HTLib()}
+     * {@link HTLibForgeInitializer}
      */
     public static void tick(TickEvent.PlayerTickEvent event){
         // Server side only.
@@ -59,7 +60,7 @@ public class PlayerCapabilityManager {
      */
     public static <T extends IPlayerDataManager, K extends IHTPlayerCapability<T>> void register(Capability<K> capability){
         if(PLAYER_CAPABILITIES.contains(capability)){
-            HTLibForgeInitializer.getLogger().warn("Registering duplicated capability : " + capability.getName());
+            HTLibAPI.logger().warn("Registering duplicated capability : {}", capability.getName());
         } else {
             PLAYER_CAPABILITIES.add(capability);
         }

@@ -2,7 +2,7 @@ package hungteen.htlib.common.block.plant;
 
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
@@ -12,11 +12,11 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  **/
 public class HTSaplingBlock extends SaplingBlock {
 
-    public HTSaplingBlock(AbstractTreeGrower treeGrower) {
-        super(treeGrower, BlockBehaviour.Properties.copy(Blocks.OAK_SAPLING));
+    public HTSaplingBlock(TreeGrower treeGrower) {
+        super(treeGrower, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING));
     }
 
-    public HTSaplingBlock(AbstractTreeGrower treeGrower, Properties properties) {
+    public HTSaplingBlock(TreeGrower treeGrower, Properties properties) {
         super(treeGrower, properties);
     }
 

@@ -20,7 +20,5 @@ public class HTDataGenHandler {
         PackOutput output = event.getGenerator().getPackOutput();
         CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
         ExistingFileHelper helper = event.getExistingFileHelper();
-
-        generator.addProvider(event.includeServer(), new HTDatapackEntriesGen(output, provider));
     }
 }

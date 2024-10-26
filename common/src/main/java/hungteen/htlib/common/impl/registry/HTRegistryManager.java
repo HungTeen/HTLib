@@ -1,7 +1,7 @@
 package hungteen.htlib.common.impl.registry;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.HTLibPlatformAPI;
+import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import hungteen.htlib.api.registry.SimpleEntry;

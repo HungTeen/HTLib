@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import hungteen.htlib.HTLibForgeInitializer;
-import hungteen.htlib.client.ClientProxy;
 import hungteen.htlib.client.util.ClientHelper;
-import hungteen.htlib.common.world.entity.DummyEntityImpl;
+import hungteen.htlib.common.HTLibProxy;
+import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -36,7 +36,7 @@ public class LevelRenderHandler {
     }
 
     public static void renderFormations(RenderLevelStageEvent event){
-        ClientProxy.getDummyEntities().stream().filter(DummyEntityImpl::renderBorder).forEach(entity -> {
+        HTLibProxy.get().getDummyEntities().stream().filter(DummyEntity::renderBorder).forEach(entity -> {
                     renderBorderFormation(entity, event.getCamera());
                 });
     }
@@ -44,7 +44,7 @@ public class LevelRenderHandler {
     /**
      * {@link net.minecraft.client.renderer.LevelRenderer}
      */
-    private static void renderBorderFormation(DummyEntityImpl entityIn, Camera camera) {
+    private static void renderBorderFormation(DummyEntity entityIn, Camera camera) {
         final double validDistance = ClientHelper.option().getEffectiveRenderDistance() * 16;
         final double maxX = entityIn.getMaxX();
         final double minX = entityIn.getMinX();

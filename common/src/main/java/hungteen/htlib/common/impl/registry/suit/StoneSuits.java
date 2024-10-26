@@ -1,15 +1,15 @@
 package hungteen.htlib.common.impl.registry.suit;
 
 import hungteen.htlib.api.registry.HTSimpleRegistry;
+import hungteen.htlib.common.block.wood.HTStairBlock;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
-import hungteen.htlib.util.helper.impl.HTLibHelper;
 import hungteen.htlib.util.helper.StringHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -36,32 +36,32 @@ public class StoneSuits {
             super(registryName);
             stoneSettings.put(HTStoneTypes.BLOCK, new HTBlockSetting(
                     r -> r,
-                    Block.Properties.copy(Blocks.STONE),
+                    Block.Properties.ofFullCopy(Blocks.STONE),
                     Block::new
             ));
             stoneSettings.put(HTStoneTypes.POLISHED_BLOCK, new HTBlockSetting(
                     r -> StringHelper.prefix(r, "polished"),
-                    Block.Properties.copy(Blocks.STONE),
+                    Block.Properties.ofFullCopy(Blocks.STONE),
                     Block::new
             ));
             stoneSettings.put(HTStoneTypes.STAIRS, new HTBlockSetting(
                     r -> StringHelper.suffix(r, "stairs"),
-                    Block.Properties.copy(Blocks.STONE),
-                    p -> new StairBlock(() -> stoneBlocks.get(HTStoneTypes.STAIRS).defaultBlockState(), p)
+                    Block.Properties.ofFullCopy(Blocks.STONE),
+                    p -> new HTStairBlock(stoneBlocks.get(HTStoneTypes.STAIRS).defaultBlockState(), p)
             ));
             stoneSettings.put(HTStoneTypes.POLISHED_STAIRS, new HTBlockSetting(
                     r -> StringHelper.expand(r, "polished", "stairs"),
-                    Block.Properties.copy(Blocks.STONE),
-                    p -> new StairBlock(() -> stoneBlocks.get(HTStoneTypes.STAIRS).defaultBlockState(), p)
+                    Block.Properties.ofFullCopy(Blocks.STONE),
+                    p -> new HTStairBlock(stoneBlocks.get(HTStoneTypes.STAIRS).defaultBlockState(), p)
             ));
             stoneSettings.put(HTStoneTypes.SLAB, new HTBlockSetting(
                     r -> StringHelper.suffix(r, "slab"),
-                    Block.Properties.copy(Blocks.STONE),
+                    Block.Properties.ofFullCopy(Blocks.STONE),
                     SlabBlock::new
             ));
             stoneSettings.put(HTStoneTypes.POLISHED_SLAB, new HTBlockSetting(
                     r -> StringHelper.expand(r, "polished", "slab"),
-                    Block.Properties.copy(Blocks.STONE),
+                    Block.Properties.ofFullCopy(Blocks.STONE),
                     SlabBlock::new
             ));
         }

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  **/
 public interface HTLibEntities {
 
-     HTVanillaRegistry<EntityType<?>> ENTITY_TYPES = HTRegistryManager.vanilla(Registries.ENTITY_TYPE, HTLibHelper.get().getModID());
+    HTVanillaRegistry<EntityType<?>> ENTITY_TYPES = HTRegistryManager.vanilla(Registries.ENTITY_TYPE, HTLibHelper.get().getModID());
 
     Supplier<EntityType<HTBoat>> BOAT = ENTITY_TYPES.register("boat", () -> {
         return EntityType.Builder.<HTBoat>of(HTBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).build(HTLibHelper.prefix("boat").toString());

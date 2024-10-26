@@ -4,9 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
-import hungteen.htlib.HTLibForgeInitializer;
+import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.registry.HTCodecRegistry;
-import hungteen.htlib.common.network.NetworkHandler;
+import hungteen.htlib.common.NetworkHandler;
 import hungteen.htlib.common.network.packets.SyncDatapackPacket;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.JavaHelper;
@@ -66,7 +66,7 @@ public class HTCodecRegistryImpl<V> extends HTRegistryImpl<V> implements HTCodec
         if(this.customSync()){
             this.getKeys(player.level()).forEach(key -> {
                 this.getOptValue(player.level(), key).flatMap(value -> CodecHelper.encodeNbt(this.syncSup.get(), value)
-                        .resultOrPartial(msg -> HTLibForgeInitializer.getLogger().warn("HTCodecRegistry : + msg"))).ifPresent(tag -> {
+                        .resultOrPartial(msg -> HTLibAPI.logger().warn("HTCodecRegistry : {}", msg))).ifPresent(tag -> {
                     if (tag instanceof CompoundTag nbt) {
                         NetworkHandler.sendToClient(player, new SyncDatapackPacket(this.getRegistryName(), key.location(), nbt));
                     }
@@ -83,9 +83,9 @@ public class HTCodecRegistryImpl<V> extends HTRegistryImpl<V> implements HTCodec
         final ResourceKey<V> key = ResourceKey.create(this.getRegistryKey(), name);
         if(this.customSync() && this.getRegistryClass().isPresent()){
             if (syncMap.containsKey(key)) {
-                HTLibForgeInitializer.getLogger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), name);
+                HTLibAPI.logger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), name);
             } else if (!this.getRegistryClass().get().isInstance(value)) {
-                HTLibForgeInitializer.getLogger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
+                HTLibAPI.logger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
             }
             syncMap.put(key, this.getRegistryClass().get().cast(value));
         }

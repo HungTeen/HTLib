@@ -1,6 +1,7 @@
 package hungteen.htlib.data.loot;
 
 import hungteen.htlib.common.impl.registry.suit.TreeSuits;
+import hungteen.htlib.util.helper.impl.VanillaHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -17,7 +18,7 @@ import java.util.Set;
 public abstract class HTBlockLootGen extends BlockLootSubProvider {
 
     public HTBlockLootGen(Set<Item> explosionResistant, HolderLookup.Provider provider) {
-        this(explosionResistant, CompatHelper.allFeatures(), provider);
+        this(explosionResistant, VanillaHelper.allFeatures(), provider);
     }
 
     public HTBlockLootGen(Set<Item> explosionResistant, FeatureFlagSet flags, HolderLookup.Provider provider) {

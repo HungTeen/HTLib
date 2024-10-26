@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 public class HTBlock extends Block {
 
     public HTBlock(BlockBehaviour block) {
-        super(Properties.copy(block));
+        super(Properties.ofFullCopy(block));
     }
 
     public HTBlock(Properties properties) {

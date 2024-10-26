@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "hungteen.htlib.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "htlib.refmap.json",
   "mixins": [
     "MixinEntity",
@@ -11,5 +11,5 @@
   ],
   "client": [
   ],
-  "minVersion": "0.8"
+  "minVersion": "0.8.4"
 }
