@@ -35,8 +35,8 @@ public class EntitySuit<T extends Entity> implements SimpleEntry {
         this.isLiving = isLiving;
         this.hasSpawnEgg = hasSpawnEgg;
 //        if (this.isLiving) {
-//            this.placementData = new PlacementData<>(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, pos, source) -> {
-//                return Mob.checkMobSpawnRules((EntityType<? extends Mob>) type, level, spawnType, pos, source);
+//            this.placementData = new PlacementData<>(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (dataType, level, spawnType, pos, source) -> {
+//                return Mob.checkMobSpawnRules((EntityType<? extends Mob>) dataType, level, spawnType, pos, source);
 //            }, SpawnPlacementRegisterEvent.Operation.OR);
 //        }
     }

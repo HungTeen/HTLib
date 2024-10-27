@@ -2,14 +2,16 @@ package hungteen.htlib.platform;
 
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
+import hungteen.htlib.common.HTLibForgeNetworkHandler;
 import hungteen.htlib.common.event.events.DummyEntityEvent;
-import hungteen.htlib.common.impl.registry.HTCodecRegistryImpl;
+import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;
 import hungteen.htlib.common.impl.registry.HTForgeCustomRegistry;
 import hungteen.htlib.common.impl.registry.HTForgeVanillaRegistry;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
-import hungteen.htlib.common.NetworkHandler;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.util.ForgeHelper;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -18,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,28 +62,28 @@ public class HTLibForgeAPI implements HTLibPlatformAPI {
     }
 
     @Override
-    public <MSG> void sendToServer(MSG msg) {
-        NetworkHandler.sendToServer(msg);
+    public void sendToServer(CustomPacketPayload msg) {
+        HTLibForgeNetworkHandler.sendToServer(msg);
     }
 
     @Override
-    public <MSG> void sendToClient(MSG msg) {
-        NetworkHandler.sendToClient(msg);
+    public void sendToClient(CustomPacketPayload msg) {
+        HTLibForgeNetworkHandler.sendToClient(msg);
     }
 
     @Override
-    public <MSG> void sendToClient(ServerPlayer serverPlayer, MSG msg) {
-        NetworkHandler.sendToClient(serverPlayer, msg);
+    public void sendToClient(ServerPlayer serverPlayer, CustomPacketPayload msg) {
+        HTLibForgeNetworkHandler.sendToClient(serverPlayer, msg);
     }
 
     @Override
-    public <MSG> void sendToClient(Level level, Vec3 vec, double dis, MSG msg) {
-        NetworkHandler.sendToNearByClient(level, vec, dis, msg);
+    public void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg) {
+        HTLibForgeNetworkHandler.sendToNearByClient(level, vec, dis, msg);
     }
 
     @Override
     public HTCodecRegistry.HTCodecRegistryFactory createCodecRegistryFactory() {
-        return HTCodecRegistryImpl::new;
+        return HTForgeCodecRegistryImpl::new;
     }
 
     @Override

@@ -66,9 +66,9 @@ public interface HTCommonRegistry<T> extends HTRegistry<T> {
     }
 
     /**
-     * Get the key of specific type. <br>
+     * Get the key of specific dataType. <br>
      * Only use after common set up !!!
-     * @param type the query type.
+     * @param type the query dataType.
      * @return empty if no key is find, otherwise return the key.
      */
     <I extends T> Optional<ResourceLocation> getKey(I type);

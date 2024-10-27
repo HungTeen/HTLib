@@ -11,8 +11,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -87,7 +85,6 @@ public class RecipeRenderManager {
         return this.ingredients.size();
     }
 
-    @OnlyIn(Dist.CLIENT)
     public class RecipeIngredient {
         private final Ingredient ingredient;
         private final int x;

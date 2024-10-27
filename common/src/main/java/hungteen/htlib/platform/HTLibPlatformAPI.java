@@ -5,10 +5,13 @@ import hungteen.htlib.api.registry.HTCustomRegistry;
 import hungteen.htlib.api.util.ServiceUtil;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
 import hungteen.htlib.common.world.entity.DummyEntity;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,31 +69,27 @@ public interface HTLibPlatformAPI {
 
     /**
      * @param msg Packet to be sent to server.
-     * @param <MSG> Packet type.
      */
-    <MSG> void sendToServer(MSG msg);
+    void sendToServer(CustomPacketPayload msg);
 
     /**
      * @param msg Packet to be sent to client.
-     * @param <MSG> Packet type.
      */
-    <MSG> void sendToClient(MSG msg);
+    void sendToClient(CustomPacketPayload msg);
 
     /**
      * @param serverPlayer The player to send the packet to.
      * @param msg Packet to be sent to client.
-     * @param <MSG> Packet type.
      */
-    <MSG> void sendToClient(ServerPlayer serverPlayer, MSG msg);
+    void sendToClient(ServerPlayer serverPlayer, CustomPacketPayload msg);
 
     /**
      * @param level client level to send packet to.
      * @param vec client position to send packet to.
      * @param dis distance to the position.
      * @param msg Packet to be sent to client.
-     * @param <MSG> Packet type.
      */
-    <MSG> void sendToClient(Level level, Vec3 vec, double dis, MSG msg);
+    void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg);
 
     /* Registry Related */
 

@@ -16,8 +16,8 @@ import net.minecraft.resources.ResourceKey;
  **/
 public interface CommandHelper {
 
-//    public static <T> Holder.Reference<T> getHolder(CommandContext<CommandSourceStack> context, ResourceKey<Registry<T>> key, String name, DynamicCommandExceptionType type) throws CommandSyntaxException {
-//        return ResourceKeyArgument.resolveKey(context, name, key, type);
+//    public static <T> Holder.Reference<T> getHolder(CommandContext<CommandSourceStack> context, ResourceKey<Registry<T>> key, String name, DynamicCommandExceptionType dataType) throws CommandSyntaxException {
+//        return ResourceKeyArgument.resolveKey(context, name, key, dataType);
 //    }
 
 }

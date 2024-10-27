@@ -1,61 +1,22 @@
 plugins {
-    id 'java'
-    id 'org.spongepowered.gradle.vanilla'
+    id("multiplatform-convention")
+
+    alias(libs.plugins.moddevgradle)
 }
 
+version = modVersion
 base {
-    archivesName = "${mod_name}-common"
-}
-version = "${minecraft_version}-${mod_version}"
-
-minecraft {
-    version(minecraft_version)
+    archivesName = "${modName}-common-${libs.versions.minecraft.asProvider().get()}"
 }
 
-repositories {
-    maven {
-        // Shedaniel's maven (Architectury API)
-        url = "https://maven.architectury.dev"
-        content {
-            includeGroup "dev.architectury"
-        }
-    }
-
-    maven {
-        name = "Jared" // Patchouli and JEI
-        url = "https://maven.blamejared.com/"
-    }
+neoForge {
+    // Look for versions on https://projects.neoforged.net/neoforged/neoform
+    neoFormVersion = libs.versions.neoform.get()
+    validateAccessTransformers = true
+    accessTransformers.files.setFrom("src/main/resources/META-INF/accesstransformer-nf.cfg")
 }
 
 dependencies {
-    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
-
-    testImplementation platform("org.junit:junit-bom:${junit_version}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    compileOnly(libs.mixin)
+    compileOnly(libs.mixinextras.common)
 }
-
-test {
-    useJUnitPlatform()
-}
-
-processResources {
-    // Exclude datagenerator .cache directory
-    exclude '.cache'
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            groupId project.group
-//            artifactId project.archivesBaseName
-//            version project.version
-//            from components.java
-//        }
-//    }
-//    repositories {
-//        maven {
-//            url "file://${project.projectDir}/repo"
-//        }
-//    }
-//}

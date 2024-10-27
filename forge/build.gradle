@@ -1,95 +1,83 @@
 plugins {
-    id 'net.minecraftforge.gradle'
-    id 'org.spongepowered.mixin'
+    id("multiplatform-convention")
+
+    alias(libs.plugins.minotaur)
+    alias(libs.plugins.forgegradle)
+    alias(libs.plugins.mixin)
 }
+
+version = modVersion
 
 base {
-    archivesName = "${mod_name}-forge"
+    archivesName = "${modName}-forge-${libs.versions.minecraft.asProvider().get()}"
 }
-version = "${minecraft_version}-${mod_version}"
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
+    add sourceSets.main, "${modId}.refmap.json"
 
-    config "${mod_id}.mixins.json"
+    config "${modId}.mixins.json"
 }
 
 minecraft {
-
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: 'official', version: libs.versions.minecraft.asProvider().get()
+    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
     reobf = false
-
     copyIdeResources = true
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
     runs {
-
-        configureEach {
-            workingDirectory project.file('../run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-        }
-
         client {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            workingDirectory(project.file("run/" + name))
+            args("--username", "Dev")
+
+            property("forge.logging.console.level", "debug")
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${project.projectDir}/build/createSrgToMcp/output.srg")
+            args("-mixin.config=${modId}.mixins.json")
+
+//            mods {
+//                modId {
+//                    source project(":common").sourceSets.main
+//                    source sourceSets.main
+//                }
+//            }
         }
 
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-//            args '--nogui'
-        }
+            workingDirectory(project.file("run/"+ name))
 
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
+            property("forge.logging.console.level", "debug")
+            property("mixin.env.remapRefMap", "true")
+            property("mixin.env.refMapRemappingFile", "${project.projectDir}/build/createSrgToMcp/output.srg")
+            args("-mixin.config=${modId}.mixins.json")
 
-        data {
-            workingDirectory project.file('../run-data')
-
-            args '--mod', mod_id, '--all',
-                    '--output', file('src/generated/resources/'),
-                    '--existing', file('src/main/resources/')
-        }
-    }
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-repositories {
-    maven {
-        // saps.dev Maven (KubeJS and Rhino)
-        url = "https://maven.saps.dev/minecraft"
-        content {
-            includeGroup "dev.latvian.mods"
+//            mods {
+//                modId {
+//                    source project(":common").sourceSets.main
+//                    source sourceSets.main
+//                }
+//            }
         }
     }
 }
 
 dependencies {
-    compileOnly project(":common")
+    minecraft(libs.forge)
+    compileOnly(project(":common"))
 
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    if (System.getProperty("idea.sync.active") != "true")
+        annotationProcessor(variantOf(libs.mixin) { classifier("processor") })
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
+//    implementation(libs.jopt.simple)
     // Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transtive dependencies request 6.0+
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 
-//    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-//    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-//    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 }
 
-//mixin {
-//    add sourceSets.main, "${mod_id}.refmap.json"
-//
-//    config "${mod_id}.mixins.json"
-//}
+mixin {
+    add sourceSets.main, "${modId}.refmap.json"
+    config "${modId}.mixins.json"
+}
 
 compileJava {
     source(project(":common").sourceSets.main.allSource)
@@ -101,45 +89,13 @@ sourcesJar {
 
 processResources {
     from project(":common").sourceSets.main.resources
-}
-
-tasks.withType(Javadoc).configureEach {
-    source(project(":common").sourceSets.main.allJava)
-}
-
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range, loader_version_range: forge_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_display_name: mod_display_name, mod_version: mod_version, mod_authors: mod_authors,
-            mod_license: mod_license, mod_logo_file: mod_logo_file, mod_description: mod_description,
-            mod_issue_url: mod_issue_url, mod_update_url: mod_update_url, mod_display_url: mod_display_url
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": mod_display_name,
-                "Specification-Vendor": mod_authors,
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": mod_display_name,
-                "Implementation-Version": "${archiveVersion.get()}",
-                "Implementation-Vendor" :mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
+    exclude("**/accesstransformer-nf.cfg")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
     archiveClassifier = 'api'
 
-    include "hungteen/${mod_id}/api/**"
+    include "hungteen/${modId}/api/**"
 
     // Sources included because of MinecraftForge/ForgeGradle#369
     from project(":common").sourceSets.main.allJava

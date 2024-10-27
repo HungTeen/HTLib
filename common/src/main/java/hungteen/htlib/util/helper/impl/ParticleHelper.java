@@ -84,12 +84,12 @@ public interface ParticleHelper extends HTVanillaRegistryHelper<ParticleType<?>>
         }
     }
 
-//    static <T extends ParticleOptions> T readParticle(FriendlyByteBuf buf, ParticleType<T> type) {
-//        return type.getDeserializer().fromNetwork(type, buf);
+//    static <T extends ParticleOptions> T readParticle(FriendlyByteBuf buf, ParticleType<T> dataType) {
+//        return dataType.getDeserializer().fromNetwork(dataType, buf);
 //    }
 //
-//    static <T extends ParticleOptions> void writeParticle(FriendlyByteBuf buf, T type) {
-//        type.writeToNetwork(buf);
+//    static <T extends ParticleOptions> void writeParticle(FriendlyByteBuf buf, T dataType) {
+//        dataType.writeToNetwork(buf);
 //    }
 
     /* Common Methods */

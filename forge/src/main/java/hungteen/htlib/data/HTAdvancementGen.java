@@ -46,16 +46,16 @@ public abstract class HTAdvancementGen extends ForgeAdvancementProvider {
 //            return advancement(null, displayItem, title, location, FrameType.TASK, true);
 //        }
 //
-//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, FrameType type, boolean displayChat) {
-//            return advancement(parent, displayItem, title, null, type, displayChat);
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, FrameType dataType, boolean displayChat) {
+//            return advancement(parent, displayItem, title, null, dataType, displayChat);
 //        }
 //
-//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean displayChat) {
-//            return advancement(parent, displayItem, title, location, type, true, displayChat, false);
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType dataType, boolean displayChat) {
+//            return advancement(parent, displayItem, title, location, dataType, true, displayChat, false);
 //        }
 //
-//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType type, boolean showToast, boolean displayChat, boolean hidden) {
-//            return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, type, showToast, displayChat, hidden);
+//        protected Advancement.Builder advancement(AdvancementHolder parent, ItemLike displayItem, String title, ResourceLocation location, FrameType dataType, boolean showToast, boolean displayChat, boolean hidden) {
+//            return Advancement.Builder.advancement().parent(parent).display(displayItem, title(title), desc(title), location, dataType, showToast, displayChat, hidden);
 //        }
 //
 //        protected MutableComponent title(String name) {

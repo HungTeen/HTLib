@@ -7,12 +7,21 @@ package hungteen.htlib.platform;
  **/
 public enum Platform {
 
-    NEOFORGE,
+    NEOFORGE("neoforge"),
 
-    FORGE,
+    FORGE("forge"),
 
-    FABRIC,
+    FABRIC("fabric"),
 
     ;
 
+    private final String name;
+
+    Platform(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

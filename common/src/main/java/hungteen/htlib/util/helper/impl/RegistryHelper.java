@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * TODO Group registration.
  * 所有注册帮助类支持分组注册、便捷标签获取、简单注册流查询等方法。 <br>
- * All registry type support following methods : <br>
+ * All registry dataType support following methods : <br>
  * 1. Group registration methods. <br>
  * 2. Easy tag getCodecRegistry methods. <br>
  * 3. Simple registration stream query methods. <br>

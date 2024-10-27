@@ -2,7 +2,7 @@ package hungteen.htlib.common.world.entity;
 
 import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.common.network.ClientPacketContext;
-import hungteen.htlib.common.network.packets.DummyEntityPacket;
+import hungteen.htlib.common.network.packet.DummyEntityPacket;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;

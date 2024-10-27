@@ -19,9 +19,6 @@ import java.util.function.Predicate;
 public interface HTModIDHelper {
 
     String MC = "minecraft";
-    String FORGE = "forge";
-    String NEOFORGE = "neoforge";
-    String FABRIC = "fabric";
 
     String getModID();
 

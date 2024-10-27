@@ -160,6 +160,14 @@ public interface HTCodecRegistry<V> extends HTRegistry<V> {
     }
 
     /**
+     * Codec of the registry.
+     * @return Codec.
+     */
+    default Optional<Codec<V>> getCodec(){
+        return Optional.empty();
+    }
+
+    /**
      * Sync data from server to client if value is present.
      * @return Sync codec.
      */

@@ -3,8 +3,6 @@ package hungteen.htlib.common.impl.registry;
 import com.mojang.serialization.Codec;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.NewRegistryEvent;
 import net.minecraftforge.registries.RegisterEvent;
@@ -24,7 +22,7 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
 
     private final ConcurrentHashMap<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     private final Supplier<RegistryBuilder<?>> registryFactory;
-    protected final HTRegistryHolder<T> registryHolder;
+    protected final HTForgeRegistryHolder<T> registryHolder;
 
     public HTForgeCustomRegistry(Class<T> clazz, ResourceLocation registryName) {
         this(clazz, registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
@@ -32,14 +30,25 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
 
     public HTForgeCustomRegistry(Class<T> clazz, ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
         super(registryName);
-        this.registryHolder = new HTRegistryHolder<>(this.registryKey);
+        this.registryHolder = new HTForgeRegistryHolder<>(this.registryKey);
         this.registryFactory = () -> builderSup.get().setName(registryName);
     }
 
-    public void register(IEventBus modBus) {
-        modBus.addListener(this::createRegistry);
-        modBus.addListener(this::addEntries);
-        modBus.addListener(this::clearEntries);
+    public void addEntries(RegisterEvent event) {
+        if (event.getRegistryKey().equals(this.getRegistryKey())) {
+            this.registryMap.forEach((key, value) -> event.register(this.getRegistryKey(), key, () -> (T) value.get()));
+            this.seenRegisterEvent = true;
+        }
+    }
+
+    public void createRegistry(NewRegistryEvent event) {
+        if (this.registryFactory != null) {
+            event.create(this.registryFactory.get(), this::onFill);
+        }
+    }
+
+    public void clearEntries() {
+        this.registryMap.clear();
     }
 
     @Override
@@ -78,24 +87,8 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
         return this.registryHolder.get();
     }
 
-    private void addEntries(RegisterEvent event) {
-        if (event.getRegistryKey().equals(this.getRegistryKey())) {
-            this.registryMap.forEach((key, value) -> event.register(this.getRegistryKey(), key, () -> (T) value.get()));
-            this.seenRegisterEvent = true;
-        }
-    }
-
-    private void createRegistry(NewRegistryEvent event) {
-        if (this.registryFactory != null) {
-            event.create(this.registryFactory.get(), this::onFill);
-        }
-    }
-
     private void onFill(IForgeRegistry<?> registry) {
 
     }
 
-    private void clearEntries(FMLCommonSetupEvent event) {
-        this.registryMap.clear();
-    }
 }

@@ -1,67 +1,41 @@
 plugins {
-    id 'java-library'
-    id 'net.neoforged.gradle.userdev'
+    id("multiplatform-convention")
+
+    alias(libs.plugins.minotaur)
+    alias(libs.plugins.moddevgradle)
 }
 
+version = modVersion
 base {
-    archivesName = "${mod_name}-neoforge"
-}
-version = "${minecraft_version}-${mod_version}"
-
-repositories {
-    maven {
-        // Shedaniel's maven (Architectury API)
-        url = "https://maven.architectury.dev"
-        content {
-            includeGroup "dev.architectury"
-        }
-    }
-
-    maven {
-        // saps.dev Maven (KubeJS and Rhino)
-        url = "https://maven.saps.dev/minecraft"
-        content {
-            includeGroup "dev.latvian.mods"
-        }
-    }
+    archivesName = "${modName}-neoforge-${libs.versions.minecraft.asProvider().get()}"
 }
 
-runs {
-    configureEach {
-        workingDirectory project.file('../run')
-        systemProperty 'forge.logging.markers', 'REGISTRIES'
-        systemProperty 'forge.logging.console.level', 'debug'
-        systemProperty 'fml.earlyprogresswindow', 'false'
+neoForge {
+    version = libs.versions.neoforge.asProvider().get()
 
-        modSource project.sourceSets.main
-    }
+    accessTransformers.files.setFrom(project(":common").file("src/main/resources/META-INF/accesstransformer-nf.cfg"))
 
-    client {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
+    runs {
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
 
-    server {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-//        programArgument '--nogui'
-    }
+        mods.create("${modId}").sourceSet(project.sourceSets.getByName("main"))
 
-    gameTestServer {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
+        create("client") {
+            client()
+        }
 
-    data {
-        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        create("server") {
+            server()
+//            programArgument("--nogui")
+        }
     }
 }
 
 dependencies {
-    compileOnly project(":common")
-
-    implementation "net.neoforged:neoforge:${neo_version}"
-
-//    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-//    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-//    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+    implementation(libs.neoforge)
+    compileOnly(project(":common"))
 }
 
 tasks.named('test').configure {
@@ -97,52 +71,10 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-tasks.withType(ProcessResources).configureEach {
-    var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_display_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_description        : mod_description
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/neoforge.mods.toml']) {
-        expand replaceProperties
-    }
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": mod_display_name,
-                "Specification-Vendor": mod_authors,
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": mod_display_name,
-                "Implementation-Version": "${archiveVersion.get()}",
-                "Implementation-Vendor" :mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
-
 task apiJar(type: Jar, dependsOn: classes) {
     archiveClassifier = 'api'
 
-    include "hungteen/${mod_id}/api/**"
+    include "hungteen/${modId}/api/**"
 
     // Sources included because of MinecraftForge/ForgeGradle#369
     from project(":common").sourceSets.main.allJava

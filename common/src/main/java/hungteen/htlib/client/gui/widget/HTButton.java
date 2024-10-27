@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @program: HTLib
@@ -66,7 +64,6 @@ public abstract class HTButton extends AbstractButton {
 
     protected abstract Pair<Integer,Integer> getButtonUVOffset();
 
-    @OnlyIn(Dist.CLIENT)
     public interface OnPress {
         void onPress(HTButton button);
     }

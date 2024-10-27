@@ -65,13 +65,13 @@ public class EntitySuits {
             return this;
         }
 
-//        public Builder<T> heightMap(Heightmap.Types type){
-//            suit.setHeightMap(type);
+//        public Builder<T> heightMap(Heightmap.Types dataType){
+//            suit.setHeightMap(dataType);
 //            return this;
 //        }
 //
-//        public Builder<T> spawn(SpawnPlacements.Type type){
-//            suit.setPlacement(type);
+//        public Builder<T> spawn(SpawnPlacements.Type dataType){
+//            suit.setPlacement(dataType);
 //            return this;
 //        }
 //

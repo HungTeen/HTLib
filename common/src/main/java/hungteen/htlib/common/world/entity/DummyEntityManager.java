@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.common.HTLibProxy;
-import hungteen.htlib.common.network.packets.DummyEntityPacket;
+import hungteen.htlib.common.network.packet.DummyEntityPacket;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;

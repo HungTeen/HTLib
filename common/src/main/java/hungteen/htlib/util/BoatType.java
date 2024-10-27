@@ -42,7 +42,7 @@ public interface BoatType extends SimpleEntry {
     };
 
     /**
-     * @return The planks block of this boat type.
+     * @return The planks block of this boat dataType.
      */
     Block getPlanks();
 

@@ -1,45 +1,9 @@
 plugins {
+    alias(libs.plugins.minotaur) apply false
+    alias(libs.plugins.curseforgegradle) apply false
+
     // Required for NeoGradle
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
+    alias(libs.plugins.ideaext)
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'idea'
-    apply plugin: 'eclipse'
-
-    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-    java.withSourcesJar()
-
-    version = mod_version
-    group = mod_group_id
-
-    repositories {
-        mavenCentral()
-
-        maven {
-            name = 'Sponge / Mixin'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-        options.release = 21
-    }
-
-    tasks.withType(GenerateModuleMetadata).configureEach {
-        it.enabled = false
-    }
-
-    jar {
-        from "LICENSE"
-
-        exclude "**/*.bat"
-        exclude "**/*.psd"
-        exclude "**/*.exe"
-        exclude "**/unused"
-    }
-}
 

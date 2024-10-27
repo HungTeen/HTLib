@@ -12,8 +12,8 @@ public class HTSignBlockEntity {
 //        super(HTBlockEntities.SIGN.get(), pos, state);
 //    }
 //
-//    public HTSignBlockEntity(BlockEntityType type, BlockPos pos, BlockState state) {
-//        super(type, pos, state);
+//    public HTSignBlockEntity(BlockEntityType dataType, BlockPos pos, BlockState state) {
+//        super(dataType, pos, state);
 //    }
 
 }
