@@ -1,0 +1,93 @@
+plugins {
+    id("multiplatform-convention")
+
+    alias(libs.plugins.minotaur)
+    alias(libs.plugins.curseforgegradle)
+    alias(libs.plugins.loom)
+}
+version = modVersion
+
+base {
+    archivesName = "${modName}-fabric-${libs.versions.minecraft.asProvider().get()}"
+}
+
+loom {
+//    accessWidenerPath = file("src/main/resources/geckolib.accesswidener")
+
+    mixin.defaultRefmapName.set("${modId}.refmap.json")
+
+    runs {
+        named("client") {
+            configName = "Fabric Client"
+
+            client()
+            ideConfigGenerated(true)
+            runDir("run/" + name)
+            programArg("--username=Dev")
+        }
+
+        named("server") {
+            configName = "Fabric Server"
+
+            server()
+            ideConfigGenerated(true)
+            runDir("run/" + name)
+        }
+    }
+}
+
+dependencies {
+    minecraft(libs.minecraft)
+    mappings(loom.layered() {
+        officialMojangMappings()
+    })
+    modImplementation(libs.fabric)
+    modImplementation(libs.fabric.api)
+    compileOnly(project(":common"))
+}
+
+compileJava {
+    source(project(":common").sourceSets.main.allSource)
+}
+
+sourcesJar {
+    from project(":common").sourceSets.main.allSource
+}
+
+processResources {
+    from project(":common").sourceSets.main.resources
+    exclude("**/accesstransformer-nf.cfg")
+}
+
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'api'
+
+    include "hungteen/${modId}/api/**"
+
+    // Sources included because of MinecraftForge/ForgeGradle#369
+    from project(":common").sourceSets.main.allJava
+    from(sourceSets.main.allJava)
+    from(sourceSets.main.output)
+}
+
+artifacts {
+    archives apiJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+//            artifact jar
+//            artifact sourcesJar
+//            artifact apiJar
+        }
+    }
+    repositories {
+        maven {
+            url "file://" + System.getenv("local_maven")
+        }
+    }
+}

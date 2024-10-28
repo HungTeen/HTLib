@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${mod_version}",
+	"name": "${mod_display_name}",
+	"description": "${mod_description}",
+	"authors": [
+		"${mod_authors}"
+	],
+	"contact": {
+		"issues": "${mod_issue_url}"
+	},
+	"license": "${mod_license}",
+	"icon": "${mod_logo_file}",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"hungteen.htlib.HTLibFabricInitializer"
+		],
+		"client": [
+			"hungteen.htlib.client.HTLibFabricClientInitializer"
+		]
+	},
+	"mixins": [
+		"${mod_id}.mixins.json"
+	],
+	"depends": {
+   		"fabricloader": ">=${fabric_loader_version_range}",
+		"fabric-api": ">=${fabric_api_version_range}",
+		"java": ">=17",
+		"minecraft": ">=${minecraft_version}"
+	},
+	"custom": {
+		"modmenu": {
+			"badges": [ "library" ]
+		}
+	}
+}

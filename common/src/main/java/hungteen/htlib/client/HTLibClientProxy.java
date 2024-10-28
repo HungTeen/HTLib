@@ -1,11 +1,8 @@
 package hungteen.htlib.client;
 
-import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.HTLibProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +21,6 @@ public class HTLibClientProxy extends HTLibProxy {
     @Override
     public void runOnClient(Supplier<Runnable> task) {
         task.get().run();
-    }
-
-    @Override
-    public @Nullable Player getPlayer() {
-        return ClientHelper.player();
     }
 
     /* 虚拟实体相关 */

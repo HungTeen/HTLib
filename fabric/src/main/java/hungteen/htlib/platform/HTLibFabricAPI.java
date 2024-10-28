@@ -2,98 +2,95 @@ package hungteen.htlib.platform;
 
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
-import hungteen.htlib.common.HTLibForgeNetworkHandler;
-import hungteen.htlib.common.event.events.DummyEntityEvent;
-import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;
-import hungteen.htlib.common.impl.registry.HTForgeCustomRegistry;
-import hungteen.htlib.common.impl.registry.HTForgeVanillaRegistry;
+import hungteen.htlib.common.event.DummyEntityEvent;
+import hungteen.htlib.common.impl.registry.HTFabricCodecRegistryImpl;
+import hungteen.htlib.common.impl.registry.HTFabricCustomRegistry;
+import hungteen.htlib.common.impl.registry.HTFabricVanillaRegistry;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
 import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.util.ForgeHelper;
+import hungteen.htlib.util.helper.PlayerHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLLoader;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @program: HTLib
  * @author: PangTeen
- * @create: 2024/10/22 15:13
+ * @create: 2024/10/28 9:22
  **/
-public class HTLibForgeAPI implements HTLibPlatformAPI {
+public class HTLibFabricAPI implements HTLibPlatformAPI{
 
     @Override
     public Platform getPlatform() {
-        return Platform.FORGE;
+        return Platform.FABRIC;
     }
 
     @Override
     public boolean isModLoaded(String modId) {
-        return ForgeHelper.isModLoaded(modId);
+        return FabricLoader.getInstance().isModLoaded(modId);
     }
 
     @Override
     public boolean isPhysicalClient() {
-        return FMLLoader.getDist() == Dist.CLIENT;
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Override
     public List<? extends HTModInfo> getModInfoList() {
-        return ModList.get().getMods().stream().map(HTForgeModInfo::new).toList();
+        return FabricLoader.getInstance().getAllMods().stream().map(HTFabricModInfo::new).toList();
     }
 
     @Override
     public Optional<? extends HTModContainer> getModContainer(String modId) {
-        return ModList.get().getModContainerById(modId).map(HTForgeModContainer::new);
+        return FabricLoader.getInstance().getModContainer(modId).map(HTFabricModContainer::new);
     }
 
     @Override
     public boolean postDummyEntityCreateEvent(Level level, DummyEntity dummyEntity) {
-        return MinecraftForge.EVENT_BUS.post(new DummyEntityEvent.DummyEntitySpawnEvent(level, dummyEntity));
+        return DummyEntityEvent.DUMMY_SPAWN.invoker().handle(level, dummyEntity);
     }
 
     @Override
     public void sendToServer(CustomPacketPayload msg) {
-        HTLibForgeNetworkHandler.sendToServer(msg);
+        ClientPlayNetworking.send(msg);
     }
 
     @Override
     public void sendToClient(ServerLevel level, CustomPacketPayload msg) {
-        HTLibForgeNetworkHandler.sendToClient(msg);
+        PlayerHelper.getServerPlayers(level).forEach(player -> sendToClient(player, msg));
     }
 
     @Override
     public void sendToClient(ServerPlayer serverPlayer, CustomPacketPayload msg) {
-        HTLibForgeNetworkHandler.sendToClient(serverPlayer, msg);
+        ServerPlayNetworking.send(serverPlayer, msg);
     }
 
     @Override
     public void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg) {
-        HTLibForgeNetworkHandler.sendToNearByClient(level, vec, dis, msg);
+        PlayerHelper.getServerPlayers(level).stream().filter(p -> p.distanceToSqr(vec) <= dis * dis && ! p.equals(player)).forEach(p -> sendToClient(p, msg));
     }
 
     @Override
     public HTCodecRegistry.HTCodecRegistryFactory createCodecRegistryFactory() {
-        return HTForgeCodecRegistryImpl::new;
+        return HTFabricCodecRegistryImpl::new;
     }
 
     @Override
     public HTCustomRegistry.HTCustomRegistryFactory createCustomRegistryFactory() {
-        return HTForgeCustomRegistry::new;
+        return HTFabricCustomRegistry::new;
     }
 
     @Override
     public HTVanillaRegistry.HTVanillaRegistryFactory createVanillaRegistryFactory() {
-        return HTForgeVanillaRegistry::new;
+        return HTFabricVanillaRegistry::new;
     }
-
 }

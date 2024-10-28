@@ -10,8 +10,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +75,7 @@ public interface HTLibPlatformAPI {
     /**
      * @param msg Packet to be sent to client.
      */
-    void sendToClient(CustomPacketPayload msg);
+    void sendToClient(ServerLevel level, CustomPacketPayload msg);
 
     /**
      * @param serverPlayer The player to send the packet to.

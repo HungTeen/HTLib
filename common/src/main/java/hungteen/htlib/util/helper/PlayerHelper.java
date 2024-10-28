@@ -3,13 +3,14 @@ package hungteen.htlib.util.helper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
@@ -68,10 +69,17 @@ public interface PlayerHelper {
     }
 
     /**
-     * getCodecRegistry all players in the server.
+     * @return  all players in the server of level.
      */
     static List<ServerPlayer> getServerPlayers(ServerLevel world){
-        return world.getServer().getPlayerList().getPlayers();
+        return getServerPlayers(world.getServer());
+    }
+
+    /**
+     * @return  all players in the server.
+     */
+    static List<ServerPlayer> getServerPlayers(MinecraftServer server){
+        return server.getPlayerList().getPlayers();
     }
 
     /**

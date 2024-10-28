@@ -1,17 +1,17 @@
 package hungteen.htlib.common.impl.registry;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import hungteen.htlib.api.registry.SimpleEntry;
+import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.util.helper.JavaHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +67,7 @@ public class HTRegistryManager {
     /**
      * 创建一个原版的注册类型，复用原版实现跨平台。
      */
-    public static <T> HTVanillaRegistry<T> vanilla(ResourceKey<? extends Registry<T>> registryKey, String modId){
+    public static <T> HTVanillaRegistry<T> vanilla(ResourceKey<Registry<T>> registryKey, String modId){
         HTVanillaRegistry<T> registry = vanillaFactory().create(registryKey, modId);
         VANILLA_REGISTRIES.put(registryKey.location(), registry);
         return registry;

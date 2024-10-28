@@ -8,7 +8,7 @@ import net.minecraft.world.Nameable;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @program: HTLib
@@ -54,6 +54,7 @@ public abstract class HTNameableBlockEntity extends HTBlockEntity implements Nam
     }
 
     @Nullable
+    @Override
     public Component getCustomName() {
         return this.name;
     }

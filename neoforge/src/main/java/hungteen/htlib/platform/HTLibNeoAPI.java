@@ -67,7 +67,7 @@ public class HTLibNeoAPI implements HTLibPlatformAPI {
     }
 
     @Override
-    public void sendToClient(CustomPacketPayload msg) {
+    public void sendToClient(ServerLevel level, CustomPacketPayload msg) {
         HTLibNeoNetworkHandler.sendToClient(msg);
     }
 

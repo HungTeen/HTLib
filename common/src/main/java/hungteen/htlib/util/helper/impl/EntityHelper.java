@@ -14,8 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -88,7 +88,7 @@ public interface EntityHelper {
     /**
      * base predicate target method.
      */
-    static <T extends Entity> List<T> getPredicateEntities(@Nonnull Entity attacker, AABB aabb, Class<T> tClass, Predicate<T> predicate) {
+    static <T extends Entity> List<T> getPredicateEntities(@NotNull Entity attacker, AABB aabb, Class<T> tClass, Predicate<T> predicate) {
         final IntOpenHashSet set = new IntOpenHashSet();
         final List<T> entities = new ArrayList<>();
         getPredicateEntityWithParts(attacker, aabb, tClass, predicate).forEach(e -> {
@@ -103,7 +103,7 @@ public interface EntityHelper {
     /**
      * base predicate target method.
      */
-    static <T extends Entity> List<T> getPredicateEntityWithParts(@Nonnull Entity attacker, AABB aabb, Class<T> tClass, Predicate<T> predicate) {
+    static <T extends Entity> List<T> getPredicateEntityWithParts(@NotNull Entity attacker, AABB aabb, Class<T> tClass, Predicate<T> predicate) {
         return attacker.level().getEntitiesOfClass(tClass, aabb).stream().filter(target -> {
             return !attacker.equals(target) && predicate.test(target);
         }).collect(Collectors.toList());

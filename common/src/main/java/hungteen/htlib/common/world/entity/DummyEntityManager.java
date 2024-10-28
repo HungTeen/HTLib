@@ -113,7 +113,7 @@ public class DummyEntityManager extends SavedData {
     }
 
     public void sync(boolean add, DummyEntity dummyEntity){
-        HTLibPlatformAPI.get().sendToClient(new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
+        HTLibPlatformAPI.get().sendToClient(level, new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
     }
 
     public static void setDirty(ServerLevel level){

@@ -36,7 +36,7 @@ public interface HTVanillaRegistry<T> {
     @FunctionalInterface
     interface HTVanillaRegistryFactory {
 
-        <T> HTVanillaRegistry<T> create(ResourceKey<? extends Registry<T>> registryKey, String modId);
+        <T> HTVanillaRegistry<T> create(ResourceKey<Registry<T>> registryKey, String modId);
 
     }
 

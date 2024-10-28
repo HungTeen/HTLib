@@ -1,14 +1,12 @@
 package hungteen.htlib.common;
 
-import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.client.HTLibClientProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
+import hungteen.htlib.platform.HTLibPlatformAPI;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -45,13 +43,6 @@ public class HTLibProxy {
      */
     public void runOnClient(Supplier<Runnable> s) {
 
-    }
-
-    /**
-     * @return 返回玩家实体。
-     */
-    public @Nullable Player getPlayer(){
-        return null;
     }
 
     /* 虚拟实体相关 */

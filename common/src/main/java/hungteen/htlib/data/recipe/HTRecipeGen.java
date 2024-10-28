@@ -22,7 +22,7 @@ public class HTRecipeGen extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput recipeOutput) {
+    public void buildRecipes(RecipeOutput recipeOutput) {
 
     }
 

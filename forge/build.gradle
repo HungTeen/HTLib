@@ -12,12 +12,6 @@ base {
     archivesName = "${modName}-forge-${libs.versions.minecraft.asProvider().get()}"
 }
 
-mixin {
-    add sourceSets.main, "${modId}.refmap.json"
-
-    config "${modId}.mixins.json"
-}
-
 minecraft {
     mappings channel: 'official', version: libs.versions.minecraft.asProvider().get()
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
