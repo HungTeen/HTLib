@@ -28,7 +28,7 @@ public class HTLibNeoNetworkHandler {
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
-        registrar.configurationToClient(
+        registrar.playToClient(
                 DummyEntityPacket.TYPE,
                 DummyEntityPacket.STREAM_CODEC,
                 NeoHelper.wrapClientHandler(DummyEntityPacket::process)

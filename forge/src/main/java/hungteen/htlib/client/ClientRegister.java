@@ -5,8 +5,7 @@ import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.entity.HTLibEntities;
-import hungteen.htlib.common.impl.BoatTypes;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,8 +43,8 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerRendererLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        BoatTypes.getBoatTypes().forEach(type -> {
-            if(type != BoatType.DEFAULT){
+        HTLibBoatTypes.getBoatTypes().forEach(type -> {
+            if(type != HTLibBoatTypes.DEFAULT){
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }

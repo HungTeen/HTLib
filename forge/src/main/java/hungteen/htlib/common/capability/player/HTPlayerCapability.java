@@ -1,13 +1,13 @@
 package hungteen.htlib.common.capability.player;
 
-import hungteen.htlib.platform.IPlayerDataManager;
+import hungteen.htlib.common.capability.HTPlayerData;
 
 /**
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-13 15:24
  **/
-public abstract class HTPlayerCapability<T extends IPlayerDataManager> implements IHTPlayerCapability<T> {
+public abstract class HTPlayerCapability<T extends HTPlayerData> implements IHTPlayerCapability<T> {
 
     protected T dataManager = null;
 

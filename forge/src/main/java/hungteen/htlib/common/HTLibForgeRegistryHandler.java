@@ -2,6 +2,7 @@ package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.entity.HTLibEntities;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;
 import hungteen.htlib.common.impl.registry.HTForgeCustomRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
@@ -67,6 +68,7 @@ public class HTLibForgeRegistryHandler {
         ForgeHelper.initRegistry(HTLibEntities.registry(), modBus);
         ForgeHelper.initRegistry(HTLibSounds.registry(), modBus);
 
+        HTLibBoatTypes.registry().initialize();
         HTLibDummyEntities.registry().initialize();
     }
 

@@ -2,9 +2,8 @@ package hungteen.htlib;
 
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.*;
-import hungteen.htlib.common.capability.PlayerCapabilityManager;
-import hungteen.htlib.common.command.HTCommand;
-import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.common.command.HTLibCommand;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.data.HTDataGenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -39,9 +38,9 @@ public class HTLibForgeInitializer {
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(DummyEntityHandler::tick);
-        forgeBus.addListener(PlayerCapabilityManager::tick);
+//        forgeBus.addListener(PlayerCapabilityManager::tick);
         forgeBus.addListener(HTLibForgeRegistryHandler::onDatapackSync);
-        forgeBus.addListener((RegisterCommandsEvent event) -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
+        forgeBus.addListener((RegisterCommandsEvent event) -> HTLibCommand.register(event.getDispatcher(), event.getBuildContext()));
     }
 
     public static void onCommonSetup(FMLCommonSetupEvent event) {
@@ -49,7 +48,7 @@ public class HTLibForgeInitializer {
         HTResourceManager.init();
         HTLibForgeRegistryHandler.onCommonSetup();
         event.enqueueWork(() -> {
-            BoatTypes.register();
+            HTLibBoatTypes.register();
             HTSuitHandler.setUp();
         });
     }

@@ -3,7 +3,7 @@
 # Common
 minecraft-range = "[1.21,)"
 minecraft = "1.21.1"
-neoform = "1.21-20240613.152323"
+neoform = "1.21.1-20240808.144430"
 jopt-simple = "5.0.4"
 
 # Fabric

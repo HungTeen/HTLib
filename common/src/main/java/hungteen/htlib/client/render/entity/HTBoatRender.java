@@ -7,7 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import hungteen.htlib.client.HTModelLayers;
 import hungteen.htlib.util.HasHTBoatType;
-import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.util.BoatType;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
@@ -38,7 +38,7 @@ public class HTBoatRender extends BoatRenderer {
 
     public HTBoatRender(EntityRendererProvider.Context context, boolean hasChest) {
         super(context, hasChest);
-        this.boatResources = BoatTypes.getBoatTypes().stream().collect(ImmutableMap.toImmutableMap((type) -> {
+        this.boatResources = HTLibBoatTypes.getBoatTypes().stream().collect(ImmutableMap.toImmutableMap((type) -> {
             return type;
         }, (type) -> {
             return Pair.of(ResourceLocation.fromNamespaceAndPath(type.getModID(), getTextureLocation(type, hasChest)), this.createBoatModel(context, type, hasChest));

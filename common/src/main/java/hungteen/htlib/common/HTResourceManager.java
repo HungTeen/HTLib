@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
+ * TODO 优化目前的繁琐用法。
  * @program: HTLib
  * @author: PangTeen
  * @create: 2023/12/9 22:59

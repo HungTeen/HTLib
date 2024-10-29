@@ -1,4 +1,4 @@
-package hungteen.htlib.platform;
+package hungteen.htlib.common.capability;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
  * @author: HungTeen
  * @create: 2022-10-13 21:12
  **/
-public interface IPlayerDataManager {
+public interface HTPlayerData {
 
     /**
      * Tick on server side.
@@ -21,7 +21,7 @@ public interface IPlayerDataManager {
      * @param data old player data.
      * @param died false if player return from the end.
      */
-    void cloneFromExistingPlayerData(IPlayerDataManager data, boolean died);
+    void cloneFromExistingPlayerData(HTPlayerData data, boolean died);
 
     /**
      * Sync data from server to client side.

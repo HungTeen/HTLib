@@ -1,6 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.common.entity.HTLibEntities;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.common.impl.registry.HTFabricCodecRegistryImpl;
 import hungteen.htlib.common.impl.registry.HTFabricCustomRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
@@ -51,6 +52,7 @@ public class HTLibFabricRegistryHandler {
         HTLibEntities.registry().initialize();
         HTLibSounds.registry().initialize();
 
+        HTLibBoatTypes.registry().initialize();
         HTLibDummyEntities.registry().initialize();
     }
 

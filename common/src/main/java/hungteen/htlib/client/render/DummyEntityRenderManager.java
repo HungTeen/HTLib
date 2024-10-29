@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import hungteen.htlib.client.util.ClientHelper;
+import hungteen.htlib.common.HTLibProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -20,6 +21,12 @@ import net.minecraft.util.Mth;
 public class DummyEntityRenderManager {
 
     private static final ResourceLocation FORCEFIELD_LOCATION = ResourceLocation.parse("textures/misc/forcefield.png");
+
+    public static void renderFormations(Camera camera) {
+        HTLibProxy.get().getDummyEntities().stream().filter(DummyEntity::renderBorder).forEach(entity -> {
+            renderBorderFormation(entity, camera);
+        });
+    }
 
     /**
      * {@link net.minecraft.client.renderer.LevelRenderer}

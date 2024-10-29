@@ -1,6 +1,6 @@
 package hungteen.htlib.common.capability.player;
 
-import hungteen.htlib.platform.IPlayerDataManager;
+import hungteen.htlib.common.capability.HTPlayerData;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * @author: HungTeen
  * @create: 2022-10-13 15:27
  **/
-public abstract class HTPlayerCapProvider<T extends IPlayerDataManager> implements ICapabilitySerializable<CompoundTag> {
+public abstract class HTPlayerCapProvider<T extends HTPlayerData> implements ICapabilitySerializable<CompoundTag> {
 
     protected HTPlayerCapability<T> playerCap;
 

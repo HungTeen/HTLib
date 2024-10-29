@@ -169,8 +169,7 @@ public class SeatEntity extends HTEntity {
     }
 
     @Override
-    public Vec3 getPassengerRidingPosition(Entity entity) {
-        return Vec3.ZERO;
+    public Vec3 getVehicleAttachmentPoint(Entity entity) {
+        return super.getVehicleAttachmentPoint(entity);
     }
-
 }

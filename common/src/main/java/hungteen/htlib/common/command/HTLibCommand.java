@@ -25,7 +25,7 @@ import java.util.List;
  * @author: HungTeen
  * @create: 2022-12-01 12:51
  **/
-public class HTCommand {
+public class HTLibCommand {
 
     private static final DynamicCommandExceptionType ERROR_INVALID_FEATURE = new DynamicCommandExceptionType((msg) -> {
         return Component.translatable("commands.place.feature.invalid", msg);

@@ -2,6 +2,7 @@ package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.entity.HTLibEntities;
+import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.common.impl.registry.HTNeoCodecRegistryImpl;
 import hungteen.htlib.common.impl.registry.HTNeoCustomRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
@@ -67,6 +68,7 @@ public class HTLibNeoRegistryHandler {
         NeoHelper.initRegistry(HTLibEntities.registry(), modBus);
         NeoHelper.initRegistry(HTLibSounds.registry(), modBus);
 
+        HTLibBoatTypes.registry().initialize();
         HTLibDummyEntities.registry().initialize();
     }
 

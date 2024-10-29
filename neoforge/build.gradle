@@ -1,13 +1,17 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     id("multiplatform-convention")
 
     alias(libs.plugins.minotaur)
+    alias(libs.plugins.curseforgegradle)
     alias(libs.plugins.moddevgradle)
 }
 
 version = modVersion
+var mcVersion = libs.versions.minecraft.asProvider().get()
 base {
-    archivesName = "${modName}-neoforge-${libs.versions.minecraft.asProvider().get()}"
+    archivesName = "${modName}-neoforge-${mcVersion}"
 }
 
 neoForge {
@@ -43,11 +47,8 @@ tasks.named('test').configure {
     enabled(false)
 }
 
-TaskCollection.metaClass.excludingNeoTasks = { ->
-    delegate.matching { !it.name.startsWith("neo") }
-}
 
-tasks.withType(JavaCompile).excludingNeoTasks().configureEach {
+tasks.withType(JavaCompile).configureEach {
     source(project(":common").sourceSets.main.allSource)
 }
 
@@ -61,14 +62,6 @@ tasks.named("sourcesJar", Jar) {
 
 tasks.withType(ProcessResources).configureEach {
     from project(":common").sourceSets.main.resources
-}
-
-// Sets up a dependency configuration called 'localRuntime'.
-// This configuration should be used instead of 'runtimeOnly' to declare
-// a dependency that will be present for runtime testing but that is
-// "optional", meaning it will not be pulled by dependents of this mod.
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
@@ -92,14 +85,41 @@ publishing {
             groupId project.group
             artifactId project.archivesBaseName
             version project.version
-//            artifact jar
-//            artifact sourcesJar
-//            artifact apiJar
         }
     }
-    repositories {
-        maven {
-            url "file://" + System.getenv("local_maven")
-        }
-    }
+}
+
+modrinth {
+    token = System.getenv("modrinthKey") ?: "Invalid/No API Token Found"
+    projectId = modrinthId
+    versionNumber.set(project.version.toString())
+    versionName = "NeoForge ${mcVersion}"
+    versionType = modVersionType
+    uploadFile.set(tasks.named("jar", Jar))
+    changelog = rootProject.file("docs/en_us/changelog.md").text
+    gameVersions = [mcVersion]
+    loaders = ["neoforge"]
+
+    debugMode = true
+    //https://github.com/modrinth/minotaur#available-properties
+}
+
+tasks.register('publishToCurseForge', TaskPublishCurseForge) {
+    group = "publishing"
+    apiToken = System.getenv("curseforge.apitoken") ?: "Invalid/No API Token Found"
+
+    var mainFile = upload(curseforgeId, tasks.jar)
+    mainFile.releaseType = modVersionType
+    mainFile.addModLoader("NeoForge")
+    mainFile.addGameVersion(mcVersion)
+    mainFile.addJavaVersion("Java 21")
+    mainFile.changelog = rootProject.file("docs/en_us/changelog.md").text
+
+    debugMode = true
+    //https://github.com/Darkhax/CurseForgeGradle#available-properties
+}
+
+tasks.named("publish", DefaultTask).configure {
+    finalizedBy("modrinth")
+    finalizedBy("publishToCurseForge")
 }
