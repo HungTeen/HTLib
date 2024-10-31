@@ -31,7 +31,8 @@ mixinextras-range = "[0.3.5,)"
 # Plugins
 plugin-moddev-gradle = "2.0.31-beta"
 plugin-minotaur = "2.8.7"
-plugin-curseforge-gradle = "1.1.25"
+plugin-curseforge-gradle = "1.1.25" # Why 403 error ?
+plugin-mod-publish = "0.7.4"
 plugin-idea-ext = "1.1.8"
 plugin-forge-gradle = "[6.0.24,6.2)"
 plugin-mixin = "0.7.+"
@@ -60,6 +61,7 @@ jopt-simple = { group = "net.sf.jopt-simple", name = "jopt-simple", version.ref 
 # Publishing
 minotaur = { id = "com.modrinth.minotaur", version.ref = "plugin-minotaur" }
 curseforgegradle = { id = "net.darkhax.curseforgegradle", version.ref = "plugin-curseforge-gradle" }
+modpublish = { id = "me.modmuss50.mod-publish-plugin", version.ref = "plugin-mod-publish" }
 
 # Platform
 vanillagradle = { id = "org.spongepowered.gradle.vanilla", version.ref = "plugin-vanilla-gradle" }

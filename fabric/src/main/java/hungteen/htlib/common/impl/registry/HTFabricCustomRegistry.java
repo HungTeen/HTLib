@@ -20,7 +20,7 @@ public class HTFabricCustomRegistry<T> extends HTCustomRegistryImpl<T> implement
 
     private final Registry<T> registry;
 
-    public HTFabricCustomRegistry(Class<T> clazz, ResourceLocation registryName) {
+    public HTFabricCustomRegistry(ResourceLocation registryName) {
         super(registryName);
         this.registry = FabricRegistryBuilder.createSimple(this.registryKey)
                 .attribute(RegistryAttribute.SYNCED)

@@ -5,8 +5,9 @@ plugins {
 }
 
 version = modVersion
+var mcVersion = libs.versions.minecraft.asProvider().get()
 base {
-    archivesName = "${modName}-common-${libs.versions.minecraft.asProvider().get()}"
+    archivesName = "${modName}-common-${mcVersion}"
 }
 
 neoForge {
@@ -19,4 +20,32 @@ neoForge {
 dependencies {
     compileOnly(libs.mixin)
     compileOnly(libs.mixinextras.common)
+}
+
+tasks.register('apiJar', Jar) {
+    dependsOn classes
+    archiveClassifier = 'api'
+
+    include "hungteen/${modId}/api/**"
+
+    // Sources included because of MinecraftForge/ForgeGradle#369
+    from(sourceSets.main.allJava)
+    from(sourceSets.main.output)
+}
+
+artifacts {
+    archives apiJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = modName
+            version "${mcVersion}-${modVersion}-common"
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }

@@ -24,7 +24,7 @@ public interface HTCustomRegistry<T> extends HTCommonRegistry<T> {
     @FunctionalInterface
     interface HTCustomRegistryFactory {
 
-        <T> HTCustomRegistry<T> create(Class<T> clazz, ResourceLocation registryName);
+        <T> HTCustomRegistry<T> create(ResourceLocation registryName);
 
     }
 

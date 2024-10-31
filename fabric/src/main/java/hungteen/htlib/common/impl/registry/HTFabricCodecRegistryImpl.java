@@ -26,6 +26,15 @@ public class HTFabricCodecRegistryImpl<V> extends HTCodecRegistryImpl<V> impleme
     }
 
     /**
+     * 不同于其他平台，Fabric 直接在构造函数中调用此方法来实现数据包的注册。
+     */
+    @Override
+    public void initialize() {
+        super.initialize();
+        addRegistry();
+    }
+
+    /**
      * Codec<Holder<T>> 不适用于原版的同步方法，故自己绕过。
      */
     public void addRegistry(){

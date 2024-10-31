@@ -61,12 +61,10 @@ public class HTLibForgeRegistryHandler {
     @SubscribeEvent
     public static void registerNewDatapack(DataPackRegistryEvent.NewRegistry event) {
         getCodecRegistries().forEach(registry -> registry.addRegistry(event));
-
     }
 
     public static void register(IEventBus modBus) {
         ForgeHelper.initRegistry(HTLibEntities.registry(), modBus);
-        ForgeHelper.initRegistry(HTLibSounds.registry(), modBus);
 
         HTLibBoatTypes.registry().initialize();
         HTLibDummyEntities.registry().initialize();

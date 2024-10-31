@@ -24,11 +24,11 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
     private final Supplier<RegistryBuilder<?>> registryFactory;
     protected final HTForgeRegistryHolder<T> registryHolder;
 
-    public HTForgeCustomRegistry(Class<T> clazz, ResourceLocation registryName) {
-        this(clazz, registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
+    public HTForgeCustomRegistry(ResourceLocation registryName) {
+        this(registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
     }
 
-    public HTForgeCustomRegistry(Class<T> clazz, ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
+    public HTForgeCustomRegistry(ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
         super(registryName);
         this.registryHolder = new HTForgeRegistryHolder<>(this.registryKey);
         this.registryFactory = () -> builderSup.get().setName(registryName);

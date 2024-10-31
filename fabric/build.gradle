@@ -1,14 +1,14 @@
 plugins {
     id("multiplatform-convention")
 
-    alias(libs.plugins.minotaur)
-    alias(libs.plugins.curseforgegradle)
     alias(libs.plugins.loom)
+    alias(libs.plugins.modpublish)
 }
-version = modVersion
 
+version = modVersion
+var mcVersion = libs.versions.minecraft.asProvider().get()
 base {
-    archivesName = "${modName}-fabric-${libs.versions.minecraft.asProvider().get()}"
+    archivesName = "${modName}-fabric-${mcVersion}"
 }
 
 loom {
@@ -77,9 +77,41 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+            artifactId = modName
+            version "${mcVersion}-${modVersion}-fabric"
+            from components.java
         }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+publishMods {
+    file = remapJar.archiveFile
+    type = (modVersionType == "STABLE" ? STABLE : BETA)
+    modLoaders.add("fabric")
+    displayName.set("${modName}-${project.version} for Fabric $mcVersion")
+
+    curseforge {
+        projectId = curseProjectId
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+
+        minecraftVersions.add(mcVersion)
+        javaVersions.add(JavaVersion.VERSION_21)
+
+        clientRequired = true
+        serverRequired = true
+
+        changelog = rootProject.file("docs/en_us/changelog.md").text
+    }
+
+    modrinth {
+        projectId = modrinthId
+        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+
+        minecraftVersions.add(mcVersion)
+
+        changelog = rootProject.file("docs/en_us/changelog.md").text
     }
 }

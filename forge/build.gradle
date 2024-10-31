@@ -1,15 +1,15 @@
 plugins {
     id("multiplatform-convention")
 
-    alias(libs.plugins.minotaur)
     alias(libs.plugins.forgegradle)
     alias(libs.plugins.mixin)
+    alias(libs.plugins.modpublish)
 }
 
 version = modVersion
-
+var mcVersion = libs.versions.minecraft.asProvider().get()
 base {
-    archivesName = "${modName}-forge-${libs.versions.minecraft.asProvider().get()}"
+    archivesName = "${modName}-forge-${mcVersion}"
 }
 
 minecraft {
@@ -28,29 +28,15 @@ minecraft {
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${project.projectDir}/build/createSrgToMcp/output.srg")
             args("-mixin.config=${modId}.mixins.json")
-
-//            mods {
-//                modId {
-//                    source project(":common").sourceSets.main
-//                    source sourceSets.main
-//                }
-//            }
         }
 
         server {
-            workingDirectory(project.file("run/"+ name))
+            workingDirectory(project.file("run/" + name))
 
             property("forge.logging.console.level", "debug")
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${project.projectDir}/build/createSrgToMcp/output.srg")
             args("-mixin.config=${modId}.mixins.json")
-
-//            mods {
-//                modId {
-//                    source project(":common").sourceSets.main
-//                    source sourceSets.main
-//                }
-//            }
         }
     }
 }
@@ -104,12 +90,45 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+            artifactId = modName
+            version "${mcVersion}-${modVersion}-forge"
+            from components.java
         }
     }
+    repositories {
+        mavenLocal()
+    }
 }
+
+publishMods {
+    file = jar.archiveFile
+    type = (modVersionType == "STABLE" ? STABLE : BETA)
+    modLoaders.add("forge")
+    displayName.set("${modName}-${project.version} for Forge $mcVersion")
+
+    curseforge {
+        projectId = curseProjectId
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+
+        minecraftVersions.add(mcVersion)
+        javaVersions.add(JavaVersion.VERSION_21)
+
+        clientRequired = true
+        serverRequired = true
+
+        changelog = rootProject.file("docs/en_us/changelog.md").text
+    }
+
+    modrinth {
+        projectId = modrinthId
+        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+
+        minecraftVersions.add(mcVersion)
+
+        changelog = rootProject.file("docs/en_us/changelog.md").text
+    }
+}
+
 
 sourceSets.each {
     def dir = layout.buildDirectory.dir("sourcesSets/$it.name")

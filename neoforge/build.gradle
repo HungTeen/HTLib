@@ -1,11 +1,8 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-
 plugins {
     id("multiplatform-convention")
 
-    alias(libs.plugins.minotaur)
-    alias(libs.plugins.curseforgegradle)
     alias(libs.plugins.moddevgradle)
+    alias(libs.plugins.modpublish)
 }
 
 version = modVersion
@@ -82,44 +79,41 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+            artifactId = modName
+            version "${mcVersion}-${modVersion}-neoforge"
+            from components.java
         }
+    }
+    repositories {
+        mavenLocal()
     }
 }
 
-modrinth {
-    token = System.getenv("modrinthKey") ?: "Invalid/No API Token Found"
-    projectId = modrinthId
-    versionNumber.set(project.version.toString())
-    versionName = "NeoForge ${mcVersion}"
-    versionType = modVersionType
-    uploadFile.set(tasks.named("jar", Jar))
-    changelog = rootProject.file("docs/en_us/changelog.md").text
-    gameVersions = [mcVersion]
-    loaders = ["neoforge"]
+publishMods {
+    file = jar.archiveFile
+    type = (modVersionType == "STABLE" ? STABLE : BETA)
+    modLoaders.add("neoforge")
+    displayName.set("${modName}-${project.version} for NeoForge $mcVersion")
 
-    debugMode = true
-    //https://github.com/modrinth/minotaur#available-properties
-}
+    curseforge {
+        projectId = curseProjectId
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
 
-tasks.register('publishToCurseForge', TaskPublishCurseForge) {
-    group = "publishing"
-    apiToken = System.getenv("curseforge.apitoken") ?: "Invalid/No API Token Found"
+        minecraftVersions.add(mcVersion)
+        javaVersions.add(JavaVersion.VERSION_21)
 
-    var mainFile = upload(curseforgeId, tasks.jar)
-    mainFile.releaseType = modVersionType
-    mainFile.addModLoader("NeoForge")
-    mainFile.addGameVersion(mcVersion)
-    mainFile.addJavaVersion("Java 21")
-    mainFile.changelog = rootProject.file("docs/en_us/changelog.md").text
+        clientRequired = true
+        serverRequired = true
 
-    debugMode = true
-    //https://github.com/Darkhax/CurseForgeGradle#available-properties
-}
+        changelog = rootProject.file("docs/en_us/changelog.md").text
+    }
 
-tasks.named("publish", DefaultTask).configure {
-    finalizedBy("modrinth")
-    finalizedBy("publishToCurseForge")
+    modrinth {
+        projectId = modrinthId
+        accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+
+        minecraftVersions.add(mcVersion)
+
+        changelog = rootProject.file("docs/en_us/changelog.md").text
+    }
 }

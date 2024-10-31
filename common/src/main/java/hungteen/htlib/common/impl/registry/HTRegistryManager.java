@@ -76,8 +76,8 @@ public class HTRegistryManager {
     /**
      * 创建一个自定义的基于原版的注册类型。
      */
-    public static <T> HTCustomRegistry<T> custom(Class<T> clazz, ResourceLocation registryName){
-        HTCustomRegistry<T> registry = customFactory().create(clazz, registryName);
+    public static <T> HTCustomRegistry<T> custom(ResourceLocation registryName){
+        HTCustomRegistry<T> registry = customFactory().create(registryName);
         CUSTOM_REGISTRIES.put(registryName, registry);
         return registry;
     }

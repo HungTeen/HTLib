@@ -1,8 +1,14 @@
 package hungteen.htlib.api;
 
 import com.mojang.logging.LogUtils;
+import hungteen.htlib.api.codec.HTEntityPredicate;
+import hungteen.htlib.api.codec.HTEntityPredicateType;
+import hungteen.htlib.api.registry.HTCodecRegistry;
+import hungteen.htlib.api.registry.HTCustomRegistry;
 import hungteen.htlib.api.util.ServiceUtil;
 import org.slf4j.Logger;
+
+import java.util.Optional;
 
 /**
  * HTLib 对外提供的 API 接口，不依赖于平台，只有一个有效实现。
@@ -42,6 +48,20 @@ public interface HTLibAPI {
      */
     default int apiVersion() {
         return 0;
+    }
+
+    /**
+     * @return Codec registry for entity predicate.
+     */
+    default Optional<HTCodecRegistry<HTEntityPredicate>> entityPredicateRegistry(){
+        return Optional.empty();
+    }
+
+    /**
+     * @return Custom registry for entity predicate type.
+     */
+    default Optional<HTCustomRegistry<HTEntityPredicateType<?>>> entityPredicateTypeRegistry(){
+        return Optional.empty();
     }
 
 }

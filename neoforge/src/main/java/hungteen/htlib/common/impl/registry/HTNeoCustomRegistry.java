@@ -27,11 +27,11 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
     protected final HTNeoRegistryHolder<T> registryHolder;
     private HTVanillaRegistryHelper<T> registryHelper;
 
-    public HTNeoCustomRegistry(Class<T> clazz, ResourceLocation registryName) {
-        this(clazz, registryName, () -> new RegistryBuilder<T>(ResourceKey.createRegistryKey(registryName)).maxId(Integer.MAX_VALUE - 1));
+    public HTNeoCustomRegistry(ResourceLocation registryName) {
+        this(registryName, () -> new RegistryBuilder<T>(ResourceKey.createRegistryKey(registryName)).maxId(Integer.MAX_VALUE - 1));
     }
 
-    public HTNeoCustomRegistry(Class<T> clazz, ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
+    public HTNeoCustomRegistry(ResourceLocation registryName, final Supplier<RegistryBuilder<T>> builderSup) {
         super(registryName);
         this.registryHolder = new HTNeoRegistryHolder<>(this.registryKey);
         this.registryFactory = builderSup::get;

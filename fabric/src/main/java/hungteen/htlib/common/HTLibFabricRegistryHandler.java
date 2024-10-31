@@ -21,21 +21,6 @@ public class HTLibFabricRegistryHandler {
     public static void register() {
         initialize();
         onDatapackSync();
-        registerNewDatapack();
-        // TODO group preInitialize
-//        ItemHelper.getCodecRegistry().preInitialize(event);
-//        BlockHelper.getCodecRegistry().preInitialize(event);
-//        BlockHelper.entity().preInitialize(event);
-//        BlockHelper.paint().preInitialize(event);
-//        BlockHelper.banner().preInitialize(event);
-//        EntityHelper.getCodecRegistry().preInitialize(event);
-//        EffectHelper.getCodecRegistry().preInitialize(event);
-//        ParticleHelper.getCodecRegistry().preInitialize(event);
-//        SoundHelper.getCodecRegistry().preInitialize(event);
-//        BiomeHelper.getCodecRegistry().preInitialize(event);
-//        FluidHelper.getCodecRegistry().preInitialize(event);
-//        GameEventHelper.getCodecRegistry().preInitialize(event);
-//        PoiTypeHelper.getCodecRegistry().preInitialize(event);
     }
 
     private static void onDatapackSync() {
@@ -44,13 +29,8 @@ public class HTLibFabricRegistryHandler {
         });
     }
 
-    private static void registerNewDatapack() {
-        getCodecRegistries().forEach(HTFabricCodecRegistryImpl::addRegistry);
-    }
-
     private static void initialize() {
         HTLibEntities.registry().initialize();
-        HTLibSounds.registry().initialize();
 
         HTLibBoatTypes.registry().initialize();
         HTLibDummyEntities.registry().initialize();

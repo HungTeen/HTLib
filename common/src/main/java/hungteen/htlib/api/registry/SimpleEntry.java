@@ -17,10 +17,10 @@ public interface SimpleEntry {
      * 获取注册项的名称。
      * @return real name of the registry.
      */
-    String getName();
+    String name();
 
     /**
-     * 获取注册项的命名空间。
+     * 获取注册项的命名空间（模组名）。
      * @return namespace of the registry.
      */
     String getModID();
@@ -33,16 +33,21 @@ public interface SimpleEntry {
         return Component.empty();
     }
 
+    @Deprecated(since = "1.1.0")
+    default String getName(){
+        return name();
+    }
+
     /**
      * 获取注册名。
      * @return String object.
      */
     default String getRegistryName(){
-        return getModID() + ":" + getName();
+        return getLocation().toString();
     }
 
     default ResourceLocation getLocation(){
-        return ResourceLocation.parse(getRegistryName());
+        return ResourceLocation.fromNamespaceAndPath(getModID(), name());
     }
 
 }
