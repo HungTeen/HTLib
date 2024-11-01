@@ -89,4 +89,9 @@ public interface HTVanillaRegistryHelper<T> extends HTRegistryHelper<T> {
         return getRegistry().byNameCodec();
     }
 
+    @Override
+    default Codec<Holder<T>> getHolderCodec() {
+        return getRegistry().holderByNameCodec();
+    }
+
 }

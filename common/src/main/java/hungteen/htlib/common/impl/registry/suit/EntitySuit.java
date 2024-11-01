@@ -41,13 +41,13 @@ public class EntitySuit<T extends Entity> implements SimpleEntry {
 //        }
     }
 
-//    public void register(RegisterEvent event) {
+//    public void initialize(RegisterEvent event) {
 //        if (EntityHelper.get().matchEvent(event)) {
 //            this.entityType = entityTypeBuilder.get().build(this.registryName.toString());
-//            EntityHelper.get().register(event, this.registryName, () -> this.entityType);
+//            EntityHelper.get().initialize(event, this.registryName, () -> this.entityType);
 //        }
 //        if (ItemHelper.get().matchEvent(event) && hasSpawnEgg && colors != null) {
-//            ItemHelper.get().register(event, StringHelper.suffix(this.registryName, "spawn_egg"), () -> {
+//            ItemHelper.get().initialize(event, StringHelper.suffix(this.registryName, "spawn_egg"), () -> {
 //                return new ForgeSpawnEggItem(() -> {
 //                    return (EntityType<? extends Mob>) this.entityType;
 //                }, colors.getFirst(), colors.getSecond(), new Item.Properties());
@@ -67,7 +67,7 @@ public class EntitySuit<T extends Entity> implements SimpleEntry {
 
 //    public void addPlacement(SpawnPlacementRegisterEvent ev) {
 //        if (placementData != null) {
-//            ev.register(entityType, placementData.placement, placementData.heightMap, placementData.predicate, placementData.operation);
+//            ev.initialize(entityType, placementData.placement, placementData.heightMap, placementData.predicate, placementData.operation);
 //        } else if (this.isLiving) {
 //            HTLibAPI.logger().warn("{} has no spawn placement.", registryName);
 //        }
@@ -126,7 +126,7 @@ public class EntitySuit<T extends Entity> implements SimpleEntry {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.registryName.getPath();
     }
 

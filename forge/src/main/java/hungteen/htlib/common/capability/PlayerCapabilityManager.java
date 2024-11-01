@@ -52,7 +52,7 @@ public class PlayerCapabilityManager {
 //    /**
 //     * Recommend to use when common set up.
 //     */
-//    public static <T extends HTPlayerData, K extends IHTPlayerCapability<T>> void register(Capability<K> capability){
+//    public static <T extends HTPlayerData, K extends IHTPlayerCapability<T>> void initialize(Capability<K> capability){
 //        if(PLAYER_CAPABILITIES.contains(capability)){
 //            HTLibAPI.logger().warn("Registering duplicated capability : {}", capability.getName());
 //        } else {

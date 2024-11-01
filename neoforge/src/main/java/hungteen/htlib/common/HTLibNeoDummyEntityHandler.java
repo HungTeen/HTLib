@@ -10,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
  * @program: HTLib
@@ -18,6 +19,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
  **/
 @EventBusSubscriber(modid = HTLibAPI.MOD_ID)
 public class HTLibNeoDummyEntityHandler {
+
+    @SubscribeEvent
+    public static void tick(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            DummyEntityManager.get(serverLevel).tick();
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event) {

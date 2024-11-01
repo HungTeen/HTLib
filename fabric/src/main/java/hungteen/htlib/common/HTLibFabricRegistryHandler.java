@@ -1,5 +1,6 @@
 package hungteen.htlib.common;
 
+import hungteen.htlib.common.codec.HTLibCodecRegistryHandler;
 import hungteen.htlib.common.entity.HTLibEntities;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.common.impl.registry.HTFabricCodecRegistryImpl;
@@ -30,10 +31,17 @@ public class HTLibFabricRegistryHandler {
     }
 
     private static void initialize() {
+        // Vanilla Registry.
         HTLibEntities.registry().initialize();
 
+        // Simple Registry.
         HTLibBoatTypes.registry().initialize();
+
+        // Custom Registry.
         HTLibDummyEntities.registry().initialize();
+
+        // Codec Suit Registry.
+        HTLibCodecRegistryHandler.initialize();
     }
 
     private static Stream<HTFabricCustomRegistry> getCustomRegistries() {

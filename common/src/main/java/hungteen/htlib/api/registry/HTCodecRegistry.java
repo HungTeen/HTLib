@@ -1,7 +1,6 @@
 package hungteen.htlib.api.registry;
 
 import com.mojang.serialization.Codec;
-import hungteen.htlib.api.HTLibAPI;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
@@ -27,13 +26,6 @@ import java.util.stream.Collectors;
  * @create: 2022-12-05 09:45
  **/
 public interface HTCodecRegistry<V> extends HTRegistry<V> {
-
-    /**
-     * Do nothing, just make the specific class being loaded.
-     */
-    default void initialize(){
-        HTLibAPI.logger().debug("Initialize codec registry: {}", getRegistryName());
-    }
 
     default Codec<Holder<V>> getHolderCodec(Codec<V> directCodec){
         return RegistryFileCodec.create(getRegistryKey(), directCodec);

@@ -33,7 +33,7 @@ import java.util.function.Function;
  * Used to resolve wood-related registrations at once. <br>
  * Register WoodType for Signs, BoatType for Boats, and related blocks and items <br>
  * Provide easy method in data gen, at <b>BlockStateGen</b>, {@link hungteen.htlib.data.tag.HTItemTagGen}, <b>BlockModelGen, HTItemModelGen</b> <br>
- * Register axe strip behavior and boat dispense action at {@link HTSuitHandler#setUp()}. <br>
+ * Register axe strip behavior and boat dispense action at. <br>
  * @author PangTeen
  * @program HTLib
  * @data 2023/2/21 10:13
@@ -117,7 +117,7 @@ public class TreeSuits {
                 }
 
                 @Override
-                public String getName() {
+                public String name() {
                     return TreeSuit.this.getName();
                 }
 

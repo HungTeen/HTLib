@@ -1,5 +1,6 @@
 package hungteen.htlib.api.registry;
 
+import hungteen.htlib.api.util.helper.HTRegistryHelper;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -11,12 +12,17 @@ import net.minecraft.resources.ResourceLocation;
 public interface HTCustomRegistry<T> extends HTCommonRegistry<T> {
 
     /**
-     * Single register. <br>
-     * Note: invoke before register event, 建议在注册事件发生前注册。
+     * Single initialize. <br>
+     * Note: invoke before initialize event, 建议在注册事件发生前注册。
      * @param name Register name of this entry.
      * @param type The entry to be registered.
      */
     <I extends T> I register(ResourceLocation name, I type);
+
+    /**
+     * @return Get the helper instance.
+     */
+    HTRegistryHelper<T> getHelper();
 
     /**
      * 不同平台都有自己的构建方式，需要在此抽象。

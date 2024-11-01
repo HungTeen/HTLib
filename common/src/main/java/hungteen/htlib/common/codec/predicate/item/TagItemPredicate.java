@@ -19,7 +19,7 @@ import java.util.Optional;
 public record TagItemPredicate(TagKey<Item> tag) implements HTItemPredicate {
 
     public static final MapCodec<TagItemPredicate> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            TagKey.hashedCodec(ItemHelper.get().resourceKey()).fieldOf("tag").forGetter(TagItemPredicate::tag)
+            ItemHelper.get().getTagCodec().fieldOf("tag").forGetter(TagItemPredicate::tag)
     ).apply(instance, TagItemPredicate::new));
 
     @Override

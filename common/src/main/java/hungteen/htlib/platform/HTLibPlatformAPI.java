@@ -2,7 +2,7 @@ package hungteen.htlib.platform;
 
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
-import hungteen.htlib.api.util.ServiceUtil;
+import hungteen.htlib.api.util.helper.ServiceHelper;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 public interface HTLibPlatformAPI {
 
-    HTLibPlatformAPI INSTANCE = ServiceUtil.findService(HTLibPlatformAPI.class);
+    HTLibPlatformAPI INSTANCE = ServiceHelper.findService(HTLibPlatformAPI.class);
 
     /**
      * Obtain the Mod API, either a valid implementation if mod is present, else

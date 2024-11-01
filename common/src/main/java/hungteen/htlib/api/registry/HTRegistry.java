@@ -1,5 +1,6 @@
 package hungteen.htlib.api.registry;
 
+import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.util.helper.HTResourceHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -13,11 +14,12 @@ import net.minecraft.resources.ResourceLocation;
  **/
 public interface HTRegistry<T> {
 
-//    /**
-//     * Register this registry.
-//     * @param modBus EventBus instance.
-//     */
-//    void register(IEventBus modBus);
+    /**
+     * Do nothing, just make the specific class being loaded.
+     */
+    default void initialize(){
+        HTLibAPI.logger().debug("Initialize registry: {}", getRegistryName());
+    }
 
     /**
      * Create resource key.

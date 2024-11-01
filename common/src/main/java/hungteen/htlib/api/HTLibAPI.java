@@ -1,11 +1,10 @@
 package hungteen.htlib.api;
 
 import com.mojang.logging.LogUtils;
-import hungteen.htlib.api.codec.HTEntityPredicate;
-import hungteen.htlib.api.codec.HTEntityPredicateType;
+import hungteen.htlib.api.codec.*;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
-import hungteen.htlib.api.util.ServiceUtil;
+import hungteen.htlib.api.util.helper.ServiceHelper;
 import org.slf4j.Logger;
 
 import java.util.Optional;
@@ -22,7 +21,7 @@ public interface HTLibAPI {
 
     Logger LOGGER = LogUtils.getLogger();
 
-    HTLibAPI INSTANCE = ServiceUtil.findService(HTLibAPI.class, () -> new HTLibAPI() {});
+    HTLibAPI INSTANCE = ServiceHelper.findService(HTLibAPI.class, () -> new HTLibAPI() {});
 
     /**
      * Obtain the Mod API, either a valid implementation if mod is present, else
@@ -58,9 +57,37 @@ public interface HTLibAPI {
     }
 
     /**
-     * @return Custom registry for entity predicate type.
+     * @return Custom registry for entity predicate block.
      */
     default Optional<HTCustomRegistry<HTEntityPredicateType<?>>> entityPredicateTypeRegistry(){
+        return Optional.empty();
+    }
+
+    /**
+     * @return Codec registry for item predicate.
+     */
+    default Optional<HTCodecRegistry<HTItemPredicate>> itemPredicateRegistry(){
+        return Optional.empty();
+    }
+
+    /**
+     * @return Custom registry for item predicate block.
+     */
+    default Optional<HTCustomRegistry<HTItemPredicateType<?>>> itemPredicateTypeRegistry(){
+        return Optional.empty();
+    }
+
+    /**
+     * @return Codec registry for block predicate.
+     */
+    default Optional<HTCodecRegistry<HTBlockPredicate>> blockPredicateRegistry(){
+        return Optional.empty();
+    }
+
+    /**
+     * @return Custom registry for block predicate block.
+     */
+    default Optional<HTCustomRegistry<HTBlockPredicateType<?>>> blockPredicateTypeRegistry(){
         return Optional.empty();
     }
 

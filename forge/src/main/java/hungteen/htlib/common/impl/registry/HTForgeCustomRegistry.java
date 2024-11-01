@@ -1,12 +1,15 @@
 package hungteen.htlib.common.impl.registry;
 
 import com.mojang.serialization.Codec;
+import hungteen.htlib.api.HTForgeRegistryHelper;
 import hungteen.htlib.api.registry.HTCustomRegistry;
+import hungteen.htlib.api.util.helper.HTRegistryHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.NewRegistryEvent;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryBuilder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +26,7 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
     private final ConcurrentHashMap<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     private final Supplier<RegistryBuilder<?>> registryFactory;
     protected final HTForgeRegistryHolder<T> registryHolder;
+    private HTForgeRegistryHelper<T> registryHelper;
 
     public HTForgeCustomRegistry(ResourceLocation registryName) {
         this(registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
@@ -80,15 +84,28 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
 
     @Override
     public Codec<T> byNameCodec() {
-        return getRegistry().getCodec();
+        return this.canUseVanilla() ? getRegistry().getCodec() : super.byNameCodec();
     }
 
+    @Nullable
     public IForgeRegistry<T> getRegistry() {
         return this.registryHolder.get();
+    }
+
+    @Override
+    public boolean canUseVanilla() {
+        return this.seenRegisterEvent && this.registryHolder.get() != null;
     }
 
     private void onFill(IForgeRegistry<?> registry) {
 
     }
 
+    @Override
+    public HTRegistryHelper<T> getHelper() {
+        if(this.registryHelper == null){
+            this.registryHelper = this::getRegistry;
+        }
+        return this.registryHelper;
+    }
 }

@@ -1,6 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
+import hungteen.htlib.common.codec.HTLibCodecRegistryHandler;
 import hungteen.htlib.common.entity.HTLibEntities;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;
@@ -30,20 +31,6 @@ public class HTLibForgeRegistryHandler {
     @SubscribeEvent
     public static void registerNewEntries(RegisterEvent event) {
         getCustomRegistries().forEach(registry -> registry.addEntries(event));
-        // TODO group preInitialize
-//        ItemHelper.getCodecRegistry().preInitialize(event);
-//        BlockHelper.getCodecRegistry().preInitialize(event);
-//        BlockHelper.entity().preInitialize(event);
-//        BlockHelper.paint().preInitialize(event);
-//        BlockHelper.banner().preInitialize(event);
-//        EntityHelper.getCodecRegistry().preInitialize(event);
-//        EffectHelper.getCodecRegistry().preInitialize(event);
-//        ParticleHelper.getCodecRegistry().preInitialize(event);
-//        SoundHelper.getCodecRegistry().preInitialize(event);
-//        BiomeHelper.getCodecRegistry().preInitialize(event);
-//        FluidHelper.getCodecRegistry().preInitialize(event);
-//        GameEventHelper.getCodecRegistry().preInitialize(event);
-//        PoiTypeHelper.getCodecRegistry().preInitialize(event);
     }
 
     @SubscribeEvent
@@ -64,10 +51,17 @@ public class HTLibForgeRegistryHandler {
     }
 
     public static void register(IEventBus modBus) {
+        // Vanilla Registry.
         ForgeHelper.initRegistry(HTLibEntities.registry(), modBus);
 
+        // Simple Registry.
         HTLibBoatTypes.registry().initialize();
+
+        // Custom Registry.
         HTLibDummyEntities.registry().initialize();
+
+        // Codec Suit Registry.
+        HTLibCodecRegistryHandler.initialize();
     }
 
     /**

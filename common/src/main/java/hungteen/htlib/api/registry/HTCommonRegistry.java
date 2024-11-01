@@ -1,6 +1,7 @@
 package hungteen.htlib.api.registry;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -14,12 +15,6 @@ import java.util.Set;
  * @data 2023/7/11 9:38
  */
 public interface HTCommonRegistry<T> extends HTRegistry<T> {
-
-//    /**
-//     * Get forge registry.
-//     * @return register.
-//     */
-//    IForgeRegistry<T> getRegistry();
 
     /**
      * Get all registered entries, 获取所有注册项。
@@ -78,5 +73,15 @@ public interface HTCommonRegistry<T> extends HTRegistry<T> {
      * This is one reason why I code the lib, 这是我写这个Lib的原因之一。<br>
      * @return Codec.
      */
-    Codec<T> byNameCodec();
+    default Codec<T> byNameCodec(){
+        return ResourceLocation.CODEC.flatXmap((location) -> {
+            return this.getValue(location).map(DataResult::success).orElseGet(() -> {
+                return DataResult.error(() -> "Unknown registry key in " + this.getRegistryName() + ": " + location);
+            });
+        }, (value) -> {
+            return this.getKey(value).map(DataResult::success).orElseGet(() -> {
+                return DataResult.error(() -> "Unknown registry element in " + this.getRegistryName() + ": " + value);
+            });
+        });
+    }
 }

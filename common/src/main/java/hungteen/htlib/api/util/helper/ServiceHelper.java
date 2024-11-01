@@ -1,4 +1,4 @@
-package hungteen.htlib.api.util;
+package hungteen.htlib.api.util.helper;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -11,16 +11,16 @@ import java.util.function.Supplier;
  * @author: PangTeen
  * @create: 2024/10/21 15:46
  **/
-public class ServiceUtil {
+public interface ServiceHelper {
 
-    public static <T> T findService(Class<T> clazz) {
+    static <T> T findService(Class<T> clazz) {
         return findService(clazz, null);
     }
 
     /**
      * 基于 SPI 机制查找服务。
      */
-    public static <T> T findService(Class<T> clazz, @Nullable Supplier<T> defaultSupplier) {
+    static <T> T findService(Class<T> clazz, @Nullable Supplier<T> defaultSupplier) {
         ServiceLoader<T> loader = ServiceLoader.load(clazz);
         if (loader.findFirst().isEmpty()) {
             if (defaultSupplier != null) {

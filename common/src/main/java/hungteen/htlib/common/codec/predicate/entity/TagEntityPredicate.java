@@ -19,7 +19,7 @@ import java.util.Optional;
 public record TagEntityPredicate(TagKey<EntityType<?>> tag) implements HTEntityPredicate {
 
     public static final MapCodec<TagEntityPredicate> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            TagKey.hashedCodec(EntityHelper.get().resourceKey()).fieldOf("tag").forGetter(TagEntityPredicate::tag)
+            EntityHelper.get().getTagCodec().fieldOf("tag").forGetter(TagEntityPredicate::tag)
     ).apply(instance, TagEntityPredicate::new));
 
     @Override

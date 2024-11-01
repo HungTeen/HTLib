@@ -35,7 +35,7 @@ public final class DummyEntityType<T extends DummyEntity> implements SimpleEntry
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return location.getPath();
     }
 

@@ -39,7 +39,7 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
 
     public void addEntries(RegisterEvent event) {
         if (event.getRegistryKey().equals(this.getRegistryKey())) {
-            this.registryMap.forEach((key, value) -> event.register(this.getRegistryKey(), key, () -> (T) value.get()));
+            this.registryMap.forEach((key, value) -> event.register(this.getRegistryKey(), key, value::get));
             this.seenRegisterEvent = true;
         }
     }
@@ -83,18 +83,24 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
 
     @Override
     public Codec<T> byNameCodec() {
-        return getHelper().getCodec();
+        return this.canUseVanilla() ? getRegistry().byNameCodec() : super.byNameCodec();
     }
 
-    public Registry<T> getRegistry() {
-        return this.registryHolder.get();
+    @Override
+    public boolean canUseVanilla() {
+        return this.seenRegisterEvent && this.registryHolder.get() != null;
     }
 
+    @Override
     public HTVanillaRegistryHelper<T> getHelper(){
         if(this.registryHelper == null){
             this.registryHelper = this::getRegistry;
         }
         return this.registryHelper;
+    }
+
+    public Registry<T> getRegistry() {
+        return this.registryHolder.get();
     }
 
 }

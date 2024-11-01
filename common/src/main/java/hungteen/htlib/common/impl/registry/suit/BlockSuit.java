@@ -104,7 +104,7 @@ public abstract class BlockSuit<T extends Enum<T>> implements SimpleEntry {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return this.registryName.getPath();
     }
 

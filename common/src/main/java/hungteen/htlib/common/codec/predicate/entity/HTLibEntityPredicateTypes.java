@@ -19,16 +19,17 @@ public interface HTLibEntityPredicateTypes {
     HTEntityPredicateType<AndEntityPredicate> AND = register("and", AndEntityPredicate.CODEC);
     HTEntityPredicateType<OrEntityPredicate> OR = register("or", OrEntityPredicate.CODEC);
     HTEntityPredicateType<NotEntityPredicate> NOT = register("not", NotEntityPredicate.CODEC);
+    HTEntityPredicateType<TypeEntityPredicate> TYPE = register("type", TypeEntityPredicate.CODEC);
     HTEntityPredicateType<TagEntityPredicate> TAG = register("tag", TagEntityPredicate.CODEC);
 
     static <T extends HTEntityPredicate> HTEntityPredicateType<T> register(String name, MapCodec<T> codec) {
-        return registry().register(HTLibHelper.prefix(name), new PositionTypeImpl<>(codec));
+        return registry().register(HTLibHelper.prefix(name), new EntityPredicateTypeImpl<>(codec));
     }
 
     static HTCustomRegistry<HTEntityPredicateType<?>> registry() {
         return TYPES;
     }
 
-    record PositionTypeImpl<P extends HTEntityPredicate>(MapCodec<P> codec) implements HTEntityPredicateType<P> {
+    record EntityPredicateTypeImpl<P extends HTEntityPredicate>(MapCodec<P> codec) implements HTEntityPredicateType<P> {
     }
 }

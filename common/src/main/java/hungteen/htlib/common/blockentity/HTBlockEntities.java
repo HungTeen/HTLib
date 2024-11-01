@@ -9,11 +9,11 @@ public class HTBlockEntities {
 
 //    private static final HTVanillaRegistry<BlockEntityType<?>> BLOCK_ENTITIES = HTRegistryManager.vanilla(Registries.BLOCK_ENTITY_TYPE, HTLibAPI.id());
 //
-//    public static final Supplier<BlockEntityType<HTSignBlockEntity>> SIGN = BLOCK_ENTITIES.register("sign", () -> BlockEntityType.Builder.of(
+//    public static final Supplier<BlockEntityType<HTSignBlockEntity>> SIGN = BLOCK_ENTITIES.initialize("sign", () -> BlockEntityType.Builder.of(
 //            HTSignBlockEntity::new, TreeSuits.getSignBlocks().toArray(new Block[0])
 //    ).build(null));
 //
-//    public static final Supplier<BlockEntityType<HTHangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITIES.register("hanging_sign", () -> BlockEntityType.Builder.of(
+//    public static final Supplier<BlockEntityType<HTHangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITIES.initialize("hanging_sign", () -> BlockEntityType.Builder.of(
 //            HTHangingSignBlockEntity::new, TreeSuits.getHangingSignBlocks().toArray(new Block[0])
 //    ).build(null));
 //

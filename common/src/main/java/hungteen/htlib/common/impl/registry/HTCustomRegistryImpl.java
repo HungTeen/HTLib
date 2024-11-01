@@ -31,7 +31,7 @@ public abstract class HTCustomRegistryImpl<T> extends HTRegistryImpl<T> implemen
     @Override
     public <I extends T> I register(ResourceLocation name, @NotNull I type) {
         if (seenRegisterEvent) {
-            throw new IllegalStateException("Cannot register new entries to HTVanillaRegistry after RegisterEvent has been fired.");
+            throw new IllegalStateException("Cannot initialize new entries to HTVanillaRegistry after RegisterEvent has been fired.");
         }
         if (registryMap.containsKey(name)) {
             HTLibAPI.logger().warn("HTVanillaRegistry {} already registered {}", this.getRegistryName(), name);

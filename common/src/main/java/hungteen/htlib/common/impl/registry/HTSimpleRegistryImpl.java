@@ -1,7 +1,6 @@
 package hungteen.htlib.common.impl.registry;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.api.registry.SimpleEntry;
@@ -69,15 +68,6 @@ public final class HTSimpleRegistryImpl<T extends SimpleEntry> extends HTRegistr
 
     @Override
     public Codec<T> byNameCodec() {
-        return ResourceLocation.CODEC.flatXmap((location) -> {
-            return this.getValue(location).map(DataResult::success).orElseGet(() -> {
-                return DataResult.error(() -> "Unknown registry key in " + this.getRegistryName() + ": " + location);
-            });
-        }, (value) -> {
-            return this.getKey(value).map(DataResult::success).orElseGet(() -> {
-                return DataResult.error(() -> "Unknown registry element in " + this.getRegistryName() + ": " + value);
-            });
-        });
+        return HTSimpleRegistry.super.byNameCodec();
     }
-
 }

@@ -2,6 +2,7 @@ package hungteen.htlib.api;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.api.util.helper.HTRegistryHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -82,6 +83,11 @@ public interface HTForgeRegistryHelper<T> extends HTRegistryHelper<T> {
     @Override
     default Codec<T> getCodec(){
         return getRegistry().getCodec();
+    }
+
+    @Override
+    default Codec<Holder<T>> getHolderCodec() {
+        throw new UnsupportedOperationException("Forge Registry does not support Holder Codec.");
     }
 
 }

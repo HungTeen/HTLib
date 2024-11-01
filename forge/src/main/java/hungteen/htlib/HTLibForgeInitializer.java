@@ -37,7 +37,6 @@ public class HTLibForgeInitializer {
 
         /* Forge Bus Events */
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        forgeBus.addListener(DummyEntityHandler::tick);
 //        forgeBus.addListener(PlayerCapabilityManager::tick);
         forgeBus.addListener(HTLibForgeRegistryHandler::onDatapackSync);
         forgeBus.addListener((RegisterCommandsEvent event) -> HTLibCommand.register(event.getDispatcher(), event.getBuildContext()));

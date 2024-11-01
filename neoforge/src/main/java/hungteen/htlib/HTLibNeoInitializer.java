@@ -33,7 +33,7 @@ public class HTLibNeoInitializer
 //            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
 //
 //    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-//    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
+//    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.initialize("example_tab", () -> CreativeModeTab.builder()
 //            .title(Component.translatable("itemGroup.examplemod")) //The language key for the title of your CreativeModeTab
 //            .withTabsBefore(CreativeModeTabs.COMBAT)
 //            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
@@ -45,7 +45,7 @@ public class HTLibNeoInitializer
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public HTLibNeoInitializer(IEventBus modBus, ModContainer modContainer) {
         modBus.addListener(HTLibNeoInitializer::onCommonSetup);
-//        modBus.addListener(EventPriority.LOW, HTSuitHandler::register);
+//        modBus.addListener(EventPriority.LOW, HTSuitHandler::initialize);
 //        modBus.addListener(HTSuitHandler::clear);
 //        modBus.addListener(HTDataGenHandler::gatherData);
 //        modBus.addListener(HTSuitHandler::fillInCreativeTab);

@@ -38,7 +38,7 @@ public class ClientRegister {
 //    @SubscribeEvent
 //    public static void registerBakeModels(ModelEvent.RegisterAdditional event){
 //        HTResourceManager.getExtraModels().forEach(model -> {
-//            event.register(ClientHelper.getModelLocation(model));
+//            event.initialize(ClientHelper.getModelLocation(model));
 //        });
 //    }
 

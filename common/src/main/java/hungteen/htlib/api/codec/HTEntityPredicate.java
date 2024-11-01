@@ -18,7 +18,7 @@ public interface HTEntityPredicate {
     Optional<Boolean> predicate(Entity entity);
 
     /**
-     * Use with {@link HTEntityPredicateType#codec()} to specify the type of predicate.
+     * Use with {@link HTEntityPredicateType#codec()} to specify the entity predicate.
      * @return type.
      */
     HTEntityPredicateType<?> getType();

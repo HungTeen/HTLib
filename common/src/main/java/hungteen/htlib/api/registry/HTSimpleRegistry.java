@@ -21,15 +21,15 @@ public interface HTSimpleRegistry<T extends SimpleEntry> extends HTCommonRegistr
     }
 
     /**
-     * Single register. <br>
-     * Note: invoke before register event, 建议在注册事件发生前注册。
+     * Single initialize. <br>
+     * Note: invoke before initialize event, 建议在注册事件发生前注册。
      * @param type The entry to be registered.
      */
     <I extends T> I register(@NotNull I type);
 
     /**
-     * Multiple register. <br>
-     * Note: invoke before register event, 建议在注册事件发生前注册。
+     * Multiple initialize. <br>
+     * Note: invoke before initialize event, 建议在注册事件发生前注册。
      * @param types registry list.
      */
     default <I extends T> void register(List<I> types){

@@ -1,6 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.common.world.entity.DummyEntityManager;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -16,11 +17,18 @@ import net.minecraft.world.InteractionResult;
 public class HTLibFabricDummyEntityHandler {
 
     public static void registerDummyEntityEvents(){
+        tick();
         login();
         rightClickBlock();
         leftClickBlock();
         rightClickEntity();
         leftClickEntity();
+    }
+
+    public static void tick(){
+        ServerTickEvents.END_WORLD_TICK.register(world -> {
+            DummyEntityManager.get(world).tick();
+        });
     }
 
     public static void login() {

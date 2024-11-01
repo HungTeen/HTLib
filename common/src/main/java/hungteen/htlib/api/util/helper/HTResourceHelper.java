@@ -1,10 +1,14 @@
 package hungteen.htlib.api.util.helper;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -54,6 +58,16 @@ public interface HTResourceHelper<T> {
 
     default ResourceKey<T> createKey(ResourceLocation location){
         return ResourceKey.create(resourceKey(), location);
+    }
+
+    /* Codec Methods */
+
+    default StreamCodec<RegistryFriendlyByteBuf, Holder<T>> getStreamCodec() {
+        return ByteBufCodecs.holderRegistry(resourceKey());
+    }
+
+    default Codec<TagKey<T>> getTagCodec() {
+        return TagKey.codec(resourceKey());
     }
 
 }

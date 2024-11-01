@@ -18,7 +18,7 @@ public interface HTItemPredicate {
     Optional<Boolean> predicate(ItemStack stack);
 
     /**
-     * Use with {@link HTItemPredicateType#codec()} to specify the type of predicate.
+     * Use with {@link HTItemPredicateType#codec()} to specify the item predicate.
      * @return type.
      */
     HTItemPredicateType<?> getType();

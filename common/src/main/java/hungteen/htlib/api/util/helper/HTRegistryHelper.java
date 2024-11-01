@@ -1,6 +1,7 @@
 package hungteen.htlib.api.util.helper;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -76,10 +77,10 @@ public interface HTRegistryHelper<T> extends HTResourceHelper<T> {
      */
     Optional<ResourceKey<T>> getResourceKey(T object);
 
+    /* Codec Methods */
+
     Codec<T> getCodec();
 
-    default Codec<TagKey<T>> getTagCodec() {
-        return TagKey.codec(resourceKey());
-    }
+    Codec<Holder<T>> getHolderCodec();
 
 }

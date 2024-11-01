@@ -25,7 +25,7 @@ public interface HTLibBoatTypes {
 
     BoatType DEFAULT = registerBoatType(new BoatType() {
         @Override
-        public String getName() {
+        public String name() {
             return "oak";
         }
 

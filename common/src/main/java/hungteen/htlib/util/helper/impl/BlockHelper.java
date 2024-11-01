@@ -80,11 +80,11 @@ public interface BlockHelper {
 //    }
 //
 //    /**
-//     * register wood entityType.
+//     * initialize wood entityType.
 //     */
 //    static void registerWoodType(WoodType woodType) {
-//        WoodType.register(woodType);
-//        BlockSetType.register(woodType.setType());
+//        WoodType.initialize(woodType);
+//        BlockSetType.initialize(woodType.setType());
 //        WOOD_TYPES.add(woodType);
 //    }
 //

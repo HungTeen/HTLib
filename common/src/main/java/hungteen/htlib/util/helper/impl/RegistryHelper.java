@@ -34,12 +34,12 @@ public abstract class RegistryHelper<T> implements HTRegistryHelper<T> {
 //    }
 //
 //    /**
-//     * Used in group register, 用于分组注册。
+//     * Used in group initialize, 用于分组注册。
 //     * {@link HTLib#postRegister(RegisterEvent)}
 //     */
-//    public void register(RegisterEvent event){
+//    public void initialize(RegisterEvent event){
 //        this.groups.forEach((key, value) -> {
-//            value.getRegistrations().forEach(entry -> register(event, entry.getKey(), entry.getValue()));
+//            value.getRegistrations().forEach(entry -> initialize(event, entry.getKey(), entry.getValue()));
 //            value.dump();
 //        });
 //    }

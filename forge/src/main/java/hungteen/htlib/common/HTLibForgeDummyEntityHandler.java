@@ -4,6 +4,7 @@ import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -18,6 +19,13 @@ import net.minecraftforge.fml.common.Mod;
  **/
 @Mod.EventBusSubscriber(modid = HTLibAPI.MOD_ID)
 public class HTLibForgeDummyEntityHandler {
+
+    @SubscribeEvent
+    public static void tick(TickEvent.LevelTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel) {
+            DummyEntityManager.get((ServerLevel) event.level).tick();
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void login(PlayerEvent.PlayerLoggedInEvent event) {
