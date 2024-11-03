@@ -1,7 +1,6 @@
 package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.api.util.helper.HTResourceHelper;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
  **/
 public abstract class HTCustomRegistryImpl<T> extends HTRegistryImpl<T> implements HTCustomRegistry<T> {
 
-    private final Map<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
+    protected final Map<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     protected boolean seenRegisterEvent = false;
 
     HTCustomRegistryImpl(ResourceLocation registryName) {
@@ -66,11 +65,6 @@ public abstract class HTCustomRegistryImpl<T> extends HTRegistryImpl<T> implemen
     public <I extends T> Optional<ResourceLocation> getKey(I type) {
         // Do not support reverse lookup.
         throw new UnsupportedOperationException("HTVanillaRegistry does not support reverse lookup before vanilla registry finish.");
-    }
-
-    @Override
-    public HTResourceHelper<T> helper() {
-        return registryHelper;
     }
 
     /**

@@ -1,6 +1,7 @@
 package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.HTLibAPI;
+import hungteen.htlib.api.registry.HTHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
@@ -28,7 +29,7 @@ public interface HTVanillaRegistry<T> {
      * @param supplier 条目提供器
      * @return 返回注册的条目
      */
-    <K extends T> Supplier<K> register(String name, Supplier<K> supplier);
+    <K extends T> HTHolder<K> register(String name, Supplier<K> supplier);
 
     /**
      * 不同平台都有自己的构建方式，需要在此抽象。

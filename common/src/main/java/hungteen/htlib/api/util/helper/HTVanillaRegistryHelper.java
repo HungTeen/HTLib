@@ -94,4 +94,14 @@ public interface HTVanillaRegistryHelper<T> extends HTRegistryHelper<T> {
         return getRegistry().holderByNameCodec();
     }
 
+    default Holder<T> holder(ResourceLocation key){
+        return getRegistry().getHolder(key).orElseThrow(() -> {
+            return new IllegalStateException("Missing key in " + getRegistry().key() + ": " + key);
+        });
+    }
+
+    default Holder<T> holder(ResourceKey<T> key){
+        return getRegistry().getHolderOrThrow(key);
+    }
+
 }

@@ -22,7 +22,8 @@ public interface HTCustomRegistry<T> extends HTCommonRegistry<T> {
     /**
      * @return Get the helper instance.
      */
-    HTRegistryHelper<T> getHelper();
+    @Override
+    HTRegistryHelper<T> helper();
 
     /**
      * 不同平台都有自己的构建方式，需要在此抽象。

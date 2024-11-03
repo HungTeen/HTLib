@@ -1,9 +1,11 @@
 package hungteen.htlib.common.impl.registry;
 
+import hungteen.htlib.api.registry.HTHolder;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
@@ -30,9 +32,10 @@ public class HTFabricVanillaRegistry<T> implements HTVanillaRegistry<T> {
     }
 
     @Override
-    public <K extends T> Supplier<K> register(String name, Supplier<K> supplier) {
-        K obj = Registry.register(registry, StringHelper.res(modId, name), supplier.get());
-        return () -> obj;
+    public <K extends T> HTHolder<K> register(String name, Supplier<K> supplier) {
+        ResourceLocation registryName = StringHelper.res(modId, name);
+        K obj = Registry.register(registry, registryName, supplier.get());
+        return new HTFabricHolder<>(registryName, obj);
     }
 
 }

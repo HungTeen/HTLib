@@ -15,6 +15,12 @@ import net.minecraft.resources.ResourceLocation;
 public interface HTRegistry<T> {
 
     /**
+     * Get the registry key, 获取该注册的注册名。
+     * @return registry key.
+     */
+    ResourceKey<Registry<T>> getRegistryKey();
+
+    /**
      * Do nothing, just make the specific class being loaded.
      */
     default void initialize(){
@@ -43,11 +49,5 @@ public interface HTRegistry<T> {
     default ResourceLocation getRegistryName(){
         return getRegistryKey().location();
     }
-
-    /**
-     * Get the registry key, 获取该注册的注册名。
-     * @return registry key.
-     */
-    ResourceKey<Registry<T>> getRegistryKey();
 
 }

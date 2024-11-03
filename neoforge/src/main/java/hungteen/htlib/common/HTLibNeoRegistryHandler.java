@@ -42,7 +42,7 @@ public class HTLibNeoRegistryHandler {
      * Subscribe at {@link hungteen.htlib.HTLibNeoInitializer}.
      */
     public static void onDatapackSync(OnDatapackSyncEvent event) {
-        HTRegistryManager.getCodecRegistries().forEach(registry -> registry.syncToClient(event.getPlayer()));
+        HTRegistryManager.getCodecRegistries().forEach(registry -> registry.syncToClient(event.getRelevantPlayers().toList()));
     }
 
     @SubscribeEvent

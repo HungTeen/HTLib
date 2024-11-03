@@ -1,25 +1,40 @@
 package hungteen.htlib.common.block.plant;
 
-import net.minecraft.world.level.block.StemBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
+ * TODO StemBlock 多平台不好兼容。
  * Copy from {@link StemBlock}}.
- *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 22:38
  **/
-public abstract class HTStemBlock {
-//        extends BushBlock implements BonemealableBlock {
-//
-//    private final Supplier<Item> seedSupplier;
-//
-//    public HTStemBlock(Supplier<Item> seedSupplier, BlockBehaviour.Properties properties) {
-//        super(properties);
-//        this.seedSupplier = seedSupplier;
-//        this.registerDefaultState(this.stateDefinition.any().setValue(getAgeProperty(), 0));
-//    }
-//
+public abstract class HTStemBlock extends BushBlock implements BonemealableBlock {
+
+    private final Supplier<Item> seedSupplier;
+
+    public HTStemBlock(Supplier<Item> seedSupplier, BlockBehaviour.Properties properties) {
+        super(properties);
+        this.seedSupplier = seedSupplier;
+        this.registerDefaultState(this.stateDefinition.any().setValue(getAgeProperty(), 0));
+    }
+
 //    @Override
 //    public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
 //        // Forge: prevent loading unloaded chunks when checking neighbor's light.
@@ -56,59 +71,60 @@ public abstract class HTStemBlock {
 //    protected float getGrowSpeed(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos) {
 //        return CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
 //    }
-//
-//    protected Optional<HTStemGrownBlock> getResultFruit(RandomSource random) {
-//        return Optional.empty();
-//    }
-//
-//    public abstract IntegerProperty getAgeProperty();
-//
-//    public abstract int getMaxAge();
-//
-//    public BlockState maxAgeState(){
-//        return setAge(defaultBlockState(), getMaxAge());
-//    }
-//
-//    public BlockState setAge(BlockState state, int age) {
-//        return state.setValue(getAgeProperty(), age);
-//    }
-//
-//    protected int getAge(BlockState state) {
-//        return state.getValue(getAgeProperty());
-//    }
-//
-//    @Override
-//    protected boolean mayPlaceOn(BlockState state, BlockGetter blockGetter, BlockPos blockPos) {
-//        return state.is(Blocks.FARMLAND);
-//    }
-//
-//    @Override
-//    public boolean isValidBonemealTarget(LevelReader blockGetter, BlockPos blockPos, BlockState blockState) {
-//        return getAge(blockState) < getMaxAge();
-//    }
-//
-//    @Override
-//    public void performBonemeal(ServerLevel serverLevel, RandomSource random, BlockPos blockPos, BlockState oldState) {
-//        final int nextAge = Math.min(getMaxAge(), getAge(oldState) + Mth.nextInt(serverLevel.random, 2, 5));
-//        BlockState newState = setAge(oldState, nextAge);
-//        serverLevel.setBlock(blockPos, newState, 2);
-//        if (nextAge == getMaxAge()) {
-//            newState.randomTick(serverLevel, blockPos, serverLevel.random);
-//        }
-//    }
-//
-//    public ItemStack getCloneItemStack(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
-//        return new ItemStack(this.seedSupplier.get());
-//    }
-//
-//    @Override
-//    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos blockPos, BlockState state) {
-//        return true;
-//    }
-//
-//    @Override
-//    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_57040_) {
-//        p_57040_.add(getAgeProperty());
-//    }
+
+    protected Optional<HTStemGrownBlock> getResultFruit(RandomSource random) {
+        return Optional.empty();
+    }
+
+    public abstract IntegerProperty getAgeProperty();
+
+    public abstract int getMaxAge();
+
+    public BlockState maxAgeState(){
+        return setAge(defaultBlockState(), getMaxAge());
+    }
+
+    public BlockState setAge(BlockState state, int age) {
+        return state.setValue(getAgeProperty(), age);
+    }
+
+    public int getAge(BlockState state) {
+        return state.getValue(getAgeProperty());
+    }
+
+    @Override
+    protected boolean mayPlaceOn(BlockState state, BlockGetter blockGetter, BlockPos blockPos) {
+        return state.is(Blocks.FARMLAND);
+    }
+
+    @Override
+    public boolean isValidBonemealTarget(LevelReader blockGetter, BlockPos blockPos, BlockState blockState) {
+        return getAge(blockState) < getMaxAge();
+    }
+
+    @Override
+    public void performBonemeal(ServerLevel serverLevel, RandomSource random, BlockPos blockPos, BlockState oldState) {
+        final int nextAge = Math.min(getMaxAge(), getAge(oldState) + Mth.nextInt(serverLevel.random, 2, 5));
+        BlockState newState = setAge(oldState, nextAge);
+        serverLevel.setBlock(blockPos, newState, 2);
+        if (nextAge == getMaxAge()) {
+            newState.randomTick(serverLevel, blockPos, serverLevel.random);
+        }
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader reader, BlockPos blockPos, BlockState blockState) {
+        return new ItemStack(this.seedSupplier.get());
+    }
+
+    @Override
+    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos blockPos, BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_57040_) {
+        p_57040_.add(getAgeProperty());
+    }
 
 }

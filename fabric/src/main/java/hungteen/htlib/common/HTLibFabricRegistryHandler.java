@@ -10,6 +10,7 @@ import hungteen.htlib.common.world.entity.HTLibDummyEntities;
 import hungteen.htlib.util.helper.JavaHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -26,7 +27,7 @@ public class HTLibFabricRegistryHandler {
 
     private static void onDatapackSync() {
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
-            getCodecRegistries().forEach(registry -> registry.syncToClient(player));
+            getCodecRegistries().forEach(registry -> registry.syncToClient(List.of(player)));
         });
     }
 

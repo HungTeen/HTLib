@@ -12,7 +12,7 @@ base {
 }
 
 loom {
-//    accessWidenerPath = file("src/main/resources/geckolib.accesswidener")
+    accessWidenerPath = file("src/main/resources/${modId}.accesswidener")
 
     mixin.defaultRefmapName.set("${modId}.refmap.json")
 

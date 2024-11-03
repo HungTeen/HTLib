@@ -1,6 +1,5 @@
 package hungteen.htlib.api.registry;
 
-import hungteen.htlib.api.HTLibAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -12,13 +11,6 @@ import java.util.List;
  * @data 2023/6/28 14:32
  */
 public interface HTSimpleRegistry<T extends SimpleEntry> extends HTCommonRegistry<T> {
-
-    /**
-     * Do nothing, just make the specific class being loaded.
-     */
-    default void initialize(){
-        HTLibAPI.logger().debug("Initialize simple registry: {}", getRegistryName());
-    }
 
     /**
      * Single initialize. <br>

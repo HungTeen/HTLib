@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 一种基于原版数据包的注册方式，可以通过外部数据包实现灵活扩展。
@@ -41,9 +41,9 @@ public interface HTCodecRegistry<V> extends HTRegistry<V> {
 
     /**
      * Sync data to client, 同步数据到客户端。
-     * @param player the player to sync, null if sync to all players.
+     * @param players the players to sync data.
      */
-    void syncToClient(@Nullable ServerPlayer player);
+    void syncToClient(List<ServerPlayer> players);
 
     /**
      * 用于客户端同步时注册数据。
@@ -72,8 +72,21 @@ public interface HTCodecRegistry<V> extends HTRegistry<V> {
      * Get keys of all registered entries, 获取所有注册名。
      * @return all keys of registered entries.
      */
-    default Set<ResourceKey<V>> getKeys(Level level){
-        return customSync() ? getClientKeys() : lookup(level).listElementIds().collect(Collectors.toSet());
+    default Stream<ResourceKey<V>> getKeys(Level level){
+        if(level.isClientSide() && customSync()){
+            return getClientKeys().stream();
+        }
+        return lookup(level).listElementIds();
+    }
+
+    /**
+     * 暂不支持以自定义的方式获取客户端同步的数据。
+     */
+    default Stream<Holder.Reference<V>> getHolders(Level level){
+        if(level.isClientSide() && customSync()){
+            return Stream.of();
+        }
+        return lookup(level).listElements();
     }
 
     /**
@@ -85,7 +98,7 @@ public interface HTCodecRegistry<V> extends HTRegistry<V> {
     }
 
     /**
-     * 获取缓存的 Key。
+     * 获取缓存的 Key，用于 Command Suggestion。
      */
     List<ResourceLocation> getCachedKeys();
 

@@ -12,7 +12,6 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -23,10 +22,9 @@ import java.util.stream.Collectors;
  **/
 public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements HTCustomRegistry<T> {
 
-    private final ConcurrentHashMap<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     private final Supplier<RegistryBuilder<?>> registryFactory;
     protected final HTForgeRegistryHolder<T> registryHolder;
-    private HTForgeRegistryHelper<T> registryHelper;
+    private final HTForgeRegistryHelper<T> registryHelper;
 
     public HTForgeCustomRegistry(ResourceLocation registryName) {
         this(registryName, () -> new RegistryBuilder<T>().setName(registryName).setMaxID(Integer.MAX_VALUE - 1).disableSaving().hasTags());
@@ -36,6 +34,7 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
         super(registryName);
         this.registryHolder = new HTForgeRegistryHolder<>(this.registryKey);
         this.registryFactory = () -> builderSup.get().setName(registryName);
+        this.registryHelper = this::getRegistry;
     }
 
     public void addEntries(RegisterEvent event) {
@@ -102,10 +101,7 @@ public class HTForgeCustomRegistry<T> extends HTCustomRegistryImpl<T> implements
     }
 
     @Override
-    public HTRegistryHelper<T> getHelper() {
-        if(this.registryHelper == null){
-            this.registryHelper = this::getRegistry;
-        }
+    public HTRegistryHelper<T> helper() {
         return this.registryHelper;
     }
 }

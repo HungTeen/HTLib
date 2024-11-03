@@ -1,7 +1,10 @@
 package hungteen.htlib;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.*;
+import hungteen.htlib.common.HTLibForgeNetworkHandler;
+import hungteen.htlib.common.HTLibForgeRegistryHandler;
+import hungteen.htlib.common.HTResourceManager;
+import hungteen.htlib.common.HTSuitHandler;
 import hungteen.htlib.common.command.HTLibCommand;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.data.HTDataGenHandler;

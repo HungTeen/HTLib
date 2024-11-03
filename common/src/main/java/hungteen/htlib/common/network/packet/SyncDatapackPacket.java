@@ -6,7 +6,7 @@ import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 public record SyncDatapackPacket(ResourceLocation dataType, ResourceLocation location, CompoundTag data) implements PlayToClientPacket {
 
     public static final CustomPacketPayload.Type<SyncDatapackPacket> TYPE = new CustomPacketPayload.Type<>(HTLibHelper.prefix("sync_datapack"));
-    public static final StreamCodec<FriendlyByteBuf, SyncDatapackPacket> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncDatapackPacket> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC,
             SyncDatapackPacket::dataType,
             ResourceLocation.STREAM_CODEC,

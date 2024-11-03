@@ -33,7 +33,7 @@ public class HTLibNeoNetworkHandler {
                 DummyEntityPacket.STREAM_CODEC,
                 NeoHelper.wrapClientHandler(DummyEntityPacket::process)
         );
-        registrar.configurationToClient(
+        registrar.playToClient(
                 SyncDatapackPacket.TYPE,
                 SyncDatapackPacket.STREAM_CODEC,
                 NeoHelper.wrapClientHandler(SyncDatapackPacket::process)

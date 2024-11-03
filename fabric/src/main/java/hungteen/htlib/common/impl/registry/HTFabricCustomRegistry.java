@@ -2,6 +2,8 @@ package hungteen.htlib.common.impl.registry;
 
 import com.mojang.serialization.Codec;
 import hungteen.htlib.api.registry.HTCustomRegistry;
+import hungteen.htlib.api.util.helper.HTRegistryHelper;
+import hungteen.htlib.api.util.helper.HTVanillaRegistryHelper;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import net.minecraft.core.Registry;
@@ -19,17 +21,24 @@ import java.util.stream.Collectors;
 public class HTFabricCustomRegistry<T> extends HTCustomRegistryImpl<T> implements HTCustomRegistry<T> {
 
     private final Registry<T> registry;
+    private final HTVanillaRegistryHelper<T> registryHelper;
 
     public HTFabricCustomRegistry(ResourceLocation registryName) {
         super(registryName);
         this.registry = FabricRegistryBuilder.createSimple(this.registryKey)
                 .attribute(RegistryAttribute.SYNCED)
                 .buildAndRegister();
+        this.registryHelper = this::getRegistry;
     }
 
     @Override
     public <I extends T> I register(ResourceLocation name, @NotNull I type) {
         return Registry.register(this.registry, name, type);
+    }
+
+    @Override
+    public HTRegistryHelper<T> helper() {
+        return this.registryHelper;
     }
 
     @Override

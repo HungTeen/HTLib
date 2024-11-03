@@ -25,7 +25,7 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
     private final ConcurrentHashMap<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     private final Supplier<RegistryBuilder<?>> registryFactory;
     protected final HTNeoRegistryHolder<T> registryHolder;
-    private HTVanillaRegistryHelper<T> registryHelper;
+    private final HTVanillaRegistryHelper<T> registryHelper;
 
     public HTNeoCustomRegistry(ResourceLocation registryName) {
         this(registryName, () -> new RegistryBuilder<T>(ResourceKey.createRegistryKey(registryName)).maxId(Integer.MAX_VALUE - 1));
@@ -35,6 +35,7 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
         super(registryName);
         this.registryHolder = new HTNeoRegistryHolder<>(this.registryKey);
         this.registryFactory = builderSup::get;
+        this.registryHelper = this::getRegistry;
     }
 
     public void addEntries(RegisterEvent event) {
@@ -92,10 +93,7 @@ public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements H
     }
 
     @Override
-    public HTVanillaRegistryHelper<T> getHelper(){
-        if(this.registryHelper == null){
-            this.registryHelper = this::getRegistry;
-        }
+    public HTVanillaRegistryHelper<T> helper(){
         return this.registryHelper;
     }
 

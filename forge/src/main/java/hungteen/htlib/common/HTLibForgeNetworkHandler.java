@@ -33,10 +33,10 @@ public class HTLibForgeNetworkHandler {
                     .simpleChannel()
                     .configuration()
                     .clientbound()
-                    .add(DummyEntityPacket.class, DummyEntityPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(DummyEntityPacket::process))
-                    .add(SyncDatapackPacket.class, SyncDatapackPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(SyncDatapackPacket::process))
                     .play()
                     .clientbound()
+                    .add(DummyEntityPacket.class, DummyEntityPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(DummyEntityPacket::process))
+                    .add(SyncDatapackPacket.class, SyncDatapackPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(SyncDatapackPacket::process))
                     .add(PlaySoundPacket.class, PlaySoundPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(PlaySoundPacket::process))
                     .build()
             ;

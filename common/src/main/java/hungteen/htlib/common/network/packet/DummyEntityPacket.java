@@ -7,6 +7,7 @@ import hungteen.htlib.common.world.entity.HTLibDummyEntities;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,7 @@ public class DummyEntityPacket implements PlayToClientPacket {
     private ResourceLocation entityType;
     private CompoundTag entityNBT;
 
-    public static final StreamCodec<FriendlyByteBuf, DummyEntityPacket> STREAM_CODEC = StreamCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, DummyEntityPacket> STREAM_CODEC = StreamCodec.of(
             DummyEntityPacket::encode,
             DummyEntityPacket::new
     );

@@ -42,7 +42,7 @@ public class HTLibForgeRegistryHandler {
      * Subscribe at {@link hungteen.htlib.HTLibForgeInitializer}.
      */
     public static void onDatapackSync(OnDatapackSyncEvent event) {
-        HTRegistryManager.getCodecRegistries().forEach(registry -> registry.syncToClient(event.getPlayer()));
+        getCodecRegistries().forEach(registry -> registry.syncToClient(event.getPlayers()));
     }
 
     @SubscribeEvent
@@ -60,7 +60,7 @@ public class HTLibForgeRegistryHandler {
         // Custom Registry.
         HTLibDummyEntities.registry().initialize();
 
-        // Codec Suit Registry.
+        // Codec Registry.
         HTLibCodecRegistryHandler.initialize();
     }
 

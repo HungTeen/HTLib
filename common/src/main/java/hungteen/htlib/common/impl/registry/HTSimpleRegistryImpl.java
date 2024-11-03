@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.api.registry.SimpleEntry;
+import hungteen.htlib.api.util.helper.HTResourceHelper;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,9 +25,11 @@ import java.util.stream.Collectors;
 public final class HTSimpleRegistryImpl<T extends SimpleEntry> extends HTRegistryImpl<T> implements HTSimpleRegistry<T> {
 
     private final Map<ResourceLocation, Optional<? extends T>> registryMap = new ConcurrentHashMap<>();
+    private final HTResourceHelper<T> helper;
 
     public HTSimpleRegistryImpl(ResourceLocation registryName) {
         super(registryName);
+        this.helper = this::getRegistryKey;
     }
 
     @Override
@@ -69,5 +72,10 @@ public final class HTSimpleRegistryImpl<T extends SimpleEntry> extends HTRegistr
     @Override
     public Codec<T> byNameCodec() {
         return HTSimpleRegistry.super.byNameCodec();
+    }
+
+    @Override
+    public HTResourceHelper<T> helper() {
+        return helper;
     }
 }

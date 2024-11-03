@@ -1,5 +1,6 @@
 package hungteen.htlib.common.impl.registry;
 
+import hungteen.htlib.api.registry.HTHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
@@ -26,8 +27,8 @@ public class HTNeoVanillaRegistry<T> implements HTVanillaRegistry<T> {
     }
 
     @Override
-    public <K extends T> Supplier<K> register(String name, Supplier<K> supplier) {
-        return deferredRegister.register(name, supplier);
+    public <K extends T> HTHolder<K> register(String name, Supplier<K> supplier) {
+        return new HTNeoHolder<>(deferredRegister.register(name, supplier));
     }
 
     public void register(IEventBus eventBus) {
