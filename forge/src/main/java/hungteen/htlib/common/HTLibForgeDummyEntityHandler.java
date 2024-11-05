@@ -4,6 +4,8 @@ import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,39 +29,20 @@ public class HTLibForgeDummyEntityHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent
     public static void login(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity().level() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
-//            PlayerCapabilityManager.syncToClient(event.getEntity());
             DummyEntityManager.get(serverLevel).initialize(serverPlayer);
         }
     }
 
-    @SubscribeEvent
-    public static void logout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            DummyEntityManager.get(serverPlayer.serverLevel()).finalize(serverPlayer);
+    @Mod.EventBusSubscriber(modid = HTLibAPI.MOD_ID, value = Dist.CLIENT)
+    public static class PlayerLoggedOutHandler {
+        @SubscribeEvent
+        public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
+            HTLibProxy.get().clearDummyEntities();
         }
     }
-
-//    @SubscribeEvent
-//    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-//        if(EntityHelper.isServer(event.getEntity())) {
-//            PlayerCapabilityManager.syncToClient(event.getEntity());
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-//        if(EntityHelper.isServer(event.getEntity())) {
-//            PlayerCapabilityManager.syncToClient(event.getEntity());
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    public static void onPlayerClone(PlayerEvent.Clone event) {
-//        PlayerCapabilityManager.cloneData(event.getOriginal(), event.getEntity(), event.isWasDeath());
-//    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void interactAt(PlayerInteractEvent.EntityInteractSpecific event) {

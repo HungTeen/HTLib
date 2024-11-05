@@ -35,4 +35,9 @@ public class HTNeoVanillaRegistry<T> implements HTVanillaRegistry<T> {
         deferredRegister.register(eventBus);
     }
 
+    @Override
+    public void initialize() {
+        throw new RuntimeException("Do not use this method to initialize registry. Please use NeoHelper instead.");
+    }
+
 }

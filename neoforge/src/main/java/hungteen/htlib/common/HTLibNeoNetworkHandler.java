@@ -1,7 +1,8 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.network.packet.DummyEntityPacket;
+import hungteen.htlib.common.network.packet.DummyEntityInitPacket;
+import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
 import hungteen.htlib.common.network.packet.PlaySoundPacket;
 import hungteen.htlib.common.network.packet.SyncDatapackPacket;
 import hungteen.htlib.util.NeoHelper;
@@ -29,9 +30,14 @@ public class HTLibNeoNetworkHandler {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
         registrar.playToClient(
-                DummyEntityPacket.TYPE,
-                DummyEntityPacket.STREAM_CODEC,
-                NeoHelper.wrapClientHandler(DummyEntityPacket::process)
+                DummyEntityPlayPacket.TYPE,
+                DummyEntityPlayPacket.STREAM_CODEC,
+                NeoHelper.wrapClientHandler(DummyEntityPlayPacket::process)
+        );
+        registrar.playToClient(
+                DummyEntityInitPacket.TYPE,
+                DummyEntityInitPacket.STREAM_CODEC,
+                NeoHelper.wrapClientHandler(DummyEntityInitPacket::process)
         );
         registrar.playToClient(
                 SyncDatapackPacket.TYPE,

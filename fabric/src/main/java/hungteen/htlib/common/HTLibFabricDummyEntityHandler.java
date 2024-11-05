@@ -31,10 +31,12 @@ public class HTLibFabricDummyEntityHandler {
         });
     }
 
+    /**
+     * Logout invoke at client initializer.
+     */
     public static void login() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             DummyEntityManager manager = DummyEntityManager.get(handler.getPlayer().serverLevel());
-            manager.finalize(handler.getPlayer());
             manager.initialize(handler.getPlayer());
         });
     }

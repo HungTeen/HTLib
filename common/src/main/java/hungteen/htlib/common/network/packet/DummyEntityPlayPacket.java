@@ -17,29 +17,29 @@ import net.minecraft.resources.ResourceLocation;
  * @author: HungTeen
  * @create: 2022-11-28 09:31
  **/
-public class DummyEntityPacket implements PlayToClientPacket {
+public class DummyEntityPlayPacket implements PlayToClientPacket {
 
-    public static final CustomPacketPayload.Type<DummyEntityPacket> TYPE = new CustomPacketPayload.Type<>(HTLibHelper.prefix("dummy_entity"));
+    public static final CustomPacketPayload.Type<DummyEntityPlayPacket> TYPE = new CustomPacketPayload.Type<>(HTLibHelper.prefix("dummy_entity_play"));
     private final Operation operation;
     private int entityID;
     private ResourceLocation entityType;
     private CompoundTag entityNBT;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, DummyEntityPacket> STREAM_CODEC = StreamCodec.of(
-            DummyEntityPacket::encode,
-            DummyEntityPacket::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, DummyEntityPlayPacket> STREAM_CODEC = StreamCodec.of(
+            DummyEntityPlayPacket::encode,
+            DummyEntityPlayPacket::new
     );
 
-    public DummyEntityPacket() {
+    public DummyEntityPlayPacket() {
         this.operation = Operation.CLEAR;
     }
 
-    public DummyEntityPacket(DummyEntity dummyEntity, CompoundTag nbt) {
+    public DummyEntityPlayPacket(DummyEntity dummyEntity, CompoundTag nbt) {
         this(Operation.UPDATE, dummyEntity);
         this.entityNBT = nbt;
     }
 
-    public DummyEntityPacket(Operation operation, DummyEntity dummyEntity) {
+    public DummyEntityPlayPacket(Operation operation, DummyEntity dummyEntity) {
         this.operation = operation;
         this.entityID = dummyEntity.getEntityID();
         if (this.operation == Operation.CREATE) {
@@ -48,7 +48,7 @@ public class DummyEntityPacket implements PlayToClientPacket {
         }
     }
 
-    public DummyEntityPacket(FriendlyByteBuf buffer) {
+    public DummyEntityPlayPacket(FriendlyByteBuf buffer) {
         this.operation = Operation.values()[buffer.readInt()];
         if (this.operation != Operation.CLEAR) {
             this.entityID = buffer.readInt();
@@ -61,7 +61,7 @@ public class DummyEntityPacket implements PlayToClientPacket {
         }
     }
 
-    public static void encode(FriendlyByteBuf buffer, DummyEntityPacket packet) {
+    public static void encode(FriendlyByteBuf buffer, DummyEntityPlayPacket packet) {
         buffer.writeInt(packet.operation.ordinal());
         if (packet.operation != Operation.CLEAR) {
             buffer.writeInt(packet.entityID);

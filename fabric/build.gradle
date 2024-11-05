@@ -93,6 +93,8 @@ publishMods {
     modLoaders.add("fabric")
     displayName.set("${modName}-${project.version} for Fabric $mcVersion")
 
+    additionalFiles.from(apiJar.archiveFile)
+
     curseforge {
         projectId = curseProjectId
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")

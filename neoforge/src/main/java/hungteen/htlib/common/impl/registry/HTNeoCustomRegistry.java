@@ -11,7 +11,6 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
  **/
 public class HTNeoCustomRegistry<T> extends HTCustomRegistryImpl<T> implements HTCustomRegistry<T> {
 
-    private final ConcurrentHashMap<ResourceLocation, Supplier<? extends T>> registryMap = new ConcurrentHashMap<>();
     private final Supplier<RegistryBuilder<?>> registryFactory;
     protected final HTNeoRegistryHolder<T> registryHolder;
     private final HTVanillaRegistryHelper<T> registryHelper;

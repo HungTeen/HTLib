@@ -106,6 +106,8 @@ publishMods {
     modLoaders.add("forge")
     displayName.set("${modName}-${project.version} for Forge $mcVersion")
 
+    additionalFiles.from(apiJar.archiveFile)
+
     curseforge {
         projectId = curseProjectId
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")

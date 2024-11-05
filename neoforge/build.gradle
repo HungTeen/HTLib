@@ -95,6 +95,10 @@ publishMods {
     modLoaders.add("neoforge")
     displayName.set("${modName}-${project.version} for NeoForge $mcVersion")
 
+    additionalFiles.from(apiJar.archiveFile)
+
+//    dryRun = true
+
     curseforge {
         projectId = curseProjectId
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")

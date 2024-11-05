@@ -1,16 +1,19 @@
-# HTLib [![](https://cf.way2muchnoise.eu/full_794622_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
+# HungTeen's Lib (HTLib) [![](https://cf.way2muchnoise.eu/full_794622_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
 
 [![](https://cf.way2muchnoise.eu/versions/794622.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
 
-A lib made by HungTeen for more easily developing minecraft forge mod.
+A lib made by HungTeen for more easily developing minecraft mod.
 
 ### Features
-* Useful methods in data generators.
-* Particle helper for easy spawn different styles of particles on both side.
-* Easily make a wood suit including boat, sign, etc.
-* Custom raid.
-* Easy registration relate helpers.
-* Custom registry system.
+* **Multiplatform**: HTLib support Forge, Fabric, NeoForge since 1.21.1+.
+* **Registry System**: there are more flexible registries like Simple, Codec, Vanilla, Custom.
+* **Resource Helper**: provide a bunch of resource/registry helper for mod development.
+* **Suit**: register a series of wood relate registries with simple code, including boat, sign, etc.
+* **Data Pack**: provide many codec utils for data pack development.
+
+### Warning
+* Since 1.21.1, HTLib will support Forge, Fabric, NeoForge.
+* Since 1.21.1, the custom raid system has been split into a new mod called [Custom Raid](https://github.com/HungTeen/Custom-Raid).
 
 ### Current Progress
 

@@ -2,7 +2,7 @@ package hungteen.htlib.common.world.entity;
 
 import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.common.network.ClientPacketContext;
-import hungteen.htlib.common.network.packet.DummyEntityPacket;
+import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
 import hungteen.htlib.util.helper.ColorHelper;
 import hungteen.htlib.util.helper.MathHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
@@ -49,7 +49,7 @@ public abstract class DummyEntity {
 
     /**
      * Use to construct instance and packet sync. <br>
-     * {@link DummyEntityType#create(Level, CompoundTag)} and {@link DummyEntityPacket#process(ClientPacketContext)}.
+     * {@link DummyEntityType#create(Level, CompoundTag)} and {@link DummyEntityPlayPacket#process(ClientPacketContext)}.
      * @param tag contains entity data.
      */
     public void load(CompoundTag tag) {
@@ -90,7 +90,7 @@ public abstract class DummyEntity {
     public void sync(CompoundTag tag){
         if(this.level instanceof ServerLevel serverLevel) {
             PlayerHelper.getServerPlayers(serverLevel).forEach(player -> {
-                HTLibPlatformAPI.get().sendToClient(player, new DummyEntityPacket(this, tag));
+                HTLibPlatformAPI.get().sendToClient(player, new DummyEntityPlayPacket(this, tag));
             });
         }
     }

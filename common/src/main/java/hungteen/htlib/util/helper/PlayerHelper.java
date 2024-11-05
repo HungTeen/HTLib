@@ -1,5 +1,8 @@
 package hungteen.htlib.util.helper;
 
+import hungteen.htlib.common.network.packet.PlaySoundPacket;
+import hungteen.htlib.platform.HTLibPlatformAPI;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -10,7 +13,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
@@ -28,11 +30,10 @@ public interface PlayerHelper {
         return player.getCooldowns().isOnCooldown(item);
     }
 
-    static void playClientSound(Player player, @Nullable SoundEvent ev) {
-        // TODO play client sound
-//        if(ev != null) {
-//            NetworkHandler.sendToClient((ServerPlayer) player, new PlaySoundPacket(ev.getLocation().toString()));
-//        }
+    static void playClientSound(Player player, Holder<SoundEvent> ev) {
+        if(ev != null) {
+            HTLibPlatformAPI.get().sendToClient((ServerPlayer) player, new PlaySoundPacket(ev));
+        }
     }
 
     static void sendTitleToPlayer(Player player, Component text) {

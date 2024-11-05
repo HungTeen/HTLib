@@ -43,29 +43,37 @@ public class HTFabricCustomRegistry<T> extends HTCustomRegistryImpl<T> implement
 
     @Override
     public Collection<T> getValues() {
-        return this.canUseVanilla() ? Objects.requireNonNull(getRegistry()).stream().toList() : super.getValues();
+        return Objects.requireNonNull(getRegistry()).stream().toList();
     }
 
     @Override
     public Set<ResourceLocation> getKeys() {
-        return this.canUseVanilla() ? Objects.requireNonNull(getRegistry()).keySet() : super.getKeys();
+        return Objects.requireNonNull(getRegistry()).keySet();
     }
 
     @Override
     public Set<Map.Entry<ResourceLocation, T>> getEntries() {
-        return this.canUseVanilla() ? Objects.requireNonNull(getRegistry()).entrySet().stream()
+        return Objects.requireNonNull(getRegistry()).entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey().location(), entry.getValue()))
-                .collect(Collectors.toSet()) : super.getEntries();
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Optional<T> getValue(ResourceLocation type) {
-        return this.canUseVanilla() ? Optional.ofNullable(Objects.requireNonNull(getRegistry()).get(type)) : super.getValue(type);
+        return Optional.ofNullable(Objects.requireNonNull(getRegistry()).get(type));
     }
 
     @Override
     public <I extends T> Optional<ResourceLocation> getKey(I type) {
-        return this.canUseVanilla() ? Optional.ofNullable(Objects.requireNonNull(getRegistry()).getKey(type)) : super.getKey(type);
+        return Optional.ofNullable(Objects.requireNonNull(getRegistry()).getKey(type));
+    }
+
+    /**
+     * Fabric 的 Registry 无需延迟注册。
+     */
+    @Override
+    public boolean canUseVanilla() {
+        return false;
     }
 
     @Override

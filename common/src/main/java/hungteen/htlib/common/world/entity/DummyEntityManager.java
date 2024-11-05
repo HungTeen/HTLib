@@ -2,9 +2,10 @@ package hungteen.htlib.common.world.entity;
 
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
-import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.common.HTLibProxy;
-import hungteen.htlib.common.network.packet.DummyEntityPacket;
+import hungteen.htlib.common.network.packet.DummyEntityInitPacket;
+import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
+import hungteen.htlib.platform.HTLibPlatformAPI;
 import hungteen.htlib.util.helper.MathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -100,20 +101,14 @@ public class DummyEntityManager extends SavedData {
      * 玩家进入世界初始化同步。
      */
     public void initialize(ServerPlayer player){
-        this.entityMap.forEach((id, entity) -> {
-            HTLibPlatformAPI.get().sendToClient(player, new DummyEntityPacket(DummyEntityPacket.Operation.CREATE, entity));
-        });
+        HTLibPlatformAPI.get().sendToClient(player, new DummyEntityInitPacket(this.entityMap.values()));
     }
 
     /**
-     * 玩家退出世界清除同步。
+     * 玩家游戏过程中的同步。
      */
-    public void finalize(ServerPlayer player){
-        HTLibPlatformAPI.get().sendToClient(player, new DummyEntityPacket());
-    }
-
     public void sync(boolean add, DummyEntity dummyEntity){
-        HTLibPlatformAPI.get().sendToClient(level, new DummyEntityPacket(add ? DummyEntityPacket.Operation.CREATE : DummyEntityPacket.Operation.REMOVE, dummyEntity));
+        HTLibPlatformAPI.get().sendToClient(level, new DummyEntityPlayPacket(add ? DummyEntityPlayPacket.Operation.CREATE : DummyEntityPlayPacket.Operation.REMOVE, dummyEntity));
     }
 
     public static void setDirty(ServerLevel level){
@@ -223,7 +218,7 @@ public class DummyEntityManager extends SavedData {
                             .ifPresent(entityType -> {
                                 final CompoundTag nbt = tag.getCompound("DummyEntityTag_" + num);
                                 final DummyEntity dummyEntity = entityType.create(level, nbt);
-                                manager.add(dummyEntity, true);
+                                manager.add(dummyEntity, false);
                             });
                 }
             }

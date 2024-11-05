@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import hungteen.htlib.util.helper.impl.EntityHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.ItemStack;
 
@@ -43,16 +45,15 @@ public interface NBTHelper {
     static CompoundTag armorTag(List<ItemStack> armors) {
         CompoundTag tag = create();
         ListTag listtag = new ListTag();
-// TODO Armor tag
 
-//        for(ItemStack itemstack : armors) {
-//            CompoundTag compoundtag = new CompoundTag();
-//            if (!itemstack.isEmpty()) {
-//                itemstack.save(compoundtag);
-//            }
-//
-//            listtag.add(compoundtag);
-//        }
+        for(ItemStack itemstack : armors) {
+            Tag compoundtag = new CompoundTag();
+            if (!itemstack.isEmpty()) {
+                compoundtag = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, itemstack).getOrThrow();
+            }
+
+            listtag.add(compoundtag);
+        }
 
         tag.put("ArmorItems", listtag);
         return tag;
