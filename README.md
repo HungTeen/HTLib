@@ -8,8 +8,10 @@ A lib made by HungTeen for more easily developing minecraft mod.
 * **Multiplatform**: HTLib support Forge, Fabric, NeoForge since 1.21.1+.
 * **Registry System**: there are more flexible registries like Simple, Codec, Vanilla, Custom.
 * **Resource Helper**: provide a bunch of resource/registry helper for mod development.
-* **Suit**: register a series of wood relate registries with simple code, including boat, sign, etc.
 * **Data Pack**: provide many codec utils for data pack development.
+#### Neoforge Only
+* **Suit**: register a series of wood relate registries with simple code, including boat, sign, etc.
+
 
 ### Warning
 * Since 1.21.1, HTLib will support Forge, Fabric, NeoForge.

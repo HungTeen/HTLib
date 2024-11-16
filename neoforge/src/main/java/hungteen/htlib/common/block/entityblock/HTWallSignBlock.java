@@ -1,6 +1,10 @@
 package hungteen.htlib.common.block.entityblock;
 
+import hungteen.htlib.common.blockentity.HTSignBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.WallSignBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 /**
@@ -14,9 +18,9 @@ public class HTWallSignBlock extends WallSignBlock {
         super(woodType, properties);
     }
 
-//    @Override
-//    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-//        return new HTSignBlockEntity(pos, state);
-//    }
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new HTSignBlockEntity(pos, state);
+    }
 
 }

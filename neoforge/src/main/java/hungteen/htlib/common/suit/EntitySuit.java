@@ -1,4 +1,4 @@
-package hungteen.htlib.common.impl.registry.suit;
+package hungteen.htlib.common.suit;
 
 import com.mojang.datafixers.util.Pair;
 import hungteen.htlib.api.HTLibAPI;

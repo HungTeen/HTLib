@@ -1,4 +1,4 @@
-package hungteen.htlib.common.impl.registry.suit;
+package hungteen.htlib.common.suit;
 
 import hungteen.htlib.api.registry.SimpleEntry;
 import hungteen.htlib.util.helper.JavaHelper;

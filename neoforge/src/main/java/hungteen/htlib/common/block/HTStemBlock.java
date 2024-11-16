@@ -1,6 +1,10 @@
-package hungteen.htlib.common.block.plant;
+package hungteen.htlib.common.block;
 
+import hungteen.htlib.common.block.plant.HTStemGrownBlock;
+import hungteen.htlib.util.helper.impl.BlockHelper;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -14,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -35,42 +40,42 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
         this.registerDefaultState(this.stateDefinition.any().setValue(getAgeProperty(), 0));
     }
 
-//    @Override
-//    public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
-//        // Forge: prevent loading unloaded chunks when checking neighbor's light.
-//        if (!serverLevel.isAreaLoaded(blockPos, 1)) {
-//            return;
-//        }
-//        if (serverLevel.getRawBrightness(blockPos, 0) >= 9) {
-//            final float f = getGrowSpeed(serverLevel, blockState, blockPos);
-//            if (f > 0 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(serverLevel, blockPos, blockState, random.nextInt((int) (25.0F / f) + 1) == 0)) {
-//                final int age = getAge(blockState);
-//                if (age < getMaxAge()) {
-//                    serverLevel.setBlock(blockPos, setAge(blockState, age + 1), 2);
-//                } else {
-//                    grow(serverLevel, blockState, blockPos, random);
-//                }
-//                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(serverLevel, blockPos, blockState);
-//            }
-//        }
-//    }
-//
-//    public void grow(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos, RandomSource random) {
-//        final Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-//        final BlockPos blockpos = blockPos.relative(direction);
-//        final BlockState blockstate = serverLevel.getBlockState(blockpos.below());
-//        final Block block = blockstate.getBlock();
-//        if (serverLevel.isEmptyBlock(blockpos) && (blockstate.canSustainPlant(serverLevel, blockpos.below(), Direction.UP, this) || block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
-//            getResultFruit(random).ifPresent(resultFruit -> {
-//                serverLevel.setBlockAndUpdate(blockpos, BlockHelper.setProperty(resultFruit.defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
-//                serverLevel.setBlockAndUpdate(blockPos, BlockHelper.setProperty(resultFruit.getAttachedStem().defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
-//            });
-//        }
-//    }
-//
-//    protected float getGrowSpeed(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos) {
-//        return CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
-//    }
+    @Override
+    public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
+        // Forge: prevent loading unloaded chunks when checking neighbor's light.
+        if (!serverLevel.isAreaLoaded(blockPos, 1)) {
+            return;
+        }
+        if (serverLevel.getRawBrightness(blockPos, 0) >= 9) {
+            final float f = getGrowSpeed(serverLevel, blockState, blockPos);
+            if (f > 0 && CommonHooks.canCropGrow(serverLevel, blockPos, blockState, random.nextInt((int) (25.0F / f) + 1) == 0)) {
+                final int age = getAge(blockState);
+                if (age < getMaxAge()) {
+                    serverLevel.setBlock(blockPos, setAge(blockState, age + 1), 2);
+                } else {
+                    grow(serverLevel, blockState, blockPos, random);
+                }
+                CommonHooks.fireCropGrowPost(serverLevel, blockPos, blockState);
+            }
+        }
+    }
+
+    public void grow(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos, RandomSource random) {
+        final Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+        final BlockPos blockpos = blockPos.relative(direction);
+        final BlockState blockstate = serverLevel.getBlockState(blockpos.below());
+        final Block block = blockstate.getBlock();
+        if (serverLevel.isEmptyBlock(blockpos) && (blockstate.canSustainPlant(serverLevel, blockpos.below(), Direction.UP, blockstate).isTrue() || block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
+            getResultFruit(random).ifPresent(resultFruit -> {
+                serverLevel.setBlockAndUpdate(blockpos, BlockHelper.setProperty(resultFruit.defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
+                serverLevel.setBlockAndUpdate(blockPos, BlockHelper.setProperty(resultFruit.getAttachedStem().defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
+            });
+        }
+    }
+
+    protected float getGrowSpeed(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos) {
+        return CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
+    }
 
     protected Optional<HTStemGrownBlock> getResultFruit(RandomSource random) {
         return Optional.empty();

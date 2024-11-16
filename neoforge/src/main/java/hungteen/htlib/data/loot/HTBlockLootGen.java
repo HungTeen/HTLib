@@ -1,6 +1,6 @@
 package hungteen.htlib.data.loot;
 
-import hungteen.htlib.common.impl.registry.suit.TreeSuits;
+import hungteen.htlib.common.suit.TreeSuits;
 import hungteen.htlib.util.helper.impl.VanillaHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;

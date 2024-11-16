@@ -1,4 +1,4 @@
-package hungteen.htlib.common.impl.registry.suit;
+package hungteen.htlib.common.suit;
 
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;

@@ -1,4 +1,4 @@
-package hungteen.htlib.common.impl.registry.suit;
+package hungteen.htlib.common.suit;
 
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.block.entityblock.HTHangingSignBlock;
@@ -8,11 +8,12 @@ import hungteen.htlib.common.block.entityblock.HTWallSignBlock;
 import hungteen.htlib.common.block.wood.*;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
-import hungteen.htlib.util.helper.impl.HTLibHelper;
+import hungteen.htlib.data.tag.HTItemTagGen;
+import hungteen.htlib.util.BoatType;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
+import hungteen.htlib.util.helper.impl.HTLibHelper;
 import hungteen.htlib.util.helper.impl.ItemHelper;
-import hungteen.htlib.util.BoatType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.HangingSignItem;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,7 +34,7 @@ import java.util.function.Function;
 /**
  * Used to resolve wood-related registrations at once. <br>
  * Register WoodType for Signs, BoatType for Boats, and related blocks and items <br>
- * Provide easy method in data gen, at <b>BlockStateGen</b>, {@link hungteen.htlib.data.tag.HTItemTagGen}, <b>BlockModelGen, HTItemModelGen</b> <br>
+ * Provide easy method in data gen, at <b>BlockStateGen</b>, {@link HTItemTagGen}, <b>BlockModelGen, HTItemModelGen</b> <br>
  * Register axe strip behavior and boat dispense action at. <br>
  * @author PangTeen
  * @program HTLib

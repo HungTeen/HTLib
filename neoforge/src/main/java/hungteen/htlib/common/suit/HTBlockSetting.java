@@ -1,4 +1,4 @@
-package hungteen.htlib.common.impl.registry.suit;
+package hungteen.htlib.common.suit;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
