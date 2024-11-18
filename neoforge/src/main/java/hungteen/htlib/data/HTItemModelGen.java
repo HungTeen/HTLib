@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.impl.registry.suit.TreeSuits;
+import hungteen.htlib.common.registry.suit.HTWoodSuit;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import hungteen.htlib.util.helper.impl.ItemHelper;
@@ -9,9 +9,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -64,8 +64,8 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
-        woodIntegration.getWoodBlocks().forEach(pair -> {
+    protected void woodSuitGen(HTWoodSuit suit) {
+        suit.entryBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             if(pair.getKey().hasItem() && ! this.contains(block.asItem())){
                 switch (pair.getKey()) {

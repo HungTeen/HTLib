@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class HTSignBlockEntity extends SignBlockEntity {
 
     public HTSignBlockEntity(BlockPos pos, BlockState state) {
-        super(HTBlockEntities.SIGN.get(), pos, state);
+        super(HTLibBlockEntities.SIGN.get(), pos, state);
     }
 
     public HTSignBlockEntity(BlockEntityType dataType, BlockPos pos, BlockState state) {

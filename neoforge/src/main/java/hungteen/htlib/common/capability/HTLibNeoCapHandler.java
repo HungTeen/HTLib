@@ -11,9 +11,9 @@ public class HTLibNeoCapHandler {
 //    @SubscribeEvent
 //    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 //        event.registerEntity(
-//                , // capability to initialize for
+//                , // capability to register for
 //                (level, pos, state, be, side) ->
-//                // blocks to initialize for
+//                // blocks to register for
 //                MY_ITEM_HANDLER_BLOCK,
 //                MY_OTHER_ITEM_HANDLER_BLOCK
 //    );

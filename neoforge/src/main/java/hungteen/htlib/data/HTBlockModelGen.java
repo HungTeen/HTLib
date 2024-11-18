@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.impl.registry.suit.TreeSuits;
+import hungteen.htlib.common.registry.suit.HTWoodSuit;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import hungteen.htlib.util.helper.impl.ItemHelper;
@@ -9,8 +9,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,9 +58,9 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.FENCE).ifPresent(b -> gen(b, this::fence));
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.BUTTON).ifPresent(b -> gen(b, this::button));
+    protected void woodSuitGen(HTWoodSuit suit) {
+        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.FENCE).ifPresent(b -> gen(b, this::fence));
+        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.BUTTON).ifPresent(b -> gen(b, this::button));
     }
 
     /**

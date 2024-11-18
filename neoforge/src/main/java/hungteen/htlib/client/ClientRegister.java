@@ -4,10 +4,13 @@ import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.HTResourceManager;
+import hungteen.htlib.common.blockentity.HTLibBlockEntities;
 import hungteen.htlib.common.entity.HTLibEntities;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
+import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -32,13 +35,12 @@ public class ClientRegister {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-//        EntityRenderSuit.getRenderSuits().forEach(suit -> suit.preInitialize(event));
         event.registerEntityRenderer(HTLibEntities.BOAT.get(), (c) -> new HTBoatRender(c, false));
         event.registerEntityRenderer(HTLibEntities.CHEST_BOAT.get(), (c) -> new HTBoatRender(c, true));
         event.registerEntityRenderer(HTLibEntities.SEAT.get(), EmptyEffectRender::new);
 
-//        event.registerBlockEntityRenderer(HTBlockEntities.SIGN.get(), SignRenderer::new);
-//        event.registerBlockEntityRenderer(HTBlockEntities.HANGING_SIGN.get(), HangingSignRenderer::new);
+        event.registerBlockEntityRenderer(HTLibBlockEntities.SIGN.get(), SignRenderer::new);
+        event.registerBlockEntityRenderer(HTLibBlockEntities.HANGING_SIGN.get(), HangingSignRenderer::new);
     }
 
     @SubscribeEvent

@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Block;
  * @author: HungTeen
  * @create: 2022-10-13 22:41
  **/
-public interface BoatType extends SimpleEntry {
+public interface HTBoatType extends SimpleEntry {
 
     /**
      * @return The planks block of this boat dataType.

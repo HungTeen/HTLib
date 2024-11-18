@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 /**
- * TODO 告示牌方块实体
  * @author PangTeen
  * @program HTLib
  * @data 2023/4/13 15:49

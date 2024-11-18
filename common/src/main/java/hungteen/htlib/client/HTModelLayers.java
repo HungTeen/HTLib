@@ -1,6 +1,6 @@
 package hungteen.htlib.client;
 
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
 
@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceLocation;
  **/
 public class HTModelLayers {
 
-    public static ModelLayerLocation createBoatModelName(BoatType type) {
+    public static ModelLayerLocation createBoatModelName(HTBoatType type) {
         return createLocation(type.getModID(), "boat/" + type.getName(), "main");
     }
 
-    public static ModelLayerLocation createChestBoatModelName(BoatType type) {
+    public static ModelLayerLocation createChestBoatModelName(HTBoatType type) {
         return createLocation(type.getModID(), "chest_boat/" + type.getName(), "main");
     }
 

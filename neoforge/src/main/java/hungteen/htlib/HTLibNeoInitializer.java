@@ -5,6 +5,7 @@ import hungteen.htlib.common.HTLibNeoRegistryHandler;
 import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.command.HTLibCommand;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
+import hungteen.htlib.common.registry.HTLibSuitHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -12,18 +13,14 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+/**
+ * @author PangTeen
+ */
 @Mod(HTLibAPI.MOD_ID)
 public class HTLibNeoInitializer {
 
     public HTLibNeoInitializer(IEventBus modBus, ModContainer modContainer) {
         modBus.addListener(HTLibNeoInitializer::onCommonSetup);
-//        modBus.addListener(EventPriority.LOW, HTSuitHandler::initialize);
-//        modBus.addListener(HTSuitHandler::clear);
-//        modBus.addListener(HTDataGenHandler::gatherData);
-//        modBus.addListener(HTSuitHandler::fillInCreativeTab);
-//        modBus.addListener(HTSuitHandler::addAttributes);
-//        modBus.addListener(HTSuitHandler::addSpawnPlacements);
-//        modBus.addListener(HTSuitHandler::clear);
         HTLibNeoRegistryHandler.register(modBus);
 
         /* Neo Bus Events */
@@ -36,8 +33,8 @@ public class HTLibNeoInitializer {
         HTResourceManager.init();
         HTLibNeoRegistryHandler.onCommonSetup();
         event.enqueueWork(() -> {
-            HTLibBoatTypes.register();
-//            HTSuitHandler.setUp();
+            HTLibBoatTypes.registerDispenserBehaviors();
+            HTLibSuitHandler.setUp();
         });
     }
 

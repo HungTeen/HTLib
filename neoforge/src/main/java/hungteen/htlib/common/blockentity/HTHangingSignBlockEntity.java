@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class HTHangingSignBlockEntity extends HTSignBlockEntity {
 
     public HTHangingSignBlockEntity(BlockPos pos, BlockState state) {
-        super(HTBlockEntities.HANGING_SIGN.get(), pos, state);
+        super(HTLibBlockEntities.HANGING_SIGN.get(), pos, state);
     }
 
     public int getTextLineHeight() {

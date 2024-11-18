@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.impl.registry.suit.TreeSuits;
+import hungteen.htlib.common.registry.suit.HTWoodSuit;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -9,10 +9,10 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -166,12 +166,14 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
         hangingSignBlock(signBlock, wallSignBlock, sign);
     }
 
-    protected void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture) {
+    @Override
+    public void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ResourceLocation texture) {
         ModelFile sign = models().sign(name(signBlock), texture);
         hangingSignBlock(signBlock, wallSignBlock, sign);
     }
 
-    protected void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ModelFile sign) {
+    @Override
+    public void hangingSignBlock(CeilingHangingSignBlock signBlock, WallHangingSignBlock wallSignBlock, ModelFile sign) {
         simpleBlock(signBlock, sign);
         simpleBlock(wallSignBlock, sign);
     }
@@ -227,12 +229,12 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
+    protected void woodSuitGen(HTWoodSuit suit) {
         /* Must gen first to avoid crash. */
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.PLANKS).ifPresentOrElse(block -> {
+        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.PLANKS).ifPresentOrElse(block -> {
             gen(block, this::simpleBlock);
-        }, () -> HTLibAPI.logger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", woodIntegration.getRegistryName()));
-        woodIntegration.getWoodBlocks().forEach(pair -> {
+        }, () -> HTLibAPI.logger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", suit.getRegistryName()));
+        suit.entryBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             switch (pair.getKey()) {
                 /* RotatedPillarBlocks. */
@@ -273,13 +275,13 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
             }
         });
         /* Sign Blocks. */
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STANDING_SIGN).ifPresent(block1 -> {
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WALL_SIGN).ifPresent(block2 -> {
+        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STANDING_SIGN).ifPresent(block1 -> {
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) gen(b1, b2, this::sign);
             });
         });
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.HANGING_SIGN).ifPresent(block1 -> {
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WALL_HANGING_SIGN).ifPresent(block2 -> {
+        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.HANGING_SIGN).ifPresent(block1 -> {
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_HANGING_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) gen(b1, b2, this::hangingSign);
             });
         });

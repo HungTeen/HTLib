@@ -2,15 +2,15 @@ package hungteen.htlib.common.block;
 
 import hungteen.htlib.common.block.plant.HTStemGrownBlock;
 import hungteen.htlib.util.helper.impl.BlockHelper;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
@@ -24,13 +24,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * TODO StemBlock 多平台不好兼容。
  * Copy from {@link StemBlock}}.
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 22:38
  **/
-public abstract class HTStemBlock extends BushBlock implements BonemealableBlock {
+public abstract class HTStemBlock extends CropBlock {
 
     private final Supplier<Item> seedSupplier;
 
@@ -60,12 +59,15 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
         }
     }
 
+    /**
+     * Grow fruit.
+     */
     public void grow(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos, RandomSource random) {
         final Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
         final BlockPos blockpos = blockPos.relative(direction);
-        final BlockState blockstate = serverLevel.getBlockState(blockpos.below());
-        final Block block = blockstate.getBlock();
-        if (serverLevel.isEmptyBlock(blockpos) && (blockstate.canSustainPlant(serverLevel, blockpos.below(), Direction.UP, blockstate).isTrue() || block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
+        final BlockState belowBlockstate = serverLevel.getBlockState(blockpos.below());
+        final Block belowBlock = belowBlockstate.getBlock();
+        if (serverLevel.isEmptyBlock(blockpos) && (belowBlock instanceof FarmBlock || belowBlockstate.is(BlockTags.DIRT))) {
             getResultFruit(random).ifPresent(resultFruit -> {
                 serverLevel.setBlockAndUpdate(blockpos, BlockHelper.setProperty(resultFruit.defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
                 serverLevel.setBlockAndUpdate(blockPos, BlockHelper.setProperty(resultFruit.getAttachedStem().defaultBlockState(), HorizontalDirectionalBlock.FACING, direction));
@@ -74,15 +76,17 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
     }
 
     protected float getGrowSpeed(ServerLevel serverLevel, BlockState blockState, BlockPos blockPos) {
-        return CropBlock.getGrowthSpeed(this, serverLevel, blockPos);
+        return CropBlock.getGrowthSpeed(blockState, serverLevel, blockPos);
     }
 
     protected Optional<HTStemGrownBlock> getResultFruit(RandomSource random) {
         return Optional.empty();
     }
 
+    @Override
     public abstract IntegerProperty getAgeProperty();
 
+    @Override
     public abstract int getMaxAge();
 
     public BlockState maxAgeState(){
@@ -93,6 +97,7 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
         return state.setValue(getAgeProperty(), age);
     }
 
+    @Override
     public int getAge(BlockState state) {
         return state.getValue(getAgeProperty());
     }
@@ -109,7 +114,7 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
 
     @Override
     public void performBonemeal(ServerLevel serverLevel, RandomSource random, BlockPos blockPos, BlockState oldState) {
-        final int nextAge = Math.min(getMaxAge(), getAge(oldState) + Mth.nextInt(serverLevel.random, 2, 5));
+        final int nextAge = Math.min(getMaxAge(), getAge(oldState) + getBonemealAgeIncrease(serverLevel));
         BlockState newState = setAge(oldState, nextAge);
         serverLevel.setBlock(blockPos, newState, 2);
         if (nextAge == getMaxAge()) {
@@ -118,13 +123,23 @@ public abstract class HTStemBlock extends BushBlock implements BonemealableBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader reader, BlockPos blockPos, BlockState blockState) {
-        return new ItemStack(this.seedSupplier.get());
+    protected boolean isRandomlyTicking(BlockState state) {
+        return super.isRandomlyTicking(state);
+    }
+
+    @Override
+    protected ItemLike getBaseSeedId() {
+        return this.seedSupplier.get();
     }
 
     @Override
     public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos blockPos, BlockState state) {
         return true;
+    }
+
+    @Override
+    protected int getBonemealAgeIncrease(Level level) {
+        return Mth.nextInt(level.random, 2, 5);
     }
 
     @Override

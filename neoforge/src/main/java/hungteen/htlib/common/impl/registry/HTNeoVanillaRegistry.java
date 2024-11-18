@@ -37,7 +37,7 @@ public class HTNeoVanillaRegistry<T> implements HTVanillaRegistry<T> {
 
     @Override
     public void initialize() {
-        throw new RuntimeException("Do not use this method to initialize registry. Please use NeoHelper instead.");
+        throw new RuntimeException("Do not use this method to register registry. Please use NeoHelper instead.");
     }
 
 }

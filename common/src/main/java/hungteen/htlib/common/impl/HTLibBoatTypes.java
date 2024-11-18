@@ -4,7 +4,7 @@ import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.item.HTBoatDispenseItemBehavior;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -21,9 +21,9 @@ import java.util.Collections;
  */
 public interface HTLibBoatTypes {
 
-    HTSimpleRegistry<BoatType> TYPES = HTRegistryManager.simple(HTLibHelper.prefix("boat_type"));
+    HTSimpleRegistry<HTBoatType> TYPES = HTRegistryManager.simple(HTLibHelper.prefix("boat_type"));
 
-    BoatType DEFAULT = registerBoatType(new BoatType() {
+    HTBoatType DEFAULT = registerBoatType(new HTBoatType() {
         @Override
         public String name() {
             return "oak";
@@ -51,9 +51,9 @@ public interface HTLibBoatTypes {
     });
 
     /**
-     * Register Boat Dispense Behavior
+     * Register Boat Dispense Behavior in different platforms.
      */
-    static void register(){
+    static void registerDispenserBehaviors(){
         getBoatTypes().forEach(type -> {
             DispenserBlock.registerBehavior(type.getBoatItem(), new HTBoatDispenseItemBehavior(type, false));
             DispenserBlock.registerBehavior(type.getChestBoatItem(), new HTBoatDispenseItemBehavior(type, true));
@@ -63,19 +63,19 @@ public interface HTLibBoatTypes {
     /**
      * Usually other mod no need to use this method, because HTLib has done everything. <br>
      */
-    static BoatType registerBoatType(BoatType type) {
+    static HTBoatType registerBoatType(HTBoatType type) {
         return registry().register(type);
     }
 
-    static Collection<BoatType> getBoatTypes() {
+    static Collection<HTBoatType> getBoatTypes() {
         return Collections.unmodifiableCollection(registry().getValues());
     }
 
-    static BoatType getBoatType(String name) {
+    static HTBoatType getBoatType(String name) {
         return registry().getValue(name).orElse(HTLibBoatTypes.DEFAULT);
     }
 
-    static HTSimpleRegistry<BoatType> registry(){
+    static HTSimpleRegistry<HTBoatType> registry(){
         return TYPES;
     }
 }

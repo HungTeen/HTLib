@@ -22,7 +22,7 @@ public class HTLibFabricInitializer implements ModInitializer {
         HTLibFabricRegistryHandler.register();
         HTResourceManager.init();
 
-        HTLibBoatTypes.register();
+        HTLibBoatTypes.registerDispenserBehaviors();
         HTLibFabricDummyEntityHandler.registerDummyEntityEvents();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> {

@@ -3,7 +3,7 @@ package hungteen.htlib.platform;
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
 import hungteen.htlib.common.HTLibForgeNetworkHandler;
-import hungteen.htlib.common.event.events.DummyEntityEvent;
+import hungteen.htlib.common.event.DummyEntityEvent;
 import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;
 import hungteen.htlib.common.impl.registry.HTForgeCustomRegistry;
 import hungteen.htlib.common.impl.registry.HTForgeVanillaRegistry;

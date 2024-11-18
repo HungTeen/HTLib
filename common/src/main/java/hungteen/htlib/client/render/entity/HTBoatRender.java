@@ -8,7 +8,7 @@ import com.mojang.math.Axis;
 import hungteen.htlib.client.HTModelLayers;
 import hungteen.htlib.util.HasHTBoatType;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.model.ListModel;
@@ -34,7 +34,7 @@ import java.util.Map;
  **/
 public class HTBoatRender extends BoatRenderer {
 
-    private final Map<BoatType, Pair<ResourceLocation, ListModel<Boat>>> boatResources;
+    private final Map<HTBoatType, Pair<ResourceLocation, ListModel<Boat>>> boatResources;
 
     public HTBoatRender(EntityRendererProvider.Context context, boolean hasChest) {
         super(context, hasChest);
@@ -45,11 +45,11 @@ public class HTBoatRender extends BoatRenderer {
         }));
     }
 
-    private static String getTextureLocation(BoatType type, boolean hasChest) {
+    private static String getTextureLocation(HTBoatType type, boolean hasChest) {
         return "textures/entity/" + (hasChest ? "chest_" : "") + "boat/" + type.getName() + ".png";
     }
 
-    private ListModel<Boat> createBoatModel(EntityRendererProvider.Context context, BoatType boatType, boolean hasChest) {
+    private ListModel<Boat> createBoatModel(EntityRendererProvider.Context context, HTBoatType boatType, boolean hasChest) {
         final ModelLayerLocation modellayerlocation = hasChest ? HTModelLayers.createChestBoatModelName(boatType) : HTModelLayers.createBoatModelName(boatType);
         final ModelPart modelpart = context.bakeLayer(modellayerlocation);
         return hasChest ? new ChestBoatModel(modelpart) : new BoatModel(modelpart);

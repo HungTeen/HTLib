@@ -1,4 +1,4 @@
-package hungteen.htlib.common.event.events;
+package hungteen.htlib.common.event;
 
 import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.world.level.Level;

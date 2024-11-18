@@ -4,13 +4,10 @@ import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.common.HTLibForgeNetworkHandler;
 import hungteen.htlib.common.HTLibForgeRegistryHandler;
 import hungteen.htlib.common.HTResourceManager;
-import hungteen.htlib.common.HTSuitHandler;
 import hungteen.htlib.common.command.HTLibCommand;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
-import hungteen.htlib.data.HTDataGenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -29,13 +26,6 @@ public class HTLibForgeInitializer {
         IEventBus modBus = context.getModEventBus();
 
         modBus.addListener(HTLibForgeInitializer::onCommonSetup);
-        modBus.addListener(EventPriority.LOW, HTSuitHandler::register);
-        modBus.addListener(HTSuitHandler::clear);
-        modBus.addListener(HTDataGenHandler::gatherData);
-        modBus.addListener(HTSuitHandler::fillInCreativeTab);
-        modBus.addListener(HTSuitHandler::addAttributes);
-//        modBus.addListener(HTSuitHandler::addSpawnPlacements);
-        modBus.addListener(HTSuitHandler::clear);
         HTLibForgeRegistryHandler.register(modBus);
 
         /* Forge Bus Events */
@@ -50,8 +40,7 @@ public class HTLibForgeInitializer {
         HTResourceManager.init();
         HTLibForgeRegistryHandler.onCommonSetup();
         event.enqueueWork(() -> {
-            HTLibBoatTypes.register();
-            HTSuitHandler.setUp();
+            HTLibBoatTypes.registerDispenserBehaviors();
         });
     }
 

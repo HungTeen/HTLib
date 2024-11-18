@@ -9,14 +9,23 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.WoodType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @program: HTLib
@@ -25,11 +34,7 @@ import net.minecraft.world.level.block.state.properties.Property;
  **/
 public interface BlockHelper {
 
-//    /**
-//     * Axe Strip when
-//     */
-//    Map<Block, Block> STRIPPABLES = new HashMap<>();
-//    List<WoodType> WOOD_TYPES = new ArrayList<>();
+    List<WoodType> WOOD_TYPES = new ArrayList<>();
 
     HTVanillaRegistryHelper<Block> HELPER = () -> BuiltInRegistries.BLOCK;
 
@@ -56,7 +61,7 @@ public interface BlockHelper {
     }
 
     /**
-     * Register flammable blocks, not thread safe.
+     * 注册可燃物，不保证线程安全。
      */
     static void setFlammable(Block block, int spreadSpeed, int burnSpeed) {
         if (Blocks.FIRE instanceof FireBlock fire) {
@@ -64,50 +69,33 @@ public interface BlockHelper {
         }
     }
 
-//    /**
-//     * 不保证线程安全，请使用{@link ParallelDispatchEvent#enqueueWork(Runnable)}. <br>
-//     * remember to subscribe {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}.
-//     */
-//    static void registerCompostable(float chance, ItemLike itemIn) {
-//        ComposterBlock.COMPOSTABLES.put(itemIn.asItem(), chance);
-//    }
-//
-//    /**
-//     * 不保证线程安全，请使用{@link ParallelDispatchEvent#enqueueWork(Runnable)}. <br>
-//     */
-//    static void registerAxeStrip(Block oldState, Block newState) {
-//        BlockHelper.STRIPPABLES.put(oldState, newState);
-//    }
-//
-//    /**
-//     * initialize wood entityType.
-//     */
-//    static void registerWoodType(WoodType woodType) {
-//        WoodType.initialize(woodType);
-//        BlockSetType.initialize(woodType.setType());
-//        WOOD_TYPES.add(woodType);
-//    }
-//
-//    /**
-//     * {@link hungteen.htlib.client.ClientRegister#clientSetUp(FMLClientSetupEvent)}
-//     */
-//    static List<WoodType> getWoodTypes() {
-//        return Collections.unmodifiableList(WOOD_TYPES);
-//    }
-//
-//    /**
-//     * Can block be stripped by Axe.
-//     */
-//    static boolean canBeStripped(Block block) {
-//        return STRIPPABLES.containsKey(block);
-//    }
-//
-//    /**
-//     * Get the stripped result block.
-//     */
-//    static Block getStrippedBlock(Block block) {
-//        return STRIPPABLES.getOrDefault(block, block);
-//    }
+    /**
+     * 注册堆肥桶的肥料，不保证线程安全。
+     */
+    static void registerCompostable(float chance, ItemLike itemIn) {
+        ComposterBlock.COMPOSTABLES.put(itemIn.asItem(), chance);
+    }
+
+    /**
+     * 注册斧头的方块行为，不保证线程安全。
+     */
+    static void registerAxeStrip(Block oldState, Block newState) {
+        AxeItem.STRIPPABLES.put(oldState, newState);
+    }
+
+    /**
+     * 注册木头类型，不保证线程安全。
+     */
+    static void registerWoodType(WoodType woodType) {
+        WoodType.register(woodType);
+        BlockSetType.register(woodType.setType());
+        WOOD_TYPES.add(woodType);
+    }
+
+    @Deprecated(since = "1.1.0")
+    static List<WoodType> getWoodTypes() {
+        return Collections.unmodifiableList(WOOD_TYPES);
+    }
 
     /**
      * Set property only when there is a property for state.

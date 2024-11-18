@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.common.suit.TreeSuits;
+import hungteen.htlib.common.registry.suit.HTWoodSuit;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -19,8 +19,8 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
         super(output, provider, BlockHelper.get());
     }
 
-    protected void woodIntegration(TreeSuits.TreeSuit woodIntegration) {
-        woodIntegration.getWoodBlocks().forEach(pair -> {
+    protected void woodSuitGen(HTWoodSuit suit) {
+        suit.entryBlocks().forEach(pair -> {
             Block block = pair.getValue();
             switch (pair.getKey()) {
                 case LOG, STRIPPED_LOG, WOOD, STRIPPED_WOOD -> this.tag(BlockTags.LOGS_THAT_BURN).add(block);
@@ -39,12 +39,12 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
                 case PRESSURE_PLATE -> this.tag(BlockTags.WOODEN_PRESSURE_PLATES).add(block);
             }
         });
-        woodIntegration.getLogBlockTag().ifPresent(blockTag -> {
+        suit.getLogBlockTag().ifPresent(blockTag -> {
             this.tag(BlockTags.LOGS_THAT_BURN).addTag(blockTag);
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.LOG).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WOOD).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.LOG).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WOOD).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
         });
     }
 }

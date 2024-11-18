@@ -1,15 +1,5 @@
 package hungteen.htlib.common.capability;
 
-import hungteen.htlib.common.capability.player.IHTPlayerCapability;
-import hungteen.htlib.util.helper.PlayerHelper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.function.Function;
-
 /**
  * 玩家能力系统管理器，帮助自动监听各种事件。
  * @author PangTeen
@@ -18,7 +8,7 @@ import java.util.function.Function;
  */
 public class PlayerCapabilityManager {
 
-    public static Set<Capability<? extends IHTPlayerCapability<? extends HTPlayerData>>> PLAYER_CAPABILITIES = new HashSet<>();
+//    public static Set<Capability<? extends IHTPlayerCapability<? extends HTPlayerData>>> PLAYER_CAPABILITIES = new HashSet<>();
 
 //    /**
 //     * {@link HTLibForgeInitializer}
@@ -59,34 +49,34 @@ public class PlayerCapabilityManager {
 //            PLAYER_CAPABILITIES.add(capability);
 //        }
 //    }
-
-    public static List<? extends Optional<? extends HTPlayerData>> getOptPlayerManagers(Player player){
-        return getPlayerCapabilities().stream().map(l -> getOptManager(player, l)).toList();
-    }
-
-    public static Collection<Capability<? extends IHTPlayerCapability<? extends HTPlayerData>>> getPlayerCapabilities(){
-        return Collections.unmodifiableSet(PLAYER_CAPABILITIES);
-    }
-
-    public static Optional<? extends HTPlayerData> getOptManager(Player player, Capability<? extends IHTPlayerCapability<? extends HTPlayerData>> capability) {
-        return Optional.ofNullable(getManager(player, capability));
-    }
-
-    @Nullable
-    public static <T extends HTPlayerData, K extends IHTPlayerCapability<? extends T>> T getManager(Player player, Capability<K> capability) {
-        if(PlayerHelper.isValidPlayer(player)) {
-            final Optional<K> optional = getPlayerCapability(player, capability).resolve();
-            return optional.map(IHTPlayerCapability::get).orElse(null);
-        }
-        return null;
-    }
-
-    public static <U, T extends HTPlayerData, K extends IHTPlayerCapability<T>> U getManagerResult(Player player, Capability<K> capability, Function<T, U> function, U defaultValue) {
-        final T manager = getManager(player, capability);
-        return manager != null ? function.apply(manager) : defaultValue;
-    }
-
-    public static <T extends HTPlayerData, K extends IHTPlayerCapability<? extends T>> LazyOptional<K> getPlayerCapability(Player player, Capability<K> capability){
-        return player.getCapability(capability);
-    }
+//
+//    public static List<? extends Optional<? extends HTPlayerData>> getOptPlayerManagers(Player player){
+//        return getPlayerCapabilities().stream().map(l -> getOptManager(player, l)).toList();
+//    }
+//
+//    public static Collection<Capability<? extends IHTPlayerCapability<? extends HTPlayerData>>> getPlayerCapabilities(){
+//        return Collections.unmodifiableSet(PLAYER_CAPABILITIES);
+//    }
+//
+//    public static Optional<? extends HTPlayerData> getOptManager(Player player, Capability<? extends IHTPlayerCapability<? extends HTPlayerData>> capability) {
+//        return Optional.ofNullable(getManager(player, capability));
+//    }
+//
+//    @Nullable
+//    public static <T extends HTPlayerData, K extends IHTPlayerCapability<? extends T>> T getManager(Player player, Capability<K> capability) {
+//        if(PlayerHelper.isValidPlayer(player)) {
+//            final Optional<K> optional = getPlayerCapability(player, capability).resolve();
+//            return optional.map(IHTPlayerCapability::get).orElse(null);
+//        }
+//        return null;
+//    }
+//
+//    public static <U, T extends HTPlayerData, K extends IHTPlayerCapability<T>> U getManagerResult(Player player, Capability<K> capability, Function<T, U> function, U defaultValue) {
+//        final T manager = getManager(player, capability);
+//        return manager != null ? function.apply(manager) : defaultValue;
+//    }
+//
+//    public static <T extends HTPlayerData, K extends IHTPlayerCapability<? extends T>> LazyOptional<K> getPlayerCapability(Player player, Capability<K> capability){
+//        return player.getCapability(capability);
+//    }
 }

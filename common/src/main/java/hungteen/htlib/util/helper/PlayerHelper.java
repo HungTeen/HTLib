@@ -90,12 +90,4 @@ public interface PlayerHelper {
         return ! player.isCreative() && ! player.isSpectator();
     }
 
-    /**
-     * Avoid crash by fake player.
-     */
-    static boolean isValidPlayer(Player player) {
-        // TODO Any problem ?
-//        return player != null && ! (player instanceof FakePlayer);
-        return player != null;
-    }
 }

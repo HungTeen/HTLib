@@ -17,18 +17,30 @@ public interface StringHelper {
 
     /* ResourceLocation Related Methods */
 
+    /**
+     * @return A resource location in the mod.
+     */
     static ResourceLocation res(String modId, String name) {
         return ResourceLocation.fromNamespaceAndPath(modId, name);
     }
 
+    /**
+     * @return A resource location in the mod.
+     */
     static String resString(String modId, String name) {
         return res(modId, name).toString();
     }
 
+    /**
+     * @return Whether the resource location is in the mod.
+     */
     static boolean in(ResourceLocation location, String modId) {
         return location.getNamespace().equals(modId);
     }
 
+    /**
+     * @return Whether the resource key is in the mod.
+     */
     static <T> boolean in(ResourceKey<T> resourceKey, String modId) {
         return in(resourceKey.location(), modId);
     }
@@ -44,22 +56,47 @@ public interface StringHelper {
         return res(location.getNamespace(), location.getPath().replace(oldString, newString));
     }
 
+    /**
+     * Add suffix to location.
+     * @param location origin location.
+     * @param suffix to be added.
+     * @return new location, such as "minecraft:stone" -> "minecraft:stone_suffix".
+     */
     static ResourceLocation suffix(ResourceLocation location, String suffix){
         return location.withSuffix("_" + suffix);
     }
 
+    /**
+     * Add prefix to location.
+     * @param location origin location.
+     * @param prefix to be added.
+     * @return new location, such as "minecraft:stone" -> "minecraft:prefix_stone".
+     */
     static ResourceLocation prefix(ResourceLocation location, String prefix){
         return location.withPrefix(prefix + "_");
     }
 
+    /**
+     * Add prefix and suffix to location.
+     * @param location origin location.
+     * @param prefix to be added.
+     * @param suffix to be added.
+     * @return new location, such as "minecraft:stone" -> "minecraft:prefix_stone_suffix".
+     */
     static ResourceLocation expand(ResourceLocation location, String prefix, String suffix){
         return expand(location, prefix, suffix, "_");
     }
 
+    /**
+     * {@link #expand(ResourceLocation, String, String)} 的泛化版本。
+     */
     static ResourceLocation expand(ResourceLocation location, String prefix, String suffix, String split){
         return res(location.getNamespace(), prefix + split + location.getPath() + split + suffix);
     }
 
+    /**
+     * @return A combination of {@link #expand(ResourceLocation, String, String)} and {@link #replace(ResourceLocation, String, String)}.
+     */
     static ResourceLocation expandAndReplace(ResourceLocation location, String oldString, String prefix, String suffix){
         return expand(replace(location, oldString, ""), prefix, suffix);
     }

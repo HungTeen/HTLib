@@ -7,7 +7,7 @@ package hungteen.htlib.util;
  **/
 public interface HasHTBoatType {
 
-    BoatType getHTBoatType();
+    HTBoatType getHTBoatType();
 
-    void setHTBoatType(BoatType boatType);
+    void setHTBoatType(HTBoatType boatType);
 }

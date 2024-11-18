@@ -1,6 +1,6 @@
 package hungteen.htlib.data.recipe;
 
-import hungteen.htlib.common.suit.TreeSuits;
+import hungteen.htlib.common.registry.suit.HTWoodSuit;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -29,28 +29,28 @@ public class HTRecipeGen extends RecipeProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodIntegration(RecipeOutput recipeOutput, TreeSuits.TreeSuit woodIntegration) {
-        final Optional<Block> planksOpt = woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.PLANKS);
+    protected void woodIntegration(RecipeOutput recipeOutput, HTWoodSuit woodIntegration) {
+        final Optional<Block> planksOpt = woodIntegration.getBlockOpt(HTWoodSuit.HTWoodVariant.PLANKS);
         planksOpt.ifPresent(planks -> {
             woodIntegration.getLogItemTag().ifPresent(logTag -> {
                 planksFromLog(recipeOutput, planks, logTag, 4);
             });
         });
-        woodIntegration.getBoatItem(TreeSuits.HTBoatStyles.NORMAL).ifPresent(boatItem -> {
+        woodIntegration.getBoatItem(HTWoodSuit.HTBoatVariant.NORMAL).ifPresent(boatItem -> {
             planksOpt.ifPresent(planks -> {
                 woodenBoat(recipeOutput, boatItem, planks);
             });
-            woodIntegration.getBoatItem(TreeSuits.HTBoatStyles.CHEST).ifPresent(chestBoat -> {
+            woodIntegration.getBoatItem(HTWoodSuit.HTBoatVariant.CHEST).ifPresent(chestBoat -> {
                 chestBoat(recipeOutput, chestBoat, boatItem);
             });
         });
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.WOOD).ifPresent(wood -> {
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.LOG).ifPresent(log -> {
+        woodIntegration.getBlockOpt(HTWoodSuit.HTWoodVariant.WOOD).ifPresent(wood -> {
+            woodIntegration.getBlockOpt(HTWoodSuit.HTWoodVariant.LOG).ifPresent(log -> {
                 woodFromLogs(recipeOutput, wood, log);
             });
         });
-        woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_WOOD).ifPresent(wood -> {
-            woodIntegration.getBlockOpt(TreeSuits.HTWoodTypes.STRIPPED_LOG).ifPresent(log -> {
+        woodIntegration.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_WOOD).ifPresent(wood -> {
+            woodIntegration.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_LOG).ifPresent(log -> {
                 woodFromLogs(recipeOutput, wood, log);
             });
         });

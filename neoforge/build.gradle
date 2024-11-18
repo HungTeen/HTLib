@@ -14,6 +14,7 @@ base {
 neoForge {
     version = libs.versions.neoforge.asProvider().get()
 
+    validateAccessTransformers = true
     accessTransformers.files.setFrom(project(":common").file("src/main/resources/META-INF/accesstransformer-nf.cfg"))
 
     runs {

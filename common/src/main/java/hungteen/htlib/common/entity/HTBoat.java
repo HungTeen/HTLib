@@ -1,7 +1,7 @@
 package hungteen.htlib.common.entity;
 
 import hungteen.htlib.common.impl.HTLibBoatTypes;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import hungteen.htlib.util.HasHTBoatType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -70,11 +70,11 @@ public class HTBoat extends Boat implements HasHTBoatType {
         compoundTag.putString("HTBoatType", this.getHTBoatType().getRegistryName());
     }
 
-    public BoatType getHTBoatType() {
+    public HTBoatType getHTBoatType() {
         return HTLibBoatTypes.getBoatType(entityData.get(BOAT_TYPE));
     }
 
-    public void setHTBoatType(BoatType type){
+    public void setHTBoatType(HTBoatType type){
         entityData.set(BOAT_TYPE, type.getRegistryName());
     }
 

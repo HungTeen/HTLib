@@ -3,7 +3,7 @@ package hungteen.htlib.common.item;
 import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
 import hungteen.htlib.util.HasHTBoatType;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
@@ -23,10 +23,10 @@ import net.minecraft.world.level.block.DispenserBlock;
 public class HTBoatDispenseItemBehavior extends DefaultDispenseItemBehavior {
 
     private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
-    private final BoatType type;
+    private final HTBoatType type;
     private final boolean hasChest;
 
-    public HTBoatDispenseItemBehavior(BoatType type, boolean hasChest) {
+    public HTBoatDispenseItemBehavior(HTBoatType type, boolean hasChest) {
         this.type = type;
         this.hasChest = hasChest;
     }

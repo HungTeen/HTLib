@@ -4,7 +4,7 @@ import hungteen.htlib.common.entity.HTBoat;
 import hungteen.htlib.common.entity.HTChestBoat;
 import hungteen.htlib.util.HasHTBoatType;
 import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.BoatType;
+import hungteen.htlib.util.HTBoatType;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -34,10 +34,10 @@ import java.util.function.Predicate;
 public class HTBoatItem extends Item {
 
     private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
-    private final BoatType type;
+    private final HTBoatType type;
     private final boolean hasChest;
 
-    public HTBoatItem(Item.Properties properties, BoatType type, boolean hasChest) {
+    public HTBoatItem(Item.Properties properties, HTBoatType type, boolean hasChest) {
         super(properties);
         this.type = type;
         this.hasChest = hasChest;
