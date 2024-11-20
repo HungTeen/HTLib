@@ -90,14 +90,6 @@ public class ClientHelper {
     public static boolean canRenderOverlay() {
         return screen() == null && ! option().hideGui && level() != null && player() != null && ! player().isSpectator();
     }
-    
-//    public static boolean isMouseInput(KeyMapping key) {
-//        return key.getKey().getType() == InputConstants.Type.MOUSE;
-//    }
-//
-//    public static boolean isKeyInput(KeyMapping key) {
-//        return key.getKey().getType() == InputConstants.Type.KEYSYM;
-//    }
 
 //    /**
 //     * Why not add them together?

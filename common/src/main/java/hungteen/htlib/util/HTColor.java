@@ -19,8 +19,20 @@ public record HTColor(int red, int green, int blue, int alpha, boolean hasAlpha)
         return ColorHelper.toRGB(red(), green(), blue());
     }
 
-    public float[] rgba(){
+    public int rgba(){
+        return ColorHelper.toRGBA(red(), green(), blue(), alpha());
+    }
+
+    public int argb(){
+        return ColorHelper.toARGB(alpha(), red(), green(), blue());
+    }
+
+    public float[] toRGBAArray(){
         return new float[]{get(0), get(1), get(2), get(3)};
+    }
+
+    public float[] toARGBArray(){
+        return new float[]{get(3), get(0), get(1), get(2)};
     }
 
 }

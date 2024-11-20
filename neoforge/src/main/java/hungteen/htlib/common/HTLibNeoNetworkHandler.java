@@ -9,6 +9,7 @@ import hungteen.htlib.util.NeoHelper;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -65,6 +66,10 @@ public class HTLibNeoNetworkHandler {
 
     public static void sendToNearByClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg) {
         PacketDistributor.sendToPlayersNear(level, player, vec.x, vec.y, vec.z, dis, msg);
+    }
+
+    public static void sendToClientTrackingPlayerAndSelf(Entity entity, CustomPacketPayload msg) {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, msg);
     }
 
 }

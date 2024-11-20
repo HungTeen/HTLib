@@ -5,6 +5,7 @@ import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.platform.HTLibPlatformAPI;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -36,6 +37,10 @@ public class HTLibProxy {
             }
         }
         return instance;
+    }
+
+    public Optional<Player> getClientPlayer(){
+        return Optional.empty();
     }
 
     /**

@@ -2,6 +2,7 @@ package hungteen.htlib.util.helper;
 
 import hungteen.htlib.util.HTColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.MapColor;
 
@@ -232,8 +233,28 @@ public interface ColorHelper {
     int DRUG_ROOT = toRGB(158, 190, 58);
     int ICE_ROOT = toRGB(69, 213, 228);
 
+    static int toRGB(float red, float green, float blue){
+        return toRGB(FastColor.as8BitChannel(red), FastColor.as8BitChannel(green), FastColor.as8BitChannel(blue));
+    }
+
+    static int toRGBA(float red, float green, float blue, float alpha){
+        return toRGBA(FastColor.as8BitChannel(red), FastColor.as8BitChannel(green), FastColor.as8BitChannel(blue), FastColor.as8BitChannel(alpha));
+    }
+
     static int toRGB(int red, int green, int blue){
         return (red << 16) | (green << 8) | blue;
+    }
+
+    static int toRGBA(int red, int green, int blue, int alpha){
+        return (toRGB(red, green, blue) << 8) | alpha;
+    }
+
+    static int toARGB(float alpha, float red, float green, float blue){
+        return toARGB(FastColor.as8BitChannel(alpha), FastColor.as8BitChannel(red), FastColor.as8BitChannel(green), FastColor.as8BitChannel(blue));
+    }
+
+    static int toARGB(int alpha, int red, int green, int blue){
+        return FastColor.ARGB32.color(alpha, red, green, blue);
     }
 
     static int getRedFromRGB(int rgb){
@@ -280,7 +301,7 @@ public interface ColorHelper {
     }
 
     static HTColor create(int red, int green, int blue, int alpha){
-        return new HTColor(red, green, blue, alpha, false);
+        return new HTColor(red, green, blue, alpha, true);
     }
 
     static HTColor create(int rgb){

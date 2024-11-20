@@ -7,6 +7,7 @@ import hungteen.htlib.common.network.packet.SyncDatapackPacket;
 import hungteen.htlib.util.ForgeHelper;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.ChannelBuilder;
@@ -64,6 +65,10 @@ public class HTLibForgeNetworkHandler {
 
     public static <MSG> void sendToNearByClient(Level level, Vec3 vec, double dis, MSG msg) {
         channel().send(msg, PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(vec.x, vec.y, vec.z, dis, level.dimension())));
+    }
+
+    public static <MSG> void sendToClientTrackingPlayerAndSelf(Entity entity, MSG msg) {
+        channel().send(msg, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity));
     }
 
 }

@@ -1,6 +1,7 @@
 package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.registry.HTHolder;
+import hungteen.htlib.api.registry.PTHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,6 +30,11 @@ public class HTForgeVanillaRegistry<T> implements HTVanillaRegistry<T> {
     @Override
     public <K extends T> HTHolder<K> register(String name, Supplier<K> supplier) {
         return new HTForgeHolder<>(deferredRegister.register(name, supplier));
+    }
+
+    @Override
+    public <K extends T> PTHolder<T> registerForHolder(String name, Supplier<K> supplier) {
+        return new PTForgeHolder<>(deferredRegister.register(name, supplier));
     }
 
     public void register(IEventBus eventBus) {

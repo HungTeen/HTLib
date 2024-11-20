@@ -82,7 +82,7 @@ public abstract class ContainerBlockEntity extends HTNameableBlockEntity impleme
 
     @Override
     public void setChanged() {
-
+        super.setChanged();
     }
 
     @Override
@@ -109,6 +109,7 @@ public abstract class ContainerBlockEntity extends HTNameableBlockEntity impleme
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
+        this.getItems().clear();
         if(tag.contains("ContainerItems")){
             ContainerHelper.loadAllItems(tag.getCompound("ContainerItems"), this.getItems(), provider);
         }

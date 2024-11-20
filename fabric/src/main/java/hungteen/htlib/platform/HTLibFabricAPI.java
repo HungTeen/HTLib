@@ -13,8 +13,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -77,6 +79,11 @@ public class HTLibFabricAPI implements HTLibPlatformAPI{
     @Override
     public void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg) {
         PlayerHelper.getServerPlayers(level).stream().filter(p -> p.distanceToSqr(vec) <= dis * dis && ! p.equals(player)).forEach(p -> sendToClient(p, msg));
+    }
+
+    @Override
+    public void sendToClientTrackingPlayerAndSelf(Entity entity, CustomPacketPayload msg) {
+        ((ServerChunkCache)entity.getCommandSenderWorld().getChunkSource()).broadcastAndSend(entity, ServerPlayNetworking.createS2CPacket(msg));
     }
 
     @Override

@@ -104,4 +104,8 @@ public interface HTVanillaRegistryHelper<T> extends HTRegistryHelper<T> {
         return getRegistry().getHolderOrThrow(key);
     }
 
+    default Optional<Holder.Reference<T>> holder(T object){
+        return getRegistry().getHolder(getKey(object));
+    }
+
 }

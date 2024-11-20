@@ -13,6 +13,7 @@ import hungteen.htlib.util.ForgeHelper;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -79,6 +80,11 @@ public class HTLibForgeAPI implements HTLibPlatformAPI {
     @Override
     public void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg) {
         HTLibForgeNetworkHandler.sendToNearByClient(level, vec, dis, msg);
+    }
+
+    @Override
+    public void sendToClientTrackingPlayerAndSelf(Entity entity, CustomPacketPayload msg) {
+        HTLibForgeNetworkHandler.sendToClientTrackingPlayerAndSelf(entity, msg);
     }
 
     @Override

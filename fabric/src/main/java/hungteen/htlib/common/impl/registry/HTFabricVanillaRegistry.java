@@ -1,6 +1,7 @@
 package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.registry.HTHolder;
+import hungteen.htlib.api.registry.PTHolder;
 import hungteen.htlib.util.helper.StringHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,6 +37,12 @@ public class HTFabricVanillaRegistry<T> implements HTVanillaRegistry<T> {
         ResourceLocation registryName = StringHelper.res(modId, name);
         K obj = Registry.register(registry, registryName, supplier.get());
         return new HTFabricHolder<>(registryName, obj);
+    }
+
+    @Override
+    public <K extends T> PTHolder<T> registerForHolder(String name, Supplier<K> supplier) {
+        ResourceLocation registryName = StringHelper.res(modId, name);
+        return new PTFabricHolder<>(registryName, Registry.registerForHolder(registry, registryName, supplier.get()));
     }
 
 }

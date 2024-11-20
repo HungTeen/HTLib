@@ -24,7 +24,6 @@ public interface BrainHelper {
 
     HTVanillaRegistryHelper<MemoryModuleType<?>> MEMORY_HELPER = () -> BuiltInRegistries.MEMORY_MODULE_TYPE;
 
-
     /* Common Methods */
 
     static HTVanillaRegistryHelper<Activity> activity(){

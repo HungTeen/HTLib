@@ -2,6 +2,7 @@ package hungteen.htlib.common.impl.registry;
 
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.registry.HTHolder;
+import hungteen.htlib.api.registry.PTHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
@@ -30,6 +31,8 @@ public interface HTVanillaRegistry<T> {
      * @return 返回注册的条目
      */
     <K extends T> HTHolder<K> register(String name, Supplier<K> supplier);
+
+    <K extends T> PTHolder<T> registerForHolder(String name, Supplier<K> supplier);
 
     /**
      * 不同平台都有自己的构建方式，需要在此抽象。

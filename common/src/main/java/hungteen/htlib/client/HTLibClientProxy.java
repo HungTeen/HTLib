@@ -1,7 +1,9 @@
 package hungteen.htlib.client;
 
+import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.HTLibProxy;
 import hungteen.htlib.common.world.entity.DummyEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -17,6 +19,11 @@ import java.util.function.Supplier;
 public class HTLibClientProxy extends HTLibProxy {
 
     private static final HashMap<Integer, DummyEntity> DUMMY_ENTITY_MAP = new HashMap<>();
+
+    @Override
+    public Optional<Player> getClientPlayer() {
+        return Optional.ofNullable(ClientHelper.player());
+    }
 
     @Override
     public void runOnClient(Supplier<Runnable> task) {

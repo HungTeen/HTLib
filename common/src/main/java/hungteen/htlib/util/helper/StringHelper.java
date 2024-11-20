@@ -177,6 +177,10 @@ public interface StringHelper {
         return group + "." + modId + "." + lang;
     }
 
+    static String langKey(String group, String modId, String lang, String extra){
+        return group + "." + modId + "." + lang + "." + extra;
+    }
+
     static MutableComponent itemLang(String modId, String path, Object... args){
         return lang("item", modId, path, args);
     }

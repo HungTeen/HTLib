@@ -4,6 +4,8 @@ import hungteen.htlib.api.util.helper.HTRegistryHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +25,11 @@ public abstract class HTHolderTagsProvider<T> extends IntrinsicHolderTagsProvide
     protected void addTags(HolderLookup.Provider provider) {
     }
 
+    public void addTag(TagKey<T> tag, ResourceLocation... location){
+        for(ResourceLocation loc : location){
+            this.tag(tag).add(getHelper().createKey(loc));
+        }
+    }
 
     public HTRegistryHelper<T> getHelper() {
         return this.helper;

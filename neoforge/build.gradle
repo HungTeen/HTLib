@@ -17,6 +17,8 @@ neoForge {
     validateAccessTransformers = true
     accessTransformers.files.setFrom(project(":common").file("src/main/resources/META-INF/accesstransformer-nf.cfg"))
 
+    addModdingDependenciesTo(sourceSets.test)
+
     runs {
         configureEach {
             logLevel = org.slf4j.event.Level.DEBUG

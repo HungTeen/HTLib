@@ -104,6 +104,10 @@ public interface BlockHelper {
         return state.hasProperty(property) ? state.setValue(property, value) : state;
     }
 
+    static BannerPattern create(ResourceLocation location){
+        return new BannerPattern(location, StringHelper.langKey("block", location.getNamespace(), "banner", location.getPath()));
+    }
+
     /* Common Methods */
 
     static HTVanillaRegistryHelper<Block> get() {

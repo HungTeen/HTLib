@@ -8,6 +8,7 @@ import hungteen.htlib.common.world.entity.DummyEntity;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +91,13 @@ public interface HTLibPlatformAPI {
      * @param msg Packet to be sent to client.
      */
     void sendToClient(ServerLevel level, @Nullable ServerPlayer player, Vec3 vec, double dis, CustomPacketPayload msg);
+
+    /**
+     * Send packet to all players who tracking the entity.
+     * @param entity the tracked entity.
+     * @param msg Packet to be sent to client.
+     */
+    void sendToClientTrackingPlayerAndSelf(Entity entity, CustomPacketPayload msg);
 
     /* Registry Related */
 
