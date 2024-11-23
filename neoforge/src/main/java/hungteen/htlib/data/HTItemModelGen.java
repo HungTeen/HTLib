@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import hungteen.htlib.util.helper.impl.ItemHelper;
@@ -64,7 +64,7 @@ public abstract class HTItemModelGen extends ItemModelProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodSuitGen(HTWoodSuit suit) {
+    protected void woodSuitGen(HTWoodSet suit) {
         suit.entryBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             if(pair.getKey().hasItem() && ! this.contains(block.asItem())){

@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,8 +19,8 @@ public abstract class HTTagsProvider<T> extends TagsProvider<T> {
 
     private final HTResourceHelper<T> helper;
 
-    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, HTResourceHelper<T> helper) {
-        super(output, helper.resourceKey(), provider);
+    public HTTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, HTResourceHelper<T> helper, String modId, ExistingFileHelper fileHelper) {
+        super(output, helper.resourceKey(), provider, modId, fileHelper);
         this.helper = helper;
     }
 

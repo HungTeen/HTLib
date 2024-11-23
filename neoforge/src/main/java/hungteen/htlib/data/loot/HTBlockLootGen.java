@@ -1,6 +1,6 @@
 package hungteen.htlib.data.loot;
 
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.impl.VanillaHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -28,7 +28,7 @@ public abstract class HTBlockLootGen extends BlockLootSubProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodSuitGen(HTWoodSuit suit) {
+    protected void woodSuitGen(HTWoodSet suit) {
         suit.entryBlocks().forEach(pair -> {
             final Block block = pair.getValue();
             switch (pair.getKey()) {

@@ -6,7 +6,7 @@ import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.common.network.ServerPacketContext;
 import hungteen.htlib.common.network.packet.PlayToClientPacket;
 import hungteen.htlib.common.network.packet.PlayToServerPacket;
-import hungteen.htlib.platform.Platform;
+import hungteen.htlib.api.util.Platform;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.player.LocalPlayer;
@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
  **/
 public interface FabricHelper {
 
-    HTModIDHelper HELPER = Platform.FABRIC::getName;
+    HTModIDHelper HELPER = Platform.FABRIC::getNamespace;
 
     static <T extends PlayToServerPacket> ServerPlayNetworking.PlayPayloadHandler<T> wrapServerHandler(BiConsumer<T, ServerPacketContext> consumer) {
         return (t, payloadContext) -> {

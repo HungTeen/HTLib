@@ -9,7 +9,7 @@ import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.common.network.ServerPacketContext;
 import hungteen.htlib.common.network.packet.PlayToClientPacket;
 import hungteen.htlib.common.network.packet.PlayToServerPacket;
-import hungteen.htlib.platform.Platform;
+import hungteen.htlib.api.util.Platform;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  **/
 public interface NeoHelper {
 
-    HTModIDHelper HELPER = Platform.NEOFORGE::getName;
+    HTModIDHelper HELPER = Platform.NEOFORGE::getNamespace;
 
     /**
      * Check if the mod with the given modId is loaded.

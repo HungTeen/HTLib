@@ -27,6 +27,13 @@ public interface StringHelper {
     /**
      * @return A resource location in the mod.
      */
+    static ResourceLocation res(String name) {
+        return ResourceLocation.parse(name);
+    }
+
+    /**
+     * @return A resource location in the mod.
+     */
     static String resString(String modId, String name) {
         return res(modId, name).toString();
     }

@@ -41,7 +41,7 @@ import java.util.function.Function;
  * @author: PangTeen
  * @create: 2024/11/17 22:54
  **/
-public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
+public class HTWoodSet extends HTBlockSet<HTWoodSet.HTWoodVariant> {
 
     private final EnumMap<HTWoodVariant, HTBlockSetting> settingMap = new EnumMap<>(HTWoodVariant.class);
     private final EnumMap<HTWoodVariant, Block> blockMap = new EnumMap<>(HTWoodVariant.class);
@@ -53,10 +53,10 @@ public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
     private final TagKey<Block> logBlockTag;
 
     /**
-     * Use {@link HTWoodSuit.WoodSuitBuilder} instead.
+     * Use {@link HTWoodSet.WoodSuitBuilder} instead.
      * @param registryName such as "pvz:nut", former is mod id, latter is wood name.
      */
-    protected HTWoodSuit(ResourceLocation registryName) {
+    protected HTWoodSet(ResourceLocation registryName) {
         super(registryName);
 
         // BoatSetting Relate.
@@ -338,27 +338,27 @@ public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
         return new HTBoatSetting(new HTBoatType() {
             @Override
             public Block getPlanks() {
-                return HTWoodSuit.this.blockMap.getOrDefault(HTWoodVariant.PLANKS, Blocks.AIR);
+                return HTWoodSet.this.blockMap.getOrDefault(HTWoodVariant.PLANKS, Blocks.AIR);
             }
 
             @Override
             public Item getBoatItem() {
-                return HTWoodSuit.this.boatMap.getOrDefault(HTBoatVariant.NORMAL, ItemStack.EMPTY.getItem());
+                return HTWoodSet.this.boatMap.getOrDefault(HTBoatVariant.NORMAL, ItemStack.EMPTY.getItem());
             }
 
             @Override
             public Item getChestBoatItem() {
-                return HTWoodSuit.this.boatMap.getOrDefault(HTBoatVariant.CHEST, ItemStack.EMPTY.getItem());
+                return HTWoodSet.this.boatMap.getOrDefault(HTBoatVariant.CHEST, ItemStack.EMPTY.getItem());
             }
 
             @Override
             public String name() {
-                return HTWoodSuit.this.name();
+                return HTWoodSet.this.name();
             }
 
             @Override
             public String getModID() {
-                return HTWoodSuit.this.getModID();
+                return HTWoodSet.this.getModID();
             }
         });
     }
@@ -416,17 +416,17 @@ public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
 
     public static class WoodSuitBuilder {
 
-        private final HTWoodSuit suit;
+        private final HTWoodSet suit;
 
         public WoodSuitBuilder(ResourceLocation registryLocation) {
-            this.suit = new HTWoodSuit(registryLocation);
+            this.suit = new HTWoodSet(registryLocation);
         }
 
         /**
          * 取消一些木制品方块。
          * @param variants 木制品方块变体。
          */
-        public WoodSuitBuilder banBlocks(HTWoodSuit.HTWoodVariant... variants) {
+        public WoodSuitBuilder banBlocks(HTWoodSet.HTWoodVariant... variants) {
             suit.banBlocks(variants);
             return this;
         }
@@ -435,7 +435,7 @@ public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
          * 取消一些木制品方块对应的物品。
          * @param variants 木制品方块变体。
          */
-        public WoodSuitBuilder banItems(HTWoodSuit.HTWoodVariant... variants) {
+        public WoodSuitBuilder banItems(HTWoodSet.HTWoodVariant... variants) {
             suit.banItems(variants);
             return this;
         }
@@ -503,7 +503,7 @@ public class HTWoodSuit extends HTBlockSuit<HTWoodSuit.HTWoodVariant> {
             return this;
         }
 
-        public HTWoodSuit build() {
+        public HTWoodSet build() {
             return this.suit;
         }
 

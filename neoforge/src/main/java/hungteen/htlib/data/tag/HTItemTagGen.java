@@ -1,6 +1,6 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -8,6 +8,7 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,11 +19,11 @@ import java.util.concurrent.CompletableFuture;
  **/
 public abstract class HTItemTagGen extends ItemTagsProvider {
 
-    public HTItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, CompletableFuture<TagsProvider.TagLookup<Block>> tagLookup) {
-        super(output, provider, tagLookup);
+    public HTItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, CompletableFuture<TagsProvider.TagLookup<Block>> tagLookup, String modId, ExistingFileHelper fileHelper) {
+        super(output, provider, tagLookup, modId, fileHelper);
     }
 
-    protected void woodSuitGen(HTWoodSuit suit) {
+    protected void woodSuitGen(HTWoodSet suit) {
         this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
         this.copy(BlockTags.WOODEN_BUTTONS, ItemTags.WOODEN_BUTTONS);
         this.copy(BlockTags.BUTTONS, ItemTags.BUTTONS);
@@ -45,10 +46,10 @@ public abstract class HTItemTagGen extends ItemTagsProvider {
                 this.copy(blockTag, itemTag);
             });
         });
-        suit.getBoatItem(HTWoodSuit.HTBoatVariant.NORMAL).ifPresent(item -> {
+        suit.getBoatItem(HTWoodSet.HTBoatVariant.NORMAL).ifPresent(item -> {
             this.tag(ItemTags.BOATS).add(item);
         });
-        suit.getBoatItem(HTWoodSuit.HTBoatVariant.CHEST).ifPresent(item -> {
+        suit.getBoatItem(HTWoodSet.HTBoatVariant.CHEST).ifPresent(item -> {
             this.tag(ItemTags.CHEST_BOATS).add(item);
         });
     }

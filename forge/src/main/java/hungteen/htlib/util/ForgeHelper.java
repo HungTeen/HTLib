@@ -8,7 +8,7 @@ import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.common.network.HTPlayToClientPayload;
 import hungteen.htlib.common.network.HTPlayToServerPayload;
 import hungteen.htlib.common.network.ServerPacketContext;
-import hungteen.htlib.platform.Platform;
+import hungteen.htlib.api.util.Platform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  **/
 public interface ForgeHelper {
 
-    HTModIDHelper HELPER = Platform.FORGE::getName;
+    HTModIDHelper HELPER = Platform.FORGE::getNamespace;
 
     static boolean isModLoaded(String modId){
         return ModList.get().isLoaded(modId);

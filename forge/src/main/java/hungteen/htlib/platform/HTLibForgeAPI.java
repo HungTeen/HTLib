@@ -2,6 +2,7 @@ package hungteen.htlib.platform;
 
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
+import hungteen.htlib.api.util.Platform;
 import hungteen.htlib.common.HTLibForgeNetworkHandler;
 import hungteen.htlib.common.event.DummyEntityEvent;
 import hungteen.htlib.common.impl.registry.HTForgeCodecRegistryImpl;

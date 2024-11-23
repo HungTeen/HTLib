@@ -1,13 +1,18 @@
 package hungteen.htlib.common.registry.suit;
 
+import hungteen.htlib.util.NeoHelper;
+import hungteen.htlib.util.helper.impl.BlockHelper;
+import hungteen.htlib.util.helper.impl.ItemHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,6 +32,7 @@ public class HTBlockSetting {
     private Function<BlockBehaviour.Properties, Block> blockFunc;
     private BiFunction<Block, Item.Properties, BlockItem> itemFunc;
     private boolean hasItem = true;
+    private Block block;
 
     HTBlockSetting(Function<ResourceLocation, ResourceLocation> nameFunc, BlockBehaviour.Properties blockProperties, Function<BlockBehaviour.Properties, Block> blockFunc) {
         this(nameFunc, blockProperties, blockFunc, new Item.Properties(), ItemNameBlockItem::new);
@@ -47,7 +53,21 @@ public class HTBlockSetting {
         this.itemFunc = itemFunc;
     }
 
-
+    /**
+     * Register all variants of blocks and items in once.
+     */
+    public void register(RegisterEvent event, ResourceLocation location) {
+        ResourceLocation registryName = getName(location);
+        NeoHelper.register(event, BlockHelper.get(), registryName, () -> {
+                this.block = getSupplier().get();
+                return block;
+        });
+        if (hasItem()) {
+                final Optional<Block> block = getBlockOpt();
+                assert block.isPresent() : "Why cause block item registry failed ? No block of %s found.".formatted(registryName.toString());
+                NeoHelper.register(event, ItemHelper.get(), registryName, getItemSupplier(block.get()));
+        }
+    }
 
     /**
      * @param consumer 修改物品的属性。
@@ -89,6 +109,13 @@ public class HTBlockSetting {
 
     public void setItemFunc(BiFunction<Block, Item.Properties, BlockItem> itemFunc) {
         this.itemFunc = itemFunc;
+    }
+
+    /**
+     * @return 返回方块，注册之后才会有值。
+     */
+    public Optional<Block> getBlockOpt(){
+        return Optional.ofNullable(this.block);
     }
 
     public boolean hasItem() {

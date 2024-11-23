@@ -18,12 +18,12 @@ import java.util.Map;
  * @author: PangTeen
  * @create: 2024/11/17 22:06
  **/
-public class HTStoneSuit extends HTBlockSuit<HTStoneSuit.HTStoneVariant> {
+public class HTStoneSet extends HTBlockSet<HTStoneSet.HTStoneVariant> {
 
     private final EnumMap<HTStoneVariant, HTBlockSetting> settingMap = new EnumMap<>(HTStoneVariant.class);
     private final EnumMap<HTStoneVariant, Block> blockMap = new EnumMap<>(HTStoneVariant.class);
 
-    public HTStoneSuit(ResourceLocation registryName) {
+    public HTStoneSet(ResourceLocation registryName) {
         super(registryName);
         settingMap.put(HTStoneVariant.BLOCK, new HTBlockSetting(
                 r -> r,

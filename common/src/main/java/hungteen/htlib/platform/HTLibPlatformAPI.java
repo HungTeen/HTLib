@@ -2,6 +2,7 @@ package hungteen.htlib.platform;
 
 import hungteen.htlib.api.registry.HTCodecRegistry;
 import hungteen.htlib.api.registry.HTCustomRegistry;
+import hungteen.htlib.api.util.Platform;
 import hungteen.htlib.api.util.helper.ServiceHelper;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
 import hungteen.htlib.common.world.entity.DummyEntity;

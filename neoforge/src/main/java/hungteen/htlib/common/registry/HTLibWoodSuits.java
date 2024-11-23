@@ -3,7 +3,7 @@ package hungteen.htlib.common.registry;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -18,28 +18,28 @@ import java.util.*;
  */
 public interface HTLibWoodSuits {
 
-    HTSimpleRegistryImpl<HTWoodSuit> WOODS = HTRegistryManager.simple(HTLibHelper.prefix("wood"));
+    HTSimpleRegistryImpl<HTWoodSet> WOODS = HTRegistryManager.simple(HTLibHelper.prefix("wood"));
 
     /**
      * Modders should call this method in their mod constructor.
      */
-    static HTWoodSuit register(HTWoodSuit type) {
+    static HTWoodSet register(HTWoodSet type) {
         return registry().register(type);
     }
 
-    static Collection<HTWoodSuit> getSuits() {
+    static Collection<HTWoodSet> getSuits() {
         return Collections.unmodifiableCollection(registry().getValues());
     }
 
-    static HTSimpleRegistry<HTWoodSuit> registry(){
+    static HTSimpleRegistry<HTWoodSet> registry(){
         return WOODS;
     }
 
     static Set<Block> getSignBlocks(){
         final Set<Block> blocks = new HashSet<>();
         getSuits().forEach(wood -> {
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.STANDING_SIGN).ifPresent(blocks::add);
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.STANDING_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.WALL_SIGN).ifPresent(blocks::add);
         });
         return blocks;
     }
@@ -47,18 +47,18 @@ public interface HTLibWoodSuits {
     static Set<Block> getHangingSignBlocks(){
         final Set<Block> blocks = new HashSet<>();
         getSuits().forEach(wood -> {
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.HANGING_SIGN).ifPresent(blocks::add);
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_HANGING_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.HANGING_SIGN).ifPresent(blocks::add);
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.WALL_HANGING_SIGN).ifPresent(blocks::add);
         });
         return blocks;
     }
 
-    static Optional<HTWoodSuit> getWoodSuit(String name) {
+    static Optional<HTWoodSet> getWoodSuit(String name) {
         return registry().getValue(name);
     }
 
-    static HTWoodSuit.WoodSuitBuilder builder(ResourceLocation location) {
-        return new HTWoodSuit.WoodSuitBuilder(location);
+    static HTWoodSet.WoodSuitBuilder builder(ResourceLocation location) {
+        return new HTWoodSet.WoodSuitBuilder(location);
     }
 
 }

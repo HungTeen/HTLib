@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -229,9 +229,9 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodSuitGen(HTWoodSuit suit) {
+    protected void woodSuitGen(HTWoodSet suit) {
         /* Must gen first to avoid crash. */
-        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.PLANKS).ifPresentOrElse(block -> {
+        suit.getBlockOpt(HTWoodSet.HTWoodVariant.PLANKS).ifPresentOrElse(block -> {
             gen(block, this::simpleBlock);
         }, () -> HTLibAPI.logger().warn("Wood Integration {} Data Gen skipped, because wood planks was banned !", suit.getRegistryName()));
         suit.entryBlocks().forEach(pair -> {
@@ -275,13 +275,13 @@ public abstract class HTBlockStateGen extends BlockStateProvider {
             }
         });
         /* Sign Blocks. */
-        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STANDING_SIGN).ifPresent(block1 -> {
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_SIGN).ifPresent(block2 -> {
+        suit.getBlockOpt(HTWoodSet.HTWoodVariant.STANDING_SIGN).ifPresent(block1 -> {
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.WALL_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof StandingSignBlock b1 && block2 instanceof WallSignBlock b2) gen(b1, b2, this::sign);
             });
         });
-        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.HANGING_SIGN).ifPresent(block1 -> {
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WALL_HANGING_SIGN).ifPresent(block2 -> {
+        suit.getBlockOpt(HTWoodSet.HTWoodVariant.HANGING_SIGN).ifPresent(block1 -> {
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.WALL_HANGING_SIGN).ifPresent(block2 -> {
                 if (block1 instanceof CeilingHangingSignBlock b1 && block2 instanceof WallHangingSignBlock b2) gen(b1, b2, this::hangingSign);
             });
         });

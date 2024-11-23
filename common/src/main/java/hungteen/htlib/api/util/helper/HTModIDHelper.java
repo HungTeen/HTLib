@@ -18,8 +18,6 @@ import java.util.function.Predicate;
  */
 public interface HTModIDHelper {
 
-    String MC = "minecraft";
-
     String getModID();
 
     /* ResourceLocation Related */

@@ -1,11 +1,12 @@
 package hungteen.htlib.data.tag;
 
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,11 +16,11 @@ import java.util.concurrent.CompletableFuture;
  * @create: 2022-10-07 08:46
  **/
 public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
-    public HTBlockTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
-        super(output, provider, BlockHelper.get());
+    public HTBlockTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, String modId, ExistingFileHelper fileHelper) {
+        super(output, provider, BlockHelper.get(), modId, fileHelper);
     }
 
-    protected void woodSuitGen(HTWoodSuit suit) {
+    protected void woodSuitGen(HTWoodSet suit) {
         suit.entryBlocks().forEach(pair -> {
             Block block = pair.getValue();
             switch (pair.getKey()) {
@@ -41,10 +42,10 @@ public abstract class HTBlockTagGen extends HTHolderTagsProvider<Block> {
         });
         suit.getLogBlockTag().ifPresent(blockTag -> {
             this.tag(BlockTags.LOGS_THAT_BURN).addTag(blockTag);
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.LOG).ifPresent(this.tag(blockTag)::add);
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.WOOD).ifPresent(this.tag(blockTag)::add);
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
-            suit.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.LOG).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.WOOD).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.STRIPPED_WOOD).ifPresent(this.tag(blockTag)::add);
+            suit.getBlockOpt(HTWoodSet.HTWoodVariant.STRIPPED_LOG).ifPresent(this.tag(blockTag)::add);
         });
     }
 }

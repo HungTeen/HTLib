@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -17,11 +18,12 @@ import java.util.concurrent.CompletableFuture;
 public abstract class HTHolderTagsProvider<T> extends IntrinsicHolderTagsProvider<T> {
     private final HTRegistryHelper<T> helper;
 
-    public HTHolderTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, HTRegistryHelper<T> registryHelper) {
-        super(output, registryHelper.resourceKey(), provider, (obj) -> registryHelper.getResourceKey(obj).orElseThrow());
+    public HTHolderTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, HTRegistryHelper<T> registryHelper, String modId, ExistingFileHelper fileHelper) {
+        super(output, registryHelper.resourceKey(), provider, (obj) -> registryHelper.getResourceKey(obj).orElseThrow(), modId, fileHelper);
         this.helper = registryHelper;
     }
 
+    @Override
     protected void addTags(HolderLookup.Provider provider) {
     }
 

@@ -1,6 +1,7 @@
 package hungteen.htlib.api.util.helper;
 
 import com.mojang.serialization.Codec;
+import hungteen.htlib.api.util.Platform;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -29,14 +30,56 @@ public interface HTResourceHelper<T> {
     /* Tag Related Methods */
 
     /**
-     * 根据 name 创建 tag。
+     * @return 创建 minecraft:name。
+     */
+    default TagKey<T> vanillaTag(String name) {
+        return tag(Platform.MINECRAFT.getNamespace(), name);
+    }
+
+    /**
+     * @return 创建 neoforge:name。
+     */
+    default TagKey<T> neoTag(String name) {
+        return tag(Platform.NEOFORGE.getNamespace(), name);
+    }
+
+    /**
+     * @return 创建 fabric:name。
+     */
+    default TagKey<T> fabricTag(String name) {
+        return tag(Platform.FABRIC.getNamespace(), name);
+    }
+
+    /**
+     * @return 创建 forge:name。
+     */
+    default TagKey<T> forgeTag(String name) {
+        return tag(Platform.FORGE.getNamespace(), name);
+    }
+
+    /**
+     * @return 创建 c:name。
+     */
+    default TagKey<T> uniformTag(String name) {
+        return tag(Platform.UNIFORM.getNamespace(), name);
+    }
+
+    /**
+     * @return 根据 name 创建 tag。
      */
     default TagKey<T> tag(String name) {
         return tag(ResourceLocation.parse(name));
     }
 
     /**
-     * 根据 location 创建 tag。
+     * @return 根据 modId 和 name 创建 tag。
+     */
+    default TagKey<T> tag(String modId, String name) {
+        return tag(ResourceLocation.fromNamespaceAndPath(modId, name));
+    }
+
+    /**
+     * @return 根据 location 创建 tag。
      */
     default TagKey<T> tag(ResourceLocation location) {
         return TagKey.create(resourceKey(), location);

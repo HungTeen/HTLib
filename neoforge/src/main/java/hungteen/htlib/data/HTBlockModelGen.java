@@ -1,7 +1,7 @@
 package hungteen.htlib.data;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.helper.StringHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import hungteen.htlib.util.helper.impl.ItemHelper;
@@ -58,9 +58,9 @@ public abstract class HTBlockModelGen extends BlockModelProvider {
     /**
      * Gen wood-related at once.
      */
-    protected void woodSuitGen(HTWoodSuit suit) {
-        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.FENCE).ifPresent(b -> gen(b, this::fence));
-        suit.getBlockOpt(HTWoodSuit.HTWoodVariant.BUTTON).ifPresent(b -> gen(b, this::button));
+    protected void woodSuitGen(HTWoodSet suit) {
+        suit.getBlockOpt(HTWoodSet.HTWoodVariant.FENCE).ifPresent(b -> gen(b, this::fence));
+        suit.getBlockOpt(HTWoodSet.HTWoodVariant.BUTTON).ifPresent(b -> gen(b, this::button));
     }
 
     /**

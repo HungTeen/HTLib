@@ -1,5 +1,7 @@
 package hungteen.htlib.api.registry;
 
+import net.minecraft.util.StringRepresentable;
+
 import java.util.Locale;
 
 /**
@@ -8,10 +10,15 @@ import java.util.Locale;
  * @program HTLib
  * @data 2023/2/28 19:33
  */
-public interface EnumEntry extends SimpleEntry {
+public interface EnumEntry extends SimpleEntry, StringRepresentable {
 
     @Override
-    default String getName(){
+    default String name(){
         return toString().toLowerCase(Locale.ROOT);
+    }
+
+    @Override
+    default String getSerializedName(){
+        return name();
     }
 }

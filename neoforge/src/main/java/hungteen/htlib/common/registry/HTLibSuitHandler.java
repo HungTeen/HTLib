@@ -1,8 +1,9 @@
 package hungteen.htlib.common.registry;
 
+import hungteen.htlib.common.registry.suit.HTBlockSuit;
 import hungteen.htlib.common.registry.suit.HTEntitySuit;
-import hungteen.htlib.common.registry.suit.HTStoneSuit;
-import hungteen.htlib.common.registry.suit.HTWoodSuit;
+import hungteen.htlib.common.registry.suit.HTStoneSet;
+import hungteen.htlib.common.registry.suit.HTWoodSet;
 import hungteen.htlib.util.NeoHelper;
 import hungteen.htlib.util.helper.impl.BlockHelper;
 import hungteen.htlib.util.helper.impl.EntityHelper;
@@ -42,6 +43,11 @@ public class HTLibSuitHandler {
             HTLibWoodSuits.getSuits().forEach(suit -> {
                 suit.register(event);
             });
+
+            // Register for all Block suit.
+            HTLibBlockSuits.registry().getValues().forEach(block -> {
+                block.register(event);
+            });
         }
         if(NeoHelper.canRegister(event, ItemHelper.get()) || NeoHelper.canRegister(event, EntityHelper.get())){
             // Register for all entity suit.
@@ -77,13 +83,13 @@ public class HTLibSuitHandler {
     public static void setUp() {
         /* Register Stripped Action */
         HTLibWoodSuits.registry().getValues().forEach(wood -> {
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.WOOD).ifPresent(block1 -> {
-                wood.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_WOOD).ifPresent(block2 -> {
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.WOOD).ifPresent(block1 -> {
+                wood.getBlockOpt(HTWoodSet.HTWoodVariant.STRIPPED_WOOD).ifPresent(block2 -> {
                     BlockHelper.registerAxeStrip(block1, block2);
                 });
             });
-            wood.getBlockOpt(HTWoodSuit.HTWoodVariant.LOG).ifPresent(block1 -> {
-                wood.getBlockOpt(HTWoodSuit.HTWoodVariant.STRIPPED_LOG).ifPresent(block2 -> {
+            wood.getBlockOpt(HTWoodSet.HTWoodVariant.LOG).ifPresent(block1 -> {
+                wood.getBlockOpt(HTWoodSet.HTWoodVariant.STRIPPED_LOG).ifPresent(block2 -> {
                     BlockHelper.registerAxeStrip(block1, block2);
                 });
             });
@@ -93,9 +99,10 @@ public class HTLibSuitHandler {
     @SubscribeEvent
     public static void clear(FMLLoadCompleteEvent event) {
         event.enqueueWork(() -> {
-            HTLibStoneSuits.getSuits().forEach(HTStoneSuit::clear);
-            HTLibWoodSuits.getSuits().forEach(HTWoodSuit::clear);
+            HTLibStoneSuits.getSuits().forEach(HTStoneSet::clear);
+            HTLibWoodSuits.getSuits().forEach(HTWoodSet::clear);
             EntitySuits.getSuits().forEach(HTEntitySuit::clear);
+            HTLibBlockSuits.registry().getValues().forEach(HTBlockSuit::clear);
         });
     }
 }
