@@ -1,10 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
-import hungteen.htlib.common.network.packet.DummyEntityInitPacket;
-import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
-import hungteen.htlib.common.network.packet.PlaySoundPacket;
-import hungteen.htlib.common.network.packet.SyncDatapackPacket;
+import hungteen.htlib.common.network.packet.*;
 import hungteen.htlib.util.NeoHelper;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -49,6 +46,11 @@ public class HTLibNeoNetworkHandler {
                 PlaySoundPacket.TYPE,
                 PlaySoundPacket.STREAM_CODEC,
                 NeoHelper.wrapClientHandler(PlaySoundPacket::process)
+        );
+        registrar.playToClient(
+                SpawnParticlePacket.TYPE,
+                SpawnParticlePacket.STREAM_CODEC,
+                NeoHelper.wrapClientHandler(SpawnParticlePacket::process)
         );
     }
 

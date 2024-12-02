@@ -1,6 +1,7 @@
 package hungteen.htlib.common;
 
 import hungteen.htlib.api.HTLibAPI;
+import hungteen.htlib.client.render.ClientEntitySuits;
 import hungteen.htlib.common.blockentity.HTLibBlockEntities;
 import hungteen.htlib.common.codec.HTLibCodecRegistryHandler;
 import hungteen.htlib.common.entity.HTLibEntities;
@@ -65,6 +66,10 @@ public class HTLibNeoRegistryHandler {
 
         // Codec Suit Registry.
         HTLibCodecRegistryHandler.initialize();
+
+        HTLibProxy.get().runOnClient(() -> () -> {
+            ClientEntitySuits.registry().initialize();
+        });
     }
 
     /**

@@ -65,6 +65,22 @@ public class SimpleWeightedList<T> extends WeightedList<WeightedEntry.Wrapper<T>
         return new SimpleWeightedList<>(items.stream().map(t -> WeightedEntry.wrap(t, 1)).toList());
     }
 
+    public static <T> SimpleWeightedList<T> list(List<T> items, List<Integer> weights) {
+        Builder<T> builder = builder();
+        for (int i = 0; i < Math.min(items.size(), weights.size()); i++) {
+            builder.add(items.get(i), weights.get(i));
+        }
+        return builder.build();
+    }
+
+    public static <T> SimpleWeightedList<T> list(T[] items, int[] weights) {
+        Builder<T> builder = builder();
+        for (int i = 0; i < Math.min(items.length, weights.length); i++) {
+            builder.add(items[i], weights[i]);
+        }
+        return builder.build();
+    }
+
     public static class Builder<T> {
         private final ImmutableList.Builder<WeightedEntry.Wrapper<T>> result = ImmutableList.builder();
         private int totalWeight = -1;

@@ -1,9 +1,6 @@
 package hungteen.htlib.common;
 
-import hungteen.htlib.common.network.packet.DummyEntityInitPacket;
-import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
-import hungteen.htlib.common.network.packet.PlaySoundPacket;
-import hungteen.htlib.common.network.packet.SyncDatapackPacket;
+import hungteen.htlib.common.network.packet.*;
 import hungteen.htlib.util.ForgeHelper;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,6 +38,7 @@ public class HTLibForgeNetworkHandler {
                     .add(DummyEntityInitPacket.class, DummyEntityInitPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(DummyEntityInitPacket::process))
                     .add(PlaySoundPacket.class, PlaySoundPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(PlaySoundPacket::process))
                     .add(SyncDatapackPacket.class, SyncDatapackPacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(SyncDatapackPacket::process))
+                    .add(SpawnParticlePacket.class, SpawnParticlePacket.STREAM_CODEC, ForgeHelper.wrapClientHandler(SpawnParticlePacket::process))
                     .build()
             ;
         }

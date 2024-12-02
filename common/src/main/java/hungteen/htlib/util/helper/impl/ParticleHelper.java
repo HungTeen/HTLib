@@ -1,10 +1,14 @@
 package hungteen.htlib.util.helper.impl;
 
+import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.util.helper.HTVanillaRegistryHelper;
+import hungteen.htlib.common.network.packet.SpawnParticlePacket;
+import hungteen.htlib.util.helper.NetworkHelper;
 import hungteen.htlib.util.helper.RandomHelper;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -42,55 +46,103 @@ public interface ParticleHelper extends HTVanillaRegistryHelper<ParticleType<?>>
     }
 
     static void spawnParticles(Level level, ParticleOptions particle, Vec3 pos, int amount, Vec3 speed) {
-        spawnParticles(level, particle, pos.x, pos.y, pos.z, amount, 0, 0, speed.x, speed.y, speed.z);
+        if(level instanceof ServerLevel serverLevel){
+            sendParticles(serverLevel, particle, pos, amount, speed);
+        } else{
+            spawnClientParticles(level, particle, pos, amount, speed);
+        }
     }
 
-    static void spawnParticles(Level level, ParticleOptions particle, Vec3 pos, int amount, double dst, double speed) {
-        spawnParticles(level, particle, pos.x, pos.y, pos.z, amount, dst, dst, speed, speed);
+    static void spawnClientParticles(Level level, ParticleOptions particle, Vec3 pos, int amount, Vec3 speed) {
+        if(level.isClientSide()){
+            for(int i = 0; i < amount; ++ i) {
+                level.addParticle(particle, pos.x, pos.y, pos.z, speed.x, speed.y, speed.z);
+            }
+        } else {
+            HTLibAPI.logger().warn("Server side cannot spawn particles.");
+        }
+    }
+
+    static void spawnClientParticles(Level level, ParticleOptions particle, Vec3 pos, int amount, double dst, double speed) {
+        spawnClientParticles(level, particle, pos.x, pos.y, pos.z, amount, dst, dst, speed, speed);
     }
 
     static void spawnParticles(Level level, ParticleOptions particle, Vec3 pos, int amount, double dstXZ, double dstY, double speed) {
         spawnParticles(level, particle, pos.x, pos.y, pos.z, amount, dstXZ, dstY, speed);
     }
 
-    static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dst, double speed) {
-        spawnParticles(level, particle, x, y, z, amount, dst, dst, speed, speed);
+    static void spawnClientParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dst, double speed) {
+        spawnClientParticles(level, particle, x, y, z, amount, dst, dst, speed, speed);
     }
 
-    static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speedXZ, double speedY) {
-        spawnParticles(level, particle, x, y, z, amount, dstXZ, dstY, speedXZ, speedY, speedXZ);
+    static void spawnClientParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speedXZ, double speedY) {
+        spawnClientParticles(level, particle, x, y, z, amount, dstXZ, dstY, speedXZ, speedY, speedXZ);
+    }
+
+    static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speed) {
+        if(level instanceof ServerLevel serverLevel){
+            sendParticles(serverLevel, particle, x, y, z, amount, dstXZ, dstY, dstXZ, speed);
+        } else{
+            spawnClientParticles(level, particle, x, y, z, amount, dstXZ, dstY, speed, speed, speed);
+        }
     }
 
     /**
      * Particle with speed.
      */
-    static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speedX, double speedY, double speedZ) {
+    static void spawnClientParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speedX, double speedY, double speedZ) {
         if (level.isClientSide) {
             for (int i = 0; i < amount; ++i) {
                 level.addParticle(particle, x + level.getRandom().nextGaussian() * dstXZ, y + level.getRandom().nextGaussian() * dstY, z + level.getRandom().nextGaussian() * dstXZ, level.getRandom().nextGaussian() * speedX, level.getRandom().nextGaussian() * speedY, level.getRandom().nextGaussian() * speedZ);
             }
+        } else {
+            HTLibAPI.logger().warn("Server side cannot spawn particles.");
         }
     }
 
-    static void spawnParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, int amount, double speed) {
-        level.sendParticles(particle, x, y, z, amount, 0, 0, 0, speed);
+    /**
+     * 坐标不偏移的粒子生成方法。
+     */
+    static void sendParticles(ServerLevel level, ParticleOptions particle, Vec3 pos, int amount, Vec3 speed) {
+        NetworkHelper.sendToClient(level, new SpawnParticlePacket(particle, pos, speed, amount));
     }
 
-    static void spawnParticles(Level level, ParticleOptions particle, double x, double y, double z, int amount, double dstXZ, double dstY, double speed) {
-        if(level instanceof ServerLevel serverLevel){
-            serverLevel.sendParticles(particle, x, y, z, amount, dstXZ, dstY, dstXZ, speed);
-        } else{
-            spawnParticles(level, particle, x, y, z, amount, dstXZ, dstY, speed, speed, speed);
-        }
+    /**
+     * 坐标不偏移的粒子生成方法。
+     */
+    static void sendParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, int amount, Vec3 speed) {
+        sendParticles(level, particle, new Vec3(x, y, z), amount, speed);
     }
 
-//    static <T extends ParticleOptions> T readParticle(FriendlyByteBuf buf, ParticleType<T> dataType) {
-//        return dataType.getDeserializer().fromNetwork(dataType, buf);
-//    }
-//
-//    static <T extends ParticleOptions> void writeParticle(FriendlyByteBuf buf, T dataType) {
-//        dataType.writeToNetwork(buf);
-//    }
+    /**
+     * 坐标不偏移的粒子生成方法。
+     */
+    static int sendParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, int amount, double speed) {
+       return sendParticles(level, particle, x, y, z, amount, 0D, 0D, 0D, speed);
+    }
+
+    /**
+     * {@link net.minecraft.client.multiplayer.ClientPacketListener#handleParticleEvent(ClientboundLevelParticlesPacket)}.
+     * @param level Server Side only.
+     * @param particle Particle Type.
+     * @param x 粒子的 X 轴坐标。
+     * @param y 粒子的 Y 轴坐标。
+     * @param z 粒子的 Z 轴坐标。
+     * @param xDist 粒子的最大 X 轴偏移。
+     * @param yDist 粒子的最大 Y 轴偏移。
+     * @param zDist 粒子的最大 Z 轴偏移。
+     * @param amount 粒子数量，如果设置为 0，那么会生成一个粒子，并且位置将不会偏移。
+     * @param speed 粒子的最大速度。
+     * @return 成功生成的粒子数量。
+     */
+    static int sendParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, int amount, double xDist, double yDist, double zDist, double speed) {
+        return level.sendParticles(particle, x, y, z, amount, xDist, yDist, zDist, speed);
+    }
+
+    @Deprecated(since = "1.1.1", forRemoval = true)
+    static int sendParticles(ServerLevel level, ParticleOptions particle, double x, double y, double z, double xDist, double yDist, double zDist, int amount, double speed) {
+        return sendParticles(level, particle, x, y, z, amount, xDist, yDist, zDist, speed);
+    }
 
     /* Common Methods */
 

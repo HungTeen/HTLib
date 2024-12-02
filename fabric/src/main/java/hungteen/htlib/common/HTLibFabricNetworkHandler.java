@@ -1,9 +1,6 @@
 package hungteen.htlib.common;
 
-import hungteen.htlib.common.network.packet.DummyEntityInitPacket;
-import hungteen.htlib.common.network.packet.DummyEntityPlayPacket;
-import hungteen.htlib.common.network.packet.PlaySoundPacket;
-import hungteen.htlib.common.network.packet.SyncDatapackPacket;
+import hungteen.htlib.common.network.packet.*;
 import hungteen.htlib.util.FabricHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -20,6 +17,7 @@ public interface HTLibFabricNetworkHandler {
         PayloadTypeRegistry.playS2C().register(DummyEntityInitPacket.TYPE, DummyEntityInitPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(DummyEntityPlayPacket.TYPE, DummyEntityPlayPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncDatapackPacket.TYPE, SyncDatapackPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SpawnParticlePacket.TYPE, SpawnParticlePacket.STREAM_CODEC);
     }
 
     static void initClient(){
@@ -27,6 +25,7 @@ public interface HTLibFabricNetworkHandler {
         ClientPlayNetworking.registerGlobalReceiver(DummyEntityInitPacket.TYPE, FabricHelper.wrapClientHandler(DummyEntityInitPacket::process));
         ClientPlayNetworking.registerGlobalReceiver(DummyEntityPlayPacket.TYPE, FabricHelper.wrapClientHandler(DummyEntityPlayPacket::process));
         ClientPlayNetworking.registerGlobalReceiver(SyncDatapackPacket.TYPE, FabricHelper.wrapClientHandler(SyncDatapackPacket::process));
+        ClientPlayNetworking.registerGlobalReceiver(SpawnParticlePacket.TYPE, FabricHelper.wrapClientHandler(SpawnParticlePacket::process));
     }
 
 }

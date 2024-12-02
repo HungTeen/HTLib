@@ -1,5 +1,7 @@
 package hungteen.htlib.client;
 
+import hungteen.htlib.client.render.ClientEntitySuits;
+import hungteen.htlib.client.render.HTClientEntitySuit;
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
@@ -15,6 +17,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 
@@ -34,6 +37,13 @@ public class ClientRegister {
     }
 
     @SubscribeEvent
+    public static void clear(FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            ClientEntitySuits.getSuits().forEach(HTClientEntitySuit::clear);
+        });
+    }
+
+    @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(HTLibEntities.BOAT.get(), (c) -> new HTBoatRender(c, false));
         event.registerEntityRenderer(HTLibEntities.CHEST_BOAT.get(), (c) -> new HTBoatRender(c, true));
@@ -41,6 +51,8 @@ public class ClientRegister {
 
         event.registerBlockEntityRenderer(HTLibBlockEntities.SIGN.get(), SignRenderer::new);
         event.registerBlockEntityRenderer(HTLibBlockEntities.HANGING_SIGN.get(), HangingSignRenderer::new);
+
+        ClientEntitySuits.getSuits().forEach(suit -> suit.registerRenderer(event));
     }
 
     @SubscribeEvent
@@ -51,6 +63,8 @@ public class ClientRegister {
                 event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }
         });
+
+        ClientEntitySuits.getSuits().forEach(suit -> suit.registerLayers(event));
     }
 
     @SubscribeEvent

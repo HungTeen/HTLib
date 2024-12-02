@@ -1,8 +1,7 @@
 package hungteen.htlib.api.registry;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-
-import java.util.Locale;
 
 /**
  * 有些注册项需要注册名，但是不需要序列化和反序列化，枚举更方便。
@@ -13,12 +12,17 @@ import java.util.Locale;
 public interface EnumEntry extends SimpleEntry, StringRepresentable {
 
     @Override
-    default String name(){
-        return toString().toLowerCase(Locale.ROOT);
+    default String getName(){
+        return name().toLowerCase();
+    }
+
+    @Override
+    default ResourceLocation getLocation(){
+        return ResourceLocation.fromNamespaceAndPath(getModID(), getName());
     }
 
     @Override
     default String getSerializedName(){
-        return name();
+        return getName();
     }
 }
