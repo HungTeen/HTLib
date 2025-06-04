@@ -1,23 +1,24 @@
 package hungteen.htlib.util;
 
 import hungteen.htlib.api.HTLibAPI;
+import hungteen.htlib.api.util.Platform;
 import hungteen.htlib.api.util.helper.HTModIDHelper;
+import hungteen.htlib.common.HTLibProxy;
 import hungteen.htlib.common.impl.registry.HTForgeVanillaRegistry;
 import hungteen.htlib.common.impl.registry.HTVanillaRegistry;
 import hungteen.htlib.common.network.ClientPacketContext;
 import hungteen.htlib.common.network.HTPlayToClientPayload;
 import hungteen.htlib.common.network.HTPlayToServerPayload;
 import hungteen.htlib.common.network.ServerPacketContext;
-import hungteen.htlib.api.util.Platform;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -65,9 +66,9 @@ public interface ForgeHelper {
 
     static <T extends HTPlayToClientPayload> BiConsumer<T, CustomPayloadEvent.Context> wrapClientHandler(BiConsumer<T, ClientPacketContext> consumer) {
         return (t, payloadContext) -> {
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player != null) {
-                var clientPacketContext = new ClientPacketContext(player);
+            Optional<Player> playerOpt = HTLibProxy.get().getClientPlayer();
+            if (playerOpt.isPresent()) {
+                var clientPacketContext = new ClientPacketContext(playerOpt.get());
                 payloadContext.setPacketHandled(true);
                 payloadContext.enqueueWork(() -> {
                     consumer.accept(t, clientPacketContext);

@@ -5,6 +5,7 @@ import hungteen.htlib.client.render.HTClientEntitySuit;
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
+import hungteen.htlib.client.util.ModelLayerHelper;
 import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.blockentity.HTLibBlockEntities;
 import hungteen.htlib.common.entity.HTLibEntities;
@@ -59,8 +60,8 @@ public class ClientRegister {
     public static void registerRendererLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         HTLibBoatTypes.getBoatTypes().forEach(type -> {
             if(type != HTLibBoatTypes.DEFAULT){
-                event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
-                event.registerLayerDefinition(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
+                event.registerLayerDefinition(ModelLayerHelper.createBoatModelName(type), BoatModel::createBodyModel);
+                event.registerLayerDefinition(ModelLayerHelper.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }
         });
 

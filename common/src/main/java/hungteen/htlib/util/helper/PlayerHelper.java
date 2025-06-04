@@ -37,9 +37,9 @@ public interface PlayerHelper {
         return HTLibProxy.get().getClientPlayer();
     }
 
-    static void playClientSound(Player player, Holder<SoundEvent> ev) {
+    static void playClientSound(ServerPlayer player, Holder<SoundEvent> ev) {
         if(ev != null) {
-            HTLibPlatformAPI.get().sendToClient((ServerPlayer) player, new PlaySoundPacket(ev));
+            HTLibPlatformAPI.get().sendToClient(player, new PlaySoundPacket(ev));
         }
     }
     static void playClientSound(Player player, SoundEvent ev) {

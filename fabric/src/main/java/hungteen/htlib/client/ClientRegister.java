@@ -2,6 +2,7 @@ package hungteen.htlib.client;
 
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
+import hungteen.htlib.client.util.ModelLayerHelper;
 import hungteen.htlib.common.entity.HTLibEntities;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -29,8 +30,8 @@ public class ClientRegister {
     public static void registerRendererLayers() {
         HTLibBoatTypes.getBoatTypes().forEach(type -> {
             if(type != HTLibBoatTypes.DEFAULT){
-                EntityModelLayerRegistry.registerModelLayer(HTModelLayers.createBoatModelName(type), BoatModel::createBodyModel);
-                EntityModelLayerRegistry.registerModelLayer(HTModelLayers.createBoatModelName(type), ChestBoatModel::createBodyModel);
+                EntityModelLayerRegistry.registerModelLayer(ModelLayerHelper.createBoatModelName(type), BoatModel::createBodyModel);
+                EntityModelLayerRegistry.registerModelLayer(ModelLayerHelper.createBoatModelName(type), ChestBoatModel::createBodyModel);
             }
         });
     }

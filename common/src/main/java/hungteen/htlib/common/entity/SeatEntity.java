@@ -77,6 +77,14 @@ public class SeatEntity extends HTEntity {
         }
     }
 
+    /**
+     * Can not be pushed.
+     */
+    @Override
+    public void push(double p_20286_, double p_20287_, double p_20288_) {
+
+    }
+
     public boolean isSeatInvalid(){
         return this.getPassengers().isEmpty() || (this.isRelyOnBlock() && this.level().isEmptyBlock(this.blockPosition()));
     }

@@ -1,4 +1,0 @@
-{
-  "type": "htlib:command",
-  "defender_command": "give @s apple 1"
-}

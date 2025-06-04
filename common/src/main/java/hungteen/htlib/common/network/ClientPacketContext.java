@@ -1,11 +1,11 @@
 package hungteen.htlib.common.network;
 
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @program: HTLib
  * @author: PangTeen
  * @create: 2024/10/22 17:22
  **/
-public record ClientPacketContext(LocalPlayer player) {
+public record ClientPacketContext(Player player) {
 }

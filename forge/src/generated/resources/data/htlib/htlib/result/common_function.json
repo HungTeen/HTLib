@@ -1,8 +1,0 @@
-{
-  "type": "htlib:function",
-  "defender_functions": [
-    "htlib:test"
-  ],
-  "global_functions": [],
-  "raider_functions": []
-}

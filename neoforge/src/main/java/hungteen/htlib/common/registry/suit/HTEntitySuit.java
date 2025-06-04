@@ -34,7 +34,10 @@ public class HTEntitySuit<T extends Entity> implements SimpleEntry {
     private final ResourceLocation registryName;
     private final Supplier<EntityType.Builder<T>> entityTypeBuilder;
     private EntityType<T> entityType;
-    private AttributeSupplier attributeSupplier;
+    /**
+     * Must be supplier, to delay the entity class loading.
+     */
+    private Supplier<AttributeSupplier> attributeSupplier;
     private Pair<Integer, Integer> colors;
     private final boolean isLiving;
     private HTPlacementData<T> placementData;
@@ -72,7 +75,7 @@ public class HTEntitySuit<T extends Entity> implements SimpleEntry {
 
     public Optional<AttributeSupplier> getAttributeSupplier() {
         if (this.attributeSupplier != null) {
-            return Optional.of(attributeSupplier);
+            return Optional.of(attributeSupplier.get());
         } else if (this.isLiving) {
             HTLibAPI.logger().warn("{} has no attribute, HTLib will make one for you.", registryName);
             return Optional.of(Mob.createMobAttributes().build());
@@ -93,7 +96,7 @@ public class HTEntitySuit<T extends Entity> implements SimpleEntry {
         this.colors = null;
     }
 
-    public void setAttributeSupplier(AttributeSupplier attributeSupplier) {
+    public void setAttributeSupplier(Supplier<AttributeSupplier> attributeSupplier) {
         this.attributeSupplier = attributeSupplier;
     }
 
@@ -181,7 +184,7 @@ public class HTEntitySuit<T extends Entity> implements SimpleEntry {
             this.suit = new HTEntitySuit<>(registryName, entityTypeBuilder, isLiving);
         }
 
-        public EntitySuitBuilder<T> attribute(AttributeSupplier supplier){
+        public EntitySuitBuilder<T> attribute(Supplier<AttributeSupplier> supplier){
             suit.setAttributeSupplier(supplier);
             return this;
         }

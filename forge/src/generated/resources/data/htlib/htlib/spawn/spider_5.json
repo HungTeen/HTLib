@@ -1,7 +1,0 @@
-{
-  "type": "htlib:once",
-  "setting": {
-    "entity_type": "minecraft:spider"
-  },
-  "spawn_count": 5
-}

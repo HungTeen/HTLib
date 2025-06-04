@@ -3,6 +3,7 @@ package hungteen.htlib.client.render;
 import hungteen.htlib.api.registry.HTSimpleRegistry;
 import hungteen.htlib.common.impl.registry.HTRegistryManager;
 import hungteen.htlib.common.impl.registry.HTSimpleRegistryImpl;
+import hungteen.htlib.common.registry.suit.HTEntitySuit;
 import hungteen.htlib.util.helper.impl.HTLibHelper;
 import net.minecraft.world.entity.Entity;
 
@@ -27,5 +28,9 @@ public class ClientEntitySuits {
 
     public static Collection<HTClientEntitySuit<?>> getSuits() {
         return registry().getValues();
+    }
+
+    public static <T extends Entity> HTClientEntitySuit.EntitySuitBuilder<T> builder(HTEntitySuit<T> suit){
+        return new HTClientEntitySuit.EntitySuitBuilder<>(suit);
     }
 }

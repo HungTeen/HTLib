@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import hungteen.htlib.client.HTModelLayers;
+import hungteen.htlib.client.util.ModelLayerHelper;
 import hungteen.htlib.util.HasHTBoatType;
 import hungteen.htlib.common.impl.HTLibBoatTypes;
 import hungteen.htlib.util.HTBoatType;
@@ -50,7 +50,7 @@ public class HTBoatRender extends BoatRenderer {
     }
 
     private ListModel<Boat> createBoatModel(EntityRendererProvider.Context context, HTBoatType boatType, boolean hasChest) {
-        final ModelLayerLocation modellayerlocation = hasChest ? HTModelLayers.createChestBoatModelName(boatType) : HTModelLayers.createBoatModelName(boatType);
+        final ModelLayerLocation modellayerlocation = hasChest ? ModelLayerHelper.createChestBoatModelName(boatType) : ModelLayerHelper.createBoatModelName(boatType);
         final ModelPart modelpart = context.bakeLayer(modellayerlocation);
         return hasChest ? new ChestBoatModel(modelpart) : new BoatModel(modelpart);
     }
