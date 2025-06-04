@@ -11,17 +11,17 @@ import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.world.entity.DummyEntity;
+import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.DummyEntityType;
-import hungteen.htlib.util.helper.CodecHelper;
-import hungteen.htlib.util.helper.JavaHelper;
-import hungteen.htlib.util.helper.MathHelper;
-import hungteen.htlib.util.helper.PlayerHelper;
+import hungteen.htlib.util.helper.*;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,11 +53,13 @@ import java.util.function.Supplier;
 public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     public static final String RAID_TAG = "RaidTag";
+    public static final String RAID_KEY = "RaidKey";
     public static final MutableComponent RAID_TITLE = Component.translatable("raid.htlib.title");
     public static final MutableComponent RAID_VICTORY_TITLE = Component.translatable("raid.htlib.victory_title");
     public static final MutableComponent RAID_LOSS_TITLE = Component.translatable("raid.htlib.loss_title");
     public static final MutableComponent RAID_WARN = Component.translatable("raid.htlib.too_far_away").withStyle(ChatFormatting.RED);
     private final ServerBossEvent progressBar = new ServerBossEvent(RAID_TITLE, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
+    protected ResourceLocation raidLocation;
     protected CompoundTag raidTag = new CompoundTag();
     protected IRaidComponent raidComponent;
     protected IWaveComponent waveComponent;
@@ -71,10 +73,27 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected boolean stopped = false;
     protected int stopTick = 0;
 
-    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, Vec3 position, IRaidComponent raidComponent) {
-        super(dummyEntityType, serverLevel, position);
+    public static DummyEntity summonRaid(ServerLevel level, ResourceLocation dummyType, ResourceKey<IRaidComponent> raidComponent, Vec3 pos) {
+        return summonRaid(level, dummyType, raidComponent.location(), HTRaidComponents.registry().getValue(level, raidComponent), pos);
+    }
+
+    public static DummyEntity summonRaid(ServerLevel level, ResourceLocation dummyType, ResourceLocation raidKey, IRaidComponent raidComponent, Vec3 pos) {
+        final CompoundTag nbt = new CompoundTag();
         CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), raidComponent)
-                .result().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).ifPresent(tag -> this.raidTag = tag);
+                .result().ifPresent(tag -> {
+                    nbt.put(AbstractRaid.RAID_TAG, tag);
+                    nbt.putString(AbstractRaid.RAID_KEY, raidKey.toString());
+                });
+        final DummyEntity dummyEntity = DummyEntityManager.createDummyEntity(level, dummyType, pos, nbt);
+        return dummyEntity;
+    }
+
+    public AbstractRaid(DummyEntityType<?> dummyEntityType, ServerLevel serverLevel, Vec3 position, ResourceKey<IRaidComponent> raidKey) {
+        super(dummyEntityType, serverLevel, position);
+        this.raidLocation = raidKey.location();
+        CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), HTRaidComponents.registry().getValue(serverLevel, raidKey))
+                .result().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast)
+                .ifPresent(tag -> this.raidTag = tag);
     }
 
     public AbstractRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag raidTag) {
@@ -86,6 +105,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         super.load(tag);
         if(tag.contains(RAID_TAG)){
             this.raidTag = tag.getCompound(RAID_TAG);
+        }
+        if(tag.contains(RAID_KEY)){
+            this.raidLocation = ResourceLocation.tryParse(tag.getString(RAID_KEY));
         }
         if (tag.contains("WaveComponent")) {
             HTWaveComponents.getDirectCodec().parse(NbtOps.INSTANCE, tag.get("WaveComponent"))
@@ -122,6 +144,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     @Override
     public CompoundTag save(CompoundTag tag) {
         tag.put(RAID_TAG, this.raidTag);
+        if(this.raidLocation != null) {
+            tag.putString(RAID_KEY, this.raidLocation.toString());
+        }
         this.getCurrentWave().flatMap(wave -> CodecHelper.encodeNbt(HTWaveComponents.getDirectCodec(), wave)
                 .result()).ifPresent(compoundTag -> tag.put("WaveComponent", compoundTag));
         HTSpawnComponents.pairDirectCodec().listOf().encodeStart(NbtOps.INSTANCE, this.getCurrentSpawns())

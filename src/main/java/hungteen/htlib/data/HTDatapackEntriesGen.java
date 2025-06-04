@@ -1,5 +1,6 @@
 package hungteen.htlib.data;
 
+import hungteen.htlib.common.impl.RaidItemEntries;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
@@ -28,6 +29,7 @@ public class HTDatapackEntriesGen extends DatapackBuiltinEntriesProvider {
             .add(HTSpawnComponents.registry().getRegistryKey(), HTSpawnComponents::register)
             .add(HTWaveComponents.registry().getRegistryKey(), HTWaveComponents::register)
             .add(HTRaidComponents.registry().getRegistryKey(), HTRaidComponents::register)
+            .add(RaidItemEntries.registry().getRegistryKey(), RaidItemEntries::register)
             ;
 
     private final String modId;

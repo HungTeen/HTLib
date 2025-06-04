@@ -55,7 +55,7 @@ public abstract class DummyEntity implements IDummyEntity {
      */
     public void load(CompoundTag tag) {
         if(tag.contains("Position")){
-            Vec3.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("Position"))
+            Vec3.CODEC.parse(NbtOps.INSTANCE, tag.get("Position"))
                     .result().ifPresent(vec -> this.position = vec);
         }
         if(tag.contains("Removed")){

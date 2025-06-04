@@ -1,5 +1,6 @@
 package hungteen.htlib.api.interfaces;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -43,5 +44,13 @@ public interface IHTRegistry<T> {
      * @return registry key.
      */
     ResourceKey<Registry<T>> getRegistryKey();
+
+    /**
+     * Get the codec for this ResourceKey, 获取该注册的编解码器。
+     * @return codec.
+     */
+    default Codec<ResourceKey<T>> getKeyCodec(){
+        return ResourceKey.codec(getRegistryKey());
+    }
 
 }

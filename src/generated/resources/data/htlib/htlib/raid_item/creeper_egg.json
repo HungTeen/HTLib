@@ -1,0 +1,10 @@
+{
+  "dummy_entity_type": "htlib:default_raid",
+  "item_setting": {
+    "colors": [
+      894731
+    ],
+    "model": "minecraft:creeper_spawn_egg"
+  },
+  "raid": "htlib:test"
+}

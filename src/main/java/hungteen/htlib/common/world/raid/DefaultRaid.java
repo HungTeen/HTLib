@@ -6,6 +6,7 @@ import hungteen.htlib.common.world.entity.HTDummyEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -23,8 +24,8 @@ public class DefaultRaid extends AbstractRaid {
 
     protected final Set<UUID> defenders = new HashSet<>();
 
-    public DefaultRaid(ServerLevel serverLevel, Vec3 position, IRaidComponent raidComponent) {
-        super(HTDummyEntities.DEFAULT_RAID, serverLevel, position, raidComponent);
+    public DefaultRaid(ServerLevel serverLevel, Vec3 position, ResourceKey<IRaidComponent> raidKey) {
+        super(HTDummyEntities.DEFAULT_RAID, serverLevel, position, raidKey);
     }
 
     public DefaultRaid(DummyEntityType<?> dummyEntityType, Level level, CompoundTag tag) {

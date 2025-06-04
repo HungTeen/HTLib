@@ -11,6 +11,7 @@ import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.common.impl.RaidItemEntries;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.position.HTPositionTypes;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
@@ -21,6 +22,8 @@ import hungteen.htlib.common.impl.spawn.HTSpawnComponents;
 import hungteen.htlib.common.impl.spawn.HTSpawnTypes;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.impl.wave.HTWaveTypes;
+import hungteen.htlib.common.item.HTCreativeTabs;
+import hungteen.htlib.common.item.HTItems;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.registry.HTRegistryManager;
 import hungteen.htlib.common.registry.suit.HTSuitHandler;
@@ -82,10 +85,12 @@ public class HTLib {
     }
 
     public void register(IEventBus modBus){
+        HTItems.register(modBus);
         HTEntities.register(modBus);
         HTSounds.register(modBus);
         HTBlockEntities.register(modBus);
         HTCommandArgumentInfos.register(modBus);
+        HTCreativeTabs.register(modBus);
 
         HTDummyEntities.registry().register(modBus);
 
@@ -99,6 +104,7 @@ public class HTLib {
         HTWaveComponents.registry().register(modBus);
         HTRaidTypes.registry().register(modBus);
         HTRaidComponents.registry().register(modBus);
+        RaidItemEntries.registry().register(modBus);
     }
 
     /**

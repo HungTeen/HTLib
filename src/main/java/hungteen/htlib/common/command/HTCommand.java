@@ -14,7 +14,6 @@ import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.HTDummyEntities;
 import hungteen.htlib.common.world.raid.AbstractRaid;
-import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.CommandHelper;
 import hungteen.htlib.util.helper.HTLibHelper;
 import hungteen.htlib.util.helper.MathHelper;
@@ -143,13 +142,12 @@ public class HTCommand {
     }
 
     public static int createRaid(CommandSourceStack sourceStack, ResourceLocation dummyType, ResourceLocation raidId, Vec3 position) throws CommandSyntaxException {
-        final CompoundTag nbt = new CompoundTag();
-        IRaidComponent raidComponent = HTRaidComponents.registry().getValue(sourceStack.getLevel(), HTRaidComponents.registry().createKey(raidId));
-        CodecHelper.encodeNbt(HTRaidComponents.getDirectCodec(), raidComponent)
-                .result().ifPresent(tag -> {
-                    nbt.put(AbstractRaid.RAID_TAG, tag);
-                });
-        return createDummyEntity(sourceStack, dummyType, position, nbt);
+        DummyEntity dummyEntity = AbstractRaid.summonRaid(sourceStack.getLevel(), dummyType, HTRaidComponents.registry().createKey(raidId), position);
+        if (dummyEntity != null) {
+            sourceStack.sendSuccess(() -> Component.translatable("commands.summon.success", dummyEntity.getEntityType().getRegistryName()), true);
+            return 1;
+        }
+        throw ERROR_FAILED.create();
     }
 
     public static int seat(CommandSourceStack sourceStack, Entity entity, Vec3 position) {

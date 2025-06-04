@@ -1,21 +1,29 @@
 package hungteen.htlib.client;
 
+import hungteen.htlib.client.model.RaidItemModel;
 import hungteen.htlib.client.render.entity.EmptyEffectRender;
 import hungteen.htlib.client.render.entity.HTBoatRender;
 import hungteen.htlib.client.util.ClientHelper;
 import hungteen.htlib.common.HTResourceManager;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
+import hungteen.htlib.common.codec.RaidItemSetting;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.BoatTypes;
+import hungteen.htlib.common.item.HTItems;
+import hungteen.htlib.common.item.SummonRaidItem;
 import hungteen.htlib.util.helper.registry.BlockHelper;
 import hungteen.htlib.util.interfaces.IBoatType;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -61,6 +69,27 @@ public class ClientRegister {
         HTResourceManager.getExtraModels().forEach(model -> {
             event.register(ClientHelper.getModelLocation(model));
         });
+    }
+
+    @SubscribeEvent
+    public static void bakeModel(ModelEvent.ModifyBakingResult event) {
+        final ModelResourceLocation key = new ModelResourceLocation(HTItems.SUMMON_RAID_ITEM.getId(), "inventory");
+        final BakedModel oldModel = event.getModels().get(key);
+        if (oldModel != null) {
+            event.getModels().put(key, new RaidItemModel(oldModel, event.getModelBakery()));
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event){
+        event.register((stack, id) -> {
+            RaidItemSetting setting = SummonRaidItem.getItemSetting(stack);
+            if(! setting.colors().isEmpty()) {
+                int pos = Mth.clamp(id, 0, setting.colors().size() - 1);
+                return setting.colors().get(pos);
+            }
+            return 0xFFFFFF; // 默认颜色为白色。
+        }, HTItems.SUMMON_RAID_ITEM.get());
     }
 
 }
