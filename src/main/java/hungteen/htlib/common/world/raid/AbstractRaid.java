@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import hungteen.htlib.HTLib;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.capability.raid.RaidCapability;
+import hungteen.htlib.common.entity.goal.WalkToRaidGoal;
 import hungteen.htlib.common.event.events.RaidEvent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
@@ -13,7 +14,10 @@ import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import hungteen.htlib.common.world.entity.DummyEntityType;
-import hungteen.htlib.util.helper.*;
+import hungteen.htlib.util.helper.CodecHelper;
+import hungteen.htlib.util.helper.JavaHelper;
+import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.helper.PlayerHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +35,7 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -413,6 +418,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         }
 
         this.raiderSet.add(raider);
+        if(raider instanceof PathfinderMob mob){
+            mob.goalSelector.addGoal(0, new WalkToRaidGoal(mob, 1.5F));
+        }
 
         this.updateProgress();
         this.setDirty();

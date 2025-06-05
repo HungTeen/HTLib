@@ -134,6 +134,13 @@ public class DummyEntityManager extends SavedData {
         return Optional.ofNullable(get(level).entityMap.getOrDefault(id, null));
     }
 
+    public static List<DummyEntity> getDummyEntities(Level level){
+        if(level instanceof ServerLevel serverLevel) {
+            return getDummyEntities(serverLevel);
+        }
+        return HTLib.PROXY.getDummyEntities();
+    }
+
     public static List<DummyEntity> getDummyEntities(ServerLevel serverLevel) {
         return get(serverLevel).entityMap.values().stream().toList();
     }
@@ -150,7 +157,7 @@ public class DummyEntityManager extends SavedData {
     }
 
     public static Stream<DummyEntity> getCollisionEntities(Level level){
-        return HTLib.PROXY.getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
+        return getDummyEntities(level).stream().filter(DummyEntity::hasCollision);
     }
 
     public static <T extends DummyEntity> T createEntity(ServerLevel level, Function<Integer, T> function){

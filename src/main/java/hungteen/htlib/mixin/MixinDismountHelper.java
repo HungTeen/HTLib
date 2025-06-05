@@ -1,6 +1,5 @@
 package hungteen.htlib.mixin;
 
-import hungteen.htlib.HTLib;
 import hungteen.htlib.common.world.entity.DummyEntity;
 import hungteen.htlib.common.world.entity.DummyEntityManager;
 import net.minecraft.core.BlockPos;
@@ -38,7 +37,7 @@ public class MixinDismountHelper {
             cancellable = true
     )
     private static void canDismountTo(CollisionGetter collisionGetter, LivingEntity livingEntity, AABB aabb, CallbackInfoReturnable<Boolean> result) {
-        HTLib.PROXY.getDummyEntities(livingEntity.level()).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
+        DummyEntityManager.getDummyEntities(livingEntity.level()).stream().filter(DummyEntity::hasCollision).forEach(dummyEntity -> {
             if (dummyEntity.requireBlock(livingEntity, aabb)) {
                 result.setReturnValue(false);
             }

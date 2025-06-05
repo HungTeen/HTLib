@@ -299,10 +299,12 @@ public abstract class DummyEntity implements IDummyEntity {
         return Shapes.box(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
     }
 
+    @Override
     public double getHeight(){
         return this.getLevel().getHeight();
     }
 
+    @Override
     public double getWidth(){
         return 2;
     }

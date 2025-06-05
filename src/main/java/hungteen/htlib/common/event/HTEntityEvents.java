@@ -4,6 +4,7 @@ import hungteen.htlib.HTLib;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import hungteen.htlib.common.world.raid.DefaultRaid;
 import hungteen.htlib.util.helper.registry.EntityHelper;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +26,13 @@ public class HTEntityEvents {
                     ((DefaultRaid)capability.getRaid()).addDefender(event.getSource().getEntity());
                 }
             });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityJoin(EntityTravelToDimensionEvent event){
+        if(RaidCapability.isRaider(event.getEntity())){
+            event.setCanceled(true);
         }
     }
 

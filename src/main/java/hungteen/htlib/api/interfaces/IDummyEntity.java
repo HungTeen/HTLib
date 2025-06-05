@@ -40,4 +40,14 @@ public interface IDummyEntity {
      */
     Level getLevel();
 
+    /**
+     * @return Height of this entity.
+     */
+    double getHeight();
+
+    /**
+     * @return Width of this entity.
+     */
+    double getWidth();
+
 }

@@ -14,14 +14,13 @@ import java.util.Optional;
  * @program HTLib
  * @create 2025/6/4 18:27
  **/
-public record RaidItemSetting(Optional<String> name, ResourceLocation model, int maxStackSize,
+public record RaidItemSetting(Optional<String> name, ResourceLocation model,
                               List<Integer> colors,
                               List<String> textComponents) {
 
     public static final Codec<RaidItemSetting> CODEC = RecordCodecBuilder.<RaidItemSetting>mapCodec(instance -> instance.group(
             Codec.optionalField("name", Codec.STRING).forGetter(RaidItemSetting::name),
             ResourceLocation.CODEC.fieldOf("model").forGetter(RaidItemSetting::model),
-            Codec.intRange(0, 1023).optionalFieldOf("max_stack_size", 1).forGetter(RaidItemSetting::maxStackSize),
             Codec.intRange(0, Integer.MAX_VALUE).listOf().optionalFieldOf("colors", List.of()).forGetter(RaidItemSetting::colors),
             Codec.STRING.listOf().optionalFieldOf("texts", new ArrayList<>()).forGetter(RaidItemSetting::textComponents)
     ).apply(instance, RaidItemSetting::new)).codec();
@@ -35,7 +34,6 @@ public record RaidItemSetting(Optional<String> name, ResourceLocation model, int
     public static class Builder {
         private String name = null;
         private ResourceLocation model = HTLibHelper.prefix("raid_envelope");
-        private int maxStackSize = 1;
         private List<Integer> colors = new ArrayList<>();
         private List<String> textComponents = new ArrayList<>();
 
@@ -44,19 +42,13 @@ public record RaidItemSetting(Optional<String> name, ResourceLocation model, int
             return this;
         }
 
-        public Builder modelNameTip(String name){
+        public Builder nameTip(String name){
             return this.name(HTLibHelper.get().langKey("item", name))
-                    .model(HTLibHelper.prefix(name))
                     .texts(java.util.List.of(HTLibHelper.get().langKey("tip", name)));
         }
 
         public Builder model(ResourceLocation model) {
             this.model = model;
-            return this;
-        }
-
-        public Builder stack(int maxStackSize) {
-            this.maxStackSize = maxStackSize;
             return this;
         }
 
@@ -71,7 +63,7 @@ public record RaidItemSetting(Optional<String> name, ResourceLocation model, int
         }
 
         public RaidItemSetting build() {
-            return new RaidItemSetting(Optional.ofNullable(name), model, maxStackSize, colors, textComponents);
+            return new RaidItemSetting(Optional.ofNullable(name), model, colors, textComponents);
         }
     }
 }

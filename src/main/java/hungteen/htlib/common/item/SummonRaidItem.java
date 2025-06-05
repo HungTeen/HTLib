@@ -5,7 +5,6 @@ import hungteen.htlib.common.codec.RaidItemEntry;
 import hungteen.htlib.common.codec.RaidItemSetting;
 import hungteen.htlib.common.impl.RaidItemEntries;
 import hungteen.htlib.common.world.raid.AbstractRaid;
-import hungteen.htlib.util.helper.CodecHelper;
 import hungteen.htlib.util.helper.PlayerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -33,7 +32,6 @@ import java.util.Optional;
  **/
 public class SummonRaidItem extends HTItem {
 
-    private static final String ITEM_SETTING_TAG = "ItemSetting"; // 物品设置直接存为NBT。
     private static final String ENTRY_KEY_TAG = "EntryKey";
 
     /**
@@ -54,7 +52,7 @@ public class SummonRaidItem extends HTItem {
             Optional<RaidItemEntry> entryOpt = get(serverLevel, context.getItemInHand());
             if (entryOpt.isPresent()) {
                 Optional<RaidItemEntry> raidComponentOpt = get(serverLevel, context.getItemInHand());
-                if(raidComponentOpt.isPresent()) {
+                if (raidComponentOpt.isPresent()) {
                     Vec3 summonPos = context.getClickLocation().add(0, 1, 0);
                     AbstractRaid.summonRaid(serverLevel, entryOpt.get().dummyEntityType().getLocation(), raidComponentOpt.get().raidKey(), summonPos);
                     if (context.getPlayer() != null) {
@@ -75,10 +73,9 @@ public class SummonRaidItem extends HTItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> components, TooltipFlag flag) {
         // 前置描述。
-        getItemSetting(stack).textComponents().forEach(s -> {
+        getItemSetting(Optional.ofNullable(level), stack).textComponents().forEach(s -> {
             components.add(Component.translatable(s));
         });
-
     }
 
     @Override
@@ -98,32 +95,28 @@ public class SummonRaidItem extends HTItem {
         return RaidItemEntries.registry().createKey(new ResourceLocation(stack.getOrCreateTag().getString(ENTRY_KEY_TAG)));
     }
 
-    public static void setItemSetting(ItemStack stack, RaidItemSetting itemSetting) {
-        CodecHelper.encodeNbt(RaidItemSetting.CODEC, itemSetting)
-                .resultOrPartial(msg -> HTLib.getLogger().error("ItemSetting encode error : " + msg))
-                .ifPresent(tag -> {
-                    stack.getOrCreateTag().put(ITEM_SETTING_TAG, tag);
-                });
+    @NotNull
+    public static RaidItemSetting getItemSetting(ItemStack stack) {
+        return getItemSetting(HTLib.PROXY.getLevel(), stack);
     }
 
     @NotNull
-    public static RaidItemSetting getItemSetting(ItemStack stack) {
-        return CodecHelper.parse(RaidItemSetting.CODEC, stack.getOrCreateTag().get(ITEM_SETTING_TAG))
-                .result()
-                .orElse(RaidItemSetting.DEFAULT);
+    public static RaidItemSetting getItemSetting(Optional<Level> level, ItemStack stack) {
+        if(level.isPresent()) {
+            Optional<RaidItemEntry> raidItemEntry = get(level.get(), stack);
+            if (raidItemEntry.isPresent()) {
+                RaidItemSetting itemSetting = raidItemEntry.get().itemSetting();
+                if (itemSetting != null) {
+                    return itemSetting;
+                }
+            }
+        }
+        return RaidItemSetting.DEFAULT;
     }
 
-    /**
-     * 更新组件。
-     */
-    public static void updateItem(ItemStack stack, ResourceKey<RaidItemEntry> resourceKey, RaidItemEntry entry) {
-        setItemSetting(stack, entry.itemSetting());
-        setEntryKey(stack, resourceKey);
-    }
-
-    public static ItemStack create(ResourceKey<RaidItemEntry> resourceKey, RaidItemEntry entry) {
+    public static ItemStack create(ResourceKey<RaidItemEntry> resourceKey) {
         ItemStack stack = new ItemStack(HTItems.SUMMON_RAID_ITEM.get());
-        updateItem(stack, resourceKey, entry);
+        setEntryKey(stack, resourceKey);
         return stack;
     }
 

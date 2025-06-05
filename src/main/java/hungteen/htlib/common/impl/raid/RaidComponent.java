@@ -137,7 +137,7 @@ public abstract class RaidComponent implements IRaidComponent {
         return getRaidSettings().soundSetting().lossSound().map(Holder::get);
     }
 
-    protected record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
+    public record RaidSetting(Optional<Holder<IPositionComponent>> placeComponent, BorderSetting borderSetting, BarSetting barSetting, SoundSetting soundSetting, List<Holder<IResultComponent>> victoryResults, List<Holder<IResultComponent>> lossResults, int victoryDuration, int lossDuration, boolean showRoundTitle, boolean sendRaidWarn) {
         public static final Codec<RaidSetting> CODEC = RecordCodecBuilder.<RaidSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("placement_type", HTPositionComponents.getCodec()).forGetter(RaidSetting::placeComponent),
 
@@ -156,7 +156,7 @@ public abstract class RaidComponent implements IRaidComponent {
         ).apply(instance, RaidSetting::new)).codec();
     }
 
-    protected record BorderSetting(double raidRange, boolean blockInside, boolean blockOutside, boolean renderBorder, int borderColor) {
+    public record BorderSetting(double raidRange, boolean blockInside, boolean blockOutside, boolean renderBorder, int borderColor) {
         public static final Codec<BorderSetting> CODEC = RecordCodecBuilder.<BorderSetting>mapCodec(instance -> instance.group(
                 Codec.doubleRange(0, Double.MAX_VALUE).optionalFieldOf("raid_range", 40D).forGetter(BorderSetting::raidRange),
                 Codec.BOOL.optionalFieldOf("block_inside", false).forGetter(BorderSetting::blockInside),
@@ -166,7 +166,7 @@ public abstract class RaidComponent implements IRaidComponent {
         ).apply(instance, BorderSetting::new)).codec();
     }
 
-    protected record SoundSetting(Optional<Holder<SoundEvent>> raidStartSound, Optional<Holder<SoundEvent>> waveStartSound, Optional<Holder<SoundEvent>> victorySound, Optional<Holder<SoundEvent>> lossSound) {
+    public record SoundSetting(Optional<Holder<SoundEvent>> raidStartSound, Optional<Holder<SoundEvent>> waveStartSound, Optional<Holder<SoundEvent>> victorySound, Optional<Holder<SoundEvent>> lossSound) {
         public static final Codec<SoundSetting> CODEC = RecordCodecBuilder.<SoundSetting>mapCodec(instance -> instance.group(
                 Codec.optionalField("raid_start_sound", SoundEvent.CODEC).forGetter(SoundSetting::raidStartSound),
                 Codec.optionalField("wave_start_sound", SoundEvent.CODEC).forGetter(SoundSetting::waveStartSound),
@@ -175,7 +175,7 @@ public abstract class RaidComponent implements IRaidComponent {
         ).apply(instance, SoundSetting::new)).codec();
     }
 
-    protected record BarSetting(MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle) {
+    public record BarSetting(MutableComponent raidTitle, BossEvent.BossBarColor raidColor, MutableComponent victoryTitle, MutableComponent lossTitle) {
         public static final Codec<BarSetting> CODEC = RecordCodecBuilder.<BarSetting>mapCodec(instance -> instance.group(
                 CodecHelper.componentCodec().optionalFieldOf("raid_title", AbstractRaid.RAID_TITLE).forGetter(BarSetting::raidTitle),
                 BOSS_BAR_COLOR_CODEC.optionalFieldOf("raid_bar_color", BossEvent.BossBarColor.RED).forGetter(BarSetting::raidColor),

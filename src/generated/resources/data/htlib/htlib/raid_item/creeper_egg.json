@@ -4,7 +4,11 @@
     "colors": [
       894731
     ],
-    "model": "minecraft:creeper_spawn_egg"
+    "model": "minecraft:creeper_spawn_egg",
+    "name": "creeper_raid",
+    "texts": [
+      "tip.htlib.creeper_raid"
+    ]
   },
   "raid": "htlib:test"
 }

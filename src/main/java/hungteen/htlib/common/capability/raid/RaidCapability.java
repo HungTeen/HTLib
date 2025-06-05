@@ -31,6 +31,16 @@ public class RaidCapability implements IRaidCapability {
         this.entity = entity;
     }
 
+    public static boolean isRaider(Entity entity){
+        Optional<IRaidCapability> raidOpt = RaidCapability.getRaid(entity);
+        if(raidOpt.isPresent()){
+            if(raidOpt.get().isRaider()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public CompoundTag serializeNBT() {
         final CompoundTag tag = new CompoundTag();
         tag.putInt("CurrentWave", this.wave);

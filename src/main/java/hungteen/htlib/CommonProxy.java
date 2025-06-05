@@ -1,8 +1,6 @@
 package hungteen.htlib;
 
 import hungteen.htlib.common.world.entity.DummyEntity;
-import hungteen.htlib.common.world.entity.DummyEntityManager;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -26,19 +24,16 @@ public class CommonProxy {
         return List.of();
     }
 
-    public List<DummyEntity> getDummyEntities(Level level) {
-        if(level instanceof ServerLevel) {
-            return DummyEntityManager.getDummyEntities((ServerLevel) level);
-        }
-        return getDummyEntities();
-    }
-
     public Optional<DummyEntity> getDummyEntity(int id) {
         return Optional.empty();
     }
 
     public Player getPlayer(){
         return null;
+    }
+
+    public Optional<Level> getLevel() {
+        return Optional.empty();
     }
 
     public void clearDummyEntities() {

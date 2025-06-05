@@ -32,7 +32,7 @@ public interface HTCreativeTabs {
                     .displayItems((parameters, output) -> {
                         HolderLookup.RegistryLookup<RaidItemEntry> summonEntries = parameters.holders().lookupOrThrow(RaidItemEntries.registry().getRegistryKey());
                         summonEntries.listElementIds().map(key -> {
-                            return SummonRaidItem.create(key, summonEntries.getOrThrow(key).get());
+                            return SummonRaidItem.create(key);
                         }).forEach(output::accept);
                     }).withSearchBar().withBackgroundLocation(VanillaHelper.get().containerTexture("creative_inventory/tab_item_search"))
     );

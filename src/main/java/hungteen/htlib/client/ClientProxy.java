@@ -36,13 +36,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public List<DummyEntity> getDummyEntities(Level level) {
-        return DUMMY_ENTITY_MAP.values().stream()
-                .filter(entity -> entity.getLevel().equals(level))
-                .toList();
-    }
-
-    @Override
     public Optional<DummyEntity> getDummyEntity(int id) {
         return Optional.ofNullable(DUMMY_ENTITY_MAP.getOrDefault(id, null));
     }
@@ -50,6 +43,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public Player getPlayer() {
         return MC.player;
+    }
+
+    @Override
+    public Optional<Level> getLevel() {
+        return Optional.ofNullable(MC.level);
     }
 
     @Override
