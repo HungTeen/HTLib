@@ -20,6 +20,12 @@ public interface IRaid extends IDummyEntity {
      */
     boolean addRaider(Entity raider);
 
+    /**
+     * Remove raider from the raid.
+     * @param raider Raider to remove.
+     */
+    void removeRaider(Entity raider);
+
     boolean isDefeated();
 
     boolean isLost();

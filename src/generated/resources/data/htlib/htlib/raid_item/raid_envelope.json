@@ -2,7 +2,7 @@
   "dummy_entity_type": "htlib:default_raid",
   "item_setting": {
     "model": "htlib:raid_envelope",
-    "name": "test_raid_envelope",
+    "name": "item.htlib.test_raid_envelope",
     "texts": [
       "tip.htlib.test_raid_envelope"
     ]

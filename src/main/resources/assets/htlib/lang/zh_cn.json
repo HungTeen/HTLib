@@ -1,4 +1,10 @@
 {
+  "item.htlib.summon_raid_item": "袭击召唤物",
+  "item.htlib.test_raid_envelope": "袭击挑战信（测试）",
+  "tip.htlib.test_raid_envelope": "袭击测试",
+  "item.htlib.creeper_raid": "苦力怕袭击蛋",
+  "tip.htlib.creeper_raid": "准备好迎接苦力怕大军了吗？",
+
   "entity.htlib.boat": "船",
   "entity.htlib.chest_boat": "箱船",
 
@@ -16,5 +22,7 @@
   "sound.htlib.reward": "奖励",
   "sound.htlib.final_victory": "重大胜利",
 
-  "command.htlib.dummy_entity.not_found": "未找到虚拟实体"
+  "command.htlib.dummy_entity.not_found": "未找到虚拟实体",
+
+  "itemGroup.htlib.raid_items": "自定义袭击"
 }

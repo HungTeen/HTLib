@@ -5,7 +5,7 @@
       894731
     ],
     "model": "minecraft:creeper_spawn_egg",
-    "name": "creeper_raid",
+    "name": "item.htlib.creeper_raid",
     "texts": [
       "tip.htlib.creeper_raid"
     ]

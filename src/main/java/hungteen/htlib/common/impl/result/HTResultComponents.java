@@ -30,6 +30,7 @@ public interface HTResultComponents {
     ResourceKey<IResultComponent> TEST = create("test");
     ResourceKey<IResultComponent> COMMON_FUNCTION = create("common_function");
     ResourceKey<IResultComponent> COMMAND_FUNCTION = create("command_function");
+    ResourceKey<IResultComponent> CLEAR_RAIDERS = create("clear_raiders");
 
     static void register(BootstapContext<IResultComponent> context) {
         context.register(TEST, new ItemStackResult(
@@ -44,6 +45,7 @@ public interface HTResultComponents {
         context.register(COMMAND_FUNCTION, new CommandResult(
                 Optional.empty(), Optional.of("give @s apple 1"), Optional.empty()
         ));
+        context.register(CLEAR_RAIDERS, new ClearRaiderResult(0));
     }
 
     static Codec<IResultComponent> getDirectCodec() {

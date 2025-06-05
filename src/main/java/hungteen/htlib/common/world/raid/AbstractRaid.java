@@ -427,6 +427,11 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return true;
     }
 
+    @Override
+    public void removeRaider(Entity raider){
+
+    }
+
     public void updateProgress() {
         tickProgressBar();
     }

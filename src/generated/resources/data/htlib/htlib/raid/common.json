@@ -7,6 +7,9 @@
       "block_outside": true,
       "render_border": true
     },
+    "loss_results": [
+      "htlib:clear_raiders"
+    ],
     "sound_setting": {
       "loss_sound": "htlib:loss",
       "raid_start_sound": "htlib:prepare",

@@ -5,6 +5,9 @@
       "raid_bar_color": "blue"
     },
     "border_setting": {},
+    "loss_results": [
+      "htlib:clear_raiders"
+    ],
     "sound_setting": {
       "loss_sound": "htlib:loss",
       "raid_start_sound": "htlib:prepare",

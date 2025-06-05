@@ -1,4 +1,10 @@
 {
+  "item.htlib.summon_raid_item": "Raid Summon Item",
+  "item.htlib.test_raid_envelope": "Raid Challenge Envelope (Test)",
+  "tip.htlib.test_raid_envelope": "Raid Test",
+  "item.htlib.creeper_raid": "Creeper Raid Egg",
+  "tip.htlib.creeper_raid": "Are you ready for the Creeper Army?",
+
   "entity.htlib.boat": "Boat",
   "entity.htlib.chest_boat": "Chest Boat",
 
@@ -16,5 +22,7 @@
   "sound.htlib.reward": "Reward",
   "sound.htlib.final_victory": "Final Victory",
 
-  "command.htlib.dummy_entity.not_found": "Not Found Dummy Entity"
+  "command.htlib.dummy_entity.not_found": "Not Found Dummy Entity",
+
+  "itemGroup.htlib.raid_items": "Custom Raid"
 }
