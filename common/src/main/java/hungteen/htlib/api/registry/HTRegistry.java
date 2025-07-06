@@ -1,5 +1,6 @@
 package hungteen.htlib.api.registry;
 
+import com.mojang.serialization.Codec;
 import hungteen.htlib.api.HTLibAPI;
 import hungteen.htlib.api.util.helper.HTResourceHelper;
 import net.minecraft.core.Registry;
@@ -48,6 +49,14 @@ public interface HTRegistry<T> {
      */
     default ResourceLocation getRegistryName(){
         return getRegistryKey().location();
+    }
+
+    /**
+     * 获取注册的编解码器。
+     * @return codec.
+     */
+    default Codec<ResourceKey<T>> getResourceCodec(){
+        return ResourceKey.codec(getRegistryKey());
     }
 
 }

@@ -83,6 +83,10 @@ public class ClientHelper {
         return new ModelResourceLocation(location, "inventory");
     }
 
+    public static ModelResourceLocation getStandaloneModelLocation(ResourceLocation location){
+        return new ModelResourceLocation(location, "standalone");
+    }
+
     public static InputConstants.Key getKey(int key){
         return InputConstants.getKey(key, 0);
     }
