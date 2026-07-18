@@ -108,28 +108,37 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: '学习',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: '文档',
+                to: '/docs',
               },
             ],
           },
           {
-            title: 'Community',
+            title: '社区',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                href: 'https://discord.com/invite/CfHFqB34Ye',
               },
               {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
+                label: 'QQ群',
+                href: 'https://qm.qq.com/q/C3jQWEfqDu',
+              },
+            ],
+          },
+          {
+            title: '订阅',
+            items: [
+              {
+                label: 'BiliBili',
+                href: 'https://space.bilibili.com/362855464',
+              },
+              {
+                label: 'Youtube',
+                href: 'https://www.youtube.com/@teenhung6786',
               },
             ],
           },
@@ -142,7 +151,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/HungTeen/HTLib',
               },
             ],
           },
