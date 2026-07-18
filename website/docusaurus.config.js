@@ -112,7 +112,7 @@ const config = {
             items: [
               {
                 label: '文档',
-                to: '/docs',
+                to: '/docs/intro',
               },
             ],
           },
