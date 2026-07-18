@@ -10,9 +10,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  title: 'HTLib',
+  tagline: 'PangTeen 的我的世界工具库',
+  favicon: 'img/pt.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -40,6 +40,17 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'api',
+        path: 'api',
+        routeBasePath: 'api',
+        sidebarPath: './sidebarsApi.js',
+      },
+    ],
+  ],
 
   presets: [
     [
@@ -84,19 +95,26 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'My Site',
+        title: 'HTLib',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.png',
         },
         items: [
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: '文档',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {
+            type: 'docSidebar',
+            docsPluginId: 'api',
+            sidebarId: 'apiSidebar',
+            label: 'API',
+            position: 'left',
+          },
+          {to: '/blog', label: '动态', position: 'left'},
           {
             href: 'https://github.com/facebook/docusaurus',
             label: 'GitHub',
@@ -133,11 +151,11 @@ const config = {
             title: '订阅',
             items: [
               {
-                label: 'BiliBili',
+                label: 'B站',
                 href: 'https://space.bilibili.com/362855464',
               },
               {
-                label: 'Youtube',
+                label: '油管',
                 href: 'https://www.youtube.com/@teenhung6786',
               },
             ],
@@ -156,13 +174,19 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `© ${new Date().getFullYear()} HTLib 开源项目。基于 Docusaurus 构建。`,
       },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
     }),
+  markdown: {
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "throw"
+    }
+  },
 };
 
 export default config;

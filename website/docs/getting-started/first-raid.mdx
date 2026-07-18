@@ -1,0 +1,111 @@
+# 第一个袭击
+
+## 数据包模板
+
+自定义袭击是由数据包驱动的，因此需要先准备好一个数据包模板，可以参考[数据包模板下载地址](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib/files/6616773/additional-files)。
+
+## JSON编辑器
+
+有了数据包模板，还需要会编辑数据包，了解json格式。编辑json最简单粗暴的方式是使用记事本。
+
+## 自定义袭击路径
+
++ mod_id：数据包的命名空间。
++ extra_models：代表的是数据包需要使用的自定义模型。
++ raid_item：存放袭击物品相关配置。
++ raid：存放袭击相关组件。
++ wave：存放每一波的组件。
++ spawn：存放生成怪物的组件。
++ position：存放放置方式的组件。
++ result：存放结果组件。
+
+```plain
+.
+├── assets
+│   └── mod_id
+│       └── extra_models
+│           └── xxx.json
+└── data
+    └── mod_id
+        └── htlib
+            ├── raid_item
+            ├── raid
+            ├── wave
+            ├── spawn
+            ├── position
+            └── result
+```
+
+# 第一个袭击
+
+在raid路径下添加如下名为first_raid的json文件即可成功完成第一个袭击，这个袭击有两波怪物，使用的是模组自带的预设。
+
+```plain
+{
+  "type": "htlib:common",
+  "setting": {
+    "bar_setting": {
+      "raid_bar_color": "blue"
+    },
+    "border_setting": {},
+    "sound_setting": {
+      "loss_sound": "htlib:loss",
+      "raid_start_sound": "htlib:prepare",
+      "victory_sound": "htlib:victory",
+      "wave_start_sound": "htlib:huge_wave"
+    },
+    "victory_results": [
+      "htlib:test"
+    ]
+  },
+  "waves": [
+    "htlib:test_1",
+    "htlib:test_2"
+  ]
+}
+```
+
+如果想验证袭击是否成功添加，在加入世界之后可以使用如下指令召唤袭击（注意将mod_id改成自己的数据包命名空间）。
+
+```plain
+/htlib raid create htlib:default_raid mod_id:first_raid ~ ~ ~
+```
+
+# 第一个袭击物品
+
+使用指令召唤袭击还是比较麻烦的，因此模组还添加了袭击对应的召唤物。
+
+```plain
+{
+  "dummy_entity_type": "htlib:default_raid",
+  "item_setting": {
+    "model": "mod_id:first_raid_item",
+  },
+  "raid": "mod_id:first_raid"
+}
+```
+
+如上代码定义了一个使用自定义物品模型，并且能够召唤袭击的物品。
+
+为了让这个物品模型能够被加载，还需要在assets/mod_id/extra_models/路径下添加如下代码。
+
+```plain
+{
+  "models": [
+    "mod_id:first_raid_item"
+  ]
+}
+```
+
+而其真正的物品模型需要放在assets/mod_id/models/item路径下，如下所示。
+
+```plain
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "htlib:item/raid_envelope"
+  }
+}
+```
+
+这样就可以正确的在游戏中显示这个袭击物品了。
