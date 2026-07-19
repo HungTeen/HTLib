@@ -1,0 +1,35 @@
+# HTLib数据包
+
+自定义袭击是由数据包驱动的，因此需要先准备好一个数据包模板，可以参考[数据包模板下载地址](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib/files/6616773/additional-files)。
+
+## JSON编辑器
+
+有了数据包模板，还需要会编辑数据包，了解json格式。编辑json最简单粗暴的方式是使用记事本。
+
+## 自定义袭击路径
+
++ mod_id：数据包的命名空间。
++ extra_models：代表的是数据包需要使用的自定义模型。
++ raid_item：存放袭击物品相关配置。
++ raid：存放袭击相关组件。
++ wave：存放每一波的组件。
++ spawn：存放生成怪物的组件。
++ position：存放放置方式的组件。
++ result：存放结果组件。
+
+```plain
+.
+├── assets
+│   └── mod_id
+│       └── extra_models
+│           └── xxx.json
+└── data
+    └── mod_id
+        └── htlib
+            ├── raid_item
+            ├── raid
+            ├── wave
+            ├── spawn
+            ├── position
+            └── result
+```
