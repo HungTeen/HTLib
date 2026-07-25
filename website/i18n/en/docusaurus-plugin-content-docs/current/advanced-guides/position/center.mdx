@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+---
+# Center Area Placement
+
+Spawns mobs within a specified area relative to the raid trigger position.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:center_area` |
+| `center_offset` | Vec3 | None | Offset from the raid center `[x, y, z]` |
+| `exclude_radius` | Float | `0` | Minimum spawn radius — how far from the center spawning begins |
+| `radius` | Float | — | Maximum spawn radius |
+| `on_surface` | Boolean | `false` | Whether to spawn mobs on the surface |
+| `height_offset` | Float | `0` | When `on_surface` is false, height offset relative to the center |
+| `is_circle` | Boolean | `true` | `true` for circular area, `false` for square area |
+
+### Example
+
+```json
+{
+  "type": "htlib:center_area",
+  "is_circle": false,
+  "on_surface": true,
+  "radius": 10.0
+}
+```

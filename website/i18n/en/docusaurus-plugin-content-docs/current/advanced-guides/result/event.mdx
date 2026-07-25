@@ -1,0 +1,28 @@
+---
+sidebar_position: 3
+---
+# Event Result
+
+Triggers custom events, commonly used for integration with script mods like KubeJS.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:event` |
+| `id` | String | — | Event identifier |
+| `for_level` | Boolean | `false` | Whether to trigger a world-level event |
+| `for_defender` | Boolean | `false` | Whether to trigger for defenders |
+| `for_raider` | Boolean | `false` | Whether to trigger for raiders |
+
+### Example
+
+```json
+{
+  "type": "htlib:event",
+  "id": "mod_id:custom_raid_event",
+  "for_level": true,
+  "for_defender": true,
+  "for_raider": false
+}
+```

@@ -1,0 +1,34 @@
+---
+sidebar_position: 0
+---
+import DocCardList from '@theme/DocCardList';
+
+# Placement Component
+
+Placement components determine where raiders (mobs) appear when spawned. Different placement types support different position calculation methods.
+
+Placement component JSON files are stored under `data/<mod_id>/htlib/position/`.
+
+```plain
+.
+├── data
+│   └── mod_id
+│       └── htlib
+│           ├── raid              ← Raid definitions
+│           ├── wave              ← Wave definitions
+│           ├── spawn             ← Mob spawning
+│           ├── position          ← Spawn positions
+│           ├── result            ← Results/rewards
+│           └── raid_item         ← Raid summoning items
+```
+
+## Type Summary
+
+| Type | Description |
+|------|------|
+| `htlib:center_area` | Center Area Placement: spawns within a specified radius relative to the raid center |
+| `htlib:absolute_area` | Absolute Area Placement: spawns within a specified radius of a fixed world coordinate |
+
+## Chapter Navigation
+
+<DocCardList />

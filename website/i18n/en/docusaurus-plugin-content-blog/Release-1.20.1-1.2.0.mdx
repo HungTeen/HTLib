@@ -1,0 +1,23 @@
+---
+date: 2025-06-05
+slug: release-1.20.1-1.2.0
+title: HTLib-1.20.1-1.2.0 Release Notes
+authors: [PangTeen]
+tags: [release, 1.20.1, forge]
+---
+
+Added custom raid summoning items, along with various improvements.
+
+{/* truncate */}
+
+## New Features
+* Added summonable raid items with customizable item models.
+## Bug Fixes
+* Fixed virtual entity C/S sync losing position data.
+* Fixed an issue where non-player mobs could walk outside the border.
+## Other Changes
+* Each raid now has a type identifier for easier distinction.
+* Raiders far from the raid center will now actively move toward the center.
+* The vanilla bell can now highlight raiders in custom raids (glowing effect).
+* Raiders will no longer enter portals to teleport to other dimensions.
+* New option to remove all raiders on raid failure (new result component).

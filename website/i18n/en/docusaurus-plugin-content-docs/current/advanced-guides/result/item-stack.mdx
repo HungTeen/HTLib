@@ -1,0 +1,31 @@
+---
+sidebar_position: 1
+---
+# Item Result
+
+Gives specified items directly to the player.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:item_stack` |
+| `for_defender` | Boolean | `true` | Whether to give to defenders (players) |
+| `for_raider` | Boolean | `false` | Whether to give to raiders (mobs) |
+| `rewards` | Item List | — | Item stacks to give, in standard Minecraft ItemStack format |
+
+### Example
+
+```json
+{
+  "type": "htlib:item_stack",
+  "for_defender": true,
+  "for_raider": false,
+  "rewards": [
+    {
+      "id": "minecraft:acacia_boat",
+      "Count": 3
+    }
+  ]
+}
+```

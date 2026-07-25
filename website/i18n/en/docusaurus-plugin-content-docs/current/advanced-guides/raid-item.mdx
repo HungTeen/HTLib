@@ -1,0 +1,43 @@
+---
+sidebar_position: 10
+---
+
+# Raid Summoning Item
+
+## Data Pack Structure
+
+All raid-related components are stored under `data/<mod_id>/htlib/raid_item/` in your data pack:
+
+```plain
+.
+├── assets
+│   └── mod_id
+│       └── extra_models
+│           └── xxx.json
+└── data
+    └── mod_id
+        └── htlib
+            ├── raid_item
+            ├── raid
+            ├── wave
+            ├── spawn
+            ├── position
+            └── result
+```
+
+## Raid Item
+
+| Field | Type | Description |
+|-------------------|--------|------------------------------|
+| `item_setting` | Item Settings | Item-related settings. |
+| `dummy_entity_type` | Dummy Entity Type | Use `htlib:default_raid` for now. |
+| `raid` | Namespaced ID | The registered name of the raid this item triggers. |
+
+## Item Settings
+
+| Field | Type | Description |
+|--------|------|--------------|
+| `name` | String | Display name of the raid item. |
+| `model` | String | Model of the raid item. |
+| `colors` | List | Colors for each texture layer of the item. |
+| `texts` | List | Descriptive text for the item. |

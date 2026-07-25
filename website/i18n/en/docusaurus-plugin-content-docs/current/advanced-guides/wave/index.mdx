@@ -1,0 +1,33 @@
+---
+sidebar_position: 0
+---
+import DocCardList from '@theme/DocCardList';
+
+# Wave Component
+
+A wave component defines a single wave within a raid, specifying which mobs spawn, how long the wave lasts, and whether it can be skipped.
+
+Wave component JSON files are stored under `data/<mod_id>/htlib/wave/`.
+
+```plain
+.
+├── data
+│   └── mod_id
+│       └── htlib
+│           ├── raid              ← Raid definitions
+│           ├── wave              ← Wave definitions
+│           ├── spawn             ← Mob spawning
+│           ├── position          ← Spawn positions
+│           ├── result            ← Results/rewards
+│           └── raid_item         ← Raid summoning items
+```
+
+## Type Summary
+
+| Type | Description |
+|------|------|
+| `htlib:common` | Common wave, composed of multiple mob spawn groups |
+
+## Chapter Navigation
+
+<DocCardList />

@@ -1,0 +1,75 @@
+---
+sidebar_position: 0
+---
+import DocCardList from '@theme/DocCardList';
+
+# Spawn Component
+
+Spawn components define how mobs are spawned during a raid — what entities to spawn, how many, and whether to spawn instantly or continuously.
+
+Spawn component JSON files are stored under `data/<mod_id>/htlib/spawn/`.
+
+```plain
+.
+├── data
+│   └── mod_id
+│       └── htlib
+│           ├── raid              ← Raid definitions
+│           ├── wave              ← Wave definitions
+│           ├── spawn             ← Mob spawning
+│           ├── position          ← Spawn positions
+│           ├── result            ← Results/rewards
+│           └── raid_item         ← Raid summoning items
+```
+
+## Type Overview
+
+| Type | Description |
+|------|------|
+| `htlib:once` | Instant Spawn: spawns a specified number of mobs at once at a given tick |
+| `htlib:duration` | Continuous Spawn: spawns mobs at fixed intervals over a duration |
+
+## Spawn Settings
+
+Common settings shared by both spawn types:
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `entity_type` | String | — | Entity type of the raider, e.g. `minecraft:zombie` |
+| `nbt` | NBT | Empty | NBT data appended to the spawned entity |
+| `enable_default_spawn` | Boolean | `true` | Whether to enable vanilla built-in spawn effects |
+| `spawn_placement` | String | Empty | Spawn position for this group, referencing a [placement component](/docs/advanced-guides/position). Highest priority |
+
+> **Tip**: `spawn_placement` priority: spawn level > wave level > raid level.
+
+### Example: Custom Entity with NBT
+
+```json
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:zombie",
+    "nbt": {
+      "ArmorItems": [
+        { "Count": 1, "id": "minecraft:diamond_boots", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_leggings", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_chestplate", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_helmet", "tag": { "Damage": 0 } }
+      ]
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "min_inclusive": 3,
+      "max_inclusive": 6
+    }
+  }
+}
+```
+
+This example spawns 3–6 zombies wearing full diamond armor at the specified tick.
+
+## Chapter Navigation
+
+<DocCardList />

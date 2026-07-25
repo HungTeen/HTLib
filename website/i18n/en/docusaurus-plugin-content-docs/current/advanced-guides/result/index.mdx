@@ -1,0 +1,43 @@
+---
+sidebar_position: 0
+---
+import DocCardList from '@theme/DocCardList';
+
+# Result Component
+
+Result components define the actions executed after a raid ends (victory or loss) — such as giving items, running commands, triggering functions, spawning chests, etc.
+
+Result component JSON files are stored under `data/<mod_id>/htlib/result/`.
+
+## Type Overview
+
+| Type | Description |
+|------|------|
+| `htlib:item_stack` | Item Result: directly gives items to the player |
+| `htlib:chest` | Chest Result: spawns a chest with loot at the raid location |
+| `htlib:event` | Event Result: triggers custom events (e.g. KubeJS integration) |
+| `htlib:function` | Function Result: invokes `.mcfunction` files |
+| `htlib:command` | Command Result: executes Minecraft commands |
+| `htlib:clear_raider` | Clear Raiders: removes all surviving raiders |
+
+## Combining Results
+
+You can combine multiple result components in the raid's `victory_results` and `loss_results`:
+
+```json
+// In the raid JSON
+"victory_results": [
+  "htlib:common_function",    // Execute function first
+  "htlib:command_function",   // Then execute command
+  "mod_id:my_item_reward"     // Finally give items
+],
+"loss_results": [
+  "htlib:clear_raiders"       // Clear raiders on loss
+]
+```
+
+Result components are executed in the order they appear in the list.
+
+## Chapter Navigation
+
+<DocCardList />

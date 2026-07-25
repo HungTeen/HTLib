@@ -1,0 +1,41 @@
+---
+sidebar_position: 2
+---
+# Raid Item
+
+Summoning raids via commands can be cumbersome, so the mod also provides summoning items.
+
+```json
+{
+  "dummy_entity_type": "htlib:default_raid",
+  "item_setting": {
+    "model": "mod_id:first_raid_item"
+  },
+  "raid": "mod_id:first_raid"
+}
+```
+
+The code above defines an item that uses a custom model and can summon a raid.
+
+For this item model to be loaded, add the following code under `assets/mod_id/extra_models/`:
+
+```json
+{
+  "models": [
+    "mod_id:first_raid_item"
+  ]
+}
+```
+
+The actual item model goes under `assets/mod_id/models/item/`, as shown below:
+
+```json
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "htlib:item/raid_envelope"
+  }
+}
+```
+
+This will correctly display the raid summoning item in-game.

@@ -1,0 +1,24 @@
+---
+sidebar_position: 2
+---
+# Chest Result
+
+Spawns a chest containing loot at the raid's center position.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:chest` |
+| `on_ground` | Boolean | `true` | Whether to place the chest on the ground at the raid center |
+| `loot` | String | — | Loot table registered name (located under `data/<mod_id>/loot_table/`) |
+
+### Example
+
+```json
+{
+  "type": "htlib:chest",
+  "on_ground": true,
+  "loot": "mod_id:chests/raid_reward"
+}
+```

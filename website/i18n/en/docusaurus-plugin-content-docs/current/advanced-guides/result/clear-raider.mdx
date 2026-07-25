@@ -1,0 +1,22 @@
+---
+sidebar_position: 6
+---
+# Clear Raiders
+
+Removes all surviving raiders, typically used to clean up the battlefield on raid failure.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:clear_raider` |
+| `clear_tick` | Integer | `0` | How many ticks after the result triggers to perform the cleanup |
+
+### Example
+
+```json
+{
+  "type": "htlib:clear_raider",
+  "clear_tick": 0
+}
+```

@@ -1,0 +1,37 @@
+---
+sidebar_position: 1
+---
+# Instant Spawn
+
+Spawns a batch of mobs at once at the specified tick.
+
+## Fields
+
+| Field | Type | Description |
+|------|------|------|
+| `type` | String | Fixed as `htlib:once` |
+| `setting` | Spawn Settings | Spawn-related settings (entity type, NBT, etc.) |
+| `spawn_count` | Integer / Range | Number to spawn. Can be a fixed integer, or use `minecraft:uniform` to define a random range (see example) |
+
+### Example
+
+```json
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:creeper",
+    "nbt": {
+      "ExplosionRadius": 3,
+      "Fuse": 50,
+      "powered": 1
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "min_inclusive": 3,
+      "max_inclusive": 5
+    }
+  }
+}
+```

@@ -1,0 +1,50 @@
+{
+  "link.title.学习": {
+    "message": "Learn",
+    "description": "The title of the footer links column with title=学习 in the footer"
+  },
+  "link.title.社区": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=社区 in the footer"
+  },
+  "link.title.订阅": {
+    "message": "Subscribe",
+    "description": "The title of the footer links column with title=订阅 in the footer"
+  },
+  "link.title.More": {
+    "message": "More",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.文档": {
+    "message": "Docs",
+    "description": "The label of footer link with label=文档 linking to /docs/getting-started/first-raid"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.com/invite/CfHFqB34Ye"
+  },
+  "link.item.label.QQ群": {
+    "message": "QQ Group",
+    "description": "The label of footer link with label=QQ群 linking to https://qm.qq.com/q/C3jQWEfqDu"
+  },
+  "link.item.label.B站": {
+    "message": "BiliBili",
+    "description": "The label of footer link with label=B站 linking to https://space.bilibili.com/362855464"
+  },
+  "link.item.label.油管": {
+    "message": "Youtube",
+    "description": "The label of footer link with label=油管 linking to https://www.youtube.com/@teenhung6786"
+  },
+  "link.item.label.Blog": {
+    "message": "Blog",
+    "description": "The label of footer link with label=Blog linking to /blog"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/HungTeen"
+  },
+  "copyright": {
+    "message": "© 2026 HTLib Open Source, Powered by Docusaurus.",
+    "description": "The footer copyright"
+  }
+}

@@ -1,0 +1,38 @@
+---
+sidebar_position: 0
+---
+# HTLib Data Pack
+
+Custom raids are driven by data packs, so you need to prepare a data pack template first. See the [data pack template download](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib/files/6616773/additional-files).
+
+## JSON Editor
+
+With the data pack template ready, you'll need to know how to edit data packs and understand the JSON format. The simplest way to edit JSON is using Notepad.
+
+## Custom Raid Path
+
++ **mod_id**: The namespace of your data pack.
++ **extra_models**: Custom models used by the data pack.
++ **raid_item**: Raid summoning item configurations.
++ **raid**: Raid-related components.
++ **wave**: Wave components.
++ **spawn**: Mob spawning components.
++ **position**: Placement components.
++ **result**: Result/reward components.
+
+```plain
+.
+├── assets
+│   └── mod_id
+│       └── extra_models
+│           └── xxx.json
+└── data
+    └── mod_id
+        └── htlib
+            ├── raid_item
+            ├── raid
+            ├── wave
+            ├── spawn
+            ├── position
+            └── result
+```

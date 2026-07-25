@@ -1,0 +1,24 @@
+---
+sidebar_position: 5
+---
+# Command Result
+
+Executes Minecraft commands directly.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:command` |
+| `global_command` | String | Empty | Global command (no target entity) |
+| `defender_command` | String | Empty | Command executed as each defender |
+| `raider_command` | String | Empty | Command executed as each raider |
+
+### Example
+
+```json
+{
+  "type": "htlib:command",
+  "defender_command": "give @s apple 1"
+}
+```

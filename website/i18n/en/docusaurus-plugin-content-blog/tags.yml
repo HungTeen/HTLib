@@ -1,0 +1,29 @@
+release:
+  label: Release
+  permalink: /release
+  description: Release notes
+
+1.20.1:
+  label: 1.20.1
+  permalink: /1.20.1
+  description: Minecraft 1.20.1
+
+1.21.1:
+  label: 1.21.1
+  permalink: /1.21.1
+  description: Minecraft 1.21.1
+
+forge:
+  label: Forge
+  permalink: /forge
+  description: Minecraft Forge mod loader
+
+neoforge:
+  label: NeoForge
+  permalink: /neoforge
+  description: Minecraft NeoForge mod loader
+
+fabric:
+  label: Fabric
+  permalink: /fabric
+  description: Minecraft Fabric mod loader

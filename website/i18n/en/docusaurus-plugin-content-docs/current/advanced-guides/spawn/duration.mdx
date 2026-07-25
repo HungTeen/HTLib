@@ -1,0 +1,33 @@
+---
+sidebar_position: 2
+---
+# Continuous Spawn
+
+Continuously spawns mobs at fixed intervals over a duration.
+
+### Example
+
+```json
+{
+  "type": "htlib:duration",
+  "setting": {
+    "entity_type": "minecraft:skeleton"
+  },
+  "duration": 400,
+  "spawn_interval": 100,
+  "each_spawn_count": 1,
+  "start_tick": 0
+}
+```
+
+### Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:duration` |
+| `setting` | Spawn Settings | — | Spawn-related settings |
+| `start_tick` | Integer | `0` | Tick when spawning begins |
+| `duration` | Integer | — | Total duration of continuous spawning (ticks) |
+| `spawn_interval` | Integer | — | Interval between each spawn (ticks) |
+| `each_spawn_count` | Integer | — | Number of mobs spawned per interval |
+| `spawn_offset` | Integer | `0` | Spawn offset |

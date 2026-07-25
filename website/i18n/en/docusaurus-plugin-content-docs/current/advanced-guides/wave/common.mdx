@@ -1,0 +1,49 @@
+---
+sidebar_position: 1
+---
+# Common Wave
+
+## Fields
+
+| Field | Type | Description |
+|------|------|------|
+| `type` | String | Wave type, fixed as `htlib:common` |
+| `setting` | [Wave Settings](#wave-settings) | Global settings for the wave |
+| `spawns` | List | Spawn groups included in this wave, each specifying a [spawn component](/docs/advanced-guides/spawn) and its activation tick |
+
+### Full Example
+
+```json
+{
+  "type": "htlib:common",
+  "setting": {
+    "prepare_duration": 60,
+    "spawn_placement": "htlib:common",
+    "wave_duration": 1200,
+    "can_skip_wave": true
+  },
+  "spawns": [
+    "htlib:common_spawn_1",
+    "htlib:common_spawn_2",
+    "htlib:common_spawn_3"
+  ]
+}
+```
+
+## Wave Settings
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `spawn_placement` | String | Empty | Default spawning method for this wave's mobs, referencing a [placement component](/docs/advanced-guides/position) |
+| `prepare_duration` | Integer | `100` | Preparation time before the wave starts (ticks), during which the wave title is displayed |
+| `wave_duration` | Integer | `0` | Wave duration (ticks). `0` means no time limit |
+| `can_skip_wave` | Boolean | `true` | Whether to automatically skip to the next wave after all raiders are killed |
+| `wave_start_sound` | String | Empty | Sound ID played when this wave starts. Takes priority over the raid-level `wave_start_sound` |
+
+### Priority Notes
+
+The `spawn_placement` and `wave_start_sound` in wave settings have **medium priority**:
+
+- If a [spawn component](/docs/advanced-guides/spawn) sets `spawn_placement`, the spawn component takes priority
+- Otherwise, the wave setting's `spawn_placement` is used
+- Same for sounds: wave settings > raid settings

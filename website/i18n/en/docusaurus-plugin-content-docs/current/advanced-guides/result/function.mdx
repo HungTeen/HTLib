@@ -1,0 +1,28 @@
+---
+sidebar_position: 4
+---
+# Function Result
+
+Invokes `.mcfunction` files from the data pack's `functions/` directory.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:function` |
+| `global_functions` | String List | `[]` | Global functions (no target entity), executed with the position as context |
+| `defender_functions` | String List | `[]` | Functions executed targeting each defender |
+| `raider_functions` | String List | `[]` | Functions executed targeting each raider |
+
+### Example
+
+```json
+{
+  "type": "htlib:function",
+  "global_functions": [],
+  "defender_functions": [
+    "htlib:test"
+  ],
+  "raider_functions": []
+}
+```

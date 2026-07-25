@@ -1,0 +1,28 @@
+---
+sidebar_position: 2
+---
+# Absolute Area Placement
+
+Spawns mobs within a specified area at absolute world coordinates.
+
+## Fields
+
+| Field | Type | Default | Description |
+|------|------|--------|------|
+| `type` | String | — | Fixed as `htlib:absolute_area` |
+| `position` | Vec3 | — | Absolute coordinates `[x, y, z]` |
+| `exclude_radius` | Float | `0` | Minimum spawn radius |
+| `radius` | Float | — | Maximum spawn radius |
+| `is_circle` | Boolean | `true` | `true` for circular area, `false` for square area |
+
+### Example
+
+```json
+{
+  "type": "htlib:absolute_area",
+  "position": [100, 64, 200],
+  "radius": 5.0,
+  "is_circle": false,
+  "exclude_radius": 1.0
+}
+```
