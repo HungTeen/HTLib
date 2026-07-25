@@ -23,3 +23,14 @@ slorber:
     linkedin: sebastienlorber
     github: slorber
     newsletter: https://thisweekinreact.com
+
+PangTeen:
+  name: PangTeen
+  title: 项目作者
+  url: https://space.bilibili.com/362855464
+  image_url: https://github.com/HungTeen.png
+  page:
+    # customize the url of the author page at /blog/authors/<permalink>
+    permalink: '/PangTeen'
+  socials:
+    github: HungTeen

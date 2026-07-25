@@ -1,0 +1,44 @@
+---
+sidebar_position: 10
+---
+
+# 袭击召唤物品
+
+
+
+## 数据包结构
+
+所有袭击相关的组件存放在数据包的 `data/<mod_id>/htlib/raid_item` 路径下：
+
+```plain
+.
+├── assets
+│   └── mod_id
+│       └── extra_models
+│           └── xxx.json
+└── data
+    └── mod_id
+        └── htlib
+            ├── raid_item
+            ├── raid
+            ├── wave
+            ├── spawn
+            ├── position
+            └── result
+```
+
+## 袭击物品
+| 字段                | 类型     | 描述                           |
+|-------------------|--------|------------------------------|
+| item_setting      | 物品设置   | 物品相关设置。                      |
+| dummy_entity_type | 虚拟实体类型 | 暂时用处不大，填 htlib:default_raid。 |
+| raid              | 注册名    | 物品触发的袭击的注册名。                 |
+
+
+## 物品设置
+| 字段     | 类型   | 描述           |
+|--------|------|--------------|
+| name   | 字符串  | 袭击物品的别名。     |
+| model  | 字符串  | 袭击物品的模型。     |
+| colors | list | 袭击物品各个贴图的颜色。 |
+| texts  | list | 袭击物品的相应描述。   |

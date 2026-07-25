@@ -1,19 +1,29 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+release:
+  label: Release
+  permalink: /release
+  description: 更新日志
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+1.20.1:
+  label: 1.20.1
+  permalink: /1.20.1
+  description: 我的世界 1.20.1 版本
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+1.21.1:
+  label: 1.21.1
+  permalink: /1.21.1
+  description: 我的世界 1.21.1 版本
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+forge:
+  label: Forge
+  permalink: /forge
+  description: 我的世界 Forge 模组加载器
+
+neoforge:
+  label: NeoForge
+  permalink: /neoforge
+  description: 我的世界 NeoForge 模组加载器
+
+fabric:
+  label: Fabric
+  permalink: /fabric
+  description: 我的世界 Fabric 模组加载器
