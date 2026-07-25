@@ -1,0 +1,31 @@
+---
+sidebar_position: 1
+---
+# 物品结果
+
+直接给予玩家指定物品。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:item_stack` |
+| `for_defender` | 布尔值 | `true` | 是否给予防卫者（玩家） |
+| `for_raider` | 布尔值 | `false` | 是否给予袭击者（怪物） |
+| `rewards` | 物品列表 | — | 要给予的物品堆叠，标准 Minecraft ItemStack 格式 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:item_stack",
+  "for_defender": true,
+  "for_raider": false,
+  "rewards": [
+    {
+      "id": "minecraft:acacia_boat",
+      "Count": 3
+    }
+  ]
+}
+```

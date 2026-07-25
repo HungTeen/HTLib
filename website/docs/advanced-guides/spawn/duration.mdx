@@ -1,0 +1,34 @@
+---
+sidebar_position: 2
+---
+# 持续生成
+
+在一段时间内以固定间隔持续生成怪物。
+
+### 示例
+
+```json
+{
+  "type": "htlib:duration",
+  "setting": {
+    "entity_type": "minecraft:skeleton"
+  },
+  "duration": 400,
+  "spawn_interval": 100,
+  "each_spawn_count": 1,
+  "start_tick": 0
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:duration` |
+| `setting` | 生成设置 | — | 生成相关的设置 |
+| `start_tick` | 整数 | `0` | 开始生成的时刻（tick） |
+| `duration` | 整数 | — | 持续生成的总时长（tick） |
+| `spawn_interval` | 整数 | — | 每次生成的间隔（tick） |
+| `each_spawn_count` | 整数 | — | 每次间隔生成的数量 |
+| `spawn_offset` | 整数 | `0` | 生成偏移量 |
+

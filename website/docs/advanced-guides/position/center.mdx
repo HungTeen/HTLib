@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+---
+# 中心区域放置
+
+相对于袭击触发位置在指定区域内生成怪物。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:center_area` |
+| `center_offset` | Vec3 | 无 | 相对于袭击中心点的偏移量 `[x, y, z]` |
+| `exclude_radius` | 浮点数 | `0` | 最短生成半径，离中心点多远开始生成 |
+| `radius` | 浮点数 | — | 最长生成半径 |
+| `on_surface` | 布尔值 | `false` | 是否将怪物生成在地表 |
+| `height_offset` | 浮点数 | `0` | 当 `on_surface` 为 false 时，相对于中心点的高度偏移 |
+| `is_circle` | 布尔值 | `true` | `true` 为圆形范围，`false` 为正方形范围 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:center_area",
+  "is_circle": false,
+  "on_surface": true,
+  "radius": 10.0
+}
+```

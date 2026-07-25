@@ -1,0 +1,49 @@
+---
+sidebar_position: 1
+---
+# 一般波次
+
+## 字段说明
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| `type` | 字符串 | 波的类型，固定为 `htlib:common` |
+| `setting` | [波设置](#波设置) | 波相关的全局设置 |
+| `spawns` | 列表 | 本波中包含的生成组，每项指定一个 [生成组件](/docs/advanced-guides/spawn) 及其启动时刻 |
+
+### 完整示例
+
+```json
+{
+  "type": "htlib:common",
+  "setting": {
+    "prepare_duration": 60,
+    "spawn_placement": "htlib:common",
+    "wave_duration": 1200,
+    "can_skip_wave": true
+  },
+  "spawns": [
+    "htlib:common_spawn_1",
+    "htlib:common_spawn_2",
+    "htlib:common_spawn_3"
+  ]
+}
+```
+
+## 波设置
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `spawn_placement` | 字符串 | 空 | 本波怪物的默认生成方式，引用一个 [放置组件](/docs/advanced-guides/position) |
+| `prepare_duration` | 整数 | `100` | 波次开始前的准备时间（tick），期间会显示波次标题 |
+| `wave_duration` | 整数 | `0` | 波次持续时间（tick），`0` 表示无时间限制 |
+| `can_skip_wave` | 布尔值 | `true` | 是否在波内所有袭击者被击杀后自动跳到下一波 |
+| `wave_start_sound` | 字符串 | 空 | 本波开始时播放的音效 ID，优先级高于袭击级别的 `wave_start_sound` |
+
+### 优先级说明
+
+波设置中的 `spawn_placement` 和 `wave_start_sound` 具有**中等优先级**：
+
+- 如果 [生成组件](/docs/advanced-guides/spawn) 设置了 `spawn_placement`，则以生成组件为准
+- 否则使用波设置中的 `spawn_placement`
+- 音效同理：波设置 > 袭击设置

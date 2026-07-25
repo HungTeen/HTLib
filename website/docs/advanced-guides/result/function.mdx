@@ -1,0 +1,28 @@
+---
+sidebar_position: 4
+---
+# 函数结果
+
+调用原版数据包中 `functions/` 目录下的 `.mcfunction` 文件。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:function` |
+| `global_functions` | 字符串列表 | `[]` | 全局函数（无目标实体），以执行位置为上下文 |
+| `defender_functions` | 字符串列表 | `[]` | 以每个防卫者为目标执行的函数 |
+| `raider_functions` | 字符串列表 | `[]` | 以每个袭击者为目标执行的函数 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:function",
+  "global_functions": [],
+  "defender_functions": [
+    "htlib:test"
+  ],
+  "raider_functions": []
+}
+```

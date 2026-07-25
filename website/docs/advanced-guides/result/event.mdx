@@ -1,0 +1,28 @@
+---
+sidebar_position: 3
+---
+# 事件结果
+
+触发自定义事件，常用于与 KubeJS 等脚本模组联动。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:event` |
+| `id` | 字符串 | — | 事件标识 |
+| `for_level` | 布尔值 | `false` | 是否触发世界级别事件 |
+| `for_defender` | 布尔值 | `false` | 是否针对防卫者触发 |
+| `for_raider` | 布尔值 | `false` | 是否针对袭击者触发 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:event",
+  "id": "mod_id:custom_raid_event",
+  "for_level": true,
+  "for_defender": true,
+  "for_raider": false
+}
+```

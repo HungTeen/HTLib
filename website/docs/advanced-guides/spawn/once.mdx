@@ -1,0 +1,37 @@
+---
+sidebar_position: 1
+---
+# 立刻生成
+
+在指定时刻一次性生成一批怪物。
+
+## 字段说明
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| `type` | 字符串 | 固定为 `htlib:once` |
+| `setting` | 生成设置 | 生成相关的设置（实体类型、NBT 等） |
+| `spawn_count` | 整数/范围 | 生成数量。可以是固定整数，也可以使用 `minecraft:uniform` 定义一个随机范围（如上例） |
+
+### 示例
+
+```json
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:creeper",
+    "nbt": {
+      "ExplosionRadius": 3,
+      "Fuse": 50,
+      "powered": 1
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "min_inclusive": 3,
+      "max_inclusive": 5
+    }
+  }
+}
+```

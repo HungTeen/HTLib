@@ -1,0 +1,24 @@
+---
+sidebar_position: 2
+---
+# 箱子结果
+
+在袭击中心位置生成一个包含战利品的箱子。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:chest` |
+| `on_ground` | 布尔值 | `true` | 是否放置在袭击中心的地面上 |
+| `loot` | 字符串 | — | 战利品表的注册名（位于 `data/<mod_id>/loot_table/` 下） |
+
+### 示例
+
+```json
+{
+  "type": "htlib:chest",
+  "on_ground": true,
+  "loot": "mod_id:chests/raid_reward"
+}
+```

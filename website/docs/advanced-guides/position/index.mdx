@@ -1,68 +1,34 @@
 ---
 sidebar_position: 0
 ---
+import DocCardList from '@theme/DocCardList';
+
 # 放置组件
 
 放置组件决定了袭击者（怪物）生成时在什么位置出现。不同的放置类型支持不同的位置计算方式。
 
 放置组件的 JSON 文件存放在 `data/<mod_id>/htlib/position/` 路径下。
 
-## 类型一览
+```plain
+.
+├── data
+│   └── mod_id
+│       └── htlib
+│           ├── raid              ← 袭击定义
+│           ├── wave              ← 波次定义
+│           ├── spawn             ← 怪物生成
+│           ├── position          ← 生成位置
+│           ├── result            ← 结果/奖励
+│           └── raid_item         ← 袭击召唤物品
+```
+
+## 类型汇总
 
 | 类型 | 描述 |
 |------|------|
 | `htlib:center_area` | 中心区域放置：以袭击中心点为基准，在指定半径内生成 |
 | `htlib:absolute_area` | 绝对区域放置：在世界绝对坐标的指定半径内生成 |
 
-## 中心区域放置 (htlib:center_area)
+## 章节导航
 
-相对于袭击触发位置在指定区域内生成怪物。
-
-### 示例
-
-```json
-{
-  "type": "htlib:center_area",
-  "is_circle": false,
-  "on_surface": true,
-  "radius": 10.0
-}
-```
-
-### 字段说明
-
-| 字段 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `type` | 字符串 | — | 固定为 `htlib:center_area` |
-| `center_offset` | Vec3 | 无 | 相对于袭击中心点的偏移量 `[x, y, z]` |
-| `exclude_radius` | 浮点数 | `0` | 最短生成半径，离中心点多远开始生成 |
-| `radius` | 浮点数 | — | 最长生成半径 |
-| `on_surface` | 布尔值 | `false` | 是否将怪物生成在地表 |
-| `height_offset` | 浮点数 | `0` | 当 `on_surface` 为 false 时，相对于中心点的高度偏移 |
-| `is_circle` | 布尔值 | `true` | `true` 为圆形范围，`false` 为正方形范围 |
-
-## 绝对区域放置 (htlib:absolute_area)
-
-在世界绝对坐标的指定区域内生成怪物。
-
-### 示例
-
-```json
-{
-  "type": "htlib:absolute_area",
-  "position": [100, 64, 200],
-  "radius": 5.0,
-  "is_circle": false,
-  "exclude_radius": 1.0
-}
-```
-
-### 字段说明
-
-| 字段 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `type` | 字符串 | — | 固定为 `htlib:absolute_area` |
-| `position` | Vec3 | — | 绝对坐标 `[x, y, z]` |
-| `exclude_radius` | 浮点数 | `0` | 最短生成半径 |
-| `radius` | 浮点数 | — | 最长生成半径 |
-| `is_circle` | 布尔值 | `true` | `true` 为圆形范围，`false` 为正方形范围 |
+<DocCardList />

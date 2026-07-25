@@ -1,0 +1,24 @@
+---
+sidebar_position: 5
+---
+# 命令结果
+
+直接执行 Minecraft 命令。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:command` |
+| `global_command` | 字符串 | 空 | 全局命令（无目标实体） |
+| `defender_command` | 字符串 | 空 | 以每个防卫者为执行者的命令 |
+| `raider_command` | 字符串 | 空 | 以每个袭击者为执行者的命令 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:command",
+  "defender_command": "give @s apple 1"
+}
+```

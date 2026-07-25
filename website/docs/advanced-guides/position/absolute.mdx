@@ -1,0 +1,28 @@
+---
+sidebar_position: 2
+---
+# 绝对区域放置
+
+在世界绝对坐标的指定区域内生成怪物。
+
+## 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:absolute_area` |
+| `position` | Vec3 | — | 绝对坐标 `[x, y, z]` |
+| `exclude_radius` | 浮点数 | `0` | 最短生成半径 |
+| `radius` | 浮点数 | — | 最长生成半径 |
+| `is_circle` | 布尔值 | `true` | `true` 为圆形范围，`false` 为正方形范围 |
+
+### 示例
+
+```json
+{
+  "type": "htlib:absolute_area",
+  "position": [100, 64, 200],
+  "radius": 5.0,
+  "is_circle": false,
+  "exclude_radius": 1.0
+}
+```
