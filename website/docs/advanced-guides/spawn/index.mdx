@@ -1,0 +1,122 @@
+---
+sidebar_position: 0
+---
+# 生成组件
+
+生成组件定义了袭击中怪物的具体生成方式——生成什么实体、生成多少、一次性还是持续生成。
+
+生成组件的 JSON 文件存放在 `data/<mod_id>/htlib/spawn/` 路径下。
+
+## 类型一览
+
+| 类型 | 描述 |
+|------|------|
+| `htlib:once` | 立刻生成：在指定时刻一次性生成指定数量的怪物 |
+| `htlib:duration` | 持续生成：在一段时间内以固定间隔持续生成怪物 |
+
+## 生成设置
+
+两种生成类型共用的基础设置：
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `entity_type` | 字符串 | — | 袭击者的实体类型，如 `minecraft:zombie` |
+| `nbt` | NBT | 空 | 追加到生成实体上的 NBT 数据 |
+| `enable_default_spawn` | 布尔值 | `true` | 是否启用原版内置的生成附加效果 |
+| `spawn_placement` | 字符串 | 空 | 此生成组的生成位置，引用一个 [放置组件](/docs/advanced-guides/position)，优先级最高 |
+
+> **提示**：`spawn_placement` 的优先级为：生成级别 &gt; 波级别 &gt; 袭击级别。
+
+## 立刻生成 (htlib:once)
+
+在指定时刻一次性生成一批怪物。
+
+### 示例
+
+```json
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:creeper",
+    "nbt": {
+      "ExplosionRadius": 3,
+      "Fuse": 50,
+      "powered": 1
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "min_inclusive": 3,
+      "max_inclusive": 5
+    }
+  }
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| `type` | 字符串 | 固定为 `htlib:once` |
+| `setting` | 生成设置 | 生成相关的设置（实体类型、NBT 等） |
+| `spawn_count` | 整数/范围 | 生成数量。可以是固定整数，也可以使用 `minecraft:uniform` 定义一个随机范围（如上例） |
+
+## 持续生成 (htlib:duration)
+
+在一段时间内以固定间隔持续生成怪物。
+
+### 示例
+
+```json
+{
+  "type": "htlib:duration",
+  "setting": {
+    "entity_type": "minecraft:skeleton"
+  },
+  "duration": 400,
+  "spawn_interval": 100,
+  "each_spawn_count": 1,
+  "start_tick": 0
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:duration` |
+| `setting` | 生成设置 | — | 生成相关的设置 |
+| `start_tick` | 整数 | `0` | 开始生成的时刻（tick） |
+| `duration` | 整数 | — | 持续生成的总时长（tick） |
+| `spawn_interval` | 整数 | — | 每次生成的间隔（tick） |
+| `each_spawn_count` | 整数 | — | 每次间隔生成的数量 |
+| `spawn_offset` | 整数 | `0` | 生成偏移量 |
+
+### 示例：带 NBT 的自定义实体
+
+```json
+{
+  "type": "htlib:once",
+  "setting": {
+    "entity_type": "minecraft:zombie",
+    "nbt": {
+      "ArmorItems": [
+        { "Count": 1, "id": "minecraft:diamond_boots", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_leggings", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_chestplate", "tag": { "Damage": 0 } },
+        { "Count": 1, "id": "minecraft:diamond_helmet", "tag": { "Damage": 0 } }
+      ]
+    }
+  },
+  "spawn_count": {
+    "type": "minecraft:uniform",
+    "value": {
+      "min_inclusive": 3,
+      "max_inclusive": 6
+    }
+  }
+}
+```
+
+这个示例会在指定时刻生成 3~6 个身着全套钻石盔甲的僵尸。

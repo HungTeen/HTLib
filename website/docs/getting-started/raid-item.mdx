@@ -1,8 +1,11 @@
+---
+sidebar_position: 2
+---
 # 袭击物品
 
 使用指令召唤袭击还是比较麻烦的，因此模组还添加了袭击对应的召唤物。
 
-```plain
+```json
 {
   "dummy_entity_type": "htlib:default_raid",
   "item_setting": {
@@ -16,7 +19,7 @@
 
 为了让这个物品模型能够被加载，还需要在assets/mod_id/extra_models/路径下添加如下代码。
 
-```plain
+```json
 {
   "models": [
     "mod_id:first_raid_item"
@@ -26,7 +29,7 @@
 
 而其真正的物品模型需要放在assets/mod_id/models/item路径下，如下所示。
 
-```plain
+```json
 {
   "parent": "minecraft:item/generated",
   "textures": {

@@ -5,13 +5,7 @@
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {
-  duotoneDark,
-  github,
-  gruvboxMaterialDark,
-  oceanicNext,
-  palenight,
   themes as prismThemes,
-  vsDark, vsLight
 } from 'prism-react-renderer';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -142,7 +136,7 @@ const config = {
             items: [
               {
                 label: '文档',
-                to: '/docs/getting-started/first_raid',
+                to: '/docs/getting-started/first-raid',
               },
             ],
           },
@@ -199,6 +193,8 @@ const config = {
       onBrokenMarkdownLinks: "throw"
     }
   },
+
+  themes: ['@docusaurus/theme-mermaid'],
 };
 
 export default config;

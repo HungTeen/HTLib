@@ -1,0 +1,182 @@
+---
+sidebar_position: 0
+---
+# 结果组件
+
+结果组件定义了袭击结束（胜利或失败）后执行的操作——可以是给予物品、执行命令、触发函数、生成箱子等。
+
+结果组件的 JSON 文件存放在 `data/<mod_id>/htlib/result/` 路径下。
+
+## 类型一览
+
+| 类型 | 描述 |
+|------|------|
+| `htlib:item_stack` | 物品结果：直接给予玩家物品 |
+| `htlib:chest` | 箱子结果：在袭击位置生成包含战利品的箱子 |
+| `htlib:event` | 事件结果：触发自定义事件（联动 KubeJS） |
+| `htlib:function` | 函数结果：调用 `.mcfunction` 文件 |
+| `htlib:command` | 命令结果：执行 Minecraft 命令 |
+| `htlib:clear_raider` | 清除袭击者：移除所有存活的袭击者 |
+
+## 物品结果 (htlib:item_stack)
+
+直接给予玩家指定物品。
+
+### 示例
+
+```json
+{
+  "type": "htlib:item_stack",
+  "for_defender": true,
+  "for_raider": false,
+  "rewards": [
+    {
+      "id": "minecraft:acacia_boat",
+      "Count": 3
+    }
+  ]
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:item_stack` |
+| `for_defender` | 布尔值 | `true` | 是否给予防卫者（玩家） |
+| `for_raider` | 布尔值 | `false` | 是否给予袭击者（怪物） |
+| `rewards` | 物品列表 | — | 要给予的物品堆叠，标准 Minecraft ItemStack 格式 |
+
+## 箱子结果 (htlib:chest)
+
+在袭击中心位置生成一个包含战利品的箱子。
+
+### 示例
+
+```json
+{
+  "type": "htlib:chest",
+  "on_ground": true,
+  "loot": "mod_id:chests/raid_reward"
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:chest` |
+| `on_ground` | 布尔值 | `true` | 是否放置在袭击中心的地面上 |
+| `loot` | 字符串 | — | 战利品表的注册名（位于 `data/<mod_id>/loot_table/` 下） |
+
+## 事件结果 (htlib:event)
+
+触发自定义事件，常用于与 KubeJS 等脚本模组联动。
+
+### 示例
+
+```json
+{
+  "type": "htlib:event",
+  "id": "mod_id:custom_raid_event",
+  "for_level": true,
+  "for_defender": true,
+  "for_raider": false
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:event` |
+| `id` | 字符串 | — | 事件标识 |
+| `for_level` | 布尔值 | `false` | 是否触发世界级别事件 |
+| `for_defender` | 布尔值 | `false` | 是否针对防卫者触发 |
+| `for_raider` | 布尔值 | `false` | 是否针对袭击者触发 |
+
+## 函数结果 (htlib:function)
+
+调用原版数据包中 `functions/` 目录下的 `.mcfunction` 文件。
+
+### 示例
+
+```json
+{
+  "type": "htlib:function",
+  "global_functions": [],
+  "defender_functions": [
+    "htlib:test"
+  ],
+  "raider_functions": []
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:function` |
+| `global_functions` | 字符串列表 | `[]` | 全局函数（无目标实体），以执行位置为上下文 |
+| `defender_functions` | 字符串列表 | `[]` | 以每个防卫者为目标执行的函数 |
+| `raider_functions` | 字符串列表 | `[]` | 以每个袭击者为目标执行的函数 |
+
+## 命令结果 (htlib:command)
+
+直接执行 Minecraft 命令。
+
+### 示例
+
+```json
+{
+  "type": "htlib:command",
+  "defender_command": "give @s apple 1"
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:command` |
+| `global_command` | 字符串 | 空 | 全局命令（无目标实体） |
+| `defender_command` | 字符串 | 空 | 以每个防卫者为执行者的命令 |
+| `raider_command` | 字符串 | 空 | 以每个袭击者为执行者的命令 |
+
+## 清除袭击者 (htlib:clear_raider)
+
+移除所有存活的袭击者，通常用于袭击失败时清理战场。
+
+### 示例
+
+```json
+{
+  "type": "htlib:clear_raider",
+  "clear_tick": 0
+}
+```
+
+### 字段说明
+
+| 字段 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `type` | 字符串 | — | 固定为 `htlib:clear_raider` |
+| `clear_tick` | 整数 | `0` | 在结果触发后多少 tick 执行清除 |
+
+## 组合使用
+
+你可以在袭击的 `victory_results` 和 `loss_results` 中组合多个结果组件：
+
+```json
+// 在 raid JSON 中
+"victory_results": [
+  "htlib:common_function",    // 先执行函数
+  "htlib:command_function",   // 再执行命令
+  "mod_id:my_item_reward"     // 最后给予物品
+],
+"loss_results": [
+  "htlib:clear_raiders"       // 失败时清理袭击者
+]
+```
+
+结果组件会按照列表顺序依次执行。
