@@ -22,7 +22,7 @@ import hungteen.htlib.common.codec.parser.handler.*;
  * 避免把包装结构误判成简单类型。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:22
  **/
 public interface CodecSchemaHandler {

@@ -15,7 +15,7 @@ import com.google.gson.JsonElement;
  * </ul>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:20
  **/
 public sealed interface ValueInfo permits ValueInfo.Absent, ValueInfo.Static, ValueInfo.Encoded {

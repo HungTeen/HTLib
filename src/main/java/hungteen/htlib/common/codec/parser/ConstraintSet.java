@@ -10,7 +10,7 @@ import java.util.List;
  * 解析代码通过 {@link #add} 逐条追加；对外用 {@link #constraints()} 暴露不可变视图。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:20
  **/
 public final class ConstraintSet {

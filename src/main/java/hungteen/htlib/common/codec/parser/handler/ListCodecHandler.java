@@ -12,7 +12,7 @@ import java.util.List;
  * 若 codec 显式声明了长度范围（minSize/maxSize），附加 {@link SchemaConstraint.Size} 约束。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:24
  **/
 public final class ListCodecHandler implements CodecSchemaHandler {

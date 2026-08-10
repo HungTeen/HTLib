@@ -27,7 +27,7 @@ import net.minecraft.resources.ResourceKey;
  * <p>注册表键与是否允许标签被封装进 {@link RegistrySchema}，挂在产出 Schema 上。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:24
  **/
 @SuppressWarnings("unchecked")

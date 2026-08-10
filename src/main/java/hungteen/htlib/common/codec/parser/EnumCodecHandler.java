@@ -11,7 +11,7 @@ package hungteen.htlib.common.codec.parser;
  * 供编辑器提供下拉选项。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:24
  **/
 public final class EnumCodecHandler implements CodecSchemaHandler {

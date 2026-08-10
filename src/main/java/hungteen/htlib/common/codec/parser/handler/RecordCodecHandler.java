@@ -22,7 +22,7 @@ import java.util.*;
  * </ul>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:23
  **/
 public final class RecordCodecHandler implements CodecSchemaHandler {

@@ -7,6 +7,8 @@ import hungteen.htlib.common.HTSounds;
 import hungteen.htlib.common.blockentity.HTBlockEntities;
 import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
+import hungteen.htlib.common.codec.parser.CodecSchemaParser;
+import hungteen.htlib.common.codec.parser.DataSchema;
 import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
 import hungteen.htlib.common.entity.HTEntities;
@@ -14,6 +16,7 @@ import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.common.impl.RaidItemEntries;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.position.HTPositionTypes;
+import hungteen.htlib.common.impl.raid.CommonRaid;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.impl.raid.HTRaidTypes;
 import hungteen.htlib.common.impl.result.HTResultComponents;
@@ -83,7 +86,8 @@ public class HTLib {
         forgeBus.addListener(HTRegistryManager::syncToClient);
         forgeBus.addListener((RegisterCommandsEvent event) -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
 
-
+        DataSchema parse = CodecSchemaParser.parse(CommonRaid.CODEC);
+        System.out.println("Parse Test Success");
     }
 
     public void register(IEventBus modBus){

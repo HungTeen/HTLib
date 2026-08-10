@@ -7,7 +7,7 @@ package hungteen.htlib.common.codec.parser;
  * 与 {@code name} 通常一致，但可能存在重命名映射（如 1.21 附魔 ID 变更）。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:21
  **/
 public record EnumValueSchema(String name, String serializedName) {

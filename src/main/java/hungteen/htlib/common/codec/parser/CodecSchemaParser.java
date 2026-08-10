@@ -23,7 +23,7 @@ import java.util.List;
  * {@link ParseContext#resolve} 回调到本类，保证缓存与防环全程共享。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:22
  **/
 public final class CodecSchemaParser {
@@ -38,6 +38,8 @@ public final class CodecSchemaParser {
         handlers.add(new RecordCodecHandler());
 
         handlers.add(new ListCodecHandler());
+
+        handlers.add(new DispatchCodecHandler());
 
         handlers.add(new MapCodecHandler());
 

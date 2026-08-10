@@ -43,7 +43,7 @@ import java.util.function.Supplier;
  * 类型推断 / 注册表 / 反射工具。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:22
  **/
 public final class CodecUnwrapper {
@@ -947,9 +947,55 @@ public final class CodecUnwrapper {
     // 注册表
     // -------------------------------------------------
 
+    /**
+     * BFS 找对象图中的第一个 {@link Registry} 实例（用于枚举注册表条目）。
+     *
+     * <p>registryKey 只用 key，这里返回实例本身，供 DispatchCodecHandler 枚举 dispatch 的类型值。</p>
+     */
+    public static Registry<?> findRegistry(Object root) {
+
+        if (root == null) {
+            return null;
+        }
+
+        Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        Deque<Object> stack = new ArrayDeque<>();
+
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+
+            Object current = stack.pop();
+
+            if (current == null || !seen.add(current)) {
+                continue;
+            }
+
+            if (current instanceof Registry<?> registry) {
+                return registry;
+            }
+
+            for (Field field : ReflectionUtil.fields(current.getClass())) {
+
+                try {
+
+                    Object value = field.get(current);
+
+                    if (value != null && !isTerminal(value)) {
+                        stack.push(value);
+                    }
+
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+
+        return null;
+    }
+
     /** 取 codec 中的 registryKey：先找 {@code registryKey} 命名字段，再找捕获的 Registry 实例调 {@code key()}。 */
     public static ResourceKey<?> registryKey(Object root) {
-
         if (root == null) {
             return null;
         }

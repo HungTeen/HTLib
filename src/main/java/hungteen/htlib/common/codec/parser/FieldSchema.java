@@ -7,7 +7,7 @@ package hungteen.htlib.common.codec.parser;
  * 由 {@link FieldParser} 解析字段级 MapCodec 生成。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:21
  **/
 public final class FieldSchema {

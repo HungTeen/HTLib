@@ -95,6 +95,13 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
         }
     }
 
+    /**
+     * 获取数据包序列化格式的 codec。
+     */
+    public Codec<V> getCodec(){
+        return this.codecSup.get();
+    }
+
     @Override
     public Optional<Codec<V>> getSyncCodec(){
         return this.syncSup == null ? Optional.empty() : Optional.ofNullable(this.syncSup.get());

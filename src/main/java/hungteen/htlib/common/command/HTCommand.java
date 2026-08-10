@@ -7,7 +7,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.raid.IRaidComponent;
+import hungteen.htlib.common.codec.parser.CodecSchemaParser;
+import hungteen.htlib.common.codec.parser.DataSchema;
+import hungteen.htlib.common.codec.parser.DatapackCodecs;
+import hungteen.htlib.common.codec.parser.SchemaPrinter;
 import hungteen.htlib.common.entity.SeatEntity;
 import hungteen.htlib.common.impl.raid.HTRaidComponents;
 import hungteen.htlib.common.world.entity.DummyEntity;
@@ -36,7 +41,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: HTLib
@@ -59,6 +69,9 @@ public class HTCommand {
     });
     private static final SuggestionProvider<CommandSourceStack> ALL_DUMMY_ENTITIES = SuggestionProviders.register(HTLibHelper.prefix("all_dummy_entities"), (commandContext, builder) -> {
         return SharedSuggestionProvider.suggestResource(HTDummyEntities.getIds(), builder);
+    });
+    private static final SuggestionProvider<CommandSourceStack> ALL_DATAPACK_CODECS = SuggestionProviders.register(HTLibHelper.prefix("all_datapack_codecs"), (commandContext, builder) -> {
+        return SharedSuggestionProvider.suggestResource(DatapackCodecs.getDatapackCodecs().stream().map(DatapackCodecs.Entry::name), builder);
     });
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
@@ -109,6 +122,15 @@ public class HTCommand {
                         )
                 )
         );
+        builder.then(Commands.literal("schema")
+                .then(Commands.argument("registry", ResourceLocationArgument.id())
+                        .suggests(ALL_DATAPACK_CODECS)
+                        .executes(ctx -> printSchema(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry"), false))
+                        .then(Commands.literal("json")
+                                .executes(ctx -> printSchema(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry"), true))
+                        )
+                )
+        );
         dispatcher.register(builder);
     }
 
@@ -153,6 +175,35 @@ public class HTCommand {
     public static int seat(CommandSourceStack sourceStack, Entity entity, Vec3 position) {
         if(entity instanceof LivingEntity livingEntity){
             SeatEntity.seatAt(sourceStack.getLevel(), livingEntity, MathHelper.toBlockPos(position), 0, entity.getYRot(), 120, false);
+        }
+        return 1;
+    }
+
+    /**
+     * 输出某个数据包注册表的 codec 数据格式。
+     *
+     * <p>默认只在聊天框输出文本格式；{@code writeJson} 为 true 时把完整 JSON 写入
+     * 服务器目录 {@code schema_output/<registry>.json}。</p>
+     */
+    public static int printSchema(CommandSourceStack source, ResourceLocation registryName, boolean writeJson) {
+        Optional<? extends Codec<?>> codecOpt = DatapackCodecs.getCodec(registryName);        if (codecOpt.isEmpty()) {
+            source.sendFailure(Component.literal("未找到数据包注册表 " + registryName + " 对应的 codec"));
+            return 0;
+        }
+        DataSchema schema = CodecSchemaParser.parse(codecOpt.get());
+        String text = SchemaPrinter.print(schema);
+        source.sendSuccess(() -> Component.literal("=== " + registryName + " 格式 ===\n" + text), false);
+
+        if (writeJson) {
+            try {
+                Path dir = source.getServer().getServerDirectory().toPath().resolve("schema_output");
+                Files.createDirectories(dir);
+                Path file = dir.resolve(registryName.getNamespace() + "_" + registryName.getPath() + ".json");
+                Files.writeString(file, SchemaPrinter.toJson(schema).toString(), StandardCharsets.UTF_8);
+                source.sendSuccess(() -> Component.literal("完整 JSON 已写入 " + file), true);
+            } catch (IOException e) {
+                source.sendFailure(Component.literal("写入 schema JSON 失败: " + e.getMessage()));
+            }
         }
         return 1;
     }

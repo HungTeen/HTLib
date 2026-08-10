@@ -13,7 +13,7 @@ import java.util.List;
  * （null / 空列表），保证解析绝不因单个字段失败而中断。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:23
  **/
 public final class ReflectionUtil {

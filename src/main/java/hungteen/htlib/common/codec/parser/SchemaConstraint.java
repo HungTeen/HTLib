@@ -16,7 +16,7 @@ package hungteen.htlib.common.codec.parser;
  * </ul>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:19
  **/
 public sealed interface SchemaConstraint

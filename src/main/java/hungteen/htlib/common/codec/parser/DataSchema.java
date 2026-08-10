@@ -20,7 +20,7 @@ import java.util.List;
  * 该对象会被解析缓存共享，因此字段级追加约束时必须先 {@link #copy()} 再修改。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:21
  **/
 public class DataSchema {
@@ -51,6 +51,12 @@ public class DataSchema {
 
     /** 多态变体（UNION / EITHER）。 */
     private final List<DataSchema> variants = new ArrayList<>();
+
+    /** 多态分派键名（UNION：JSON 里用于区分分支的键，如 "type"）。 */
+    private String variantKey;
+
+    /** 当前变体的名字（UNION 分支的标识，如某个枚举值/注册表键）。 */
+    private String variantName;
 
     /** 枚举值列表（仅 ENUM）。 */
     private final List<EnumValueSchema> enumValues = new ArrayList<>();
@@ -135,6 +141,26 @@ public class DataSchema {
         return variants;
     }
 
+    /** 多态分派键名（UNION）。 */
+    public String variantKey() {
+        return variantKey;
+    }
+
+    /** 设置多态分派键名。 */
+    public void variantKey(String variantKey) {
+        this.variantKey = variantKey;
+    }
+
+    /** 当前变体的名字。 */
+    public String variantName() {
+        return variantName;
+    }
+
+    /** 设置当前变体的名字。 */
+    public void variantName(String variantName) {
+        this.variantName = variantName;
+    }
+
     /**
      * 浅拷贝：用于字段级加约束时避免污染解析缓存里的共享 schema。
      * element / key / fields 等子结构引用原对象。
@@ -148,6 +174,8 @@ public class DataSchema {
         copy.key = key;
         copy.fields.addAll(fields);
         copy.variants.addAll(variants);
+        copy.variantKey = variantKey;
+        copy.variantName = variantName;
         copy.enumValues.addAll(enumValues);
         copy.constraints = constraints.copy();
         return copy;

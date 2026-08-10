@@ -10,7 +10,7 @@ import hungteen.htlib.common.codec.parser.*;
  * 节点，并附带推断出的 Java 包装类型。</p>
  *
  * @author PangTeen
- * @program examplemod-template-26.1
+ * @program: HTLib
  * @create 2026/8/8 22:24
  **/
 public final class PrimitiveCodecHandler implements CodecSchemaHandler {
