@@ -82,6 +82,8 @@ public class HTLib {
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
         forgeBus.addListener(HTRegistryManager::syncToClient);
         forgeBus.addListener((RegisterCommandsEvent event) -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
+
+
     }
 
     public void register(IEventBus modBus){
