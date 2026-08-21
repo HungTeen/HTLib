@@ -24,6 +24,37 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
+ * HTLib 特殊注册系统的"后于原版注册"分支（数据包注册 / DataPack Registry 实现）。 <br>
+ *
+ * <h3>这是什么？</h3>
+ * <p>与 {@link HTCommonRegistry}（代码注册、加载期填充）不同，本类的条目
+ * <b>不在 Java 里注册</b>，而是由玩家在数据包 JSON
+ * （<code>data/&lt;namespace&gt;/.../&lt;条目名&gt;.json</code>）中定义，
+ * 每个注册名对应一个文件，随世界加载 / 数据包重载被 {@link #codecSup} 解析成对象。
+ * 适用于内容型、可数据驱动配置的数据（如 HTLib 的 raid / wave / spawn / result 组件
+ * 与 raid_item）。</p>
+ *
+ * <h3>作用于哪个生命周期？</h3>
+ * <ol>
+ *     <li><b>Mod 构造函数</b>：由 {@link HTRegistryManager#create(...)} 创建并登记到管理器。</li>
+ *     <li><b>{@link net.minecraftforge.registries.DataPackRegistryEvent.NewRegistry}</b>（mod 加载阶段）：
+ *     {@link #addRegistry} 把注册键与其序列化 codec 交给原版数据包注册体系；之后无论服务端
+ *     还是客户端，条目都只在<b>世界加载（数据包重载）</b>时才出现。</li>
+ *     <li><b>服务器启动 / 玩家加入（OnDatapackSyncEvent）</b>：{@link #syncToClient} 把条目同步给客户端，
+ *     触发 {@link #requireCache()} 时还会把已加载的 key 列表缓存到 {@link #cacheIds}，
+ *     供后续服务端随时按名查询。</li>
+ * </ol>
+ *
+ * <h3>两种同步方式</h3>
+ * <ul>
+ *     <li><b>原版默认同步（{@link #defaultSync()}）</b>：未提供 {@code clazz} 且提供了 syncSup，
+ *     直接用 {@code event.dataPackRegistry(key, codec, syncSup)}，条目作为可下载的数据包随原版机制同步。</li>
+ *     <li><b>HTLib 自定义同步（{@link #customSync()}）</b>：提供了 {@code clazz} 且提供了 syncSup，
+ *     因为 <code>Codec&lt;Holder&lt;V&gt;&gt;</code> 形式不适合原版同步方法，故由本类用
+ *     {@link SyncDatapackPacket} 逐条目发给客户端，客户端在 {@link #syncMap} 中缓存反序列化结果，
+ *     通过 {@link #getClientValues()} / {@link #getClientOptValue} 读取。</li>
+ * </ul>
+ *
  * @author PangTeen
  * @program HTLib
  * @data 2023/6/28 11:10

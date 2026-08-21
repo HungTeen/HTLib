@@ -9,7 +9,13 @@ import net.minecraftforge.registries.RegistryManager;
 import java.util.function.Supplier;
 
 /**
- * Copy from {@link DeferredRegister}.
+ * 对 {@link IForgeRegistry} 的惰性引用，Copy from {@link DeferredRegister}。 <br>
+ *
+ * <p>Forge 注册表要在 NewRegistryEvent 阶段创建完成后才存在，因此在 mod 构造函数
+ * 早期无法直接拿到。本类把"获取注册表"推迟到首次调用 {@link #get()}：
+ * 此时从 {@link RegistryManager#ACTIVE}（Forge 已创建全部注册表）按注册键查询并缓存，
+ * 之后直接复用。生命周期上对应 <b>NewRegistryEvent 之后、任何一次实际读取时</b>。</p>
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-11-25 22:20

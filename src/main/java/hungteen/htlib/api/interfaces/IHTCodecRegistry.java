@@ -17,7 +17,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A registry style after vanilla registry, 一种后于原版注册的注册方式。 <br>
+ * "后于原版注册"的数据包注册表接口（{@link hungteen.htlib.common.registry.HTCodecRegistry}
+ * 的 API 定义）。 <br>
+ *
+ * <p>底层为 Forge/原版的数据包注册表（DataPack Registry）。条目不通过 Java 注册，
+ * 而是由数据包 JSON 在<b>世界加载 / 数据包重载</b>时动态解析，再在服务器启动与玩家加入时
+ * 同步到客户端（自定义同步见 {@link #syncRegister} / {@link #getClientValues}）。
+ * 提供 {@link #getValues}/{@link #getKeys}/{@link #getOptValue}（需传入 Level 以取注册表）、
+ * {@link #getHolderCodec}/{@link #getListCodec}（生成直接/带 Holder/HolderSet 的 codec）等工具。</p>
+ *
+ * <p>因为条目来自数据包，客户端默认没有这些数据，是否以及如何同步由
+ * {@link #requireSync}/{@link #defaultSync}/{@link #customSync}/{@link #requireCache} 控制。</p>
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-12-05 09:45

@@ -7,7 +7,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 /**
- * A registry style before vanilla registry, 一种先于原版注册的方式。 <br>
+ * HTLib 特殊注册系统的顶层接口。<br>
+ *
+ * <p>它描述一种"先于/独立于原版常规注册"的注册方式（A registry style before vanilla registry）：
+ * 模组通过 {@link hungteen.htlib.common.registry.HTRegistryManager} 创建自有的注册表，
+ * 并在 mod 生命周期早期与 Forge 事件挂接。两大实现分支见：</p>
+ * <ul>
+ *     <li>{@link hungteen.htlib.common.registry.HTCommonRegistry}（含
+ *     {@link hungteen.htlib.common.registry.HTSimpleRegistry}）——先于原版注册的通用注册（代码注册）。</li>
+ *     <li>{@link hungteen.htlib.common.registry.HTCodecRegistry} 与
+ *     {@link IHTCodecRegistry}——后于原版注册的数据包注册（JSON 数据驱动）。</li>
+ * </ul>
+ *
+ * <p><b>生命周期：</b>Mod 构造函数中创建 → {@link #register(IEventBus)} 挂接 mod bus 事件
+ * → Forge mod 加载（建表/填表/清缓存）→ 数据包分支随世界加载填充并同步客户端。
+ * 详见具体实现类注释。</p>
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-12-05 09:06

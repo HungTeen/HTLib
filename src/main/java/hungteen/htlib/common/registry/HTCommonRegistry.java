@@ -23,8 +23,34 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * 主要是用于先于常规注册的一些东西，先注册这些可以更方便的一个循环来注册常规注册。<br>
- * 建议在自身mod的构造函数中注册，如{@link HTLib#HTLib()}。
+ * HTLib 特殊注册系统的"先于原版注册"分支（通用注册 / Forge Registry 实现）。 <br>
+ *
+ * <h3>这是什么？</h3>
+ * <p>很多模组需要先注册一批<b>轻量"类型/选项"对象</b>（例如 HTLib 的 raid 类型、
+ * wave 类型、spawn 类型、result 类型），这些对象不受原版常规注册管理。本类为它们
+ * 提供一个 <b>自定义 Forge Registry</b>（{@link IForgeRegistry}），在 mod 加载阶段
+ * 由 NewRegistryEvent 创建、由 RegisterEvent 填充，注册后即可通过
+ * {@code getValues()} / {@code getValue()} / {@code getKey()} / {@code byNameCodec()} 访问。</p>
+ * <p>由于它"先于/独立于"常规注册，注册完成后容易用一个循环再驱动方块、物品、
+ * 实体等常规注册的批量生成（这也是本类的核心用途）。</p>
+ *
+ * <h3>作用于哪个生命周期？</h3>
+ * <ol>
+ *     <li><b>Mod 构造函数</b>：由 {@link HTRegistryManager#createCommon} 创建，
+ *     此时条目暂存于 {@link #registryMap}（尚未进入 Forge 注册表）。</li>
+ *     <li><b>{@link net.minecraftforge.registries.NewRegistryEvent}</b>：
+ *     {@link #register} 挂接的本方法被触发，用 {@link #registryFactory} 创建真正的
+ *     {@link IForgeRegistry}。</li>
+ *     <li><b>{@link net.minecraftforge.registries.RegisterEvent}</b>：
+ *     {@link #addEntries} 把 {@link #registryMap} 中暂存的条目一次性写入注册表，
+ *     并置 {@link #seenRegisterEvent} 标记，之后禁止再 {@link #register}（会抛异常）。</li>
+ *     <li><b>{@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}</b>：
+ *     {@link #clearEntries} 清空暂存表以释放内存；此后数据均可从正式注册表读取。</li>
+ * </ol>
+ *
+ * <p><b>注意：</b>请在每个 mod 自身的构造函数中创建并 {@link #register}，
+ * 参考 {@link HTLib#HTLib()} 与 {@link HTLib#register}。</p>
+ *
  * @author PangTeen
  * @program HTLib
  * @data 2023/7/11 9:38

@@ -10,6 +10,14 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * "先于原版注册"的通用注册表接口（{@link hungteen.htlib.common.registry.HTCommonRegistry}
+ * 的 API 定义）。 <br>
+ *
+ * <p>底层为自定义的 Forge Registry，条目在 mod 加载阶段（NewRegistryEvent → RegisterEvent）
+ * 由代码批量注册，注册后可通过 {@link #getValues}/{@link #getValue}/{@link #getKey}
+ * 读取，并借助 {@link #byNameCodec()} 与 ResourceLocation / 字符串互相转换。
+ * 常用来批量注册"重置级"依赖的轻量对象，再用一个循环驱动方块、物品、实体的常规注册。</p>
+ *
  * @author PangTeen
  * @program HTLib
  * @data 2023/7/11 9:38

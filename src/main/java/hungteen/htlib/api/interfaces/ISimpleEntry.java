@@ -6,8 +6,15 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * 很多模组自定义的注册项是需要保存或显示的，故需要名字来区分显示。<br>
- * 使用该接口可以利用{@link HTRegistry}实现原版注册之前的注册。<br>
+ * "简单条目"标记接口，用于 HTLib 特殊注册系统的"先于原版注册"分支。 <br>
+ *
+ * <p>很多模组自定义的注册项是需要保存或显示的，故需要名字来区分显示。<br>
+ * 实现本接口的对象自带 {@link #getName()} 与 {@link #getModID()}（进而得到
+ * 注册名 {@link #getRegistryName()} 与 {@link #getLocation()}），
+ * 因此可以直接通过 {@link hungteen.htlib.api.interfaces.IHTSimpleRegistry#register(ISimpleEntry)}
+ * 注册进 {@link hungteen.htlib.common.registry.HTSimpleRegistry}（底层是
+ * {@link HTRegistry}，实现原版注册之前的注册），以及用于聊天/界面/物品名字显示。</p>
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-10-06 16:53

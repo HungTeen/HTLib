@@ -1,0 +1,107 @@
+@startuml
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #556677
+  ArrowColor #556677
+  DiamondBackgroundColor #EEF3FA
+  diamondBorderColor #556677
+}
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+title HTLib 特殊注册系统（IHTRegistry）生命周期流程图
+
+' ========== 公共入口 ==========
+start
+
+:【Mod 构造函数】
+通过 HTRegistryManager 工厂创建注册表对象;
+note right
+  此时只生成 registryKey 与惰性引用
+  (HTRegistryHolder)，尚未真正建表
+end note
+
+:【Mod 构造函数 / 启动早期】
+registry.register(modBus)
+挂接各分支对应的 Forge 事件;
+
+' ========== 两大分支 ==========
+if (创建的是哪种注册表?) then (先于原版注册\n通用注册)
+  :HTSimpleRegistry / HTCommonRegistry
+  createSimple / createCommon
+  \n(条目由 Java 代码注册);
+else (后于原版注册\n数据包注册)
+  :HTCodecRegistry
+  create(...)
+  \n(条目由数据包 JSON 定义);
+endif
+
+' ========== 分支一：先于原版注册（Forge Registry） ==========
+partition "分支一 · 先于原版注册（Forge Registry）" {
+  :**[NewRegistryEvent]
+  createRegistry()
+  \n创建真正的 IForgeRegistry;
+
+  :**[RegisterEvent]
+  addEntries()
+  \n把暂存的 registryMap 条目写入注册表;
+  note right
+    记录 seenRegisterEvent=true，
+    之后再次 register() 会抛异常
+  end note
+
+  :**[FMLCommonSetupEvent]
+  clearEntries()
+  \n清空暂存表释放内存;
+  note right
+    此时起数据均可从
+    正式注册表读取
+  end note
+
+  :【使用期】
+  getValues() / getValue() / getKey()
+  byNameCodec()
+  \n以一个循环驱动方块、物品、实体等常规注册;
+}
+
+' ========== 分支二：后于原版注册（DataPack Registry） ==========
+partition "分支二 · 后于原版注册（DataPack Registry）" {
+  :**[DataPackRegistryEvent.NewRegistry]
+  addRegistry()
+  \n把注册键 + 序列化 codec 交给原版数据包体系;
+  note right
+    此时条目尚未存在——纯 JSON 驱动
+  end note
+
+  :**世界加载 / 数据包重载
+  codec 解析 data/<namespace>/.../xxx.json;
+
+  :**[OnDatapackSyncEvent]
+  syncToClient(server 启动 / 玩家加入);
+
+  if (requireSync? 需要同步到客户端?) then (是)
+    if (customSync? 提供了 clazz + syncSup) then (是·HTLib 自定义同步)
+      :SyncDatapackPacket 逐条目发送;
+      note right
+        Codec<Holder<V>> 不适合原版同步方法，
+        故由 HTLib 绕过，客户端存入 syncMap
+      end note
+      :客户端可用 getClientValues()
+      \ngetOptValue(key) 查询;
+    else (否·原版默认同步)
+      :经原版数据包机制同步给客户端;
+    endif
+    if (requireCache? 需要缓存数据?) then (是)
+      :服务端缓存 key 列表到 cacheIds;
+      note right
+        供之后随时按名查询
+        getCachedKeys()
+      end note
+    endif
+  else (否)
+    :仅服务端可读，客户端无数据;
+  endif
+}
+
+stop
+
+@enduml
