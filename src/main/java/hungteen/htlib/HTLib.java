@@ -9,6 +9,7 @@ import hungteen.htlib.common.capability.PlayerCapabilityManager;
 import hungteen.htlib.common.capability.raid.RaidCapProvider;
 import hungteen.htlib.common.command.HTCommand;
 import hungteen.htlib.common.command.HTCommandArgumentInfos;
+import hungteen.htlib.common.command.IDECommand;
 import hungteen.htlib.common.entity.HTEntities;
 import hungteen.htlib.common.impl.BoatTypes;
 import hungteen.htlib.common.impl.RaidItemEntries;
@@ -81,7 +82,10 @@ public class HTLib {
         forgeBus.addListener(PlayerCapabilityManager::tick);
         forgeBus.addGenericListener(Entity.class, HTLib::attachCapabilities);
         forgeBus.addListener(HTRegistryManager::syncToClient);
-        forgeBus.addListener((RegisterCommandsEvent event) -> HTCommand.register(event.getDispatcher(), event.getBuildContext()));
+        forgeBus.addListener((RegisterCommandsEvent event) -> {
+            HTCommand.register(event.getDispatcher(), event.getBuildContext());
+            IDECommand.register(event.getDispatcher(), event.getBuildContext());
+        });
     }
 
     public void register(IEventBus modBus){

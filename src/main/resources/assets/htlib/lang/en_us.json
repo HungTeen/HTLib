@@ -24,5 +24,30 @@
 
   "command.htlib.dummy_entity.not_found": "Not Found Dummy Entity",
 
+  "htlib.screen.type": "Type",
+  "htlib.screen.type_hint": "Enter type...",
+  "htlib.screen.form": "Form",
+  "htlib.screen.json": "JSON",
+  "htlib.screen.path": "Path",
+  "htlib.screen.save": "Save",
+  "htlib.screen.request_schema": "Requesting schema: %s",
+  "htlib.screen.loaded_schema": "Loaded schema: %s",
+  "htlib.screen.schema_error": "Schema error: %s",
+  "htlib.screen.save_sent": "Save request sent: %s",
+
+  "htlib.tooltip.length": "Length: %s ~ %s",
+  "htlib.tooltip.size_count": "Size: %s ~ %s",
+  "htlib.tooltip.pattern": "Pattern: %s",
+  "htlib.tooltip.registry": "Registry: %s",
+  "htlib.tooltip.tag": " (tags allowed)",
+  "htlib.tooltip.constraints": "Constraints: %s",
+  "htlib.tooltip.default": "Default: %s",
+  "htlib.tooltip.enum": "Enums: %s",
+  "htlib.tooltip.enum_more": " ... (%s in total)",
+  "htlib.tooltip.variant_key": "Variant Key: %s",
+  "htlib.tooltip.types": "Types (%s): %s",
+
+  "htlib.error.constraint": "Constraint violated: %s",
+
   "itemGroup.htlib.raid_items": "Custom Raid"
 }

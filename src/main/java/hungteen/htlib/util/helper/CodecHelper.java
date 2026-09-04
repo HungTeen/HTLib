@@ -10,8 +10,14 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.DataPackRegistriesHooks;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -46,6 +52,23 @@ public class CodecHelper {
             return "EmptyMapLike";
         }
     };
+
+    /**
+     * 收集全部数据包 codec，返回（注册名 → codec）有序列表。
+     *
+     * <p>重复注册名按"原版优先"合并：先放原版，再放 HTLib；同名的后者会覆盖前者。</p>
+     */
+    public static List<RegistryDataLoader.RegistryData<?>> getDatapackCodecs() {
+        return DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().toList();
+    }
+
+    /**
+     * 按注册名查 codec；不存在返回 empty。
+     */
+    public static Optional<? extends Codec<?>> getCodec(ResourceLocation name) {
+        return getDatapackCodecs().stream().filter(entry -> Objects.equals(entry.key().location(), name))
+            .map(RegistryDataLoader.RegistryData::elementCodec).findFirst();
+    }
 
     public static <T> DataResult<Tag> encodeNbt(Codec<T> codec, T value) {
         return codec.encodeStart(NbtOps.INSTANCE, value);

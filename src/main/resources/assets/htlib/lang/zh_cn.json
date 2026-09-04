@@ -24,5 +24,30 @@
 
   "command.htlib.dummy_entity.not_found": "未找到虚拟实体",
 
+  "htlib.screen.type": "类型",
+  "htlib.screen.type_hint": "输入类型...",
+  "htlib.screen.form": "表单",
+  "htlib.screen.json": "JSON",
+  "htlib.screen.path": "路径",
+  "htlib.screen.save": "保存",
+  "htlib.screen.request_schema": "正在请求 schema：%s",
+  "htlib.screen.loaded_schema": "已加载 schema：%s",
+  "htlib.screen.schema_error": "Schema 解析出错：%s",
+  "htlib.screen.save_sent": "已发送保存请求：%s",
+
+  "htlib.tooltip.length": "长度：%s ~ %s",
+  "htlib.tooltip.size_count": "数量：%s ~ %s",
+  "htlib.tooltip.pattern": "正则：%s",
+  "htlib.tooltip.registry": "注册表：%s",
+  "htlib.tooltip.tag": "（允许标签）",
+  "htlib.tooltip.constraints": "约束：%s",
+  "htlib.tooltip.default": "默认值：%s",
+  "htlib.tooltip.enum": "枚举：%s",
+  "htlib.tooltip.enum_more": " …等共 %s 项",
+  "htlib.tooltip.variant_key": "分派键：%s",
+  "htlib.tooltip.types": "类型（共 %s 种）：%s",
+
+  "htlib.error.constraint": "约束未满足：%s",
+
   "itemGroup.htlib.raid_items": "自定义袭击"
 }
