@@ -2,7 +2,7 @@ package hungteen.htlib.client.gui.screen.codec.node;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.RecordWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
@@ -70,7 +70,7 @@ public final class RecordNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        this.value = json == null ? defaultFor(schema) : json;
+        this.value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
         if (this.value == null) {
             this.value = new JsonObject();
         }

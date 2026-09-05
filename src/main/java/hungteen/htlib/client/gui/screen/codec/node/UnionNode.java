@@ -6,7 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.UnionWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;

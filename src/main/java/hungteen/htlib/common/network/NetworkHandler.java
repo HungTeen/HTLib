@@ -39,6 +39,14 @@ public class NetworkHandler {
             SchemaResponsePacket::new, SchemaResponsePacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), SaveDataPacket.class, SaveDataPacket::encode, SaveDataPacket::new,
             SaveDataPacket.Handler::onMessage);
+        CHANNEL.registerMessage(getId(), RequestRegistryEntriesPacket.class, RequestRegistryEntriesPacket::encode,
+            RequestRegistryEntriesPacket::new, RequestRegistryEntriesPacket::onMessage);
+        CHANNEL.registerMessage(getId(), RegistryEntriesResponsePacket.class, RegistryEntriesResponsePacket::encode,
+            RegistryEntriesResponsePacket::new, RegistryEntriesResponsePacket::onMessage);
+        CHANNEL.registerMessage(getId(), RequestEntrySchemaPacket.class, RequestEntrySchemaPacket::encode,
+            RequestEntrySchemaPacket::new, RequestEntrySchemaPacket::onMessage);
+        CHANNEL.registerMessage(getId(), EntrySchemaResponsePacket.class, EntrySchemaResponsePacket::encode,
+            EntrySchemaResponsePacket::new, EntrySchemaResponsePacket::onMessage);
     }
 
     public static <MSG> void sendToServer(MSG msg) {

@@ -1,5 +1,6 @@
-package hungteen.htlib.client.gui.widget.codec;
+package hungteen.htlib.client.gui.screen.codec;
 
+import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;

@@ -34,6 +34,8 @@
   "htlib.screen.loaded_schema": "Loaded schema: %s",
   "htlib.screen.schema_error": "Schema error: %s",
   "htlib.screen.save_sent": "Save request sent: %s",
+  "htlib.screen.ref": "Ref",
+  "htlib.screen.inline": "Inline",
 
   "htlib.tooltip.length": "Length: %s ~ %s",
   "htlib.tooltip.size_count": "Size: %s ~ %s",

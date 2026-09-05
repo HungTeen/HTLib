@@ -1,5 +1,6 @@
 package hungteen.htlib.client.gui.widget.codec;
 
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.ListSetNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -50,8 +51,8 @@ public final class ListSetWidget extends EditorWidget {
     @Override
     protected int doLayout() {
         placeCollapseToggle();
-        place(minus, rightEdge() - TOGGLE_WIDTH - TOGGLE_GAP - 12, y);
-        place(plus, rightEdge() - TOGGLE_WIDTH - TOGGLE_GAP - 12 - 12 - 3, y);
+        place(minus, controlX(), y);
+        place(plus, controlX() + 15, y);
         minus.visible = !hidden && rowVisible(y) && !node.items().isEmpty();
         if (isCollapsed()) {
             for (EditorWidget w : itemWidgets) {

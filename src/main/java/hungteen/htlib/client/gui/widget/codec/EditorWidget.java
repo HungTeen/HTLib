@@ -1,5 +1,6 @@
 package hungteen.htlib.client.gui.widget.codec;
 
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.Rect;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
@@ -25,8 +26,6 @@ public abstract class EditorWidget {
 
     /** 表单行高。 */
     public static final int ROW_HEIGHT = 13;
-    public static final int CONTROL_WIDTH = 64;
-    public static final int CONTROL_MIN_WIDTH = 40;
     /** 结构型子结构缩进。 */
     public static final int INDENT = 6;
     /** 标签与控件之间的间距。 */
@@ -36,8 +35,6 @@ public abstract class EditorWidget {
     public static final int TOGGLE_GAP = 3;
     /** 行右缘留白（避开滚动条）。 */
     public static final int RIGHT_MARGIN = 8;
-    /** 右侧按钮列最宽占用（[＋20][－20][▾12] + 间距），所有行内控件避开该区。 */
-    public static final int BUTTON_ZONE = 58;
 
     protected final EditorHost host;
     private final EditorFormNode node;
@@ -61,6 +58,17 @@ public abstract class EditorWidget {
 
     public final EditorFormNode node() {
         return node;
+    }
+
+    /** 控件是否已完成首次创建（dispose 后为 false）。 */
+    protected final boolean isCreated() {
+        return created;
+    }
+
+    /** 从宿主移除并解除持有（控件被替换时调用）。 */
+    protected final void removeOwned(AbstractWidget widget) {
+        host.removeWidget(widget);
+        owned.remove(widget);
     }
 
     /**
@@ -238,8 +246,8 @@ public abstract class EditorWidget {
     }
 
     protected final int controlWidth() {
-        int available = Math.max(0, width - RIGHT_MARGIN - BUTTON_ZONE - labelWidth() - LABEL_GAP);
-        return Math.max(CONTROL_MIN_WIDTH, Math.min(available, CONTROL_WIDTH));
+        int available = width - RIGHT_MARGIN - toggleShift() - labelWidth() - LABEL_GAP;
+        return Math.max(0, available);
     }
 
     protected final void place(AbstractWidget widget, int wx, int wy) {
@@ -249,7 +257,7 @@ public abstract class EditorWidget {
     }
 
     protected final EditBox createEditBox(String value, Consumer<String> onChanged) {
-        EditBox box = new EditBox(host.font(), 0, 0, 1, 12, Component.literal(""));
+        EditBox box = new EditBox(host.font(), 0, 0, 1, ROW_HEIGHT - 3, Component.literal(""));
         box.setValue(value);
         box.setResponder(onChanged);
         host.addWidget(box);
@@ -267,7 +275,7 @@ public abstract class EditorWidget {
     /** 创建行内补全选择器并注册到宿主（候选面板画在最上层）。 */
     protected final TypeSelector createSelector(int width, List<String> options, String current,
         Consumer<String> onSelect) {
-        TypeSelector selector = new TypeSelector(host.screen(), this::attachWidget, 0, 0, width, ROW_HEIGHT - 2, 0,
+        TypeSelector selector = new TypeSelector(host.screen(), this::attachWidget, 0, 0, width, ROW_HEIGHT - 3, 0,
             options, onSelect);
         selector.addToScreen(host.font());
         host.registerSelector(selector);

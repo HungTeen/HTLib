@@ -3,8 +3,9 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.EnumWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
@@ -71,7 +72,13 @@ public final class EnumNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        String current = json != null && json.isJsonPrimitive() ? json.getAsString() : "";
+        String current;
+        if (json != null && json.isJsonPrimitive()) {
+            current = json.getAsString();
+        } else {
+            // 无值重置时回到 schema 声明的默认枚举名（如有）
+            current = SchemaTooltip.defaultText(schema);
+        }
         enumIndex = Math.max(0, enumValues.indexOf(current));
     }
 

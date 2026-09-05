@@ -1,12 +1,11 @@
 package hungteen.htlib.client.gui.screen.codec.node;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
-import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.BooleanWidget;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 
 /**
  * 布尔节点：单行 true/false 切换按钮。
@@ -50,6 +49,6 @@ public final class BooleanNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        value = json == null ? JsonNull.INSTANCE : json;
+        value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
     }
 }

@@ -3,7 +3,7 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.OptionalWidget;
 import hungteen.htlib.common.codec.parse.SchemaType;
@@ -67,7 +67,7 @@ public final class OptionalNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        this.value = json == null ? JsonNull.INSTANCE : json;
+        this.value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
         JsonObject inner = elementSchema();
         optionalInner = inner == null ? null : EditorFormNode.create(inner, "", this.value);
     }

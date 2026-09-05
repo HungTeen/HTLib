@@ -175,7 +175,14 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         ensureVisible();
     }
 
-    /** 绘制补全面板（宿主在全部控件之后调用；面板右缘不越过 rightLimit）。 */
+    /**
+     * 补全面板的 Z 层：高于 vanilla tooltip（Z=400），保证面板永远压住字段悬浮提示。
+     */
+    public static final float PANEL_Z = 450.0F;
+
+    /**
+     * 绘制补全面板（宿主在全部控件之后调用；面板右缘不越过 rightLimit）。
+     */
     public void paintPanel(GuiGraphics graphics, Font font, double mouseX, double mouseY, int rightLimit) {
         if (!open || suggestions.isEmpty()) {
             return;
@@ -191,36 +198,43 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         }
         scroll = DropdownUtil.clampScroll(scroll, suggestions.size(), maxRows);
 
-        DropdownUtil.drawPanel(graphics, new Rect(listLeft - PANEL_MARGIN, listTop - PANEL_MARGIN,
-            (right - listLeft) + PANEL_MARGIN * 2, bottom - listTop + PANEL_MARGIN * 2));
+        // 面板整体抬到 tooltip 之上的 Z 层，避免被字段悬浮提示（Z=400）深度覆盖
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, PANEL_Z);
+        try {
+            DropdownUtil.drawPanel(graphics, new Rect(listLeft - PANEL_MARGIN, listTop - PANEL_MARGIN,
+                (right - listLeft) + PANEL_MARGIN * 2, bottom - listTop + PANEL_MARGIN * 2));
 
-        int end = Math.min(suggestions.size(), scroll + maxRows);
-        for (int i = scroll; i < end; i++) {
-            int y = listTop + (i - scroll) * ROW_H;
-            if (y >= bottom) {
-                break;
+            int end = Math.min(suggestions.size(), scroll + maxRows);
+            for (int i = scroll; i < end; i++) {
+                int y = listTop + (i - scroll) * ROW_H;
+                if (y >= bottom) {
+                    break;
+                }
+                // 鼠标悬停跟随高亮
+                if (mouseX >= listLeft && mouseX <= right && mouseY >= y && mouseY < y + ROW_H) {
+                    suggestIndex = i;
+                }
+                boolean highlight = i == suggestIndex;
+                if (highlight) {
+                    graphics.fill(listLeft, y, right, y + ROW_H, ViewerStyle.COLOR_SELECT);
+                }
+                graphics.drawString(font, suggestions.get(i), listLeft + 2, y + (ROW_H - 9) / 2,
+                    highlight ? 0xFFFFFF : ViewerStyle.COLOR_TYPE);
             }
-            // 鼠标悬停跟随高亮
-            if (mouseX >= listLeft && mouseX <= right && mouseY >= y && mouseY < y + ROW_H) {
-                suggestIndex = i;
-            }
-            boolean highlight = i == suggestIndex;
-            if (highlight) {
-                graphics.fill(listLeft, y, right, y + ROW_H, ViewerStyle.COLOR_SELECT);
-            }
-            graphics.drawString(font, suggestions.get(i), listLeft + 2, y + (ROW_H - 9) / 2,
-                highlight ? 0xFFFFFF : ViewerStyle.COLOR_TYPE);
-        }
 
-        if (suggestions.size() > maxRows) {
-            int trackX = right - ViewerStyle.SCROLLBAR_WIDTH - ViewerStyle.SCROLLBAR_RIGHT_MARGIN;
-            DropdownUtil.drawScrollbar(graphics,
-                new Rect(trackX, listTop, ViewerStyle.SCROLLBAR_WIDTH, bottom - listTop),
-                suggestions.size(), maxRows, scroll);
+            if (suggestions.size() > maxRows) {
+                int trackX = right - ViewerStyle.SCROLLBAR_WIDTH - ViewerStyle.SCROLLBAR_RIGHT_MARGIN;
+                DropdownUtil.drawScrollbar(graphics,
+                    new Rect(trackX, listTop, ViewerStyle.SCROLLBAR_WIDTH, bottom - listTop),
+                    suggestions.size(), maxRows, scroll);
+            }
+        } finally {
+            graphics.pose().popPose();
         }
     }
 
-    /** 点击：命中候选行 → 选中并消费；面板外 → 关闭并把点击放行给底层控件。返回是否消费。 */
+    /** 点击：命中候选行 → 选中并消费；点击自己的输入框 → 收起面板并保持聚焦；面板外 → 关闭。返回是否消费。 */
     public boolean mouseClicked(double mouseX, double mouseY, int rightLimit) {
         if (!open || suggestions.isEmpty()) {
             return false;
@@ -230,6 +244,14 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         if (right - listLeft < 20) {
             close();
             return false;
+        }
+        // 点击自己的输入框：收起面板并放行聚焦，避免被"面板外点击吞掉"逻辑拦截
+        if (box != null && mouseX >= box.getX() && mouseX <= box.getX() + box.getWidth()
+            && mouseY >= box.getY() && mouseY <= box.getY() + box.getHeight()) {
+            close();
+            box.setFocused(true);
+            host.setFocused(box);
+            return true;
         }
         if (mouseX >= listLeft && mouseX <= right && mouseY >= listTop && mouseY <= bottom) {
             int row = (int) ((mouseY - listTop) / ROW_H);

@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.ScalarWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
@@ -43,7 +43,7 @@ public final class ScalarNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        value = json == null ? JsonNull.INSTANCE : json;
+        value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
     }
 
     @Override

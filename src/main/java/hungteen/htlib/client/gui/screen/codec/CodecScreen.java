@@ -117,6 +117,19 @@ public abstract class CodecScreen extends HTScreen {
         selectors.remove(selector);
     }
 
+    /** 是否有补全面板展开（展开期间视为临时模态：隐藏字段 tooltip、拦截面板外点击）。 */
+    protected boolean anyPanelOpen() {
+        if (typeSelector != null && typeSelector.isOpen()) {
+            return true;
+        }
+        for (TypeSelector s : selectors) {
+            if (s.isOpen()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** 补全面板允许的最大右缘（默认不限制；子类可限制以避开右侧按钮列）。 */
     protected int panelRightLimit() {
         return Integer.MAX_VALUE;
@@ -137,12 +150,13 @@ public abstract class CodecScreen extends HTScreen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
         tickStatus();
+
         renderFormRegion(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (!status.isEmpty()) {
             graphics.drawString(this.font, status, ViewerStyle.LEFT_PADDING,
                 this.height - ViewerStyle.STATUS_BOTTOM, ViewerStyle.COLOR_STATUS);
         }
-        super.render(graphics, mouseX, mouseY, partialTick);
         renderOverlays(graphics, mouseX, mouseY, partialTick);
         // 补全面板画在最上层（不应被字段/控件遮挡）
         paintSelectors(graphics, mouseX, mouseY);
@@ -177,6 +191,7 @@ public abstract class CodecScreen extends HTScreen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int selectorLimit = panelRightLimit();
+        boolean panelOpen = anyPanelOpen();
         if (typeSelector != null && typeSelector.mouseClicked(mouseX, mouseY, selectorLimit)) {
             return true;
         }
@@ -185,10 +200,20 @@ public abstract class CodecScreen extends HTScreen {
                 return true;
             }
         }
+        // 面板展开时，面板外的点击只用于收起面板，不透传给下方的按钮/输入框
+        if (panelOpen) {
+            setFocused(null);
+            return true;
+        }
         if (onMouseClick(mouseX, mouseY, button)) {
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        // 点击空白区域：取消输入框聚焦
+        setFocused(null);
+        return false;
     }
 
     @Override

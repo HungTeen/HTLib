@@ -1,5 +1,6 @@
 package hungteen.htlib.client.gui.widget.codec;
 
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.ScalarNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,7 +28,6 @@ public final class ScalarWidget extends EditorWidget {
             node.setValueText(s);
             applyErrorColor(box);
         });
-        applyErrorColor(box);
     }
 
     @Override

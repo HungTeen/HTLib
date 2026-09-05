@@ -1,5 +1,6 @@
 package hungteen.htlib.client.gui.widget.codec;
 
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.UnionNode;
 import net.minecraft.client.gui.Font;
@@ -29,7 +30,9 @@ public final class UnionWidget extends EditorWidget {
         if (node.unionNames().isEmpty()) {
             return;
         }
-//        createCollapseToggle();
+        if (collapsible()) {
+            createCollapseToggle();
+        }
         selector = createSelector(controlWidth(), node.unionNames(), node.currentVariantName(), name -> {
             int idx = node.unionNames().indexOf(name);
             if (idx >= 0) {
@@ -50,7 +53,7 @@ public final class UnionWidget extends EditorWidget {
 
     @Override
     protected int doLayout() {
-//        placeCollapseToggle();
+        placeCollapseToggle();
         if (selector != null) {
             selector.setPosition(controlX(), y);
             selector.setVisible(!hidden && rowVisible(y));

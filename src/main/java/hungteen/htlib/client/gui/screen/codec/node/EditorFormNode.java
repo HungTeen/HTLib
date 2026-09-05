@@ -5,7 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import hungteen.htlib.common.codec.parse.SchemaType;
@@ -36,7 +36,7 @@ public abstract class EditorFormNode {
     protected EditorFormNode(JsonObject schema, String label, JsonElement value) {
         this.schema = schema;
         this.label = label == null ? "" : label;
-        this.value = value == null ? defaultFor(schema) : value;
+        this.value = value == null || value.isJsonNull() ? defaultFor(schema) : value;
         if (this.value == null) {
             this.value = JsonNull.INSTANCE;
         }
@@ -251,6 +251,10 @@ public abstract class EditorFormNode {
     }
 
     protected static JsonElement defaultFor(JsonObject schema) {
+        JsonElement declared = declaredDefault(schema);
+        if (declared != null) {
+            return declared;
+        }
         return switch (typeOf(schema)) {
             case RECORD -> new JsonObject();
             case LIST, SET -> new com.google.gson.JsonArray();
@@ -260,6 +264,41 @@ public abstract class EditorFormNode {
             case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> new com.google.gson.JsonPrimitive(0);
             default -> new com.google.gson.JsonPrimitive("");
         };
+    }
+
+    /** schema 声明的默认值：Encoded 元素直接用（深拷贝），Static 字符串按字段类型还原。 */
+    private static JsonElement declaredDefault(JsonObject schema) {
+        if (schema == null || !schema.has(SchemaKeys.DEFAULT)) {
+            return null;
+        }
+        JsonElement d = schema.get(SchemaKeys.DEFAULT);
+        if (d == null || d.isJsonNull()) {
+            return null;
+        }
+        if (d.isJsonPrimitive() && d.getAsJsonPrimitive().isString()) {
+            String text = d.getAsString();
+            return switch (typeOf(schema)) {
+                case BOOLEAN -> new com.google.gson.JsonPrimitive(Boolean.parseBoolean(text));
+                case BYTE -> new com.google.gson.JsonPrimitive((byte) parseDouble(text));
+                case SHORT -> new com.google.gson.JsonPrimitive((short) parseDouble(text));
+                case INT -> new com.google.gson.JsonPrimitive((int) parseDouble(text));
+                case LONG -> new com.google.gson.JsonPrimitive((long) parseDouble(text));
+                case FLOAT -> new com.google.gson.JsonPrimitive((float) parseDouble(text));
+                case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
+                case STRING, RESOURCE_LOCATION, COMPONENT, ENUM, HOLDER, HOLDER_SET, REGISTRY, UNKNOWN ->
+                    new com.google.gson.JsonPrimitive(text);
+                case RECORD, LIST, SET, MAP, OPTIONAL, UNION, EITHER -> parseJsonOrNull(text);
+            };
+        }
+        return d.deepCopy();
+    }
+
+    private static JsonElement parseJsonOrNull(String text) {
+        try {
+            return com.google.gson.JsonParser.parseString(text);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     protected static JsonElement parseInput(String text, SchemaType type) {

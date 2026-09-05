@@ -3,7 +3,7 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.HolderWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
@@ -54,6 +54,12 @@ public final class HolderNode extends EditorFormNode {
         return entries;
     }
 
+    /** schema 声明的注册表名（无注册表信息时为 null）。 */
+    public String registryName() {
+        return schema.has(SchemaKeys.REGISTRY)
+            ? schema.getAsJsonObject(SchemaKeys.REGISTRY).get(SchemaKeys.REGISTRY).getAsString() : null;
+    }
+
     @Override
     public JsonElement collect() {
         return value == null ? JsonNull.INSTANCE : value;
@@ -61,7 +67,7 @@ public final class HolderNode extends EditorFormNode {
 
     @Override
     public void load(JsonElement json) {
-        value = json == null ? JsonNull.INSTANCE : json;
+        value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
     }
 
     /** 客户端本地枚举注册表条目：内置注册表走 {@link BuiltInRegistries}，数据驱动走当前关卡 RegistryAccess。 */

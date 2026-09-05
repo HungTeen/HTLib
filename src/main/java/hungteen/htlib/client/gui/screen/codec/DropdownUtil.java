@@ -2,11 +2,10 @@ package hungteen.htlib.client.gui.screen.codec;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-/** 下拉面板的公共绘制：带边框的暗色背景、竖条滚动条、滚动限位。 */
+/**
+ * 下拉面板的公共绘制：带边框的暗色背景、竖条滚动条、滚动限位。
+ */
 public final class DropdownUtil {
-
-    private DropdownUtil() {
-    }
 
     /** 绘制带边框的暗色面板。 */
     public static void drawPanel(GuiGraphics graphics, Rect rect) {

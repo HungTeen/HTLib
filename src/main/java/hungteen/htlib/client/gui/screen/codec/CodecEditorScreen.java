@@ -3,7 +3,6 @@ package hungteen.htlib.client.gui.screen.codec;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
-import hungteen.htlib.client.gui.widget.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import hungteen.htlib.common.network.NetworkHandler;
@@ -93,21 +92,6 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
         rebuildBody();
         layoutForm();
-    }
-
-    /**
-     * 表单模式：保留当前内容，重新加载数据并全量重建。
-     */
-    public void rebuildForm() {
-        if (schema == null) {
-            return;
-        }
-        String current = collectJsonText();
-        if (formRoot != null && formRoot.hasWidget()) {
-            formRoot.widget(this).dispose();
-        }
-        formRoot.load(parseOrNull(current));
-        rebuild();
     }
 
     /** 增量布局：只重摆控件树，不销毁不重建（滚动/平移/结构变化都走这里）。 */
@@ -214,14 +198,6 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         return "{}";
     }
 
-    private com.google.gson.JsonElement parseOrNull(String text) {
-        try {
-            return JsonParser.parseString(text);
-        } catch (Exception e) {
-            return new JsonObject();
-        }
-    }
-
     // -------------------------------------------------
     // 渲染
     // -------------------------------------------------
@@ -229,7 +205,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     @Override
     protected void renderFormRegion(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // 主体区域裁剪在 TOP_OFFSET 之下：滚动/平移时不会盖住顶部工具条
-        graphics.enableScissor(0, TOP_OFFSET, this.width, this.height);
+        graphics.enableScissor(0, TOP_OFFSET, this.width, this.height - ViewerStyle.BOTTOM_PADDING + 2);
 
         // 表单：控件树自绘标签（悬浮提示在 renderOverlays 画）
         if (!jsonMode && formRoot != null) {
@@ -257,8 +233,8 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     protected void renderOverlays(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!jsonMode) {
             drawFormScrollbar(graphics);
-            // 悬浮提示由控件树自己管理（画在控件之上）
-            if (formRoot != null) {
+            // 面板展开时隐藏字段悬浮提示，避免提示从面板下方探出
+            if (formRoot != null && !anyPanelOpen()) {
                 formRoot.widget(this).renderTooltip(graphics, this.font, mouseX, mouseY);
             }
         }
