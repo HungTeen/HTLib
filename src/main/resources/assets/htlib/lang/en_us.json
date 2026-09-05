@@ -36,6 +36,12 @@
   "htlib.screen.save_sent": "Save request sent: %s",
   "htlib.screen.ref": "Ref",
   "htlib.screen.inline": "Inline",
+  "htlib.screen.collapse": "Collapse",
+  "htlib.screen.expand": "Expand",
+  "htlib.screen.add": "Add",
+  "htlib.screen.remove": "Remove",
+  "htlib.screen.mode_ref_tip": "Switch to reference mode (by ID)",
+  "htlib.screen.mode_inline_tip": "Switch to inline mode (inline object)",
 
   "htlib.tooltip.length": "Length: %s ~ %s",
   "htlib.tooltip.size_count": "Size: %s ~ %s",

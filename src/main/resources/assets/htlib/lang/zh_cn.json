@@ -36,6 +36,12 @@
   "htlib.screen.save_sent": "已发送保存请求：%s",
   "htlib.screen.ref": "引用",
   "htlib.screen.inline": "展开",
+  "htlib.screen.collapse": "折叠",
+  "htlib.screen.expand": "展开",
+  "htlib.screen.add": "添加",
+  "htlib.screen.remove": "移除",
+  "htlib.screen.mode_ref_tip": "切换为引用模式（按 ID 引用）",
+  "htlib.screen.mode_inline_tip": "切换为展开模式（内联定义）",
 
   "htlib.tooltip.length": "长度：%s ~ %s",
   "htlib.tooltip.size_count": "数量：%s ~ %s",

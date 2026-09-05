@@ -28,11 +28,11 @@ public final class ScalarWidget extends EditorWidget {
             node.setValueText(s);
             applyErrorColor(box);
         });
+        box.setWidth(40);
     }
 
     @Override
     protected int doLayout() {
-        box.setWidth(controlWidth());
         place(box, controlX(), y);
         return ROW_HEIGHT;
     }

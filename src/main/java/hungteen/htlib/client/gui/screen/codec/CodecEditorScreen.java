@@ -205,7 +205,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     @Override
     protected void renderFormRegion(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // 主体区域裁剪在 TOP_OFFSET 之下：滚动/平移时不会盖住顶部工具条
-        graphics.enableScissor(0, TOP_OFFSET, this.width, this.height - ViewerStyle.BOTTOM_PADDING + 2);
+        graphics.enableScissor(0, TOP_OFFSET, this.width, this.height);
 
         // 表单：控件树自绘标签（悬浮提示在 renderOverlays 画）
         if (!jsonMode && formRoot != null) {

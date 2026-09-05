@@ -24,6 +24,9 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  * <p>输入文字 → 下方弹出匹配候选项；鼠标悬停/↑↓ 移动高亮，Enter/Tab 或点击候选项完成选中。
  * 面板背景、滚动由宿主每帧调用 {@link #paintPanel} 绘制在主体裁剪区内。</p>
+ * @author PangTeen
+ * @program HTLib
+ * @create 2026/9/5 22:50
  */
 public final class TypeSelector {
 

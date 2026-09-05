@@ -100,9 +100,12 @@ public final class FieldParser {
 
         ValueInfo info = CodecUnwrapper.decodeEmptyDefault(codec);
 
-        // 只有真正存在默认值（且不是空的 Optional）时才记录。
+        // 记录真正存在的默认值（Static 固定值 / Encoded 编码元素；空 Optional 不算）。
         if (info instanceof ValueInfo.Static staticInfo
             && !(staticInfo.value() instanceof Optional<?> empty && empty.isEmpty())) {
+
+            field.defaultValue(info);
+        } else if (info instanceof ValueInfo.Encoded) {
 
             field.defaultValue(info);
         }

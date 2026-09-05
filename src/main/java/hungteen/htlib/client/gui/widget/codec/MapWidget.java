@@ -5,6 +5,8 @@ import hungteen.htlib.client.gui.screen.codec.node.MapNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +40,14 @@ public final class MapWidget extends EditorWidget {
             syncChildren(node.values(), valueWidgets, host);
             host.relayout();
         });
+        plus.setTooltip(Tooltip.create(Component.translatable("htlib.screen.add")));
         minus = createButton("-", 20, b -> {
             node.removeLastEntry();
             syncChildren(node.keys(), keyWidgets, host);
             syncChildren(node.values(), valueWidgets, host);
             host.relayout();
         });
+        minus.setTooltip(Tooltip.create(Component.translatable("htlib.screen.remove")));
     }
 
     @Override

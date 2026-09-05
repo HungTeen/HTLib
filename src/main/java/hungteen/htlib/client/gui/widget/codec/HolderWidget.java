@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
@@ -80,7 +81,6 @@ public final class HolderWidget extends EditorWidget {
         }
         int cx = refControlX();
         if (box != null) {
-            box.setWidth(refControlWidth());
             place(box, cx, y);
         } else if (selector != null) {
             selector.setPosition(cx, y);
@@ -220,7 +220,7 @@ public final class HolderWidget extends EditorWidget {
             removeOwned(box);
             box = null;
         }
-        selector = createSelector(refControlWidth(), entries, node.valueText(),
+        selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(),
             name -> node.setValue(new JsonPrimitive(name)));
         selector.setValue(node.valueText());
     }
@@ -232,18 +232,21 @@ public final class HolderWidget extends EditorWidget {
     private void buildControl() {
         if (supportsInline()) {
             modeButton = createButton(currentModeText(), MODE_BUTTON_WIDTH, b -> toggleMode());
+            modeButton.setTooltip(Tooltip.create(Component.translatable(
+                inlineMode() ? "htlib.screen.mode_ref_tip" : "htlib.screen.mode_inline_tip")));
         }
         if (inlineMode()) {
             return;
         }
         if (!entries.isEmpty()) {
-            selector = createSelector(refControlWidth(), entries, node.valueText(),
+            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(),
                 name -> node.setValue(new JsonPrimitive(name)));
         } else {
             box = createEditBox(node.valueText(), s -> {
                 node.setValueText(s);
                 applyErrorColor(box);
             });
+            box.setWidth(width);
             applyErrorColor(box);
         }
     }
@@ -252,7 +255,4 @@ public final class HolderWidget extends EditorWidget {
     private int refControlX() {
         return controlX() + (supportsInline() ? MODE_BUTTON_WIDTH + MODE_BUTTON_GAP : 0);
     }
-
-    private int refControlWidth() {
-        return Math.max(0, controlWidth() - (supportsInline() ? MODE_BUTTON_WIDTH + MODE_BUTTON_GAP : 0));
-    }}
+}

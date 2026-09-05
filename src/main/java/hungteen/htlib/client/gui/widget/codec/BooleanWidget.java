@@ -27,7 +27,7 @@ public final class BooleanWidget extends EditorWidget {
 
     @Override
     protected void create() {
-        button = createButton("", controlWidth(), b -> {
+        button = createButton("", 40, b -> {
             node.toggle();
             button.setMessage(Component.literal(String.valueOf(node.isCurrentTrue())));
         });
@@ -35,7 +35,6 @@ public final class BooleanWidget extends EditorWidget {
 
     @Override
     protected int doLayout() {
-        button.setWidth(controlWidth());
         place(button, controlX(), y);
         return ROW_HEIGHT;
     }

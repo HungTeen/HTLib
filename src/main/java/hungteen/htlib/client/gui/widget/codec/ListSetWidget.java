@@ -5,6 +5,8 @@ import hungteen.htlib.client.gui.screen.codec.node.ListSetNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +38,13 @@ public final class ListSetWidget extends EditorWidget {
             syncChildren(node.items(), itemWidgets, host);
             host.relayout();
         });
+        plus.setTooltip(Tooltip.create(Component.translatable("htlib.screen.add")));
         minus = createButton("-", 12, b -> {
             node.removeLastItem();
             syncChildren(node.items(), itemWidgets, host);
             host.relayout();
         });
+        minus.setTooltip(Tooltip.create(Component.translatable("htlib.screen.remove")));
     }
 
     @Override
@@ -51,8 +55,8 @@ public final class ListSetWidget extends EditorWidget {
     @Override
     protected int doLayout() {
         placeCollapseToggle();
-        place(minus, controlX(), y);
-        place(plus, controlX() + 15, y);
+        place(minus, controlX() + 15, y);
+        place(plus, controlX(), y);
         minus.visible = !hidden && rowVisible(y) && !node.items().isEmpty();
         if (isCollapsed()) {
             for (EditorWidget w : itemWidgets) {

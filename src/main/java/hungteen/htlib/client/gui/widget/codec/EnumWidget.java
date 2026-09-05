@@ -28,7 +28,7 @@ public final class EnumWidget extends EditorWidget {
         if (node.enumValues().isEmpty()) {
             return;
         }
-        selector = createSelector(controlWidth(), node.enumValues(), currentValue(), node::setEnumValue);
+        selector = createSelector(SELECTOR_WIDTH, node.enumValues(), currentValue(), node::setEnumValue);
     }
 
     @Override

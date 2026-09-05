@@ -33,6 +33,11 @@ public final class RecordNode extends EditorFormNode {
             JsonObject field = f.getAsJsonObject();
             String name = field.get(SchemaKeys.NAME).getAsString();
             JsonObject fieldSchema = field.getAsJsonObject(SchemaKeys.SCHEMA);
+            // 兼容旧格式：字段级 default 合并进字段 schema，子节点才能读到默认值
+            if (!fieldSchema.has(SchemaKeys.DEFAULT) && field.has(SchemaKeys.DEFAULT)) {
+                fieldSchema = fieldSchema.deepCopy();
+                fieldSchema.add(SchemaKeys.DEFAULT, field.get(SchemaKeys.DEFAULT));
+            }
             recordChildren.add(EditorFormNode.create(fieldSchema, name, fieldValue(name)));
         }
     }

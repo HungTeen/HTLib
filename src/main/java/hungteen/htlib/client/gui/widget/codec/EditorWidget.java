@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -35,6 +36,7 @@ public abstract class EditorWidget {
     public static final int TOGGLE_GAP = 3;
     /** 行右缘留白（避开滚动条）。 */
     public static final int RIGHT_MARGIN = 8;
+    public static final int SELECTOR_WIDTH = 80;
 
     protected final EditorHost host;
     private final EditorFormNode node;
@@ -192,10 +194,12 @@ public abstract class EditorWidget {
         return collapseToggle;
     }
 
-    /** 摆放折叠按钮（行右缘），按钮文案随状态切换。 */
+    /** 摆放折叠按钮（行右缘），悬浮提示随状态切换。 */
     protected final void placeCollapseToggle() {
         if (collapseToggle != null) {
             place(collapseToggle, rightEdge() - TOGGLE_WIDTH, y);
+            collapseToggle.setTooltip(Tooltip.create(
+                Component.translatable(collapsed ? "htlib.screen.expand" : "htlib.screen.collapse")));
         }
     }
 
@@ -243,11 +247,6 @@ public abstract class EditorWidget {
     /** 行内控件（输入框/选择器）起始 x：紧跟字段名右侧。 */
     protected final int controlX() {
         return x + labelWidth() + LABEL_GAP;
-    }
-
-    protected final int controlWidth() {
-        int available = width - RIGHT_MARGIN - toggleShift() - labelWidth() - LABEL_GAP;
-        return Math.max(0, available);
     }
 
     protected final void place(AbstractWidget widget, int wx, int wy) {

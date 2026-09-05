@@ -33,7 +33,7 @@ public final class UnionWidget extends EditorWidget {
         if (collapsible()) {
             createCollapseToggle();
         }
-        selector = createSelector(controlWidth(), node.unionNames(), node.currentVariantName(), name -> {
+        selector = createSelector(SELECTOR_WIDTH, node.unionNames(), node.currentVariantName(), name -> {
             int idx = node.unionNames().indexOf(name);
             if (idx >= 0) {
                 node.selectVariant(idx);
