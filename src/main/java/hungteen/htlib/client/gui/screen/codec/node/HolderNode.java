@@ -3,8 +3,9 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.HolderWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
@@ -17,12 +18,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 注册表引用节点（HOLDER / HOLDER_SET）：用补全输入框选条目（客户端本地枚举，不靠 schema 下发）。
+ * 注册表引用节点（HOLDER / HOLDER_SET）。
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class HolderNode extends EditorFormNode {
+public final class HolderNode extends EditorFormNode {
 
     /** 可补全的注册表条目名（客户端本地枚举）。 */
     private final List<String> entries = new ArrayList<>();
@@ -39,46 +40,18 @@ final class HolderNode extends EditorFormNode {
         }
     }
 
-    private String current() {
-        return value != null && value.isJsonPrimitive() ? value.getAsString() : "";
-    }
-
     @Override
     public int height() {
-        return ROW_HEIGHT;
+        return EditorWidget.ROW_HEIGHT;
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        if (screen.formRowVisible(y)) {
-            if (entries.isEmpty()) {
-                // 枚举不到条目（如 HTLib 自定义注册表）：退回普通输入框，允许手填。
-                buildScalarControl(screen, x, y, width);
-            } else {
-                screen.addSelector(cx, y, cw, ROW_HEIGHT - 2, entries, current(), i -> {
-                    if (i >= 0 && i < entries.size()) {
-                        value = new JsonPrimitive(entries.get(i));
-                    }
-                });
-            }
-        }
-        return y + ROW_HEIGHT;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new HolderWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        return y + ROW_HEIGHT;
-    }
-
-    @Override
-    public int buildInlineControl(CodecEditorScreen screen, int x, int y, int width) {
-        return buildControls(screen, x, y, width);
+    public List<String> entries() {
+        return entries;
     }
 
     @Override

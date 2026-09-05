@@ -3,9 +3,10 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.EnumWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 枚举节点：单行循环按钮，选中某个常量。
+ * 枚举节点：选中某个常量。
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class EnumNode extends EditorFormNode {
+public final class EnumNode extends EditorFormNode {
 
     private final List<String> enumValues = new ArrayList<>();
     private int enumIndex = 0;
@@ -41,49 +42,31 @@ final class EnumNode extends EditorFormNode {
 
     @Override
     public int height() {
-        return ROW_HEIGHT;
+        return EditorWidget.ROW_HEIGHT;
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        if (screen.formRowVisible(y)) {
-            String current = enumIndex >= 0 && enumIndex < enumValues.size() ? enumValues.get(enumIndex) : "";
-            screen.addSelector(cx, y, cw,  ROW_HEIGHT - 2, enumValues, current, i -> enumIndex = i);
-        }
-        return y + ROW_HEIGHT;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new EnumWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        return y + ROW_HEIGHT;
+    public List<String> enumValues() {
+        return enumValues;
     }
 
-    @Override
-    public int buildInlineControl(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        if (screen.formRowVisible(y)) {
-            String current = enumIndex >= 0 && enumIndex < enumValues.size() ? enumValues.get(enumIndex) : "";
-            screen.addSelector(cx, y, cw, ROW_HEIGHT - 2, enumValues, current, i -> enumIndex = i);
-        }
-        return y + ROW_HEIGHT;
-    }
-
-    @Override
     public int enumIndex() {
         return enumIndex;
+    }
+
+    /** 选中指定常量。 */
+    public void setEnumValue(String name) {
+        enumIndex = Math.max(0, enumValues.indexOf(name));
     }
 
     @Override
     public JsonElement collect() {
         return enumIndex >= 0 && enumIndex < enumValues.size()
-            ? new JsonPrimitive(enumValues.get(enumIndex)) : JsonNull.INSTANCE;
+            ? new com.google.gson.JsonPrimitive(enumValues.get(enumIndex)) : JsonNull.INSTANCE;
     }
 
     @Override

@@ -4,8 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.ListSetWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.resources.language.I18n;
 
@@ -13,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 列表/集合节点：头部 [＋][－] 增删，元素逐项递归编辑。
+ * 列表/集合节点：头部增删，元素逐项递归编辑。
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class ListSetNode extends EditorFormNode {
+public final class ListSetNode extends EditorFormNode {
 
     private final List<EditorFormNode> listItems = new ArrayList<>();
 
@@ -41,7 +43,7 @@ final class ListSetNode extends EditorFormNode {
 
     @Override
     public int height() {
-        int h = ROW_HEIGHT;
+        int h = EditorWidget.ROW_HEIGHT;
         for (EditorFormNode item : listItems) {
             h += item.height();
         }
@@ -49,42 +51,24 @@ final class ListSetNode extends EditorFormNode {
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        validateValue();
-        int cx = x + LABEL_WIDTH;
-        if (screen.formRowVisible(y)) {
-            screen.addButton(cx, y, 12, "+", b -> {
-                listItems.add(EditorFormNode.create(elementSchema(), "", JsonNull.INSTANCE));
-                screen.rebuild();
-            });
-            if (!listItems.isEmpty()) {
-                screen.addButton(cx + 12 + 3, y, 12, "-", b -> {
-                    if (!listItems.isEmpty()) {
-                        listItems.remove(listItems.size() - 1);
-                        screen.rebuild();
-                    }
-                });
-            }
-        }
-        y += ROW_HEIGHT;
-        for (EditorFormNode item : listItems) {
-            y = item.buildControls(screen, x + INDENT, y, width - INDENT);
-        }
-        return y;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new ListSetWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
+    public List<EditorFormNode> items() {
+        return listItems;
+    }
+
+    public void addItem() {
+        listItems.add(EditorFormNode.create(elementSchema(), "", JsonNull.INSTANCE));
         validateValue();
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        y += ROW_HEIGHT;
-        for (EditorFormNode item : listItems) {
-            y = item.collectLabels(screen, x + INDENT, y, width - INDENT);
+    }
+
+    public void removeLastItem() {
+        if (!listItems.isEmpty()) {
+            listItems.remove(listItems.size() - 1);
+            validateValue();
         }
-        return y;
     }
 
     @Override

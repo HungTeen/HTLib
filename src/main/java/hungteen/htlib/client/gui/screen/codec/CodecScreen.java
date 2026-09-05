@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author PangTeen
@@ -108,33 +107,29 @@ public abstract class CodecScreen extends HTScreen {
         }
     }
 
-    /**
-     * 注册一个行内补全输入框（枚举/UNION 字段用）。
-     */
-    public void addSelector(int x, int y, int width, int height, List<String> options, String current,
-        Consumer<Integer> onIndex) {
-        if (options == null || options.isEmpty()) {
-            return;
-        }
-        TypeSelector sel = new TypeSelector(this, this::addRenderableWidget, x, y, width, height, y, options,
-            name -> {
-                int idx = options.indexOf(name);
-                if (idx >= 0) {
-                    onIndex.accept(idx);
-                }
-            });
-        sel.addToScreen(this.font);
-        sel.setValue(current);
-        selectors.add(sel);
+    /** 注册一个行内补全输入框（由表单控件创建，面板画在最上层）。 */
+    public void registerSelector(TypeSelector selector) {
+        selectors.add(selector);
+    }
+
+    /** 注销一个行内补全输入框。 */
+    public void unregisterSelector(TypeSelector selector) {
+        selectors.remove(selector);
+    }
+
+    /** 补全面板允许的最大右缘（默认不限制；子类可限制以避开右侧按钮列）。 */
+    protected int panelRightLimit() {
+        return Integer.MAX_VALUE;
     }
 
     /** 顶部 + 行内所有补全面板（画在最上层）。 */
     protected void paintSelectors(GuiGraphics graphics, double mouseX, double mouseY) {
+        int limit = panelRightLimit();
         if (typeSelector != null) {
-            typeSelector.paintPanel(graphics, this.font, mouseX, mouseY);
+            typeSelector.paintPanel(graphics, this.font, mouseX, mouseY, limit);
         }
         for (TypeSelector s : selectors) {
-            s.paintPanel(graphics, this.font, mouseX, mouseY);
+            s.paintPanel(graphics, this.font, mouseX, mouseY, limit);
         }
     }
 
@@ -181,11 +176,12 @@ public abstract class CodecScreen extends HTScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (typeSelector != null && typeSelector.mouseClicked(mouseX, mouseY)) {
+        int selectorLimit = panelRightLimit();
+        if (typeSelector != null && typeSelector.mouseClicked(mouseX, mouseY, selectorLimit)) {
             return true;
         }
         for (TypeSelector s : selectors) {
-            if (s.mouseClicked(mouseX, mouseY)) {
+            if (s.mouseClicked(mouseX, mouseY, selectorLimit)) {
                 return true;
             }
         }

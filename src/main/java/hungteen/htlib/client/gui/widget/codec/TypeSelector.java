@@ -29,16 +29,18 @@ public final class TypeSelector {
 
     private static final int ROW_H = 16;
     private static final int PANEL_MARGIN = ViewerStyle.DROPDOWN_PANEL_MARGIN;
+    private static final int PANEL_GAP = 2;
     private static final int SCROLL_STEP = 3;
 
     private final Screen host;
     private final Consumer<AbstractWidget> addWidget;
     private final Consumer<String> onSelect;
     private final List<String> allNames;
-    private final int listLeft, listRight;
+    private final int listWidth;
+    private int listLeft, listRight;
     private final int height;
-    private final int listTop;
-    private final int boxY;
+    private int listTop;
+    private int boxY;
 
     private EditBox box;
     private boolean ignoreResponder = false;
@@ -54,6 +56,7 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         this.addWidget = addWidget;
         this.onSelect = onSelect;
         this.allNames = List.copyOf(names);
+        this.listWidth = width;
         this.listLeft = x;
         this.listRight = x + width;
         this.height = height;
@@ -71,6 +74,39 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         }
         addWidget.accept(box);
         return box;
+    }
+
+    /** 重摆输入框与候选面板位置（宿主布局时调用；面板在输入框下方展开，不遮挡输入框）。 */
+    public void setPosition(int x, int y) {
+        this.listLeft = x;
+        this.listRight = x + this.listWidth;
+        this.boxY = y;
+        this.listTop = y + this.height + PANEL_GAP;
+        if (box != null) {
+            box.setX(x);
+            box.setY(y);
+        }
+    }
+
+    /** 行不可见时隐藏输入框并收起候选面板。 */
+    public void setVisible(boolean visible) {
+        if (box != null) {
+            box.visible = visible;
+        }
+        if (!visible) {
+            open = false;
+            suggestions.clear();
+        }
+    }
+
+    /** 从宿主移除输入框（控件树销毁时调用；之后可重新 addToScreen 重建）。 */
+    public void dispose(Consumer<AbstractWidget> removeWidget) {
+        if (box != null) {
+            removeWidget.accept(box);
+            box = null;
+        }
+        open = false;
+        suggestions.clear();
     }
 
     /** 聚焦输入框（屏幕刚打开时调用，可直接打字）。 */
@@ -139,8 +175,8 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         ensureVisible();
     }
 
-    /** 绘制补全面板（宿主在裁剪区下调用，紧贴工具条下方）。 */
-    public void paintPanel(GuiGraphics graphics, Font font, double mouseX, double mouseY) {
+    /** 绘制补全面板（宿主在全部控件之后调用；面板右缘不越过 rightLimit）。 */
+    public void paintPanel(GuiGraphics graphics, Font font, double mouseX, double mouseY, int rightLimit) {
         if (!open || suggestions.isEmpty()) {
             return;
         }
@@ -149,10 +185,14 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         if (maxRows <= 0) {
             return;
         }
+        int right = Math.min(listRight, rightLimit);
+        if (right - listLeft < 20) {
+            return;
+        }
         scroll = DropdownUtil.clampScroll(scroll, suggestions.size(), maxRows);
 
         DropdownUtil.drawPanel(graphics, new Rect(listLeft - PANEL_MARGIN, listTop - PANEL_MARGIN,
-            (listRight - listLeft) + PANEL_MARGIN * 2, bottom - listTop + PANEL_MARGIN * 2));
+            (right - listLeft) + PANEL_MARGIN * 2, bottom - listTop + PANEL_MARGIN * 2));
 
         int end = Math.min(suggestions.size(), scroll + maxRows);
         for (int i = scroll; i < end; i++) {
@@ -161,19 +201,19 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
                 break;
             }
             // 鼠标悬停跟随高亮
-            if (mouseX >= listLeft && mouseX <= listRight && mouseY >= y && mouseY < y + ROW_H) {
+            if (mouseX >= listLeft && mouseX <= right && mouseY >= y && mouseY < y + ROW_H) {
                 suggestIndex = i;
             }
             boolean highlight = i == suggestIndex;
             if (highlight) {
-                graphics.fill(listLeft, y, listRight, y + ROW_H, ViewerStyle.COLOR_SELECT);
+                graphics.fill(listLeft, y, right, y + ROW_H, ViewerStyle.COLOR_SELECT);
             }
             graphics.drawString(font, suggestions.get(i), listLeft + 2, y + (ROW_H - 9) / 2,
                 highlight ? 0xFFFFFF : ViewerStyle.COLOR_TYPE);
         }
 
         if (suggestions.size() > maxRows) {
-            int trackX = listRight - ViewerStyle.SCROLLBAR_WIDTH - ViewerStyle.SCROLLBAR_RIGHT_MARGIN;
+            int trackX = right - ViewerStyle.SCROLLBAR_WIDTH - ViewerStyle.SCROLLBAR_RIGHT_MARGIN;
             DropdownUtil.drawScrollbar(graphics,
                 new Rect(trackX, listTop, ViewerStyle.SCROLLBAR_WIDTH, bottom - listTop),
                 suggestions.size(), maxRows, scroll);
@@ -181,12 +221,17 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
     }
 
     /** 点击：命中候选行 → 选中并消费；面板外 → 关闭并把点击放行给底层控件。返回是否消费。 */
-    public boolean mouseClicked(double mouseX, double mouseY) {
+    public boolean mouseClicked(double mouseX, double mouseY, int rightLimit) {
         if (!open || suggestions.isEmpty()) {
             return false;
         }
+        int right = Math.min(listRight, rightLimit);
         int bottom = host.height - ViewerStyle.BOTTOM_PADDING;
-        if (mouseX >= listLeft && mouseX <= listRight && mouseY >= listTop && mouseY <= bottom) {
+        if (right - listLeft < 20) {
+            close();
+            return false;
+        }
+        if (mouseX >= listLeft && mouseX <= right && mouseY >= listTop && mouseY <= bottom) {
             int row = (int) ((mouseY - listTop) / ROW_H);
             if (row >= 0 && row < (bottom - listTop) / ROW_H) {
                 selectAt(scroll + row);

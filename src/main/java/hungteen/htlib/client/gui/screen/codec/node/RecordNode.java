@@ -2,9 +2,10 @@ package hungteen.htlib.client.gui.screen.codec.node;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.RecordWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class RecordNode extends EditorFormNode {
+public final class RecordNode extends EditorFormNode {
 
     private final List<EditorFormNode> recordChildren = new ArrayList<>();
 
@@ -46,28 +47,12 @@ final class RecordNode extends EditorFormNode {
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        // 渲染 type 行
-        if (StringUtils.isNoneBlank(label)) {
-            y += ROW_HEIGHT;
-        }
-        for (EditorFormNode child : recordChildren) {
-            y = child.buildControls(screen, x + INDENT, y, width - INDENT);
-        }
-        return y;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new RecordWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        // 渲染 type 行
-        if (StringUtils.isNoneBlank(label)) {
-            fieldLabel(screen, x, y);
-            y += ROW_HEIGHT;
-        }
-        for (EditorFormNode child : recordChildren) {
-            y = child.collectLabels(screen, x + INDENT, y, width - INDENT);
-        }
-        return y;
+    public List<EditorFormNode> children() {
+        return recordChildren;
     }
 
     @Override
@@ -78,7 +63,7 @@ final class RecordNode extends EditorFormNode {
             if (child.isOptionalAndAbsent()) {
                 continue;
             }
-            obj.add(child.label, child.collect());
+            obj.add(child.label(), child.collect());
         }
         return obj;
     }
@@ -90,7 +75,7 @@ final class RecordNode extends EditorFormNode {
             this.value = new JsonObject();
         }
         for (EditorFormNode child : recordChildren) {
-            child.load(fieldValue(child.label));
+            child.load(fieldValue(child.label()));
         }
     }
 }

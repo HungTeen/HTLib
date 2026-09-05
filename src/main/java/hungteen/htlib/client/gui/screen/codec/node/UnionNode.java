@@ -1,8 +1,14 @@
 package hungteen.htlib.client.gui.screen.codec.node;
 
-import com.google.gson.*;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.UnionWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -11,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 联合（dispatch）节点：类型下拉按钮 + 当前分支的字段。
+ * 联合（dispatch）节点：类型下拉 + 当前分支的字段。
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class UnionNode extends EditorFormNode {
+public final class UnionNode extends EditorFormNode {
 
     private static final String DEFAULT_VARIANT_KEY = "type";
 
@@ -48,51 +54,38 @@ final class UnionNode extends EditorFormNode {
 
     @Override
     public int height() {
-        return unionVariants.isEmpty() ? ROW_HEIGHT
-            : ROW_HEIGHT + unionVariants.get(unionIndex).height();
+        return unionVariants.isEmpty() ? EditorWidget.ROW_HEIGHT
+            : EditorWidget.ROW_HEIGHT + unionVariants.get(unionIndex).height();
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        if (!unionVariants.isEmpty()) {
-            int cx = x + LABEL_WIDTH;
-            int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-            if (screen.formRowVisible(y)) {
-                String current = unionIndex >= 0 && unionIndex < unionNames.size()
-                    ? unionNames.get(unionIndex) : "";
-                screen.addSelector(cx, y, cw,  ROW_HEIGHT - 2, unionNames, current, i -> {
-                    selectVariant(i);
-                    screen.rebuild();
-                });
-            }
-            y += ROW_HEIGHT;
-
-            // 构建 type -> codec 的控件
-            EditorFormNode selected = unionVariants.get(unionIndex);
-            if (selected != null) {
-                // 往左偏移，因为渲染 Record 会往右偏移，但是 type 应该是同层级的
-                y = selected.buildControls(screen, x - INDENT, y, width + INDENT);
-            }
-        }
-        return y;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new UnionWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        if (!unionVariants.isEmpty()) {
-            int cx = x + LABEL_WIDTH;
-            int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-            // 渲染 type 行
-            fieldLabel(screen, x, y);
-            screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-            y += ROW_HEIGHT;
-            EditorFormNode selected = unionVariants.get(unionIndex);
-            if (selected != null) {
-                // 往左偏移，因为渲染 Record 会往右偏移，但是 type 应该是同层级的
-                y = selected.collectLabels(screen, x - INDENT, y, width + INDENT);
-            }
+    public List<String> unionNames() {
+        return unionNames;
+    }
+
+    public int variantIndex() {
+        return unionIndex;
+    }
+
+    public String currentVariantName() {
+        return unionIndex >= 0 && unionIndex < unionNames.size() ? unionNames.get(unionIndex) : "";
+    }
+
+    public EditorFormNode selectedVariant() {
+        return unionVariants.isEmpty() ? null : unionVariants.get(unionIndex);
+    }
+
+    /** 切换到指定变体（重置该变体的值）。 */
+    public void selectVariant(int idx) {
+        if (idx < 0 || idx >= unionVariants.size()) {
+            return;
         }
-        return y;
+        unionIndex = idx;
+        unionVariants.get(idx).load(JsonNull.INSTANCE);
     }
 
     @Override
@@ -122,20 +115,6 @@ final class UnionNode extends EditorFormNode {
             unionIndex = matchUnionVariant(value);
             unionVariants.get(unionIndex).load(value);
         }
-    }
-
-    @Override
-    public List<String> unionNames() {
-        return unionNames;
-    }
-
-    @Override
-    public void selectVariant(int idx) {
-        if (idx < 0 || idx >= unionVariants.size()) {
-            return;
-        }
-        unionIndex = idx;
-        unionVariants.get(idx).load(JsonNull.INSTANCE);
     }
 
     @Override

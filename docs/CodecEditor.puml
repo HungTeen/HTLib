@@ -1,0 +1,335 @@
+' ============================================================================
+' HTLib Codec 编辑器架构图（Node/Widget 分层重构后）
+' 文件内包含 4 张图（多个 @startuml 块），渲染工具会分别输出：
+'   1. codec_editor_overview   总体架构（分层 + 数据流）
+'   2. codec_editor_widgets    Node ↔ Widget 对应关系（模板方法 + 工厂）
+'   3. codec_editor_parse      Schema 解析责任链
+'   4. codec_editor_flow       一次完整编辑的时序（含增量布局）
+' ============================================================================
+
+' ========== 图 1 · 总体架构 ==========
+@startuml codec_editor_overview
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam componentStyle rectangle
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #556677
+  ArrowColor #556677
+}
+title Codec 编辑器总体架构
+
+package "入口层" {
+  component "IDECommand\n/ide editor · /ide schema (types|json|type)" as IDE
+}
+
+package "网络层 (common.network)" {
+  [OpenCodecPacket\nS → C 打开界面] as OPEN
+  [RequestSchemaPacket\nC → S 请求 schema] as REQ
+  [SchemaResponsePacket\nS → C 返回 schema JSON] as RESP
+  [SaveDataPacket\nC → S 保存数据] as SAVE
+}
+
+package "客户端 GUI 层 (client.gui.screen.codec)" {
+  [CodecScreen\n抽象基类·状态提示/选择器管理/滚动分发] as CS
+  [CodecEditorScreen\n工具条 + 表单/JSON 双模式\n实现 EditorHost] as CES
+  [TypeSelector\n类型/枚举补全输入框\nsetPosition/setVisible/dispose] as TS
+  [SchemaTooltip\n约束格式化 + 校验] as ST
+  [ViewerStyle / Rect / DropdownUtil] as AUX
+}
+
+package "Widget 层 (client.gui.widget.codec)\n视图：标签/输入框/增删按钮/tooltip" {
+  [EditorHost «接口»\naddWidget/removeWidget\nregisterSelector/relayout] as HOST
+  [EditorWidget «抽象»\nlayout(创建一次+重摆)\nrender 标签 / renderTooltip\nsetHidden / dispose] as EW
+  [ScalarWidget] as WS
+  [BooleanWidget] as WB
+  [EnumWidget] as WE
+  [HolderWidget] as WH
+  [UnionWidget] as WU
+  [ListSetWidget] as WL
+  [MapWidget] as WM
+  [OptionalWidget] as WO
+  [RecordWidget] as WR
+}
+
+package "Node 层 (screen.codec.node)\n数据：schema/value/collect/load/校验" {
+  [EditorFormNode «抽象»\nwidget(host) 惰性工厂\nlabel/type/value\nsetValueText/tooltipLines] as EN
+  [RecordNode] as NR
+  [ListSetNode] as NL
+  [MapNode] as NM
+  [OptionalNode] as NO
+  [UnionNode] as NU
+  [EnumNode] as NE
+  [BooleanNode] as NB
+  [HolderNode] as NH
+  [ScalarNode] as NS
+}
+
+package "服务端逻辑 (codec.parse)" {
+  [CodecEditorManager\n注册表列表 / schema 生成 / 写文件] as CEM
+}
+
+package "Schema 解析层" {
+  [CodecSchemaParser\n解包 → 缓存/防环 → 责任链分发] as CSP
+  [CodecUnwrapper\n剥包装 / 扫基础 codec] as CU
+  [Handler 责任链\nRegistry→Record→List→Dispatch\n→Map→Enum→Primitive] as CHAIN
+  [SchemaPrinter\nprint(文本) / toJson] as SP
+}
+
+package "Schema 数据模型" {
+  [DataSchema\ntype/fields/element/key/variants] as DS
+  [FieldSchema / RegistrySchema / EnumValueSchema] as FS
+  [SchemaType (22 种形态)] as ENUMT
+  [ParseContext / ConstraintSet / ValueInfo] as CTX
+}
+
+database "存档 datapack 目录" as DISK
+
+' —— 命令与打开界面 ——
+IDE --> OPEN : openEditor
+IDE --> SP : printSchema(聊天框分页输出)
+OPEN --> CES
+
+' —— schema 请求与响应 ——
+CES --> REQ : select(name)
+REQ --> CEM
+CEM --> CSP : CodecHelper.getCodec
+CSP --> CU
+CSP --> CHAIN
+CHAIN --> DS
+DS --> ENUMT
+DS --> FS
+DS --> CTX
+CEM --> SP
+SP --> RESP
+RESP --> CS : onSchema → applySchema
+
+' —— 保存 ——
+CES --> SAVE
+SAVE --> CEM
+CEM --> DISK : saveJson
+
+' —— 客户端内部 ——
+CS <|-- CES
+CES ..|> HOST
+CS --> TS
+CES --> EN : formRoot
+EN ..> EW : widget(host)\n1 : 1
+EW --> WS
+EW --> WB
+EW --> WE
+EW --> WH
+EW --> WU
+EW --> WL
+EW --> WM
+EW --> WO
+EW --> WR
+EN --> NR
+EN --> NL
+EN --> NM
+EN --> NO
+EN --> NU
+EN --> NE
+EN --> NB
+EN --> NH
+EN --> NS
+EN --> ST : tooltipLines
+CES --> AUX
+
+note bottom of EW
+  layout() 首次创建控件，之后只重摆位置；
+  标签在裁剪区内自绘，tooltip 由控件渲染；
+  滚动/平移 → 仅 relayout，不销毁不重建，
+  输入框焦点与文本不丢失
+end note
+@enduml
+
+' ========== 图 2 · Node ↔ Widget 对应关系 ==========
+@startuml codec_editor_widgets
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #556677
+  ArrowColor #556677
+}
+title Node ↔ Widget 一一对应（Node=数据，Widget=视图）
+
+class EditorFormNode <<abstract>> {
+  + widget(host) : EditorWidget «惰性工厂»
+  + {abstract} createWidget(host) «每个子类一个 Widget»
+  --
+  + height() : int
+  + collect() : JsonElement
+  + load(json : JsonElement)
+  + setValue(v) / setValueText(s)
+  + validate() / isInvalid()
+  + label() / type() / value()
+  + tooltipLines() : List<Component>
+  --
+  # schema : JsonObject
+  # value : JsonElement
+  # invalid : boolean
+}
+
+class EditorWidget <<abstract>> {
+  + layout(x, y, width) : int «创建一次+重摆»
+  + render(...) / renderTooltip(...) : boolean
+  + refreshFromNode() / setHidden(b) / dispose()
+  # create() / doLayout() «模板方法»
+  # syncChildren(...) «增删子控件»
+  # createEditBox / createButton / createSelector
+  # place / drawLabel / applyErrorColor
+  # hidden / x / y / width
+}
+
+EditorFormNode <|-- RecordNode
+EditorFormNode <|-- ListSetNode
+EditorFormNode <|-- MapNode
+EditorFormNode <|-- OptionalNode
+EditorFormNode <|-- UnionNode
+EditorFormNode <|-- EnumNode
+EditorFormNode <|-- BooleanNode
+EditorFormNode <|-- HolderNode
+EditorFormNode <|-- ScalarNode
+
+EditorWidget <|-- RecordWidget
+EditorWidget <|-- ListSetWidget
+EditorWidget <|-- MapWidget
+EditorWidget <|-- OptionalWidget
+EditorWidget <|-- UnionWidget
+EditorWidget <|-- EnumWidget
+EditorWidget <|-- BooleanWidget
+EditorWidget <|-- HolderWidget
+EditorWidget <|-- ScalarWidget
+
+RecordNode ..> RecordWidget : createWidget
+ListSetNode ..> ListSetWidget
+MapNode ..> MapWidget
+OptionalNode ..> OptionalWidget
+UnionNode ..> UnionWidget
+EnumNode ..> EnumWidget
+BooleanNode ..> BooleanWidget
+HolderNode ..> HolderWidget
+ScalarNode ..> ScalarWidget
+
+note right of EditorWidget::layout
+  首次调用 → create() 注册 MC 控件；
+  再次调用 → 只 setPosition + visible；
+  结构变化 → syncChildren 增量增删子控件
+end note
+@enduml
+
+' ========== 图 3 · Schema 解析责任链 ==========
+@startuml codec_editor_parse
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #556677
+  ArrowColor #556677
+  DiamondBackgroundColor #EEF3FA
+  diamondBorderColor #556677
+}
+title Schema 解析责任链（CodecSchemaParser）
+
+start
+:输入 Codec&lt;?&gt;;
+:CodecUnwrapper.unwrap
+剥掉 MapCodecCodec / Recursive 等外层包装;
+
+if (ParseContext 缓存命中?) then (是)
+  :直接返回缓存 schema;
+  stop
+else (否)
+endif
+
+if (enter() 标记递归路径) then (已在路径上·防环)
+  :返回 DataSchema(UNKNOWN);
+  stop
+else (未访问)
+endif
+
+:按注册顺序遍历 Handler 责任链
+supports() 命中即由其 parse();
+note right
+  顺序（越特定越靠前）：
+  Registry → Record → List
+  → Dispatch → Map → Enum → Primitive
+end note
+
+if (命中 Handler?) then (是)
+  :handler.parse() 产出 DataSchema
+  写入解析缓存;
+  stop
+else (否)
+endif
+
+:CodecUnwrapper.scanBaseCodec
+穿透 xmap / flatXmap / validate 等变换包装
+寻找基础结构 codec;
+
+if (找到基础 codec?) then (是)
+  :递归重新分发;
+  stop
+else (否)
+endif
+
+:产出 DataSchema(UNKNOWN)
+仅记录原始实现类名;
+stop
+@enduml
+
+' ========== 图 4 · 一次完整编辑的时序 ==========
+@startuml codec_editor_flow
+skinparam shadowing false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam sequence {
+  ArrowColor #556677
+  LifeLineBorderColor #556677
+  ParticipantBackgroundColor #FFFFFF
+  ParticipantBorderColor #556677
+}
+title 一次完整编辑的数据流（滚动/平移/增删均走增量布局）
+
+actor 玩家 as P
+participant "IDECommand\n(服务端)" as IDE
+participant "CodecEditorScreen\n(客户端·EditorHost)" as CES
+participant "EditorWidget 树\n(客户端·视图)" as W
+participant "CodecEditorManager\n(服务端)" as SRV
+participant "CodecSchemaParser" as CSP
+participant "SchemaPrinter" as SP
+database "存档 datapack 目录" as DISK
+
+== 打开编辑器 ==
+P -> IDE : /ide editor
+IDE -> SRV : openEditor()
+SRV -> CES : OpenCodecPacket(注册表列表)
+CES -> CES : init() → rebuild()
+note right: VIEWER 模式暂未启用\n(CodecViewerScreen 被注释)
+
+== 请求 schema ==
+P -> CES : 选择注册表类型 (TypeSelector)
+CES -> SRV : RequestSchemaPacket(name)
+SRV -> CSP : CodecHelper.getCodec(name)
+CSP --> SRV : DataSchema 树
+SRV -> SP : toJson(schema)
+SP --> SRV : schema JSON
+SRV -> CES : SchemaResponsePacket(name, json)
+CES -> CES : applySchema() → EditorFormNode.root
+CES -> W : rebuild() → widget(host) → layout()
+
+== 编辑（增量） ==
+P -> W : 滚动 / 右键平移
+W -> W : layout() 只重摆位置\n焦点与输入内容保留
+P -> W : [＋] / [－] / 折叠 / 切换变体
+W -> W : node 增删子节点 → syncChildren()\n→ host.relayout()
+P -> W : 编辑输入框（校验红字即时反馈）
+
+== 保存 ==
+CES -> CES : formRoot.collect() → JSON
+CES -> SRV : SaveDataPacket(registry, path, json)
+SRV -> SRV : 校验 JSON 合法性\nresolvePath(datapack:&lt;pack&gt;/...)
+SRV -> DISK : 写入 .json 文件
+SRV --> P : 聊天栏反馈保存结果
+@enduml

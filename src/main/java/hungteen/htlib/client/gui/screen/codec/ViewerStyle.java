@@ -57,6 +57,8 @@ public final class ViewerStyle {
     public static final int DROPDOWN_SCROLL_STEP = 3;
     /** 下拉面板背景相对内容的外扩边距。 */
     public static final int DROPDOWN_PANEL_MARGIN = 2;
+    /** 补全面板右缘与屏幕右边缘的保护距离（避开右侧按钮列与滚动条）。 */
+    public static final int PANEL_RIGHT_GUARD = 66;
 
     // ---- 配色 ----
     /** 字段名文字（misode 风格淡蓝）。 */

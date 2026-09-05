@@ -3,14 +3,19 @@ package hungteen.htlib.client.gui.screen.codec;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.RequestSchemaPacket;
 import hungteen.htlib.common.network.SaveDataPacket;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Codec 编辑器界面。
@@ -27,11 +31,15 @@ import java.util.function.Consumer;
  * <p>顶部工具条：数据包类型下拉框（支持搜索）、表单/JSON 模式切换、保存路径与文件名、保存按钮。
  * 主体区域：表单或 JSON 文本视图。表单支持滚轮滚动与右键拖拽平移。</p>
  *
+ * <p>控件由 {@link EditorWidget} 树持有：滚动/平移只触发 {@link #layoutForm()} 重摆，
+ * 结构变化（增删行/折叠/切换变体）由控件回调 {@link EditorHost#relayout()} 增量更新；
+ * 仅在 schema 变更、模式切换、窗口 resize 时全量 {@link #rebuild()}。</p>
+ *
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  **/
-public class CodecEditorScreen extends CodecScreen {
+public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
     private static final int TOP_OFFSET = 20;
     /** 顶部类型输入框宽度（编辑器工具条更紧凑）。 */
@@ -49,15 +57,8 @@ public class CodecEditorScreen extends CodecScreen {
     private boolean panning = false;
     private double panLastX, panLastY;
 
-    private final LabelQueue labelQueue;
-    private final List<TooltipRow> tooltipRows = new ArrayList<>();
-
-    private record TooltipRow(int x, int y, int width, int rowHeight, List<Component> tooltip) {
-    }
-
     public CodecEditorScreen(List<ResourceLocation> registryNames) {
         super(registryNames);
-        this.labelQueue = new LabelQueue();
     }
 
     /**
@@ -76,43 +77,51 @@ public class CodecEditorScreen extends CodecScreen {
     }
 
     /**
-     * 全量重建界面：类型输入框 → 主体。
+     * 全量重建：销毁旧控件树 → 清空界面 → 工具条 → 布局表单。
      */
     @Override
     public void rebuild() {
+        if (formRoot != null && formRoot.hasWidget()) {
+            formRoot.widget(this).dispose();
+        }
         clearWidgets();
         selectors.clear();
-        labelQueue.clear();
-        tooltipRows.clear();
 
         // 顶部：数据包类型输入框（自动补全）
         typeSelector.setValue(selected);
         typeSelector.addToScreen(this.font);
 
-        // 主体（顶部工具条按钮 + 表单 / JSON）
         rebuildBody();
+        layoutForm();
     }
 
     /**
-     * 表单模式：从 schema 重建表单。
+     * 表单模式：保留当前内容，重新加载数据并全量重建。
      */
     public void rebuildForm() {
         if (schema == null) {
             return;
         }
-        // 保留旧表单/JSON 的当前内容
         String current = collectJsonText();
-        formRoot = EditorFormNode.root(schema);
+        if (formRoot != null && formRoot.hasWidget()) {
+            formRoot.widget(this).dispose();
+        }
         formRoot.load(parseOrNull(current));
-        // 渲染：清空并重建
         rebuild();
     }
 
+    /** 增量布局：只重摆控件树，不销毁不重建（滚动/平移/结构变化都走这里）。 */
+    private void layoutForm() {
+        if (!jsonMode && formRoot != null) {
+            formRoot.widget(this).layout(ViewerStyle.LEFT_PADDING + panX, TOP_OFFSET - formScroll,
+                this.width - ViewerStyle.LEFT_PADDING * 2);
+        }
+    }
+
     /**
-     * 重建主体区域：顶部工具条按钮（模式切换/路径/文件名/保存）+ 表单。
+     * 顶部工具条按钮（模式切换/路径/文件名/保存）。
      */
     private void rebuildBody() {
-        // 模式切换按钮
         Button modeButton =
             Button.builder(Component.translatable(jsonMode ? "htlib.screen.form" : "htlib.screen.json"), b -> {
                 jsonMode = !jsonMode;
@@ -120,22 +129,14 @@ public class CodecEditorScreen extends CodecScreen {
             }).bounds(166, 4, 70, 14).build();
         addRenderableWidget(modeButton);
 
-        // 注册名输入框
         EditBox registryNameField = new EditBox(this.font, 244, 4, 80, 13, Component.translatable("htlib.screen.path"));
         registryNameField.setValue(saveRegistryName);
         registryNameField.setResponder(s -> saveRegistryName = s);
         addRenderableWidget(registryNameField);
 
-        // 保存按钮
         Button saveButton = Button.builder(Component.translatable("htlib.screen.save"), b -> save())
             .bounds(386, 4, 40, 14).build();
         addRenderableWidget(saveButton);
-
-        // 顶部下拉展开时隐藏主体
-        if (!jsonMode && formRoot != null) {
-            formRoot.buildControls(this, ViewerStyle.LEFT_PADDING + panX, TOP_OFFSET - formScroll,
-                this.width - ViewerStyle.LEFT_PADDING * 2);
-        }
     }
 
     /**
@@ -222,94 +223,18 @@ public class CodecEditorScreen extends CodecScreen {
     }
 
     // -------------------------------------------------
-    // 供 EditorFormNode 调用的控件辅助
+    // 渲染
     // -------------------------------------------------
-
-    public void addButton(int x, int y, int width, String text, Button.OnPress action) {
-        Button b = Button.builder(Component.literal(text), action).bounds(x, y, width, 11).build();
-        addRenderableWidget(b);
-    }
-
-    public void addCycleButton(int x, int y, int width, List<String> values, int index, Consumer<Integer> onSelect) {
-        String current = index >= 0 && index < values.size() ? values.get(index) : "";
-        Button b = Button.builder(Component.literal(current), btn -> {
-            int next = (index + 1) % Math.max(1, values.size());
-            onSelect.accept(next);
-        }).bounds(x, y, width, 12).build();
-        addRenderableWidget(b);
-    }
-
-    public EditBox addEditBox(int x, int y, int width, String value, Consumer<String> onChanged) {
-        EditBox box = new EditBox(this.font, x, y, width, 12, Component.literal(""));
-        box.setValue(value);
-        box.setResponder(onChanged);
-        addRenderableWidget(box);
-        return box;
-    }
-
-    /** 该行是否在工具条之下的可视区内（避免滚动后表单控件盖住顶部工具条）。 */
-    public boolean formRowVisible(int y) {
-        return y >= TOP_OFFSET;
-    }
-
-    /** 超宽标签省略号截断地绘制（完整文本在悬浮提示里）。 */
-    public void drawLabelEllipsis(int x, int y, String text, int maxWidth) {
-        drawLabelEllipsis(x, y, text, maxWidth, ViewerStyle.COLOR_TEXT);
-    }
-
-    public void drawLabelEllipsis(int x, int y, String text, int maxWidth, int color) {
-        drawLabel(x, y, ellipsize(text, maxWidth), color);
-    }
-
-    private String ellipsize(String text, int maxWidth) {
-        if (this.font.width(text) <= maxWidth) {
-            return text;
-        }
-        String suffix = "…";
-        int budget = maxWidth - this.font.width(suffix);
-        if (budget <= 0) {
-            return suffix;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            String c = String.valueOf(text.charAt(i));
-            if (this.font.width(sb.toString()) + this.font.width(c) > budget) {
-                break;
-            }
-            sb.append(c);
-        }
-        return sb.append(suffix).toString();
-    }
-
-    /** 记录一个悬浮提示热区（表单行）。 */
-    public void addTooltipRow(int x, int y, int width, int rowHeight, List<Component> tooltip) {
-        if (tooltip != null && !tooltip.isEmpty()) {
-            tooltipRows.add(new TooltipRow(x, y, width, rowHeight, tooltip));
-        }
-    }
-
-    public void drawLabel(int x, int y, String text) {
-        labelQueue.add(x, y, text);
-    }
-
-    public void drawLabel(int x, int y, String text, int color) {
-        labelQueue.add(x, y, text, color);
-    }
 
     @Override
     protected void renderFormRegion(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // 每帧从节点状态重建标签与悬浮提示：校验红字/报错即时生效（控件仍保持重建时创建的实例，不丢焦点）
-        labelQueue.clear();
-        tooltipRows.clear();
-        if (!jsonMode && formRoot != null) {
-            formRoot.collectLabels(this, ViewerStyle.LEFT_PADDING + panX, TOP_OFFSET - formScroll,
-                this.width - ViewerStyle.LEFT_PADDING * 2);
-        }
-
         // 主体区域裁剪在 TOP_OFFSET 之下：滚动/平移时不会盖住顶部工具条
         graphics.enableScissor(0, TOP_OFFSET, this.width, this.height);
-        // 表单区域的标签
-        labelQueue.render(graphics, this.font);
+
+        // 表单：控件树自绘标签（悬浮提示在 renderOverlays 画）
+        if (!jsonMode && formRoot != null) {
+            formRoot.widget(this).render(graphics, this.font, mouseX, mouseY);
+        }
 
         // 多行滚动 JSON 视图
         if (jsonMode) {
@@ -332,13 +257,9 @@ public class CodecEditorScreen extends CodecScreen {
     protected void renderOverlays(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!jsonMode) {
             drawFormScrollbar(graphics);
-        }
-
-        // 悬浮提示（画在控件之上）
-        for (TooltipRow r : tooltipRows) {
-            if (mouseX >= r.x && mouseX <= r.x + r.width && mouseY >= r.y && mouseY <= r.y + r.rowHeight) {
-                graphics.renderComponentTooltip(this.font, r.tooltip, (int)mouseX, (int)mouseY);
-                break;
+            // 悬浮提示由控件树自己管理（画在控件之上）
+            if (formRoot != null) {
+                formRoot.widget(this).renderTooltip(graphics, this.font, mouseX, mouseY);
             }
         }
     }
@@ -348,7 +269,7 @@ public class CodecEditorScreen extends CodecScreen {
         if (formRoot == null) {
             return;
         }
-        int content = formRoot.height();
+        int content = formRoot.widget(this).height();
         int visible = this.height - TOP_OFFSET - ViewerStyle.BOTTOM_PADDING;
         int maxScroll = Math.max(0, content - visible);
         if (maxScroll <= 0) {
@@ -358,7 +279,7 @@ public class CodecEditorScreen extends CodecScreen {
         int trackY = TOP_OFFSET;
         graphics.fill(trackX - 1, trackY, trackX + ViewerStyle.SCROLLBAR_WIDTH + 1, trackY + visible,
             ViewerStyle.COLOR_SCROLL_TRACK);
-        int thumbH = Math.max(EditorFormNode.ROW_HEIGHT, visible * visible / Math.max(1, content));
+        int thumbH = Math.max(EditorWidget.ROW_HEIGHT, visible * visible / Math.max(1, content));
         int thumbY = trackY + (int)((long)formScroll * (visible - thumbH) / maxScroll);
         graphics.fill(trackX, thumbY, trackX + ViewerStyle.SCROLLBAR_WIDTH, thumbY + thumbH,
             ViewerStyle.COLOR_SCROLL_THUMB);
@@ -379,21 +300,22 @@ public class CodecEditorScreen extends CodecScreen {
         return lines;
     }
 
+    // -------------------------------------------------
+    // 滚动 / 平移
+    // -------------------------------------------------
+
     /** 补全面板之外：表单/JSON 滚动。 */
     @Override
     protected boolean onScroll(double mouseX, double mouseY, double delta) {
         if (!jsonMode) {
-            int content = formRoot == null ? 0 : formRoot.height();
+            int content = formRoot == null ? 0 : formRoot.widget(this).height();
             int visible = this.height - TOP_OFFSET - ViewerStyle.BOTTOM_PADDING;
             formScroll = DropdownUtil.clampScroll(formScroll - (int)delta * ViewerStyle.SCROLL_STEP, content, visible);
-            rebuild();
+            layoutForm();
             return true;
         }
-        if (jsonMode) {
-            jsonScroll = (int)Math.max(0, jsonScroll - delta * 10);
-            return true;
-        }
-        return false;
+        jsonScroll = (int)Math.max(0, jsonScroll - delta * 10);
+        return true;
     }
 
     /** 补全面板之外：右键按下开始平移（表单/JSON 视图均可）。 */
@@ -415,7 +337,7 @@ public class CodecEditorScreen extends CodecScreen {
             panX += (int)Math.round(mouseX - panLastX);
             int dy = (int)Math.round(mouseY - panLastY);
             if (!jsonMode) {
-                int content = formRoot == null ? 0 : formRoot.height();
+                int content = formRoot == null ? 0 : formRoot.widget(this).height();
                 int visible = this.height - TOP_OFFSET - ViewerStyle.BOTTOM_PADDING;
                 formScroll = DropdownUtil.clampScroll(formScroll - dy, content, visible);
             } else {
@@ -424,7 +346,7 @@ public class CodecEditorScreen extends CodecScreen {
             panX = Math.max(-this.width, Math.min(0, panX));
             panLastX = mouseX;
             panLastY = mouseY;
-            rebuild();
+            layoutForm();
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -436,5 +358,50 @@ public class CodecEditorScreen extends CodecScreen {
             panning = false;
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    // -------------------------------------------------
+    // EditorHost
+    // -------------------------------------------------
+
+    @Override
+    public Screen screen() {
+        return this;
+    }
+
+    @Override
+    public Font font() {
+        return this.font;
+    }
+
+    @Override
+    public int screenWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int topOffset() {
+        return TOP_OFFSET;
+    }
+
+    @Override
+    public void addWidget(AbstractWidget widget) {
+        addRenderableWidget(widget);
+    }
+
+    @Override
+    public void removeWidget(AbstractWidget widget) {
+        super.removeWidget(widget);
+    }
+
+    @Override
+    public void relayout() {
+        layoutForm();
+    }
+
+    /** 补全面板右缘不越过右侧按钮列与滚动条区，避免面板盖住 [＋][－][▾] 按钮及其文字。 */
+    @Override
+    protected int panelRightLimit() {
+        return this.width - ViewerStyle.PANEL_RIGHT_GUARD;
     }
 }

@@ -3,8 +3,10 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.ScalarWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.resources.language.I18n;
 
@@ -14,7 +16,7 @@ import net.minecraft.client.resources.language.I18n;
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class ScalarNode extends EditorFormNode {
+public final class ScalarNode extends EditorFormNode {
 
     ScalarNode(JsonObject schema, String label, JsonElement value) {
         super(schema, label, value);
@@ -26,23 +28,12 @@ final class ScalarNode extends EditorFormNode {
 
     @Override
     public int height() {
-        return ROW_HEIGHT;
+        return EditorWidget.ROW_HEIGHT;
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        buildScalarControl(screen, x, y, width);
-        return y + ROW_HEIGHT;
-    }
-
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        validateValue();
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        return y + ROW_HEIGHT;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new ScalarWidget(host, this);
     }
 
     @Override
@@ -53,9 +44,6 @@ final class ScalarNode extends EditorFormNode {
     @Override
     public void load(JsonElement json) {
         value = json == null ? JsonNull.INSTANCE : json;
-        if (editBox != null) {
-            editBox.setValue(textOf(value));
-        }
     }
 
     @Override

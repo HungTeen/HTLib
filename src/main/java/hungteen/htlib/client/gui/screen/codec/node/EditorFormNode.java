@@ -3,9 +3,10 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import hungteen.htlib.common.codec.parse.SchemaType;
 import net.minecraft.client.resources.language.I18n;
@@ -16,28 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 表单节点基类：调度工厂 + 公共布局/工具。
- *
- * <p>采用策略/模板方法模式，<b>每种 schema 类型一个子类</b>：{@link RecordNode}、{@link ListSetNode}、
- * {@link MapNode}、{@link OptionalNode}、{@link UnionNode}、{@link EnumNode}、{@link BooleanNode}、
- * {@link ScalarNode}。子类只需实现 init/height/buildControls/collectLabels/collect/load。</p>
- *
- * <p>控件由 {@link #buildControls} 在重建时创建；标签与悬浮提示由 {@link #collectLabels} <b>每帧</b>重建
- * （校验红字/报错即时生效，且不丢输入焦点）。</p>
- *
+ * 表单节点基类：纯粹的"数据/状态"层，持有 schema、当前值与校验结果，
+ * 通过 {@link #widget(EditorHost)} 与视图层的 {@link EditorWidget} 一一对应。
  * @author PangTeen
- * @program: HTLib
+ * @program HTLib
  * @create 2026/8/10 14:10
  **/
 public abstract class EditorFormNode {
-
-    /** 表单行高。 */
-    public static final int ROW_HEIGHT = 13;
-    static final int LABEL_WIDTH = 60;
-    static final int CONTROL_WIDTH = 64;
-    static final int CONTROL_MIN_WIDTH = 40;
-    /** 结构型子结构缩进。 */
-    static final int INDENT = 6;
 
     protected final JsonObject schema;
     protected final String label;
@@ -45,8 +31,7 @@ public abstract class EditorFormNode {
     protected boolean invalid = false;
     protected String errorMessage = "";
 
-    /** 左值编辑框（标量用，load 时回填）。 */
-    protected net.minecraft.client.gui.components.EditBox editBox;
+    private EditorWidget widget;
 
     protected EditorFormNode(JsonObject schema, String label, JsonElement value) {
         this.schema = schema;
@@ -59,9 +44,7 @@ public abstract class EditorFormNode {
         // 由工厂在构造完成后再调用。
     }
 
-    /**
-     * 工厂：按 schema 类型创建对应节点子类（构造完成后调用 init 填充子结构）。
-     */
+    /** 工厂：按 schema 类型创建对应节点子类（构造完成后调用 init 填充子结构）。 */
     public static EditorFormNode create(JsonObject schema, String label, JsonElement value) {
         EditorFormNode node = switch (typeOf(schema)) {
             case RECORD -> new RecordNode(schema, label, value);
@@ -84,30 +67,83 @@ public abstract class EditorFormNode {
     }
 
     // -------------------------------------------------
-    // 子类必须实现的模板方法
+    // Widget 桥接：每个节点对应一个控件（惰性创建）
     // -------------------------------------------------
 
-    /** 从 schema + value 解析子结构。 */
+    public final boolean hasWidget() {
+        return widget != null;
+    }
+
+    public final EditorWidget widget(EditorHost host) {
+        if (widget == null) {
+            widget = createWidget(host);
+        }
+        return widget;
+    }
+
+    /** 创建与本节点配套的控件（每种节点一个 Widget）。 */
+    protected abstract EditorWidget createWidget(EditorHost host);
+
+    // -------------------------------------------------
+    // 供控件层访问的数据 API
+    // -------------------------------------------------
+
+    public String label() {
+        return label;
+    }
+
+    public SchemaType type() {
+        return typeOf(schema);
+    }
+
+    public JsonElement value() {
+        return value;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    public String errorMessage() {
+        return errorMessage;
+    }
+
+    public void setValue(JsonElement v) {
+        this.value = v == null ? JsonNull.INSTANCE : v;
+        validateValue();
+    }
+
+    /** 标量输入框文本 → 节点值（解析 + 校验）。 */
+    public void setValueText(String text) {
+        this.value = parseInput(text, type());
+        validateValue();
+    }
+
+    /** 节点值的文本展示形式（字符串不加引号）。 */
+    public String valueText() {
+        return textOf(value);
+    }
+
+    /** 重新校验约束（控件创建/刷新时调用）。 */
+    public void validate() {
+        validateValue();
+    }
+
+    // -------------------------------------------------
+    // 数据模型（子类实现）
+    // -------------------------------------------------
+
+    /** 从 schema + value 解析子结构（由工厂在构造完成后调用）。 */
     protected abstract void init();
 
     /** 预估占用的总行高（用于滚动范围）。 */
     public abstract int height();
 
-    /** 创建控件（仅建控件，不画标签），返回下一个可用 y。 */
-    public abstract int buildControls(CodecEditorScreen screen, int x, int y, int width);
-
-    /** 只重建标签与悬浮提示（不建控件），每帧调用；布局推进与 {@link #buildControls} 一致。 */
-    public abstract int collectLabels(CodecEditorScreen screen, int x, int y, int width);
-
-    /** 从控件收集 JSON 值。 */
+    /** 从控件树收集 JSON 值。 */
     public abstract JsonElement collect();
 
-    /** 把 JSON 值加载回控件。 */
+    /** 把 JSON 值加载回节点。 */
     public abstract void load(JsonElement json);
-
-    // -------------------------------------------------
-    // 子类可选覆写
-    // -------------------------------------------------
 
     /** 校验当前值是否满足约束；无约束时不变。 */
     protected void validateValue() {
@@ -118,73 +154,9 @@ public abstract class EditorFormNode {
         return false;
     }
 
-    /** 当前枚举下标（可选枚举折叠用）。 */
-    public int enumIndex() {
-        return 0;
-    }
-
-    /** UNION 变体名列表（类型下拉用）。 */
-    public List<String> unionNames() {
-        return List.of();
-    }
-
-    /** 切换到指定 UNION 变体。 */
-    public void selectVariant(int idx) {
-    }
-
-    /** 用外部行标签渲染单行控件（可选字段内联标量用）；默认编辑框。 */
-    public int buildInlineControl(CodecEditorScreen screen, int x, int y, int width) {
-        buildScalarControl(screen, x, y, width);
-        return y + ROW_HEIGHT;
-    }
-
-    /** {@link #buildInlineControl} 的标签/提示版本。 */
-    public int collectInlineLabels(CodecEditorScreen screen, int x, int y, int width, String rowLabel) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        validateValue();
-        fieldLabelText(screen, x, y, rowLabel, fieldLabelColor());
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        return y + ROW_HEIGHT;
-    }
-
     // -------------------------------------------------
-    // 公共工具
+    // 悬浮提示
     // -------------------------------------------------
-
-    /** 单行标量控件（编辑框 + 校验），供标量节点与可选内联共用。 */
-    protected void buildScalarControl(CodecEditorScreen screen, int x, int y, int width) {
-        validateValue();
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        if (screen.formRowVisible(y)) {
-            editBox = screen.addEditBox(cx, y, cw, textOf(value), s -> {
-                value = parseInput(s, type());
-                validateValue();
-                if (editBox != null) {
-                    editBox.setTextColor(invalid ? ViewerStyle.COLOR_ERROR_VALUE : 0xFFFFFFFF);
-                }
-            });
-            if (invalid) {
-                editBox.setTextColor(ViewerStyle.COLOR_ERROR_VALUE);
-            }
-        }
-    }
-
-    /** 校验失败时文字变红。 */
-    protected int fieldLabelColor() {
-        return invalid ? ViewerStyle.COLOR_ERROR : ViewerStyle.COLOR_TEXT;
-    }
-
-    /** 字段名标签：超宽时省略号截断；默认用本节点 label（空则类型名）。 */
-    protected void fieldLabel(CodecEditorScreen screen, int x, int y) {
-        fieldLabelText(screen, x, y, label.isEmpty() ? type().name() : label, fieldLabelColor());
-    }
-
-    /** 用给定文本绘制字段名；与同行控件文字同一纵线。 */
-    protected void fieldLabelText(CodecEditorScreen screen, int x, int y, String text, int color) {
-        screen.drawLabelEllipsis(x, y + 1, text, LABEL_WIDTH, color);
-    }
 
     /** 悬浮提示：类型/注册表/约束/默认值 + 子类附加信息 + 校验报错。 */
     public List<Component> tooltipLines() {
@@ -232,11 +204,11 @@ public abstract class EditorFormNode {
         return Component.literal(text).withStyle(style -> style.withColor(color));
     }
 
-    /** schema "type" → {@link SchemaType}（序列化名与枚举名一致）。 */
-    protected SchemaType type() {
-        return typeOf(schema);
-    }
+    // -------------------------------------------------
+    // schema 工具
+    // -------------------------------------------------
 
+    /** schema "type" → {@link SchemaType}（序列化名与枚举名一致）。 */
     protected static SchemaType typeOf(JsonObject s) {
         if (s == null || !s.has(SchemaKeys.TYPE)) {
             return SchemaType.UNKNOWN;
@@ -267,7 +239,7 @@ public abstract class EditorFormNode {
         return null;
     }
 
-    protected String textOf(JsonElement e) {
+    protected static String textOf(JsonElement e) {
         if (e == null || e.isJsonNull()) {
             return "";
         }

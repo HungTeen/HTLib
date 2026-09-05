@@ -4,18 +4,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.MapWidget;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 映射节点：头部 [＋][－] 增删（删最后一项），键/值各占一行递归编辑。
+ * 映射节点：头部增删（删最后一项），键/值各占一行递归编辑。
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/4 22:50
  */
-final class MapNode extends EditorFormNode {
+public final class MapNode extends EditorFormNode {
 
     private final List<EditorFormNode> mapKeys = new ArrayList<>();
     private final List<EditorFormNode> mapValues = new ArrayList<>();
@@ -41,7 +43,7 @@ final class MapNode extends EditorFormNode {
 
     @Override
     public int height() {
-        int h = ROW_HEIGHT;
+        int h = EditorWidget.ROW_HEIGHT;
         for (int i = 0; i < mapKeys.size(); i++) {
             h += mapKeys.get(i).height() + mapValues.get(i).height();
         }
@@ -49,44 +51,28 @@ final class MapNode extends EditorFormNode {
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        validateValue();
-        int cx = x + LABEL_WIDTH;
-        if (screen.formRowVisible(y)) {
-            screen.addButton(cx, y, 20, "+", b -> {
-                mapKeys.add(EditorFormNode.create(keySchema(), "", new JsonPrimitive("")));
-                mapValues.add(EditorFormNode.create(valueSchema(), "", JsonNull.INSTANCE));
-                screen.rebuildForm();
-            });
-            screen.addButton(cx + 22, y, 20, "-", b -> {
-                if (!mapKeys.isEmpty()) {
-                    mapKeys.remove(mapKeys.size() - 1);
-                    mapValues.remove(mapValues.size() - 1);
-                    screen.rebuildForm();
-                }
-            });
-        }
-        y += ROW_HEIGHT;
-        for (int i = 0; i < mapKeys.size(); i++) {
-            y = mapKeys.get(i).buildControls(screen, x + INDENT, y, width - INDENT);
-            y = mapValues.get(i).buildControls(screen, x + INDENT, y, width - INDENT);
-        }
-        return y;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new MapWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        validateValue();
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        y += ROW_HEIGHT;
-        for (int i = 0; i < mapKeys.size(); i++) {
-            y = mapKeys.get(i).collectLabels(screen, x + INDENT, y, width - INDENT);
-            y = mapValues.get(i).collectLabels(screen, x + INDENT, y, width - INDENT);
+    public List<EditorFormNode> keys() {
+        return mapKeys;
+    }
+
+    public List<EditorFormNode> values() {
+        return mapValues;
+    }
+
+    public void addEntry() {
+        mapKeys.add(EditorFormNode.create(keySchema(), "", new JsonPrimitive("")));
+        mapValues.add(EditorFormNode.create(valueSchema(), "", JsonNull.INSTANCE));
+    }
+
+    public void removeLastEntry() {
+        if (!mapKeys.isEmpty()) {
+            mapKeys.remove(mapKeys.size() - 1);
+            mapValues.remove(mapValues.size() - 1);
         }
-        return y;
     }
 
     @Override

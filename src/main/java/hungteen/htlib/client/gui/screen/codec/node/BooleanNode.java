@@ -4,13 +4,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import hungteen.htlib.client.gui.screen.codec.CodecEditorScreen;
+import hungteen.htlib.client.gui.widget.codec.EditorHost;
+import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.BooleanWidget;
 
 /**
  * 布尔节点：单行 true/false 切换按钮。
- *
+ * @author PangTeen
+ * @program HTLib
+ * @create 2026/9/4 22:50
  */
-final class BooleanNode extends EditorFormNode {
+public final class BooleanNode extends EditorFormNode {
 
     BooleanNode(JsonObject schema, String label, JsonElement value) {
         super(schema, label, value);
@@ -22,41 +26,26 @@ final class BooleanNode extends EditorFormNode {
 
     @Override
     public int height() {
-        return ROW_HEIGHT;
+        return EditorWidget.ROW_HEIGHT;
     }
 
     @Override
-    public int buildControls(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        if (screen.formRowVisible(y)) {
-            boolean cur = value != null && value.isJsonPrimitive() && value.getAsBoolean();
-            screen.addButton(cx, y, cw, String.valueOf(cur), b -> {
-                value = new JsonPrimitive(!cur);
-                screen.rebuild();
-            });
-        }
-        return y + ROW_HEIGHT;
+    protected EditorWidget createWidget(EditorHost host) {
+        return new BooleanWidget(host, this);
     }
 
-    @Override
-    public int collectLabels(CodecEditorScreen screen, int x, int y, int width) {
-        int cx = x + LABEL_WIDTH;
-        int cw = Math.max(CONTROL_MIN_WIDTH, Math.min(width - LABEL_WIDTH, CONTROL_WIDTH));
-        fieldLabel(screen, x, y);
-        screen.addTooltipRow(x, y, cx + cw - x, ROW_HEIGHT, tooltipLines());
-        return y + ROW_HEIGHT;
+    /** 切换 true/false。 */
+    public void toggle() {
+        setValue(new JsonPrimitive(!isCurrentTrue()));
     }
 
-    @Override
-    public int buildInlineControl(CodecEditorScreen screen, int x, int y, int width) {
-        return buildControls(screen, x, y, width);
+    public boolean isCurrentTrue() {
+        return value != null && value.isJsonPrimitive() && value.getAsBoolean();
     }
 
     @Override
     public JsonElement collect() {
-        boolean cur = value != null && value.isJsonPrimitive() && value.getAsBoolean();
-        return new JsonPrimitive(cur);
+        return new JsonPrimitive(isCurrentTrue());
     }
 
     @Override
