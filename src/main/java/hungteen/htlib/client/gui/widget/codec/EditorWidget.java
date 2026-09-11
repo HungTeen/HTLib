@@ -197,7 +197,7 @@ public abstract class EditorWidget {
     /** 摆放折叠按钮（行右缘），悬浮提示随状态切换。 */
     protected final void placeCollapseToggle() {
         if (collapseToggle != null) {
-            place(collapseToggle, rightEdge() - TOGGLE_WIDTH, y);
+            place(collapseToggle, controlX(), y);
             collapseToggle.setTooltip(Tooltip.create(
                 Component.translatable(collapsed ? "htlib.screen.expand" : "htlib.screen.collapse")));
         }
@@ -224,9 +224,12 @@ public abstract class EditorWidget {
         return rowY >= host.topOffset();
     }
 
-    /** 标签在行左侧按文本实际宽度渲染，不截断。 */
+    /** 标签在行左侧按文本实际宽度渲染（必填字段名后带红色星号）。 */
     protected final void drawLabel(GuiGraphics graphics, Font font, String text, int color) {
         graphics.drawString(font, text, x, y + 1, color);
+        if (isRequired()) {
+            graphics.drawString(font, "*", x + font.width(text), y + 1, ViewerStyle.COLOR_REQUIRED);
+        }
     }
 
     /** 展示用的字段名（内联行用外层标签）。 */
@@ -234,9 +237,9 @@ public abstract class EditorWidget {
         return inline ? inlineLabel : node.label();
     }
 
-    /** 标签实际宽度。 */
+    /** 标签实际宽度（含必填星号）。 */
     protected final int labelWidth() {
-        return host.font().width(displayLabel());
+        return host.font().width(displayLabel()) + (isRequired() ? host.font().width(" *") : 0);
     }
 
     /** 行右缘（留白避开滚动条）。 */
@@ -244,7 +247,7 @@ public abstract class EditorWidget {
         return x + width - RIGHT_MARGIN;
     }
 
-    /** 行内控件（输入框/选择器）起始 x：紧跟字段名右侧。 */
+    /** 行内控件（输入框/选择器）起始 x：紧跟字段名（及必填星号）右侧。 */
     protected final int controlX() {
         return x + labelWidth() + LABEL_GAP;
     }
@@ -292,6 +295,11 @@ public abstract class EditorWidget {
     private void attachWidget(AbstractWidget widget) {
         host.addWidget(widget);
         owned.add(widget);
+    }
+
+    /** 该节点是否必填（字段名后带红星）。 */
+    protected final boolean isRequired() {
+        return node().isRequired();
     }
 
     protected final int labelColor() {

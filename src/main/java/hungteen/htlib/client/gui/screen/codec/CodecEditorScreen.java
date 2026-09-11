@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
+import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import hungteen.htlib.common.network.NetworkHandler;
-import hungteen.htlib.common.network.RequestSchemaPacket;
 import hungteen.htlib.common.network.SaveDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -48,6 +48,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     private JsonObject schema;
     private EditorFormNode formRoot;
     private String saveRegistryName;
+    private hungteen.htlib.client.gui.widget.codec.DropdownButton saveDropdown;
     private int jsonScroll = 0;
     private int formScroll = 0;
     private int panX = 0;
@@ -103,7 +104,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     }
 
     /**
-     * 顶部工具条按钮（模式切换/路径/文件名/保存）。
+     * 顶部工具条按钮（模式切换/路径/文件名/动作下拉）。
      */
     private void rebuildBody() {
         Button modeButton =
@@ -115,12 +116,71 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
         EditBox registryNameField = new EditBox(this.font, 244, 4, 80, 13, Component.translatable("htlib.screen.path"));
         registryNameField.setValue(saveRegistryName);
-        registryNameField.setResponder(s -> saveRegistryName = s);
+        registryNameField.setSuggestion(I18n.get("htlib.screen.path_hint"));
+        registryNameField.setResponder(s -> {
+            saveRegistryName = s;
+            registryNameField.setSuggestion(StringUtils.isBlank(s) ? I18n.get("htlib.screen.path_hint") : null);
+        });
         addRenderableWidget(registryNameField);
 
-        Button saveButton = Button.builder(Component.translatable("htlib.screen.save"), b -> save())
-            .bounds(386, 4, 40, 14).build();
-        addRenderableWidget(saveButton);
+        // 动作下拉：保存 / 校验（按钮文案固定为"更多"）
+        List<String> actions = List.of(I18n.get("htlib.screen.save"), I18n.get("htlib.screen.validate"));
+        int actionsWidth = Math.max(40, actions.stream().mapToInt(this.font::width).max().orElse(40) + 8);
+        saveDropdown = new hungteen.htlib.client.gui.widget.codec.DropdownButton(this::addRenderableWidget,
+            this::removeWidget, I18n.get("htlib.screen.more"), actionsWidth, 14, actions, 0, index -> {
+            if (index == 0) {
+                save();
+            } else {
+                validate();
+            }
+        });
+        saveDropdown.addToScreen(this.font);
+        saveDropdown.setPosition(this.width - actionsWidth - 2, 4);
+    }
+
+    /**
+     * 校验整个表单：递归校验节点树，状态栏提示第一个错误。
+     */
+    private void validate() {
+        if (formRoot == null) {
+            return;
+        }
+        List<String> errors = new ArrayList<>();
+        collectErrors(formRoot, errors);
+        if (errors.isEmpty()) {
+            setStatus(I18n.get("htlib.screen.validate_ok"));
+        } else {
+            setStatusPersistent(I18n.get("htlib.screen.validate_fail", errors.size(), errors.get(0)));
+        }
+    }
+
+    private static void collectErrors(EditorFormNode node, List<String> errors) {
+        node.validate();
+        if (node.isInvalid() && !node.label().isEmpty()) {
+            errors.add(node.label() + ": " + node.errorMessage());
+        }
+        if (node instanceof hungteen.htlib.client.gui.screen.codec.node.RecordNode record) {
+            for (EditorFormNode child : record.children()) {
+                collectErrors(child, errors);
+            }
+        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.ListSetNode list) {
+            for (EditorFormNode item : list.items()) {
+                collectErrors(item, errors);
+            }
+        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.MapNode map) {
+            for (EditorFormNode key : map.keys()) {
+                collectErrors(key, errors);
+            }
+            for (EditorFormNode value : map.values()) {
+                collectErrors(value, errors);
+            }
+        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.OptionalNode optional
+            && optional.inner() != null) {
+            collectErrors(optional.inner(), errors);
+        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.UnionNode union
+            && union.selectedVariant() != null) {
+            collectErrors(union.selectedVariant(), errors);
+        }
     }
 
     /**
@@ -135,7 +195,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     }
 
     /**
-     * 选中注册表 → 请求 schema。
+     * 选中注册表 → 优先读取 schema 缓存，未命中才请求服务端（同一注册表只请求一次）。
      */
     public void select(String name) {
         this.selected = name;
@@ -143,9 +203,19 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         this.formRoot = null;
         this.formScroll = 0;
         this.panX = 0;
-        NetworkHandler.sendToServer(new RequestSchemaPacket(name));
+        String cached = EntrySchemaCache.schema(name);
+        if (cached != null && !cached.isEmpty()) {
+            applySchema(cached);
+            return;
+        }
         setStatusPersistent(I18n.get("htlib.screen.request_schema", name));
         rebuild();
+        EntrySchemaCache.acquire(name, json -> {
+            // 回调时可能已切换/关闭界面：仅当仍是当前选中且屏幕存活时应用
+            if (name.equals(selected) && screen() == Minecraft.getInstance().screen) {
+                applySchema(json);
+            }
+        });
     }
 
     /**
@@ -158,7 +228,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             this.formRoot = EditorFormNode.root(this.schema);
             this.formScroll = 0;
             this.panX = 0;
-            setStatusPersistent(I18n.get("htlib.screen.loaded_schema", selected));
+            setStatusFor(I18n.get("htlib.screen.loaded_schema", selected), ViewerStyle.INFO_TIMEOUT_MS);
             rebuild();
         } catch (Exception e) {
             setStatusPersistent(I18n.get("htlib.screen.schema_error", e.getMessage()));
@@ -188,7 +258,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         String path = String.format("datapack:%s/data/%s/%s/%s.json", registryName.getNamespace(), registryType.getNamespace(),
             registryType.getPath(), registryName.getPath());
         NetworkHandler.sendToServer(new SaveDataPacket(selected, path, json));
-        setStatusPersistent(I18n.get("htlib.screen.save_sent", path));
+        setStatusFor(I18n.get("htlib.screen.save_sent", path), ViewerStyle.INFO_TIMEOUT_MS);
     }
 
     private String collectJsonText() {
@@ -334,6 +404,36 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             panning = false;
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    /** 动作下拉的面板与字段补全面板一起画在最上层。 */
+    @Override
+    protected void paintSelectors(GuiGraphics graphics, double mouseX, double mouseY) {
+        super.paintSelectors(graphics, mouseX, mouseY);
+        if (saveDropdown != null) {
+            saveDropdown.paintPanel(graphics, this.font, mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // 动作下拉展开期间：面板内选择，面板外只收起（不透传给下方控件）
+        if (saveDropdown != null && saveDropdown.isOpen()) {
+            saveDropdown.mouseClicked(mouseX, mouseY);
+            setFocused(null);
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (saveDropdown != null && saveDropdown.isOpen()
+            && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+            saveDropdown.close();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     // -------------------------------------------------

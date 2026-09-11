@@ -210,8 +210,9 @@ public final class SchemaPrinter {
                     appendJsonDefault(fieldObj, field.defaultValue());
                     JsonObject fieldSchema = new JsonObject();
                     appendJsonNode(field.schema(), fieldSchema);
-                    // 默认值同时挂到字段 schema 上，客户端节点才能读到
+                    // 默认值与必填标记同时挂到字段 schema 上，客户端节点才能读到
                     appendJsonDefault(fieldSchema, field.defaultValue());
+                    fieldSchema.addProperty("required", field.required());
                     fieldObj.add("schema", fieldSchema);
                     fields.add(fieldObj);
                 }

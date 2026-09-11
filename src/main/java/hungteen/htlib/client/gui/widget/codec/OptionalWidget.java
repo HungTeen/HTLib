@@ -1,6 +1,7 @@
 package hungteen.htlib.client.gui.widget.codec;
 
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
+import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.OptionalNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,6 +15,8 @@ import net.minecraft.client.gui.GuiGraphics;
 public final class OptionalWidget extends EditorWidget {
 
     private final OptionalNode node;
+    /** 当前绑定的内层节点（load 可能重建内层节点，身份变化时旧控件必须销毁）。 */
+    private EditorFormNode innerNode;
     private EditorWidget innerWidget;
 
     public OptionalWidget(EditorHost host, OptionalNode node) {
@@ -77,8 +80,8 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     public void refreshFromNode() {
-        if (innerWidget != null) {
-            innerWidget.refreshFromNode();
+        if (inner() != null) {
+            inner().refreshFromNode();
         }
     }
 
@@ -98,8 +101,16 @@ public final class OptionalWidget extends EditorWidget {
     }
 
     private EditorWidget inner() {
-        if (innerWidget == null && node.inner() != null) {
-            innerWidget = node.inner().widget(host);
+        // 内层节点被 load() 重建：销毁旧控件，避免泄漏与新节点无控件可用
+        if (innerNode != node.inner()) {
+            if (innerWidget != null) {
+                innerWidget.dispose();
+                innerWidget = null;
+            }
+            innerNode = node.inner();
+        }
+        if (innerWidget == null && innerNode != null) {
+            innerWidget = innerNode.widget(host);
         }
         return innerWidget;
     }

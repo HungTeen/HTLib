@@ -58,7 +58,8 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         this.host = host;
         this.addWidget = addWidget;
         this.onSelect = onSelect;
-        this.allNames = List.copyOf(names);
+        // 共享调用方传入的列表引用（契约：只读），多个下拉框可复用同一列表对象
+        this.allNames = names;
         this.listWidth = width;
         this.listLeft = x;
         this.listRight = x + width;

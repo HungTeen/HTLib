@@ -13,7 +13,10 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * 枚举节点：选中某个常量。
@@ -23,7 +26,11 @@ import java.util.List;
  */
 public final class EnumNode extends EditorFormNode {
 
-    private final List<String> enumValues = new ArrayList<>();
+    /** enum 值列表按 schema 共享（同一 schema 的所有枚举下拉共用同一个列表对象）。 */
+    private static final Map<JsonObject, List<String>> SHARED_ENUM_VALUES =
+        Collections.synchronizedMap(new WeakHashMap<>());
+
+    private List<String> enumValues = List.of();
     private int enumIndex = 0;
 
     EnumNode(JsonObject schema, String label, JsonElement value) {
@@ -32,13 +39,26 @@ public final class EnumNode extends EditorFormNode {
 
     @Override
     protected void init() {
-        if (schema.has(SchemaKeys.ENUM_VALUES)) {
-            for (JsonElement e : schema.getAsJsonArray(SchemaKeys.ENUM_VALUES)) {
-                enumValues.add(e.getAsJsonObject().get(SchemaKeys.SERIALIZED_NAME).getAsString());
-            }
-        }
+        this.enumValues = sharedEnumValues(schema);
         String current = value != null && value.isJsonPrimitive() ? value.getAsString() : "";
         enumIndex = Math.max(0, enumValues.indexOf(current));
+    }
+
+    /** 构建并共享枚举值列表（schema 相等即复用，列表不可变）。 */
+    private static List<String> sharedEnumValues(JsonObject schema) {
+        List<String> cached = SHARED_ENUM_VALUES.get(schema);
+        if (cached != null) {
+            return cached;
+        }
+        java.util.List<String> built = new ArrayList<>();
+        if (schema.has(SchemaKeys.ENUM_VALUES)) {
+            for (JsonElement e : schema.getAsJsonArray(SchemaKeys.ENUM_VALUES)) {
+                built.add(e.getAsJsonObject().get(SchemaKeys.SERIALIZED_NAME).getAsString());
+            }
+        }
+        List<String> unmodifiable = List.copyOf(built);
+        SHARED_ENUM_VALUES.put(schema, unmodifiable);
+        return unmodifiable;
     }
 
     @Override

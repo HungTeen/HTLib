@@ -14,7 +14,10 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * 联合（dispatch）节点：类型下拉 + 当前分支的字段。
@@ -26,7 +29,11 @@ public final class UnionNode extends EditorFormNode {
 
     private static final String DEFAULT_VARIANT_KEY = "type";
 
-    private final List<String> unionNames = new ArrayList<>();
+    /** union 变体名列表按 schema 共享（同一 schema 的所有 union 下拉共用同一个列表对象）。 */
+    private static final Map<JsonObject, List<String>> SHARED_UNION_NAMES =
+        Collections.synchronizedMap(new WeakHashMap<>());
+
+    private List<String> unionNames = List.of();
     private final List<EditorFormNode> unionVariants = new ArrayList<>();
     private int unionIndex = 0;
 
@@ -40,16 +47,34 @@ public final class UnionNode extends EditorFormNode {
             return;
         }
         JsonArray variants = schema.getAsJsonArray(SchemaKeys.VARIANTS);
+        this.unionNames = sharedUnionNames(schema);
         for (JsonElement v : variants) {
             JsonObject vo = v.getAsJsonObject();
-            unionNames.add(vo.has(SchemaKeys.NAME) ? vo.get(SchemaKeys.NAME).getAsString()
-                : ("分支" + unionNames.size()));
             unionVariants.add(EditorFormNode.create(vo, "", JsonNull.INSTANCE));
         }
         if (!unionVariants.isEmpty()) {
             unionIndex = matchUnionVariant(value);
             unionVariants.get(unionIndex).load(value);
         }
+    }
+
+    /** 构建并共享变体名列表（schema 相等即复用，列表不可变）。 */
+    private static List<String> sharedUnionNames(JsonObject schema) {
+        List<String> cached = SHARED_UNION_NAMES.get(schema);
+        if (cached != null) {
+            return cached;
+        }
+        List<String> built = new ArrayList<>();
+        if (schema.has(SchemaKeys.VARIANTS)) {
+            for (JsonElement v : schema.getAsJsonArray(SchemaKeys.VARIANTS)) {
+                JsonObject vo = v.getAsJsonObject();
+                built.add(vo.has(SchemaKeys.NAME) ? vo.get(SchemaKeys.NAME).getAsString()
+                    : ("分支" + built.size()));
+            }
+        }
+        List<String> unmodifiable = List.copyOf(built);
+        SHARED_UNION_NAMES.put(schema, unmodifiable);
+        return unmodifiable;
     }
 
     @Override

@@ -196,9 +196,9 @@ public final class HolderWidget extends EditorWidget {
         EntrySchemaCache.acquire(registryName, this::onEntrySchema);
     }
 
-    /** 条目结构 schema 到达：构建内联子表单并重排。 */
+    /** 条目结构 schema 到达：构建内联子表单并重排（空串表示服务端解析失败，忽略并停留引用模式）。 */
     private void onEntrySchema(String schemaJson) {
-        if (!isCreated() || entrySchema != null || inlineNode != null) {
+        if (!isCreated() || entrySchema != null || inlineNode != null || schemaJson.isEmpty()) {
             return;
         }
         try {

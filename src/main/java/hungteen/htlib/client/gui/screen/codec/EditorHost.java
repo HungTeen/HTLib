@@ -19,7 +19,9 @@ public interface EditorHost {
 
     int screenWidth();
 
-    /** 表单区顶部工具条高度，行 y 小于该值时不显示。 */
+    /**
+     * 表单区顶部工具条高度，行 y 小于该值时不显示。
+     */
     int topOffset();
 
     void addWidget(AbstractWidget widget);
@@ -30,6 +32,8 @@ public interface EditorHost {
 
     void unregisterSelector(TypeSelector selector);
 
-    /** 结构变化后请求重新布局（只重摆控件，不重建）。 */
+    /**
+     * 结构变化后请求重新布局（只重摆控件，不重建）。
+     */
     void relayout();
 }

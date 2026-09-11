@@ -33,10 +33,6 @@ public class NetworkHandler {
             SyncDatapackPacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), OpenCodecPacket.class, OpenCodecPacket::encode, OpenCodecPacket::new,
             OpenCodecPacket.Handler::onMessage);
-        CHANNEL.registerMessage(getId(), RequestSchemaPacket.class, RequestSchemaPacket::encode,
-            RequestSchemaPacket::new, RequestSchemaPacket.Handler::onMessage);
-        CHANNEL.registerMessage(getId(), SchemaResponsePacket.class, SchemaResponsePacket::encode,
-            SchemaResponsePacket::new, SchemaResponsePacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), SaveDataPacket.class, SaveDataPacket::encode, SaveDataPacket::new,
             SaveDataPacket.Handler::onMessage);
         CHANNEL.registerMessage(getId(), RequestRegistryEntriesPacket.class, RequestRegistryEntriesPacket::encode,

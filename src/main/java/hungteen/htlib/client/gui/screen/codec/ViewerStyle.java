@@ -98,4 +98,6 @@ public final class ViewerStyle {
     // ---- 行为 ----
     /** 状态提示自动消失时长（毫秒）。 */
     public static final long STATUS_TIMEOUT_MS = 3000L;
+    /** 完成类提示（加载/保存）的消失时长（毫秒）。 */
+    public static final long INFO_TIMEOUT_MS = 8000L;
 }

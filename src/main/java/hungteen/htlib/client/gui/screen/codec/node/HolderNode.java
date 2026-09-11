@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.HolderWidget;
+import hungteen.htlib.client.gui.widget.codec.RegistryEntriesCache;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
@@ -26,7 +27,7 @@ import java.util.Optional;
 public final class HolderNode extends EditorFormNode {
 
     /** 可补全的注册表条目名（客户端本地枚举）。 */
-    private final List<String> entries = new ArrayList<>();
+    private List<String> entries = List.of();
 
     HolderNode(JsonObject schema, String label, JsonElement value) {
         super(schema, label, value);
@@ -36,7 +37,17 @@ public final class HolderNode extends EditorFormNode {
     protected void init() {
         if (schema.has(SchemaKeys.REGISTRY)) {
             String name = schema.getAsJsonObject(SchemaKeys.REGISTRY).get(SchemaKeys.REGISTRY).getAsString();
-            entries.addAll(clientRegistryEntries(name));
+            // 条目列表走共享缓存（同一注册表只枚举一次，本地结果也写回缓存给所有 Holder 下拉复用）
+            List<String> cached = RegistryEntriesCache.entries(name);
+            if (!cached.isEmpty()) {
+                entries = cached;
+            } else {
+                List<String> scanned = clientRegistryEntries(name);
+                entries = scanned;
+                if (!scanned.isEmpty()) {
+                    RegistryEntriesCache.update(name, scanned);
+                }
+            }
         }
     }
 

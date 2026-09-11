@@ -1,5 +1,6 @@
 package hungteen.htlib.common.network;
 
+import com.google.gson.JsonObject;
 import hungteen.htlib.common.codec.parse.CodecEditorManager;
 import hungteen.htlib.common.codec.parse.SchemaRegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,9 +41,11 @@ public class RequestEntrySchemaPacket {
             }
             // 供 DispatchCodec 枚举解析数据驱动注册表。
             SchemaRegistryAccess.set(sender.server.registryAccess());
-            CodecEditorManager.getSchemaJson(message.registryName).ifPresent(schema ->
-                NetworkHandler.sendToClient(sender,
-                    new EntrySchemaResponsePacket(message.registryName, schema.toString())));
+            // 无论成败都回包，避免客户端监听者永久挂起（空串表示失败）。
+            String schemaJson = CodecEditorManager.getSchemaJson(message.registryName)
+                .map(JsonObject::toString).orElse("");
+            NetworkHandler.sendToClient(sender,
+                new EntrySchemaResponsePacket(message.registryName, schemaJson));
         });
         ctx.get().setPacketHandled(true);
     }

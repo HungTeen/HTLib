@@ -31,7 +31,7 @@ public final class ListSetWidget extends EditorWidget {
 
     @Override
     protected void create() {
-        createCollapseToggle();
+//        createCollapseToggle();
         plus = createButton("+", 12, b -> {
             node.addItem();
             expand();
@@ -54,7 +54,7 @@ public final class ListSetWidget extends EditorWidget {
 
     @Override
     protected int doLayout() {
-        placeCollapseToggle();
+//        placeCollapseToggle();
         place(minus, controlX() + 15, y);
         place(plus, controlX(), y);
         minus.visible = !hidden && rowVisible(y) && !node.items().isEmpty();

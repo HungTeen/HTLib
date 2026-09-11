@@ -30,9 +30,9 @@ public final class UnionWidget extends EditorWidget {
         if (node.unionNames().isEmpty()) {
             return;
         }
-        if (collapsible()) {
-            createCollapseToggle();
-        }
+//        if (collapsible()) {
+//            createCollapseToggle();
+//        }
         selector = createSelector(SELECTOR_WIDTH, node.unionNames(), node.currentVariantName(), name -> {
             int idx = node.unionNames().indexOf(name);
             if (idx >= 0) {
@@ -53,19 +53,19 @@ public final class UnionWidget extends EditorWidget {
 
     @Override
     protected int doLayout() {
-        placeCollapseToggle();
+//        placeCollapseToggle();
         if (selector != null) {
             selector.setPosition(controlX(), y);
             selector.setVisible(!hidden && rowVisible(y));
         }
-        if (isCollapsed()) {
-            for (EditorWidget widget : variantWidgets) {
-                if (widget != null) {
-                    widget.setHidden(true);
-                }
-            }
-            return ROW_HEIGHT;
-        }
+//        if (isCollapsed()) {
+//            for (EditorWidget widget : variantWidgets) {
+//                if (widget != null) {
+//                    widget.setHidden(true);
+//                }
+//            }
+//            return ROW_HEIGHT;
+//        }
         for (int i = 0; i < variantWidgets.length; i++) {
             if (i != node.variantIndex() && variantWidgets[i] != null) {
                 variantWidgets[i].setHidden(true);

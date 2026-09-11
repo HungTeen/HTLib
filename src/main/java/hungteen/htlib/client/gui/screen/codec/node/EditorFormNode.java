@@ -30,6 +30,8 @@ public abstract class EditorFormNode {
     protected JsonElement value;
     protected boolean invalid = false;
     protected String errorMessage = "";
+    /** 是否必填（schema 声明；显示时字段名后带红色星号）。 */
+    protected boolean required = false;
 
     private EditorWidget widget;
 
@@ -37,6 +39,8 @@ public abstract class EditorFormNode {
         this.schema = schema;
         this.label = label == null ? "" : label;
         this.value = value == null || value.isJsonNull() ? defaultFor(schema) : value;
+        this.required = this.schema != null && this.schema.has(SchemaKeys.REQUIRED)
+            && this.schema.get(SchemaKeys.REQUIRED).getAsBoolean();
         if (this.value == null) {
             this.value = JsonNull.INSTANCE;
         }
@@ -102,6 +106,10 @@ public abstract class EditorFormNode {
 
     public boolean isInvalid() {
         return invalid;
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 
     public String errorMessage() {
@@ -303,11 +311,8 @@ public abstract class EditorFormNode {
 
     protected static JsonElement parseInput(String text, SchemaType type) {
         if (text == null || text.isEmpty()) {
-            return switch (type) {
-                case STRING, RESOURCE_LOCATION, COMPONENT, UNKNOWN, HOLDER, HOLDER_SET, REGISTRY ->
-                    new com.google.gson.JsonPrimitive("");
-                default -> JsonNull.INSTANCE;
-            };
+            // 啥也没有
+            return JsonNull.INSTANCE;
         }
         return switch (type) {
             case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));

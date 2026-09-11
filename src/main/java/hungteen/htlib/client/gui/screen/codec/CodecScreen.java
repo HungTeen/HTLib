@@ -31,13 +31,6 @@ public abstract class CodecScreen extends HTScreen {
         this.registryNames = new ArrayList<>(registryNames);
     }
 
-    /** 收到某注册表的 schema：统一转发给当前打开的 Codec 界面。 */
-    public static void onSchema(String registryName, String schemaJson) {
-        if (Minecraft.getInstance().screen instanceof CodecScreen screen && screen.selected.equals(registryName)) {
-            screen.applySchema(schemaJson);
-        }
-    }
-
     /**
      * 创建顶部类型补全输入框。
      */
@@ -91,8 +84,13 @@ public abstract class CodecScreen extends HTScreen {
 
     /** 短暂状态提示（自动消失）。 */
     protected void setStatus(String text) {
+        setStatusFor(text, ViewerStyle.STATUS_TIMEOUT_MS);
+    }
+
+    /** 定时消失的状态提示。 */
+    protected void setStatusFor(String text, long timeoutMs) {
         this.status = text;
-        this.statusUntil = Util.getMillis() + ViewerStyle.STATUS_TIMEOUT_MS;
+        this.statusUntil = Util.getMillis() + timeoutMs;
     }
 
     /** 持久状态提示（不自动消失）。 */
