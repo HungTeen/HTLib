@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 表单节点基类：纯粹的"数据/状态"层，持有 schema、当前值与校验结果，
- * 通过 {@link #widget(EditorHost)} 与视图层的 {@link EditorWidget} 一一对应。
+ * 表单节点基类：纯粹的"数据/状态"层，持有 schema、当前值与校验结果， 通过 {@link #widget(EditorHost)} 与视图层的 {@link EditorWidget} 一一对应。
+ *
  * @author PangTeen
  * @program HTLib
  * @create 2026/8/10 14:10
@@ -39,8 +39,9 @@ public abstract class EditorFormNode {
         this.schema = schema;
         this.label = label == null ? "" : label;
         this.value = value == null || value.isJsonNull() ? defaultFor(schema) : value;
-        this.required = this.schema != null && this.schema.has(SchemaKeys.REQUIRED)
-            && this.schema.get(SchemaKeys.REQUIRED).getAsBoolean();
+        this.required =
+            this.schema != null && this.schema.has(SchemaKeys.REQUIRED) && this.schema.get(SchemaKeys.REQUIRED)
+                .getAsBoolean();
         if (this.value == null) {
             this.value = JsonNull.INSTANCE;
         }
@@ -264,13 +265,10 @@ public abstract class EditorFormNode {
             return declared;
         }
         return switch (typeOf(schema)) {
-            case RECORD -> new JsonObject();
-            case LIST, SET -> new com.google.gson.JsonArray();
-            case MAP -> new JsonObject();
-            case OPTIONAL -> JsonNull.INSTANCE;
+//            case RECORD, MAP -> new JsonObject();
+//            case LIST, SET -> new com.google.gson.JsonArray();
             case BOOLEAN -> new com.google.gson.JsonPrimitive(false);
-            case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> new com.google.gson.JsonPrimitive(0);
-            default -> new com.google.gson.JsonPrimitive("");
+            default -> JsonNull.INSTANCE;
         };
     }
 
@@ -287,11 +285,11 @@ public abstract class EditorFormNode {
             String text = d.getAsString();
             return switch (typeOf(schema)) {
                 case BOOLEAN -> new com.google.gson.JsonPrimitive(Boolean.parseBoolean(text));
-                case BYTE -> new com.google.gson.JsonPrimitive((byte) parseDouble(text));
-                case SHORT -> new com.google.gson.JsonPrimitive((short) parseDouble(text));
-                case INT -> new com.google.gson.JsonPrimitive((int) parseDouble(text));
-                case LONG -> new com.google.gson.JsonPrimitive((long) parseDouble(text));
-                case FLOAT -> new com.google.gson.JsonPrimitive((float) parseDouble(text));
+                case BYTE -> new com.google.gson.JsonPrimitive((byte)parseDouble(text));
+                case SHORT -> new com.google.gson.JsonPrimitive((short)parseDouble(text));
+                case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));
+                case LONG -> new com.google.gson.JsonPrimitive((long)parseDouble(text));
+                case FLOAT -> new com.google.gson.JsonPrimitive((float)parseDouble(text));
                 case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
                 case STRING, RESOURCE_LOCATION, COMPONENT, ENUM, HOLDER, HOLDER_SET, REGISTRY, UNKNOWN ->
                     new com.google.gson.JsonPrimitive(text);

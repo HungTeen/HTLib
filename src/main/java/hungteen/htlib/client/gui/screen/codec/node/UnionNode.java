@@ -127,7 +127,9 @@ public final class UnionNode extends EditorFormNode {
         obj.add(variantKey, new JsonPrimitive(variantName));
         if (inner.isJsonObject()) {
             for (var e : inner.getAsJsonObject().entrySet()) {
-                obj.add(e.getKey(), e.getValue());
+                if (e.getValue() != null && !e.getValue().isJsonNull()) {
+                    obj.add(e.getKey(), e.getValue());
+                }
             }
         }
         return obj;

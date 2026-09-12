@@ -1,11 +1,10 @@
 package hungteen.htlib.client.gui.widget.codec;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.HolderNode;
+import hungteen.htlib.common.codec.parse.CodecEditorManager;
 import hungteen.htlib.common.codec.parse.SchemaType;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,6 +13,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ import java.util.List;
  *   （{@code RegistryFileCodec} 原生支持 ID 与内联对象两种 JSON 形态）。</li>
  * </ul>
  * 模式切换按钮位于字段名之后、输入框之前；按钮只对可内联的 HOLDER 类型显示。
+ *
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/5 22:50
@@ -153,9 +154,14 @@ public final class HolderWidget extends EditorWidget {
     // 引用 / 展开模式
     // -------------------------------------------------
 
-    /** 是否提供展开按钮（仅 HOLDER 且有注册表信息）。 */
+    /**
+     * 是否提供展开按钮（仅 HOLDER 且有注册表信息，还需要是数据包类型）。
+     */
     private boolean supportsInline() {
-        return node.type() == SchemaType.HOLDER && node.registryName() != null;
+        return node.type() == SchemaType.HOLDER && node.registryName() != null
+            && CodecEditorManager.getRegistryNames().stream().anyMatch(loc -> {
+                return StringUtils.equals(loc.toString(), node.registryName());
+        });
     }
 
     /** 展开模式：值为内联对象。 */
@@ -220,9 +226,14 @@ public final class HolderWidget extends EditorWidget {
             removeOwned(box);
             box = null;
         }
-        selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(),
-            name -> node.setValue(new JsonPrimitive(name)));
+        selector =
+            createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> node.setValue(new JsonPrimitive(name)));
         selector.setValue(node.valueText());
+        // 条目是异步到达的：选择器刚建出来还在屏幕 (0,0)，必须立刻落位，否则会在下一次布局前
+        // 渲染到最左上角（隐藏分支下不会被重排，故 setVisible 也要跟着当前状态走）。
+        selector.setPosition(refControlX(), y);
+        selector.setVisible(!hidden && rowVisible(y));
+        host.relayout();
     }
 
     // -------------------------------------------------
@@ -232,15 +243,20 @@ public final class HolderWidget extends EditorWidget {
     private void buildControl() {
         if (supportsInline()) {
             modeButton = createButton(currentModeText(), MODE_BUTTON_WIDTH, b -> toggleMode());
-            modeButton.setTooltip(Tooltip.create(Component.translatable(
-                inlineMode() ? "htlib.screen.mode_ref_tip" : "htlib.screen.mode_inline_tip")));
+            modeButton.setTooltip(Tooltip.create(
+                Component.translatable(inlineMode() ? "htlib.screen.mode_ref_tip" : "htlib.screen.mode_inline_tip")));
         }
         if (inlineMode()) {
             return;
         }
         if (!entries.isEmpty()) {
-            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(),
-                name -> node.setValue(new JsonPrimitive(name)));
+            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
+                if (StringUtils.isBlank(name)) {
+                    node.setValue(JsonNull.INSTANCE);
+                } else {
+                    node.setValue(new JsonPrimitive(name));
+                }
+            });
         } else {
             box = createEditBox(node.valueText(), s -> {
                 node.setValueText(s);

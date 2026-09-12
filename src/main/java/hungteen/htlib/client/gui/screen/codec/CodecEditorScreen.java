@@ -2,12 +2,14 @@ package hungteen.htlib.client.gui.screen.codec;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.serialization.Codec;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SaveDataPacket;
+import hungteen.htlib.util.helper.CodecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Codec 编辑器界面。
@@ -145,12 +148,12 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         if (formRoot == null) {
             return;
         }
-        List<String> errors = new ArrayList<>();
-        collectErrors(formRoot, errors);
-        if (errors.isEmpty()) {
-            setStatus(I18n.get("htlib.screen.validate_ok"));
-        } else {
-            setStatusPersistent(I18n.get("htlib.screen.validate_fail", errors.size(), errors.get(0)));
+        setStatus(I18n.get("htlib.screen.validate_ok"));
+        Optional<? extends Codec<?>> codecOpt = CodecHelper.getCodec(ResourceLocation.tryParse(this.selected));
+        if (codecOpt.isPresent()) {
+            CodecHelper.parse(codecOpt.get(), formRoot.collect()).resultOrPartial(msg -> {
+                setStatus(msg);
+            });
         }
     }
 

@@ -75,7 +75,10 @@ public final class RecordNode extends EditorFormNode {
             if (child.isOptionalAndAbsent()) {
                 continue;
             }
-            obj.add(child.label(), child.collect());
+            JsonElement e = child.collect();
+            if (e != null && !e.isJsonNull()) {
+                obj.add(child.label(), e);
+            }
         }
         return obj;
     }
