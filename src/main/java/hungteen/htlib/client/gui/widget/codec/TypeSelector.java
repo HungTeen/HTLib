@@ -38,7 +38,10 @@ public final class TypeSelector {
     private final Screen host;
     private final Consumer<AbstractWidget> addWidget;
     private final Consumer<String> onSelect;
-    private final List<String> allNames;
+    /**
+     * 共享调用方传入的列表引用（契约：只读），多个下拉框可复用同一列表对象
+     */
+    private List<String> allNames;
     private final int listWidth;
     private int listLeft, listRight;
     private final int height;
@@ -58,7 +61,6 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         this.host = host;
         this.addWidget = addWidget;
         this.onSelect = onSelect;
-        // 共享调用方传入的列表引用（契约：只读），多个下拉框可复用同一列表对象
         this.allNames = names;
         this.listWidth = width;
         this.listLeft = x;
@@ -71,7 +73,7 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
     /** 创建编辑框并加入屏幕（font 在 render 阶段才可用；幂等）。 */
     public EditBox addToScreen(Font font) {
         if (box == null) {
-            box = new EditBox(font, listLeft, boxY, listRight - listLeft, this.height, Component.translatable("htlib.screen.type"));
+            box = new ClippedEditBox(font, listLeft, boxY, listRight - listLeft, this.height, Component.translatable("htlib.screen.type"));
             box.setMaxLength(128);
             box.setSuggestion(I18n.get("htlib.screen.type_hint"));
             box.setResponder(this::onTextChanged);
@@ -153,23 +155,26 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         suggestions.clear();
         if (q.isEmpty()) {
             open = false;
+            // 空的时候匹配全部
+            suggestions.addAll(allNames);
             box.setSuggestion(I18n.get("htlib.screen.type_hint"));
-            return;
-        }
-        box.setSuggestion(null);
-        // 前缀匹配优先，其次包含匹配
-        List<String> starts = new ArrayList<>();
-        List<String> contains = new ArrayList<>();
-        for (String name : allNames) {
-            String lower = name.toLowerCase(Locale.ROOT);
-            if (lower.startsWith(q)) {
-                starts.add(name);
-            } else if (lower.contains(q)) {
-                contains.add(name);
+        } else {
+            box.setSuggestion(null);
+            // 前缀匹配优先，其次包含匹配
+            List<String> starts = new ArrayList<>();
+            List<String> contains = new ArrayList<>();
+            for (String name : allNames) {
+                String lower = name.toLowerCase(Locale.ROOT);
+                if (lower.startsWith(q)) {
+                    starts.add(name);
+                } else if (lower.contains(q)) {
+                    contains.add(name);
+                }
             }
+            suggestions.addAll(starts);
+            suggestions.addAll(contains);
         }
-        suggestions.addAll(starts);
-        suggestions.addAll(contains);
+
         open = !suggestions.isEmpty();
         suggestIndex = suggestions.indexOf(current);
         if (suggestIndex < 0) {
@@ -316,6 +321,10 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         return false;
     }
 
+    public void setSuggestions(List<String> suggestions) {
+        this.allNames = suggestions;
+    }
+
     /** 空文本时按 ↑↓：列出全部以浏览。 */
     private void openAllIfClosed() {
         if (!open) {
@@ -370,5 +379,30 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
 
     private boolean isFocused() {
         return box != null && box.isFocused();
+    }
+
+    /**
+     * 裁剪版 EditBox：覆盖 render 方法，用 Scissor 裁剪把背景与边框限制在控件矩形内，
+     * 防止文本过长时光标/右边框绘制到控件右侧之外（白色色块问题）。
+     * 裁剪范围向外扩 1px，保证控件自身的边框线不被裁掉。
+     */
+    private static class ClippedEditBox extends EditBox {
+        ClippedEditBox(Font font, int x, int y, int width, int height, Component message) {
+            super(font, x, y, width, height, message);
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            if (!visible) {
+                return;
+            }
+            // 向外扩 1px：enableScissor 的 x2/y2 是排他的，控件边框恰好在边界上会被裁掉
+            graphics.enableScissor(getX() - 1, getY() - 1, getX() + getWidth() + 1, getY() + getHeight() + 1);
+            try {
+                super.render(graphics, mouseX, mouseY, partialTick);
+            } finally {
+                graphics.disableScissor();
+            }
+        }
     }
 }

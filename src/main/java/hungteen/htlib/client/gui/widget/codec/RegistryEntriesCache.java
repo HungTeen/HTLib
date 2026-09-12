@@ -26,6 +26,13 @@ public final class RegistryEntriesCache {
     private RegistryEntriesCache() {
     }
 
+    /** 清空全部缓存（/reload 后由客户端事件调用）。 */
+    public static void clear() {
+        ENTRIES.clear();
+        LISTENERS.clear();
+        REQUESTED.clear();
+    }
+
     public static List<String> entries(String registryName) {
         List<String> list = ENTRIES.get(registryName);
         return list == null ? List.of() : list;
@@ -62,4 +69,5 @@ public final class RegistryEntriesCache {
             }
         }
     }
+
 }

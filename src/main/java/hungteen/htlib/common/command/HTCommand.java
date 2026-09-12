@@ -51,10 +51,6 @@ public class HTCommand {
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
     private static final SuggestionProvider<CommandSourceStack> ALL_CUSTOM_RAIDS = SuggestionProviders.register(HTLibHelper.prefix("all_custom_raids"), (commandContext, builder) -> {
-//        Optional<HolderLookup.RegistryLookup<IRaidComponent>> raids = commandContext.getSource().registryAccess().lookup(HTRaidComponents.registry().getRegistryKey());
-//        if(raids.isPresent()){
-//            return SharedSuggestionProvider.suggestResource(raids.get().listElementIds().map(ResourceKey::location), builder);
-//        }
         return SharedSuggestionProvider.suggestResource(HTRaidComponents.registry().getCachedKeys(), builder);
     });
     private static final SuggestionProvider<CommandSourceStack> ALL_DUMMY_ENTITIES = SuggestionProviders.register(HTLibHelper.prefix("all_dummy_entities"), (commandContext, builder) -> {

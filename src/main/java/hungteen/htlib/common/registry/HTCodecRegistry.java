@@ -29,10 +29,8 @@ import java.util.function.Supplier;
  * <h3>这是什么？</h3>
  * <p>与 {@link HTCommonRegistry}（代码注册、加载期填充）不同，本类的条目
  * <b>不在 Java 里注册</b>，而是由玩家在数据包 JSON
- * （<code>data/&lt;namespace&gt;/.../&lt;条目名&gt;.json</code>）中定义，
- * 每个注册名对应一个文件，随世界加载 / 数据包重载被 {@link #codecSup} 解析成对象。
- * 适用于内容型、可数据驱动配置的数据（如 HTLib 的 raid / wave / spawn / result 组件
- * 与 raid_item）。</p>
+ * （<code>data/&lt;namespace&gt;/.../&lt;条目名&gt;.json</code>）中定义， 每个注册名对应一个文件，随世界加载 / 数据包重载被 {@link #codecSup} 解析成对象。
+ * 适用于内容型、可数据驱动配置的数据（如 HTLib 的 raid / wave / spawn / result 组件 与 raid_item）。</p>
  *
  * <h3>作用于哪个生命周期？</h3>
  * <ol>
@@ -69,12 +67,17 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     private final boolean requireCache;
 
     /**
-     * @param registryName 注册名，决定了数据的路径。
-     * @param codecSup 序列化格式。
-     * @param syncSup 同步格式。
-     * @param registryClass 数据类。
+     * @param registryName
+     *     注册名，决定了数据的路径。
+     * @param codecSup
+     *     序列化格式。
+     * @param syncSup
+     *     同步格式。
+     * @param registryClass
+     *     数据类。
      */
-    HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup, @Nullable Class<V> registryClass, boolean requireCache) {
+    HTCodecRegistry(ResourceLocation registryName, Supplier<Codec<V>> codecSup, @Nullable Supplier<Codec<V>> syncSup,
+        @Nullable Class<V> registryClass, boolean requireCache) {
         super(registryName);
         this.codecSup = codecSup;
         this.syncSup = syncSup;
@@ -83,33 +86,35 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     }
 
     @Override
-    public void register(IEventBus modBus){
+    public void register(IEventBus modBus) {
         modBus.addListener(this::addRegistry);
     }
 
     public void syncToClient(ServerPlayer player) {
-        if(this.customSync()){
+        if (this.customSync()) {
             this.getKeys(player.level()).forEach(key -> {
                 this.getOptValue(player.level(), key).flatMap(value -> CodecHelper.encodeNbt(this.syncSup.get(), value)
-                        .resultOrPartial(msg -> HTLib.getLogger().warn("HTCodecRegistry : + msg"))).ifPresent(tag -> {
+                    .resultOrPartial(msg -> HTLib.getLogger().warn("HTCodecRegistry : " + msg))).ifPresent(tag -> {
                     if (tag instanceof CompoundTag nbt) {
-                        NetworkHandler.sendToClient(player, new SyncDatapackPacket(this.getRegistryName(), key.location(), nbt));
+                        NetworkHandler.sendToClient(player,
+                            new SyncDatapackPacket(this.getRegistryName(), key.location(), nbt));
                     }
                 });
             });
         }
-        if(requireCache()){
+        if (requireCache()) {
             this.cacheIds = this.getKeys(player.level()).stream().map(ResourceKey::location).toList();
         }
     }
 
-    public void syncRegister(ResourceLocation name, Object value){
+    public void syncRegister(ResourceLocation name, Object value) {
         final ResourceKey<V> key = ResourceKey.create(this.getRegistryKey(), name);
-        if(this.customSync() && this.getRegistryClass().isPresent()){
+        if (this.customSync() && this.getRegistryClass().isPresent()) {
             if (syncMap.containsKey(key)) {
                 HTLib.getLogger().warn("HTCodecRegistry {} already registered {}", this.getRegistryName(), name);
             } else if (!this.getRegistryClass().get().isInstance(value)) {
-                HTLib.getLogger().warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
+                HTLib.getLogger()
+                    .warn("HTCodecRegistry {} can not cast {} to correct entityType", this.getRegistryName(), name);
             }
             syncMap.put(key, this.getRegistryClass().get().cast(value));
         }
@@ -118,8 +123,8 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     /**
      * Codec<Holder<T>> 不适用于原版的同步方法，故自己绕过。
      */
-    private void addRegistry(DataPackRegistryEvent.NewRegistry event){
-        if(this.defaultSync()){
+    private void addRegistry(DataPackRegistryEvent.NewRegistry event) {
+        if (this.defaultSync()) {
             event.dataPackRegistry(this.getRegistryKey(), this.codecSup.get(), this.syncSup.get());
         } else {
             event.dataPackRegistry(this.getRegistryKey(), this.codecSup.get());
@@ -129,22 +134,22 @@ public class HTCodecRegistry<V> extends HTRegistry<V> implements IHTCodecRegistr
     /**
      * 获取数据包序列化格式的 codec。
      */
-    public Codec<V> getCodec(){
+    public Codec<V> getCodec() {
         return this.codecSup.get();
     }
 
     @Override
-    public Optional<Codec<V>> getSyncCodec(){
+    public Optional<Codec<V>> getSyncCodec() {
         return this.syncSup == null ? Optional.empty() : Optional.ofNullable(this.syncSup.get());
     }
 
     @Override
-    public boolean customSync(){
+    public boolean customSync() {
         return this.requireSync() && this.getRegistryClass().isPresent();
     }
 
     @Override
-    public boolean defaultSync(){
+    public boolean defaultSync() {
         return this.requireSync() && this.getRegistryClass().isEmpty();
     }
 

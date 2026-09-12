@@ -39,7 +39,6 @@ public final class HolderWidget extends EditorWidget {
     private static final int MODE_BUTTON_GAP = 3;
 
     private final HolderNode node;
-    private List<String> entries = List.of();
     private String requestedRegistry;
     private String requestedEntrySchema;
     private JsonObject entrySchema;
@@ -55,7 +54,7 @@ public final class HolderWidget extends EditorWidget {
 
     @Override
     protected void create() {
-        entries = node.entries();
+        List<String> entries = node.entries();
         String registryName = node.registryName();
         if (entries.isEmpty() && registryName != null) {
             entries = RegistryEntriesCache.entries(registryName);
@@ -221,12 +220,12 @@ public final class HolderWidget extends EditorWidget {
 
     /** 服务端条目到达：把手填输入框升级为补全选择器（仅引用模式）。 */
     private void onEntries(List<String> received) {
-        if (!isCreated() || received.isEmpty() || selector != null || inlineMode()) {
+        if (!isCreated() || received.isEmpty() || inlineMode()) {
             return;
         }
-        entries = received;
+        node.setEntries(received);
         if (selector == null) {
-            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
+            selector = createSelector(SELECTOR_WIDTH, received, node.valueText(), name -> {
                 if (StringUtils.isBlank(name)) {
                     node.setValue(JsonNull.INSTANCE);
                 } else {
@@ -234,7 +233,7 @@ public final class HolderWidget extends EditorWidget {
                 }
             });
         }
-        selector.setValue(node.valueText());
+        selector.setSuggestions(received);
         // 条目是异步到达的：选择器刚建出来还在屏幕 (0,0)，必须立刻落位，否则会在下一次布局前
         // 渲染到最左上角（隐藏分支下不会被重排，故 setVisible 也要跟着当前状态走）。
         selector.setPosition(refControlX(), y);
@@ -255,7 +254,7 @@ public final class HolderWidget extends EditorWidget {
         if (inlineMode()) {
             return;
         }
-        selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
+        selector = createSelector(SELECTOR_WIDTH, node.entries(), node.valueText(), name -> {
             if (StringUtils.isBlank(name)) {
                 node.setValue(JsonNull.INSTANCE);
             } else {

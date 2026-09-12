@@ -44,7 +44,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
     private static final int TOP_OFFSET = 20;
     /** 顶部类型输入框宽度（编辑器工具条更紧凑）。 */
-    private static final int TYPE_DROPDOWN_WIDTH = 150;
+    private static final int TYPE_DROPDOWN_WIDTH = 120;
 
     private boolean jsonMode = false;
     private JsonObject schema;
@@ -59,6 +59,11 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     /* 右键拖拽平移 */
     private boolean panning = false;
     private double panLastX, panLastY;
+
+    /* 导入 JSON 模式 */
+    private boolean importMode = false;
+    private EditBox importBox;
+    private Button importConfirmButton;
 
     public CodecEditorScreen(List<ResourceLocation> registryNames) {
         super(registryNames);
@@ -118,14 +123,16 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
      * 顶部工具条按钮（模式切换/路径/文件名/动作下拉）。
      */
     private void rebuildBody() {
+        int currentLeftOffset = TYPE_DROPDOWN_WIDTH + 20;
         Button modeButton =
             Button.builder(Component.translatable(jsonMode ? "htlib.screen.form" : "htlib.screen.json"), b -> {
                 jsonMode = !jsonMode;
                 rebuild();
-            }).bounds(166, 4, 70, 14).build();
+            }).bounds(currentLeftOffset, 4, 50, 14).build();
         addRenderableWidget(modeButton);
+        currentLeftOffset += 50 + 10;
 
-        EditBox datapackNameField = new EditBox(this.font, 244, 4, 60, 13, Component.translatable("htlib.screen.path"));
+        EditBox datapackNameField = new EditBox(this.font, currentLeftOffset, 4, 60, 13, Component.translatable("htlib.screen.path"));
         datapackNameField.setValue(saveRegistryName);
         datapackNameField.setSuggestion(I18n.get("htlib.screen.datapack_hint"));
         datapackNameField.setResponder(s -> {
@@ -133,8 +140,9 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             datapackNameField.setSuggestion(StringUtils.isBlank(s) ? I18n.get("htlib.screen.datapack_hint") : null);
         });
         addRenderableWidget(datapackNameField);
+        currentLeftOffset += 60 + 10;
 
-        EditBox registryNameField = new EditBox(this.font, 314, 4, 60, 13, Component.translatable("htlib.screen.path"));
+        EditBox registryNameField = new EditBox(this.font, currentLeftOffset, 4, 60, 13, Component.translatable("htlib.screen.path"));
         registryNameField.setValue(saveRegistryName);
         registryNameField.setSuggestion(I18n.get("htlib.screen.path_hint"));
         registryNameField.setResponder(s -> {
@@ -142,17 +150,24 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             registryNameField.setSuggestion(StringUtils.isBlank(s) ? I18n.get("htlib.screen.path_hint") : null);
         });
         addRenderableWidget(registryNameField);
-
-        // 动作下拉：保存 / 校验（按钮文案固定为"更多"）
-        List<String> actions = List.of(I18n.get("htlib.screen.save"), I18n.get("htlib.screen.validate"));
+        currentLeftOffset += 60 + 10;
+        
+        // 动作下拉：保存 / 校验 / 导入JSON（按钮文案固定为"更多"）
+        List<String> actions = List.of(
+            I18n.get("htlib.screen.save"),
+            I18n.get("htlib.screen.validate"),
+            I18n.get("htlib.screen.import_json")
+        );
         int actionsWidth = Math.max(40, actions.stream().mapToInt(this.font::width).max().orElse(40) + 8);
         saveDropdown =
             new hungteen.htlib.client.gui.widget.codec.DropdownButton(this::addRenderableWidget, this::removeWidget,
                 I18n.get("htlib.screen.more"), actionsWidth, 14, actions, 0, index -> {
                 if (index == 0) {
                     save();
-                } else {
+                } else if (index == 1) {
                     validate();
+                } else if (index == 2) {
+                    startImportJson();
                 }
             });
         saveDropdown.addToScreen(this.font);
@@ -271,6 +286,68 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             return formRoot.collect().toString();
         }
         return "{}";
+    }
+
+    // -------------------------------------------------
+    // 导入 JSON
+    // -------------------------------------------------
+
+    /** 激活导入 JSON 模式：在底部显示输入框。 */
+    private void startImportJson() {
+        if (formRoot == null) {
+            return;
+        }
+        importMode = true;
+        int boxWidth = Math.min(400, this.width - 100);
+        int boxX = (this.width - boxWidth) / 2;
+        int boxY = this.height - 30;
+        importBox = new EditBox(this.font, boxX, boxY, boxWidth, 14, Component.translatable("htlib.screen.import_json_hint"));
+        importBox.setMaxLength(8192);
+        importBox.setResponder(s -> {});
+        addRenderableWidget(importBox);
+        setFocused(importBox);
+
+        importConfirmButton = Button.builder(Component.literal("OK"), b -> confirmImportJson())
+            .bounds(boxX + boxWidth + 4, boxY, 30, 14).build();
+        addRenderableWidget(importConfirmButton);
+    }
+
+    /** 确认导入：解析 JSON 并加载到表单。 */
+    private void confirmImportJson() {
+        String text = importBox.getValue();
+        cancelImportJson();
+        if (StringUtils.isBlank(text)) {
+            return;
+        }
+        try {
+            com.google.gson.JsonElement element = JsonParser.parseString(text);
+            if (!element.isJsonObject()) {
+                setStatusFor(I18n.get("htlib.screen.import_json_not_object"), ViewerStyle.INFO_TIMEOUT_MS);
+                return;
+            }
+            formRoot.load(element);
+            if (formRoot.hasWidget()) {
+                formRoot.widget(this).refreshFromNode();
+            }
+            relayout();
+            setStatusFor(I18n.get("htlib.screen.import_json_ok"), ViewerStyle.INFO_TIMEOUT_MS);
+        } catch (Exception e) {
+            setStatusPersistent(I18n.get("htlib.screen.import_json_error", e.getMessage()));
+        }
+    }
+
+    /** 取消导入模式：移除输入框。 */
+    private void cancelImportJson() {
+        importMode = false;
+        if (importBox != null) {
+            removeWidget(importBox);
+            importBox = null;
+        }
+        if (importConfirmButton != null) {
+            removeWidget(importConfirmButton);
+            importConfirmButton = null;
+        }
+        setFocused(null);
     }
 
     // -------------------------------------------------
@@ -433,6 +510,16 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // 导入模式：Escape 取消
+        if (importMode && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+            cancelImportJson();
+            return true;
+        }
+        // 导入模式：Enter 确认
+        if (importMode && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER && importBox != null) {
+            confirmImportJson();
+            return true;
+        }
         if (saveDropdown != null && saveDropdown.isOpen() && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
             saveDropdown.close();
             return true;

@@ -52,6 +52,11 @@
   "htlib.screen.remove": "Remove",
   "htlib.screen.mode_ref_tip": "Switch to reference mode (by ID)",
   "htlib.screen.mode_inline_tip": "Switch to inline mode (inline object)",
+  "htlib.screen.import_json": "Import JSON",
+  "htlib.screen.import_json_hint": "Paste JSON here, press Enter to confirm...",
+  "htlib.screen.import_json_ok": "JSON imported successfully",
+  "htlib.screen.import_json_not_object": "Import failed: JSON must be an object",
+  "htlib.screen.import_json_error": "Import failed: %s",
 
   "htlib.tooltip.length": "Length: %s ~ %s",
   "htlib.tooltip.size_count": "Size: %s ~ %s",

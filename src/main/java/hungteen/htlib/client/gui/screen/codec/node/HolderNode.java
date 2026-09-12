@@ -8,15 +8,12 @@ import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.HolderWidget;
 import hungteen.htlib.client.gui.widget.codec.RegistryEntriesCache;
 import hungteen.htlib.common.codec.parse.SchemaKeys;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 注册表引用节点（HOLDER / HOLDER_SET）。
@@ -61,6 +58,10 @@ public final class HolderNode extends EditorFormNode {
         return new HolderWidget(host, this);
     }
 
+    public void setEntries(List<String> entries) {
+        this.entries = entries;
+    }
+
     public List<String> entries() {
         return entries;
     }
@@ -81,7 +82,9 @@ public final class HolderNode extends EditorFormNode {
         value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
     }
 
-    /** 客户端本地枚举注册表条目：内置注册表走 {@link BuiltInRegistries}，数据驱动走当前关卡 RegistryAccess。 */
+    /**
+     * 客户端本地枚举注册表条目：内置注册表走 {@link BuiltInRegistries}。
+     */
     private static List<String> clientRegistryEntries(String registryName) {
         List<String> result = new ArrayList<>();
         ResourceLocation name = ResourceLocation.tryParse(registryName);
@@ -94,17 +97,6 @@ public final class HolderNode extends EditorFormNode {
                 result.add(entry.getKey().location().toString());
             }
             return result;
-        }
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null) {
-            @SuppressWarnings({"unchecked", "rawtypes"})
-            Optional<? extends Registry<?>> opt =
-                mc.level.registryAccess().registry((ResourceKey) ResourceKey.createRegistryKey(name));
-            if (opt.isPresent()) {
-                for (var entry : opt.get().entrySet()) {
-                    result.add(entry.getKey().location().toString());
-                }
-            }
         }
         return result;
     }

@@ -26,6 +26,13 @@ public final class EntrySchemaCache {
     private EntrySchemaCache() {
     }
 
+    /** 清空全部缓存（/reload 后由客户端事件调用）。 */
+    public static void clear() {
+        SCHEMAS.clear();
+        LISTENERS.clear();
+        REQUESTED.clear();
+    }
+
     public static String schema(String registryName) {
         return SCHEMAS.get(registryName);
     }

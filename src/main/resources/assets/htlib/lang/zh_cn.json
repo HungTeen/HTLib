@@ -52,6 +52,11 @@
   "htlib.screen.remove": "移除",
   "htlib.screen.mode_ref_tip": "切换为引用模式（按 ID 引用）",
   "htlib.screen.mode_inline_tip": "切换为展开模式（内联定义）",
+  "htlib.screen.import_json": "导入 JSON",
+  "htlib.screen.import_json_hint": "在此粘贴 JSON，按回车确认…",
+  "htlib.screen.import_json_ok": "JSON 导入成功",
+  "htlib.screen.import_json_not_object": "导入失败：JSON 必须是对象",
+  "htlib.screen.import_json_error": "导入失败：%s",
 
   "htlib.tooltip.length": "长度：%s ~ %s",
   "htlib.tooltip.size_count": "数量：%s ~ %s",

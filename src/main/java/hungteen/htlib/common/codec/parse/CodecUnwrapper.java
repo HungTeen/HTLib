@@ -13,7 +13,7 @@ import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
-
+import net.minecraft.util.StringRepresentable;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -25,6 +25,12 @@ import java.util.function.Supplier;
  * <p>由于 DFU 的 codec 大量使用私有字段、匿名类与 lambda 捕获，无法靠类型安全地访问，
  * 这里以"实测结构"为基础，用反射 + 公开 API 混合的方式读取内部结构。所有方法都是
  * 尽力而为：读不到就返回 null / 默认值，绝不抛异常。</p>
+ *
+ * <p><b>反射命名规则（务必遵守）：</b>只有 {@code com.mojang.serialization} /
+ * {@code com.mojang.datafixers}（DFU，独立依赖库、正式环境不混淆）的内部结构可以按字段名反射；
+ * {@code net.minecraft.*} 的成员在正式游戏环境是 SRG 名（{@code f_xxx_} / {@code m_xxx_}），
+ * 只有开发环境（Mojmap）才是可读名。对 MC 类型一律用 instanceof + 类型扫描 + 直接接口调用，
+ * 按字段名读只会"开发环境正常、正式环境静默失效"。</p>
  *
  * <p>基于 26.1 (DFU 9.0.19) 的实测结构：</p>
  * <ul>
@@ -965,9 +971,12 @@ public final class CodecUnwrapper {
     // -------------------------------------------------
 
     /**
-     * BFS 找对象图中的第一个 {@link Registry} 实例（用于枚举注册表条目）。
+     * 按层深找对象图中最浅的 {@link Registry} 实例（用于枚举注册表条目）。
      *
      * <p>registryKey 只用 key，这里返回实例本身，供 DispatchCodecHandler 枚举 dispatch 的类型值。</p>
+     *
+     * <p>按层深而非栈序：栈式 DFS 的命中顺序取决于字段声明顺序，浅层（本层）的注册表必须优先于
+     * 变体 codec 里嵌套的其它注册表。</p>
      */
     public static Registry<?> findRegistry(Object root) {
 
@@ -977,92 +986,148 @@ public final class CodecUnwrapper {
 
         Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
 
-        Deque<Object> stack = new ArrayDeque<>();
+        List<Object> level = new ArrayList<>();
 
-        stack.push(root);
+        level.add(root);
 
-        while (!stack.isEmpty()) {
+        while (!level.isEmpty()) {
 
-            Object current = stack.pop();
+            List<Object> next = new ArrayList<>();
 
-            if (current == null || !seen.add(current)) {
-                continue;
-            }
+            for (Object current : level) {
 
-            if (current instanceof Registry<?> registry) {
-                return registry;
-            }
+                if (current == null || !seen.add(current)) {
+                    continue;
+                }
 
-            for (Field field : ReflectionUtil.fields(current.getClass())) {
+                if (current instanceof Registry<?> registry) {
+                    return registry;
+                }
 
-                try {
+                for (Field field : ReflectionUtil.fields(current.getClass())) {
 
-                    Object value = field.get(current);
+                    try {
 
-                    if (value != null && !isTerminal(value)) {
-                        stack.push(value);
+                        Object value = field.get(current);
+
+                        if (value != null && !isTerminal(value)) {
+                            next.add(value);
+                        }
+
+                    } catch (Throwable ignored) {
                     }
-
-                } catch (Throwable ignored) {
                 }
             }
+
+            level = next;
         }
 
         return null;
     }
 
-    /** 取 codec 中的 registryKey：先找 {@code registryKey} 命名字段，再找捕获的 Registry 实例调 {@code key()}。 */
+    /**
+     * 取 codec 声明的注册表键（HOLDER / HOLDER_SET / REGISTRY 指向的那个注册表）。
+     *
+     * <p>按层深遍历对象图，优先级从高到低：</p>
+     * <ol>
+     *   <li><b>注册表引用 codec 本体</b>（{@link RegistryFileCodec} / {@link RegistryFixedCodec} /
+     *       {@link HolderSetCodec}）持有的注册表键，见 {@link #holderRegistryKey}；</li>
+     *   <li>对象图中捕获的 {@link Registry} 实例（如 dispatch 键 codec 捕获的类型注册表）的 {@code key()}。</li>
+     * </ol>
+     *
+     * <p>顺序很关键：HTLib 的条目 codec 是 {@code typeRegistry.byNameCodec().dispatch(...)} 套在
+     * 引用 codec 里，图里同时存在"外层数据包注册表"与"内层类型注册表"（如 {@code htlib:wave} 与
+     * {@code htlib:wave_type}）。若让内层先命中，schema 会把 Holder 字段写成类型注册表，
+     * 下拉框随之列出类型而非条目。</p>
+     */
     public static ResourceKey<?> registryKey(Object root) {
+
         if (root == null) {
             return null;
         }
 
         Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
 
-        Deque<Object> stack = new ArrayDeque<>();
+        List<Object> level = new ArrayList<>();
 
-        stack.push(root);
+        level.add(root);
 
-        while (!stack.isEmpty()) {
+        ResourceKey<?> captured = null;
 
-            Object current = stack.pop();
+        while (!level.isEmpty()) {
 
-            if (current == null || !seen.add(current)) {
-                continue;
-            }
+            List<Object> next = new ArrayList<>();
 
-            if (current instanceof Registry<?> registry) {
+            for (Object current : level) {
 
-                try {
+                if (current == null || !seen.add(current)) {
+                    continue;
+                }
 
-                    ResourceKey<? extends Registry<?>> key = registry.key();
+                ResourceKey<?> key = holderRegistryKey(current);
 
-                    if (key != null) {
-                        return key;
+                if (key != null) {
+                    return key;
+                }
+
+                if (captured == null && current instanceof Registry<?> registry) {
+
+                    try {
+
+                        ResourceKey<? extends Registry<?>> registryKey = registry.key();
+
+                        if (registryKey != null) {
+                            captured = registryKey;
+                        }
+
+                    } catch (Throwable ignored) {
                     }
+                }
 
-                } catch (Throwable ignored) {
+                for (Field field : ReflectionUtil.fields(current.getClass())) {
+
+                    try {
+
+                        Object value = field.get(current);
+
+                        if (value != null && !isTerminal(value)) {
+                            next.add(value);
+                        }
+
+                    } catch (Throwable ignored) {
+                    }
                 }
             }
 
-            Object key = ReflectionUtil.getField(current, "registryKey");
+            level = next;
+        }
 
-            if (key instanceof ResourceKey<?> resourceKey) {
-                return resourceKey;
-            }
+        return captured;
+    }
 
-            for (Field field : ReflectionUtil.fields(current.getClass())) {
+    /**
+     * 注册表引用 codec 本体持有的注册表键，非引用 codec 返回 null。
+     *
+     * <p>键按<b>类型</b>识别而非字段名：这三个类都只持有一个 {@link ResourceKey} 字段，
+     * 就是目标注册表的键，所以取第一个即可。这里不能用 {@code getDeclaredField("registryKey")}：
+     * MC 成员在正式环境是 SRG 名，按名读不到就会静默漏掉外层键、让 BFS 落到内层的类型注册表上。</p>
+     */
+    private static ResourceKey<?> holderRegistryKey(Object node) {
 
-                try {
+        if (!(node instanceof RegistryFileCodec<?> || node instanceof RegistryFixedCodec<?>
+            || node instanceof HolderSetCodec<?>)) {
+            return null;
+        }
 
-                    Object value = field.get(current);
+        for (Field field : ReflectionUtil.fields(node.getClass())) {
 
-                    if (value != null && !isTerminal(value)) {
-                        stack.push(value);
-                    }
+            try {
 
-                } catch (Throwable ignored) {
+                if (field.get(node) instanceof ResourceKey<?> key) {
+                    return key;
                 }
+
+            } catch (Throwable ignored) {
             }
         }
 
@@ -1238,8 +1303,10 @@ public final class CodecUnwrapper {
 
         String name = value instanceof Enum<?> anEnum ? anEnum.name() : String.valueOf(value);
 
-        Object serialized = invokeNoArg(value, "getSerializedName");
+        // 直接接口调用而非按名反射：getSerializedName 是 MC 接口方法，正式环境为 SRG 名。
+        String serialized = value instanceof StringRepresentable representable ? representable.getSerializedName()
+            : name;
 
-        return new EnumValueSchema(name, serialized instanceof String string ? string : name);
+        return new EnumValueSchema(name, serialized);
     }
 }
