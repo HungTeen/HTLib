@@ -30,15 +30,20 @@
   "htlib.screen.json": "JSON",
   "htlib.screen.path": "Path",
   "htlib.screen.path_hint": "htlib:xxx",
+  "htlib.screen.datapack_hint": "datapack",
   "htlib.screen.more": "More",
   "htlib.screen.save": "Save",
   "htlib.screen.validate": "Validate",
   "htlib.screen.validate_ok": "Validation passed",
   "htlib.screen.validate_fail": "Found %s problem(s): %s",
+  "htlib.screen.validating": "Validating...",
+  "htlib.screen.validate_failed": "Validation failed: %s",
   "htlib.screen.request_schema": "Requesting schema: %s",
   "htlib.screen.loaded_schema": "Loaded schema: %s",
   "htlib.screen.schema_error": "Schema error: %s",
-  "htlib.screen.save_sent": "Save request sent: %s",
+  "htlib.screen.saving": "Saving...",
+  "htlib.screen.saved": "Saved: %s",
+  "htlib.screen.save_failed": "Save failed: %s",
   "htlib.screen.ref": "Ref",
   "htlib.screen.inline": "Inline",
   "htlib.screen.collapse": "Collapse",
@@ -62,5 +67,7 @@
 
   "htlib.error.constraint": "Constraint violated: %s",
 
-  "itemGroup.htlib.raid_items": "Custom Raid"
+  "itemGroup.htlib.raid_items": "Custom Raid",
+  "htlib.screen.missing_path": "数据包名词或注册名缺失",
+  "htlib.screen.invalid_registry_name": "注册名不合法"
 }

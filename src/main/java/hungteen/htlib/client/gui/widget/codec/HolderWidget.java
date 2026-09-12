@@ -1,6 +1,9 @@
 package hungteen.htlib.client.gui.widget.codec;
 
-import com.google.gson.*;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.HolderNode;
@@ -158,10 +161,10 @@ public final class HolderWidget extends EditorWidget {
      * 是否提供展开按钮（仅 HOLDER 且有注册表信息，还需要是数据包类型）。
      */
     private boolean supportsInline() {
-        return node.type() == SchemaType.HOLDER && node.registryName() != null
-            && CodecEditorManager.getRegistryNames().stream().anyMatch(loc -> {
+        return node.type() == SchemaType.HOLDER && node.registryName() != null && CodecEditorManager.getRegistryNames()
+            .stream().anyMatch(loc -> {
                 return StringUtils.equals(loc.toString(), node.registryName());
-        });
+            });
     }
 
     /** 展开模式：值为内联对象。 */
@@ -222,12 +225,15 @@ public final class HolderWidget extends EditorWidget {
             return;
         }
         entries = received;
-        if (box != null) {
-            removeOwned(box);
-            box = null;
+        if (selector == null) {
+            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
+                if (StringUtils.isBlank(name)) {
+                    node.setValue(JsonNull.INSTANCE);
+                } else {
+                    node.setValue(new JsonPrimitive(name));
+                }
+            });
         }
-        selector =
-            createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> node.setValue(new JsonPrimitive(name)));
         selector.setValue(node.valueText());
         // 条目是异步到达的：选择器刚建出来还在屏幕 (0,0)，必须立刻落位，否则会在下一次布局前
         // 渲染到最左上角（隐藏分支下不会被重排，故 setVisible 也要跟着当前状态走）。
@@ -249,22 +255,15 @@ public final class HolderWidget extends EditorWidget {
         if (inlineMode()) {
             return;
         }
-        if (!entries.isEmpty()) {
-            selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
-                if (StringUtils.isBlank(name)) {
-                    node.setValue(JsonNull.INSTANCE);
-                } else {
-                    node.setValue(new JsonPrimitive(name));
-                }
-            });
-        } else {
-            box = createEditBox(node.valueText(), s -> {
-                node.setValueText(s);
-                applyErrorColor(box);
-            });
-            box.setWidth(width);
-            applyErrorColor(box);
-        }
+        selector = createSelector(SELECTOR_WIDTH, entries, node.valueText(), name -> {
+            if (StringUtils.isBlank(name)) {
+                node.setValue(JsonNull.INSTANCE);
+            } else {
+                node.setValue(new JsonPrimitive(name));
+            }
+        });
+        selector.setPosition(refControlX(), y);
+        selector.setVisible(!hidden && rowVisible(y));
     }
 
     /** 模式按钮占位后的引用控件起始 x。 */

@@ -1,7 +1,10 @@
 package hungteen.htlib.common.network;
 
+import com.mojang.serialization.DataResult;
 import hungteen.htlib.common.codec.parse.CodecEditorManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.nio.file.Path;
@@ -46,15 +49,25 @@ public class SaveDataPacket {
                 if (sender == null) {
                     return;
                 }
-                Optional<Path> saved = CodecEditorManager.saveJson(sender.server, message.targetPath, message.json);
-                saved.ifPresentOrElse(
-                        path -> sender.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                                "已保存 " + message.registryName + " → " + path)),
-                        () -> sender.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                                "保存失败，请检查路径与 JSON 合法性"))
+                // 先校验：Holder 引用需要服务端完整的 RegistryAccess 才能解析，不通过则不落盘，只回传原因
+                Optional<String> error = CodecEditorManager.validate(sender.server, message.registryName, message.json);
+                if (error.isPresent()) {
+                    reply(sender, false, error.get());
+                    return;
+                }
+                DataResult<Path> saved = CodecEditorManager.saveJson(sender.server, message.targetPath, message.json);
+                saved.result().ifPresentOrElse(
+                        path -> reply(sender, true, path.toString()),
+                        () -> reply(sender, false, saved.error().map(err -> err.message()).orElse("写入失败"))
                 );
             });
             ctx.get().setPacketHandled(true);
+        }
+
+        /** 结果同时写状态栏（响应包）与聊天栏（界面已关闭时仍能看到路径 / 原因）。 */
+        private static void reply(ServerPlayer sender, boolean success, String message) {
+            NetworkHandler.sendToClient(sender, new EditorResultPacket(EditorResultPacket.ACTION_SAVE, success, message));
+            sender.sendSystemMessage(Component.literal(success ? "已保存 → " + message : "保存失败：" + message));
         }
     }
 }

@@ -2,14 +2,15 @@ package hungteen.htlib.client.gui.screen.codec;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.serialization.Codec;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
+import hungteen.htlib.client.gui.widget.codec.EditorResultCache;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
+import hungteen.htlib.common.network.EditorResultPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SaveDataPacket;
-import hungteen.htlib.util.helper.CodecHelper;
+import hungteen.htlib.common.network.ValidateDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Codec 编辑器界面。
@@ -34,8 +34,7 @@ import java.util.Optional;
  * 主体区域：表单或 JSON 文本视图。表单支持滚轮滚动与右键拖拽平移。</p>
  *
  * <p>控件由 {@link EditorWidget} 树持有：滚动/平移只触发 {@link #layoutForm()} 重摆，
- * 结构变化（增删行/折叠/切换变体）由控件回调 {@link EditorHost#relayout()} 增量更新；
- * 仅在 schema 变更、模式切换、窗口 resize 时全量 {@link #rebuild()}。</p>
+ * 结构变化（增删行/折叠/切换变体）由控件回调 {@link EditorHost#relayout()} 增量更新； 仅在 schema 变更、模式切换、窗口 resize 时全量 {@link #rebuild()}。</p>
  *
  * @author PangTeen
  * @program HTLib
@@ -50,6 +49,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     private boolean jsonMode = false;
     private JsonObject schema;
     private EditorFormNode formRoot;
+    private String datapackName;
     private String saveRegistryName;
     private hungteen.htlib.client.gui.widget.codec.DropdownButton saveDropdown;
     private int jsonScroll = 0;
@@ -75,8 +75,8 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     @Override
     protected TypeSelector createTypeSelector() {
         List<String> names = registryNames.stream().map(ResourceLocation::toString).toList();
-        return new TypeSelector(this, this::addRenderableWidget,
-            ViewerStyle.LEFT_PADDING, 4, TYPE_DROPDOWN_WIDTH, 13, TOP_OFFSET, names, this::select);
+        return new TypeSelector(this, this::addRenderableWidget, ViewerStyle.LEFT_PADDING, 4, TYPE_DROPDOWN_WIDTH, 13,
+            TOP_OFFSET, names, this::select);
     }
 
     /**
@@ -106,6 +106,14 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         }
     }
 
+    /** 界面移除后不再接收保存/校验结果（响应可能晚于关闭到达）。 */
+    @Override
+    public void removed() {
+        super.removed();
+        EditorResultCache.release(EditorResultPacket.ACTION_SAVE);
+        EditorResultCache.release(EditorResultPacket.ACTION_VALIDATE);
+    }
+
     /**
      * 顶部工具条按钮（模式切换/路径/文件名/动作下拉）。
      */
@@ -117,7 +125,16 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             }).bounds(166, 4, 70, 14).build();
         addRenderableWidget(modeButton);
 
-        EditBox registryNameField = new EditBox(this.font, 244, 4, 80, 13, Component.translatable("htlib.screen.path"));
+        EditBox datapackNameField = new EditBox(this.font, 244, 4, 60, 13, Component.translatable("htlib.screen.path"));
+        datapackNameField.setValue(saveRegistryName);
+        datapackNameField.setSuggestion(I18n.get("htlib.screen.datapack_hint"));
+        datapackNameField.setResponder(s -> {
+            datapackName = s;
+            datapackNameField.setSuggestion(StringUtils.isBlank(s) ? I18n.get("htlib.screen.datapack_hint") : null);
+        });
+        addRenderableWidget(datapackNameField);
+
+        EditBox registryNameField = new EditBox(this.font, 314, 4, 60, 13, Component.translatable("htlib.screen.path"));
         registryNameField.setValue(saveRegistryName);
         registryNameField.setSuggestion(I18n.get("htlib.screen.path_hint"));
         registryNameField.setResponder(s -> {
@@ -129,61 +146,38 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         // 动作下拉：保存 / 校验（按钮文案固定为"更多"）
         List<String> actions = List.of(I18n.get("htlib.screen.save"), I18n.get("htlib.screen.validate"));
         int actionsWidth = Math.max(40, actions.stream().mapToInt(this.font::width).max().orElse(40) + 8);
-        saveDropdown = new hungteen.htlib.client.gui.widget.codec.DropdownButton(this::addRenderableWidget,
-            this::removeWidget, I18n.get("htlib.screen.more"), actionsWidth, 14, actions, 0, index -> {
-            if (index == 0) {
-                save();
-            } else {
-                validate();
-            }
-        });
+        saveDropdown =
+            new hungteen.htlib.client.gui.widget.codec.DropdownButton(this::addRenderableWidget, this::removeWidget,
+                I18n.get("htlib.screen.more"), actionsWidth, 14, actions, 0, index -> {
+                if (index == 0) {
+                    save();
+                } else {
+                    validate();
+                }
+            });
         saveDropdown.addToScreen(this.font);
         saveDropdown.setPosition(this.width - actionsWidth - 2, 4);
     }
 
     /**
-     * 校验整个表单：递归校验节点树，状态栏提示第一个错误。
+     * 校验整个表单：交给服务端用完整 RegistryAccess 解析。
+     *
+     * <p>Holder 引用只有在 {@code RegistryOps} 下才会按注册名解析，而客户端注册表不全，
+     * 单纯用 {@code JsonOps} 解析会把它当内联对象，报出误导性的字段错误。</p>
      */
     private void validate() {
         if (formRoot == null) {
             return;
         }
-        setStatus(I18n.get("htlib.screen.validate_ok"));
-        Optional<? extends Codec<?>> codecOpt = CodecHelper.getCodec(ResourceLocation.tryParse(this.selected));
-        if (codecOpt.isPresent()) {
-            CodecHelper.parse(codecOpt.get(), formRoot.collect()).resultOrPartial(msg -> {
-                setStatus(msg);
-            });
-        }
+        EditorResultCache.await(EditorResultPacket.ACTION_VALIDATE, this::onValidateResult);
+        setStatusPersistent(I18n.get("htlib.screen.validating"));
+        NetworkHandler.sendToServer(new ValidateDataPacket(this.selected, collectJsonText()));
     }
 
-    private static void collectErrors(EditorFormNode node, List<String> errors) {
-        node.validate();
-        if (node.isInvalid() && !node.label().isEmpty()) {
-            errors.add(node.label() + ": " + node.errorMessage());
-        }
-        if (node instanceof hungteen.htlib.client.gui.screen.codec.node.RecordNode record) {
-            for (EditorFormNode child : record.children()) {
-                collectErrors(child, errors);
-            }
-        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.ListSetNode list) {
-            for (EditorFormNode item : list.items()) {
-                collectErrors(item, errors);
-            }
-        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.MapNode map) {
-            for (EditorFormNode key : map.keys()) {
-                collectErrors(key, errors);
-            }
-            for (EditorFormNode value : map.values()) {
-                collectErrors(value, errors);
-            }
-        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.OptionalNode optional
-            && optional.inner() != null) {
-            collectErrors(optional.inner(), errors);
-        } else if (node instanceof hungteen.htlib.client.gui.screen.codec.node.UnionNode union
-            && union.selectedVariant() != null) {
-            collectErrors(union.selectedVariant(), errors);
-        }
+    /** 校验结果：通过只提示成功，不通过给出 codec 的报错原因。 */
+    private void onValidateResult(boolean success, String message) {
+        setStatusFor(success ? I18n.get("htlib.screen.validate_ok") : I18n.get("htlib.screen.validate_failed", message),
+            ViewerStyle.INFO_TIMEOUT_MS);
     }
 
     /**
@@ -239,29 +233,37 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     }
 
     /**
-     * 保存：发送到服务端。
+     * 保存：发送到服务端，由服务端校验通过后落盘。
      */
     private void save() {
         String json = collectJsonText();
-        if (StringUtils.isAnyBlank(this.selected, this.saveRegistryName)) {
-            // TODO 失败
+        if (StringUtils.isAnyBlank(this.selected, this.saveRegistryName, this.datapackName)) {
+            setStatusFor(I18n.get("htlib.screen.missing_path"), ViewerStyle.INFO_TIMEOUT_MS);
             return;
         }
         if (!ResourceLocation.isValidResourceLocation(this.saveRegistryName)) {
-            // TODO 非法注册名
+            setStatusFor(I18n.get("htlib.screen.invalid_registry_name"), ViewerStyle.INFO_TIMEOUT_MS);
             return;
         }
         ResourceLocation registryName = ResourceLocation.tryParse(this.saveRegistryName);
         ResourceLocation registryType = ResourceLocation.tryParse(this.selected);
         if (ObjectUtils.anyNull(registryName, registryType)) {
-            // TODO 非法
+            setStatusFor(I18n.get("htlib.screen.invalid_registry_name"), ViewerStyle.INFO_TIMEOUT_MS);
             return;
         }
         // 保存路径与所选数据包类型对齐：datapack:<pack>/data/<命名空间>/<注册表路径>
-        String path = String.format("datapack:%s/data/%s/%s/%s.json", registryName.getNamespace(), registryType.getNamespace(),
-            registryType.getPath(), registryName.getPath());
+        String path =
+            String.format("datapack:%s/%s/data/%s/%s/%s.json", this.datapackName, registryName.getNamespace(),
+                registryType.getNamespace(), registryType.getPath(), registryName.getPath());
+        EditorResultCache.await(EditorResultPacket.ACTION_SAVE, this::onSaveResult);
+        setStatusPersistent(I18n.get("htlib.screen.saving"));
         NetworkHandler.sendToServer(new SaveDataPacket(selected, path, json));
-        setStatusFor(I18n.get("htlib.screen.save_sent", path), ViewerStyle.INFO_TIMEOUT_MS);
+    }
+
+    /** 保存结果：成功给出落盘路径，失败给出原因（校验不通过 / 写入失败）。 */
+    private void onSaveResult(boolean success, String message) {
+        setStatusFor(success ? I18n.get("htlib.screen.saved", message) : I18n.get("htlib.screen.save_failed", message),
+            ViewerStyle.INFO_TIMEOUT_MS);
     }
 
     private String collectJsonText() {
@@ -431,8 +433,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (saveDropdown != null && saveDropdown.isOpen()
-            && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+        if (saveDropdown != null && saveDropdown.isOpen() && keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
             saveDropdown.close();
             return true;
         }
