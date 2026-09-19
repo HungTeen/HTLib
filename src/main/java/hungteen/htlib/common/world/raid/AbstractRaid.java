@@ -575,6 +575,56 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     /**
+     * 移除当前波次的所有袭击者（不清除袭击者本身，仅解除关联）。
+     */
+    private void clearCurrentRaiders() {
+        List<Entity> raiders = new ArrayList<>(this.raiderSet);
+        for (Entity raider : raiders) {
+            removeFromRaid(raider);
+        }
+        this.updateProgress();
+        this.setDirty();
+    }
+
+    /**
+     * 跳过当前波次，直接进入下一波。
+     * 若已是最后一波则直接胜利。
+     */
+    public void skipWave() {
+        if (this.status != Status.PREPARE && this.status != Status.RUNNING) {
+            return;
+        }
+        this.clearCurrentRaiders();
+        if (this.currentWave + 1 >= Objects.requireNonNull(this.getRaidComponent()).getWaveCount(this)) {
+            this.onVictory();
+        } else {
+            this.nextWave();
+        }
+    }
+
+    /**
+     * 强制胜利：移除所有袭击者并触发胜利。
+     */
+    public void forceVictory() {
+        if (this.status == Status.VICTORY || this.status == Status.LOSS) {
+            return;
+        }
+        this.clearCurrentRaiders();
+        this.onVictory();
+    }
+
+    /**
+     * 强制失败：移除所有袭击者并触发失败。
+     */
+    public void forceLoss() {
+        if (this.status == Status.VICTORY || this.status == Status.LOSS) {
+            return;
+        }
+        this.clearCurrentRaiders();
+        this.onLoss();
+    }
+
+    /**
      * Remove from world.
      */
     public void remove() {

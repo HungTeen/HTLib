@@ -74,5 +74,9 @@
 
   "itemGroup.htlib.raid_items": "Custom Raid",
   "htlib.screen.missing_path": "数据包名词或注册名缺失",
-  "htlib.screen.invalid_registry_name": "注册名不合法"
+  "htlib.screen.invalid_registry_name": "注册名不合法",
+  "htlib.command.raid.not_found": "No raid found nearby",
+  "htlib.command.raid.skip_wave": "Skipped wave %s",
+  "htlib.command.raid.force_loss": "Raid forced to loss",
+  "htlib.command.raid.force_victory": "Raid forced to victory"
 }

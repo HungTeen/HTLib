@@ -1,5 +1,6 @@
 package hungteen.htlib.common.entity.goal;
 
+import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.common.capability.raid.IRaidCapability;
 import hungteen.htlib.common.capability.raid.RaidCapability;
 import net.minecraft.world.entity.PathfinderMob;
@@ -39,14 +40,14 @@ public class WalkToRaidGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        Optional<IRaidCapability> raidOpt = RaidCapability.getRaid(this.mob);
-        if(raidOpt.isPresent() && this.mob.getTarget() == null){
-            Vec3 raidCenter = raidOpt.get().getRaid().getPosition();
-            double raidWidth = raidOpt.get().getRaid().getWidth();
+        Optional<IRaid> raidOpt = RaidCapability.getRaid(this.mob).map(IRaidCapability::getRaid);
+        if (raidOpt.isPresent() && this.mob.getTarget() == null) {
+            Vec3 raidCenter = raidOpt.get().getPosition();
+            double raidWidth = raidOpt.get().getWidth();
             double distanceToRaidCenterSqr = Math.sqrt(this.mob.distanceToSqr(raidCenter));
             // 袭击者距离中心太远。
-            if(distanceToRaidCenterSqr > raidWidth / 2 * this.dangerousRate) {
-                Vec3 vec3 = DefaultRandomPos.getPosTowards(this.mob, 32, 9, raidCenter, (float) Math.PI / 4F);
+            if (distanceToRaidCenterSqr > raidWidth / 2 * this.dangerousRate) {
+                Vec3 vec3 = DefaultRandomPos.getPosTowards(this.mob, 32, 9, raidCenter, (float)Math.PI / 4F);
                 if (vec3 != null) {
                     this.wantedX = vec3.x;
                     this.wantedY = vec3.y;

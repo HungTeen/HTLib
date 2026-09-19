@@ -72,5 +72,9 @@
 
   "htlib.error.constraint": "约束未满足：%s",
 
-  "itemGroup.htlib.raid_items": "自定义袭击"
+  "itemGroup.htlib.raid_items": "自定义袭击",
+  "htlib.command.raid.not_found": "附近未找到袭击",
+  "htlib.command.raid.skip_wave": "已跳过第 %s 波",
+  "htlib.command.raid.force_loss": "已强制失败",
+  "htlib.command.raid.force_victory": "已强制胜利"
 }

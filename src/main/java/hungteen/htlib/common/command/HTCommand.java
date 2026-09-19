@@ -97,6 +97,24 @@ public class HTCommand {
                                 )
                         )
                 )
+                .then(Commands.literal("nearby")
+                        .then(Commands.argument("dummy_entity", DummyEntityArgument.id())
+                                .suggests(ALL_DUMMY_ENTITIES)
+                                .then(Commands.argument("position", Vec3Argument.vec3())
+                                        .then(Commands.literal("skip")
+                                                .then(Commands.literal("wave")
+                                                        .executes(context -> skipNearbyRaidWave(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position")))
+                                                )
+                                        )
+                                        .then(Commands.literal("loss")
+                                                .executes(context -> nearbyRaidLoss(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position")))
+                                        )
+                                        .then(Commands.literal("victory")
+                                                .executes(context -> nearbyRaidVictory(context.getSource(), DummyEntityArgument.getDummyEntity(context, "dummy_entity"), Vec3Argument.getVec3(context, "position")))
+                                        )
+                                )
+                        )
+                )
         );
         builder.then(Commands.literal("seat")
                 .then(Commands.argument("target", EntityArgument.entity())
@@ -144,6 +162,58 @@ public class HTCommand {
             return 1;
         }
         throw ERROR_FAILED.create();
+    }
+
+    // -------------------------------------------------
+    // /htlib raid nearby skip/loss/victory
+    // -------------------------------------------------
+
+    private static final SimpleCommandExceptionType ERROR_NO_RAID_FOUND = new SimpleCommandExceptionType(Component.translatable("htlib.command.raid.not_found"));
+
+    /**
+     * 查找最近的指定类型袭击。
+     */
+    private static AbstractRaid findNearbyRaid(CommandSourceStack source, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        AbstractRaid entity = DummyEntityManager.getDummyEntities(source.getLevel(), dummyType, position, 1)
+                .filter(AbstractRaid.class::isInstance)
+                .map(AbstractRaid.class::cast)
+                .findFirst()
+                .orElse(null);
+        if (entity == null) {
+            throw ERROR_NO_RAID_FOUND.create();
+        }
+        return entity;
+    }
+
+    /**
+     * /htlib raid nearby &lt;dummy_entity&gt; &lt;position&gt; skip wave
+     */
+    public static int skipNearbyRaidWave(CommandSourceStack source, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        AbstractRaid raid = findNearbyRaid(source, dummyType, position);
+        int wave = raid.getRound() + 1;
+        raid.skipWave();
+        source.sendSuccess(() -> Component.translatable("htlib.command.raid.skip_wave", wave), true);
+        return 1;
+    }
+
+    /**
+     * /htlib raid nearby &lt;dummy_entity&gt; &lt;position&gt; loss
+     */
+    public static int nearbyRaidLoss(CommandSourceStack source, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        AbstractRaid raid = findNearbyRaid(source, dummyType, position);
+        raid.forceLoss();
+        source.sendSuccess(() -> Component.translatable("htlib.command.raid.force_loss"), true);
+        return 1;
+    }
+
+    /**
+     * /htlib raid nearby &lt;dummy_entity&gt; &lt;position&gt; victory
+     */
+    public static int nearbyRaidVictory(CommandSourceStack source, ResourceLocation dummyType, Vec3 position) throws CommandSyntaxException {
+        AbstractRaid raid = findNearbyRaid(source, dummyType, position);
+        raid.forceVictory();
+        source.sendSuccess(() -> Component.translatable("htlib.command.raid.force_victory"), true);
+        return 1;
     }
 
     public static int seat(CommandSourceStack sourceStack, Entity entity, Vec3 position) {
