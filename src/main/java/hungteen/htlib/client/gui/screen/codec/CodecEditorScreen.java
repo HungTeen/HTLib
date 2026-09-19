@@ -268,7 +268,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         }
         // 保存路径与所选数据包类型对齐：datapack:<pack>/data/<命名空间>/<注册表路径>
         String path =
-            String.format("datapack:%s/%s/data/%s/%s/%s.json", this.datapackName, registryName.getNamespace(),
+            String.format("datapack:%s/data/%s/%s/%s/%s.json", this.datapackName, registryName.getNamespace(),
                 registryType.getNamespace(), registryType.getPath(), registryName.getPath());
         EditorResultCache.await(EditorResultPacket.ACTION_SAVE, this::onSaveResult);
         setStatusPersistent(I18n.get("htlib.screen.saving"));

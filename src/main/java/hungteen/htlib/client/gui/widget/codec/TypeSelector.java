@@ -24,6 +24,7 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  * <p>输入文字 → 下方弹出匹配候选项；鼠标悬停/↑↓ 移动高亮，Enter/Tab 或点击候选项完成选中。
  * 面板背景、滚动由宿主每帧调用 {@link #paintPanel} 绘制在主体裁剪区内。</p>
+ *
  * @author PangTeen
  * @program HTLib
  * @create 2026/9/5 22:50
@@ -56,8 +57,8 @@ public final class TypeSelector {
     private int scroll = 0;
     private String current = "";
 
-public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int y, int width, int height, int listTop,
-    List<String> names, Consumer<String> onSelect) {
+    public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int y, int width, int height,
+        int listTop, List<String> names, Consumer<String> onSelect) {
         this.host = host;
         this.addWidget = addWidget;
         this.onSelect = onSelect;
@@ -73,7 +74,8 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
     /** 创建编辑框并加入屏幕（font 在 render 阶段才可用；幂等）。 */
     public EditBox addToScreen(Font font) {
         if (box == null) {
-            box = new ClippedEditBox(font, listLeft, boxY, listRight - listLeft, this.height, Component.translatable("htlib.screen.type"));
+            box = new ClippedEditBox(font, listLeft, boxY, listRight - listLeft, this.height,
+                Component.translatable("htlib.screen.type"));
             box.setMaxLength(128);
             box.setSuggestion(I18n.get("htlib.screen.type_hint"));
             box.setResponder(this::onTextChanged);
@@ -211,8 +213,9 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, PANEL_Z);
         try {
-            DropdownUtil.drawPanel(graphics, new Rect(listLeft - PANEL_MARGIN, listTop - PANEL_MARGIN,
-                (right - listLeft) + PANEL_MARGIN * 2, bottom - listTop + PANEL_MARGIN * 2));
+            DropdownUtil.drawPanel(graphics,
+                new Rect(listLeft - PANEL_MARGIN, listTop - PANEL_MARGIN, (right - listLeft) + PANEL_MARGIN * 2,
+                    bottom - listTop + PANEL_MARGIN * 2));
 
             int end = Math.min(suggestions.size(), scroll + maxRows);
             for (int i = scroll; i < end; i++) {
@@ -235,8 +238,8 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
             if (suggestions.size() > maxRows) {
                 int trackX = right - ViewerStyle.SCROLLBAR_WIDTH - ViewerStyle.SCROLLBAR_RIGHT_MARGIN;
                 DropdownUtil.drawScrollbar(graphics,
-                    new Rect(trackX, listTop, ViewerStyle.SCROLLBAR_WIDTH, bottom - listTop),
-                    suggestions.size(), maxRows, scroll);
+                    new Rect(trackX, listTop, ViewerStyle.SCROLLBAR_WIDTH, bottom - listTop), suggestions.size(),
+                    maxRows, scroll);
             }
         } finally {
             graphics.pose().popPose();
@@ -255,15 +258,14 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
             return false;
         }
         // 点击自己的输入框：收起面板并放行聚焦，避免被"面板外点击吞掉"逻辑拦截
-        if (box != null && mouseX >= box.getX() && mouseX <= box.getX() + box.getWidth()
-            && mouseY >= box.getY() && mouseY <= box.getY() + box.getHeight()) {
+        if (box != null && mouseX >= box.getX() && mouseX <= box.getX() + box.getWidth() && mouseY >= box.getY() && mouseY <= box.getY() + box.getHeight()) {
             close();
             box.setFocused(true);
             host.setFocused(box);
             return true;
         }
         if (mouseX >= listLeft && mouseX <= right && mouseY >= listTop && mouseY <= bottom) {
-            int row = (int) ((mouseY - listTop) / ROW_H);
+            int row = (int)((mouseY - listTop) / ROW_H);
             if (row >= 0 && row < (bottom - listTop) / ROW_H) {
                 selectAt(scroll + row);
             }
@@ -279,7 +281,7 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
             return false;
         }
         int maxRows = Math.max(0, (host.height - ViewerStyle.BOTTOM_PADDING - listTop) / ROW_H);
-        scroll = DropdownUtil.clampScroll(scroll - (int) delta * SCROLL_STEP, suggestions.size(), maxRows);
+        scroll = DropdownUtil.clampScroll(scroll - (int)delta * SCROLL_STEP, suggestions.size(), maxRows);
         return true;
     }
 
@@ -382,9 +384,7 @@ public TypeSelector(Screen host, Consumer<AbstractWidget> addWidget, int x, int 
     }
 
     /**
-     * 裁剪版 EditBox：覆盖 render 方法，用 Scissor 裁剪把背景与边框限制在控件矩形内，
-     * 防止文本过长时光标/右边框绘制到控件右侧之外（白色色块问题）。
-     * 裁剪范围向外扩 1px，保证控件自身的边框线不被裁掉。
+     * 裁剪版 EditBox：覆盖 render 方法，用 Scissor 裁剪把背景与边框限制在控件矩形内， 防止文本过长时光标/右边框绘制到控件右侧之外（白色色块问题）。 裁剪范围向外扩 1px，保证控件自身的边框线不被裁掉。
      */
     private static class ClippedEditBox extends EditBox {
         ClippedEditBox(Font font, int x, int y, int width, int height, Component message) {

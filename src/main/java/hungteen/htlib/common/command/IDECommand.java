@@ -43,8 +43,8 @@ public class IDECommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         LiteralArgumentBuilder<CommandSourceStack> builder =
-            Commands.literal("ide").requires((ctx) -> ctx.hasPermission(2));
-        builder.then(Commands.literal("schema").then(Commands.literal("types").then(
+            Commands.literal("htlib").requires((ctx) -> ctx.hasPermission(2));
+        builder.then(Commands.literal("ide").then(Commands.literal("schema").then(Commands.literal("types").then(
                 Commands.argument("registry", ResourceLocationArgument.id()).suggests(ALL_DATAPACK_CODECS)
                     .executes(ctx -> listSchemaTypes(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry")))))
             .then(Commands.argument("registry", ResourceLocationArgument.id()).suggests(ALL_DATAPACK_CODECS)
@@ -55,11 +55,12 @@ public class IDECommand {
                     ctx -> printSchema(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry"), true))).then(
                     Commands.literal("type").then(Commands.argument("type", StringArgumentType.greedyString()).executes(
                         ctx -> printSchemaType(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry"),
-                            StringArgumentType.getString(ctx, "type")))))));
-        builder.then(Commands.literal("editor").executes(ctx -> openEditor(ctx.getSource())));
-//        builder.then(Commands.literal("view").executes(ctx -> openViewer(ctx.getSource(), null)).then(
-//            Commands.argument("registry", ResourceLocationArgument.id()).suggests(ALL_DATAPACK_CODECS)
-//                .executes(ctx -> openViewer(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry")))));
+                            StringArgumentType.getString(ctx, "type"))))))));
+        builder.then(
+            Commands.literal("ide").then(Commands.literal("editor").executes(ctx -> openEditor(ctx.getSource()))));
+        //        builder.then(Commands.literal("view").executes(ctx -> openViewer(ctx.getSource(), null)).then(
+        //            Commands.argument("registry", ResourceLocationArgument.id()).suggests(ALL_DATAPACK_CODECS)
+        //                .executes(ctx -> openViewer(ctx.getSource(), ResourceLocationArgument.getId(ctx, "registry")))));
         dispatcher.register(builder);
     }
 
