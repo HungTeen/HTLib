@@ -132,7 +132,7 @@ public interface HTSpawnComponents {
         private Holder<IPositionComponent> placeComponent = null;
 
         public SpawnComponent.SpawnSetting build() {
-            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent));
+            return new SpawnComponent.SpawnSetting(entityType, nbt, enableDefaultSpawn, persist, Optional.ofNullable(placeComponent), 400);
         }
 
         public SpawnSettingBuilder entityType(EntityType<?> type) {

@@ -124,8 +124,8 @@ public class RandomHelper {
     public static Vec3 circleAreaVec(RandomSource rand, double minRadius, double maxRadius) {
         final double radius = getMinMax(rand, minRadius, maxRadius);
         final double delta = rand.nextDouble() * Math.PI;
-        final int x = (int) (radius * Math.sin(delta));
-        final int z = (int) (radius * Math.cos(delta));
+        final double x = radius * Math.sin(delta);
+        final double z = radius * Math.cos(delta);
         return new Vec3(x, 0, z);
     }
 

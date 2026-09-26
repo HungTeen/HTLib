@@ -2,15 +2,12 @@ package hungteen.htlib.common.impl.position;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author PangTeen
@@ -20,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RayTracePositionTest {
 
     private static RayTracePosition create(double radius) {
-        return new RayTracePosition(new Vec3(1, 0, 2), 2, radius, 16, false, 5, 8, 60);
+        return new RayTracePosition(new Vec3(1, 0, 2), 2, radius, false, 5, 8, 60);
     }
 
     @Test
@@ -31,7 +28,6 @@ class RayTracePositionTest {
         assertEquals(position.getCenterOffset(), decoded.getCenterOffset());
         assertEquals(position.getExcludeRadius(), decoded.getExcludeRadius());
         assertEquals(position.getRadius(), decoded.getRadius());
-        assertEquals(position.getHeightOffset(), decoded.getHeightOffset());
         assertEquals(position.isCircle(), decoded.isCircle());
         assertEquals(position.getReflectTimes(), decoded.getReflectTimes());
         assertEquals(position.getPositionQueueSize(), decoded.getPositionQueueSize());
@@ -45,7 +41,6 @@ class RayTracePositionTest {
         assertEquals(Vec3.ZERO, position.getCenterOffset());
         assertEquals(0D, position.getExcludeRadius());
         assertEquals(4D, position.getRadius());
-        assertEquals(0D, position.getHeightOffset());
         assertTrue(position.isCircle());
         assertEquals(3, position.getReflectTimes());
         assertEquals(16, position.getPositionQueueSize());
@@ -57,11 +52,11 @@ class RayTracePositionTest {
     @Test
     void isInAreaChecksRadius() {
         final Vec3 center = Vec3.ZERO;
-        final RayTracePosition circle = new RayTracePosition(Vec3.ZERO, 2, 10, 0, true, 3, 16, 100);
+        final RayTracePosition circle = new RayTracePosition(Vec3.ZERO, 2, 10, true, 3, 16, 100);
         assertTrue(circle.isInArea(center, new Vec3(5, 100, 0)));
         assertFalse(circle.isInArea(center, new Vec3(1, 0, 0)));
         assertFalse(circle.isInArea(center, new Vec3(11, 0, 0)));
-        final RayTracePosition square = new RayTracePosition(Vec3.ZERO, 0, 10, 0, false, 3, 16, 100);
+        final RayTracePosition square = new RayTracePosition(Vec3.ZERO, 0, 10, false, 3, 16, 100);
         assertTrue(square.isInArea(center, new Vec3(9, 0, 9)));
         assertFalse(square.isInArea(center, new Vec3(11, 0, 1)));
     }
@@ -79,17 +74,4 @@ class RayTracePositionTest {
         }
     }
 
-    @Test
-    void spawnPositionIsOnCandidate() {
-        final RayTracePosition position = create(8);
-        final RandomSource random = RandomSource.create(1L);
-        final BlockPos candidate = new BlockPos(4, 64, -4);
-        for (int i = 0; i < 100; ++i) {
-            final Vec3 spawnPosition = position.toSpawnPosition(candidate, random);
-            assertEquals(64D, spawnPosition.y, 0D);
-            final double dx = spawnPosition.x - 4.5D;
-            final double dz = spawnPosition.z + 3.5D;
-            assertTrue(Math.sqrt(dx * dx + dz * dz) <= 0.3D + 1.0E-6D);
-        }
-    }
 }

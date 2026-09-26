@@ -34,11 +34,11 @@ public class RayTracePosition extends PlaceComponent {
     /**
      * 从候选位置生成时的最大偏移。max offset when placing entity on a candidate.
      */
-    private static final double SPAWN_OFFSET = 0.3D;
+    private static final int REFRESH_TRIES = 3;
     /**
      * 初始射线的俯角范围（度），正值朝下。pitch range of the initial ray, positive means downward.
      */
-    private static final double MIN_PITCH = 5D;
+    private static final double MIN_PITCH = -45D;
     private static final double MAX_PITCH = 45D;
 
     /**
@@ -55,24 +55,21 @@ public class RayTracePosition extends PlaceComponent {
         Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(RayTracePosition::getCenterOffset),
         Codec.DOUBLE.optionalFieldOf("exclude_radius", 0D).forGetter(RayTracePosition::getExcludeRadius),
         Codec.DOUBLE.fieldOf("radius").forGetter(RayTracePosition::getRadius),
-        Codec.DOUBLE.optionalFieldOf("height_offset", 0D).forGetter(RayTracePosition::getHeightOffset),
         Codec.BOOL.optionalFieldOf("is_circle", true).forGetter(RayTracePosition::isCircle),
         Codec.INT.optionalFieldOf("reflect_times", 3).forGetter(RayTracePosition::getReflectTimes),
         Codec.intRange(1, 32).optionalFieldOf("position_queue_size", 16).forGetter(RayTracePosition::getPositionQueueSize),
-        Codec.intRange(1, 72000).optionalFieldOf("refresh_interval", 100).forGetter(RayTracePosition::getRefreshInterval)
+        Codec.intRange(1, 72000).optionalFieldOf("refresh_interval", 200).forGetter(RayTracePosition::getRefreshInterval)
     ).apply(instance, RayTracePosition::new)).codec();
 
     private final Vec3 centerOffset;
-    private final double heightOffset;
     private final Integer reflectTimes;
     private final Integer positionQueueSize;
     private final Integer refreshInterval;
 
-    public RayTracePosition(Vec3 centerOffset, double excludeRadius, double radius, double heightOffset, boolean isCircle,
+    public RayTracePosition(Vec3 centerOffset, double excludeRadius, double radius, boolean isCircle,
         Integer reflectTimes, Integer positionQueueSize, Integer refreshInterval){
         super(excludeRadius, radius, isCircle);
         this.centerOffset = centerOffset;
-        this.heightOffset = heightOffset;
         this.reflectTimes = reflectTimes;
         this.positionQueueSize = positionQueueSize;
         this.refreshInterval = refreshInterval;
@@ -88,17 +85,20 @@ public class RayTracePosition extends PlaceComponent {
             return;
         }
         final List<BlockPos> candidates = raid.getCandidatePositions();
+        final Vec3 center = raid.getPosition().add(this.getCenterOffset());
         if (candidates.size() >= this.getPositionQueueSize()) {
             if (level.getGameTime() % this.getRefreshInterval() != 0) {
                 return;
             }
-            candidates.clear();
+            for (int i = 0; i < REFRESH_TRIES; ++i) {
+                this.rayTrace(level, center).ifPresent(newPos -> {
+                    int randomReplaceIndex = level.getRandom().nextInt(candidates.size());
+                    candidates.set(randomReplaceIndex, newPos);
+                });
+            }
         }
-        final Vec3 center = raid.getPosition().add(this.getCenterOffset());
         for (int i = 0; i < ATTEMPTS_PER_TICK && candidates.size() < this.getPositionQueueSize(); ++i) {
-            this.rayTrace(level, center)
-                .filter(pos -> !candidates.contains(pos))
-                .ifPresent(candidates::add);
+            this.rayTrace(level, center).ifPresent(candidates::add);
         }
     }
 
@@ -119,12 +119,12 @@ public class RayTracePosition extends PlaceComponent {
         for (int i = 0; i < attempts && !candidates.isEmpty(); ++i) {
             final BlockPos pos = candidates.get(random.nextInt(candidates.size()));
             if (this.canPlace(world, pos)) {
-                return this.toSpawnPosition(pos, random);
+                return this.toSpawnPosition(pos);
             }
             candidates.remove(pos);
         }
         return this.rayTrace(world, origin.add(this.getCenterOffset()))
-            .map(pos -> this.toSpawnPosition(pos, world.getRandom()))
+            .map(this::toSpawnPosition)
             .orElse(origin);
     }
 
@@ -138,12 +138,12 @@ public class RayTracePosition extends PlaceComponent {
      * 否则随机弹射并继续检测，弹射次数超过 {@link #getReflectTimes()} 则失败。
      *
      * @param level 现世界。
-     * @param center 放置区域中心（不包含高度偏移）。
+     * @param center 放置区域中心。
      * @return 命中的可站立位置。
      */
     protected Optional<BlockPos> rayTrace(ServerLevel level, Vec3 center) {
         final RandomSource random = level.getRandom();
-        Vec3 from = center.add(0D, this.getHeightOffset(), 0D);
+        Vec3 from = center;
         Vec3 direction = this.randomDirection(random);
         int reflect = 0;
         while (true) {
@@ -212,19 +212,12 @@ public class RayTracePosition extends PlaceComponent {
     /**
      * 在方块上方做小范围随机偏移。
      */
-    protected Vec3 toSpawnPosition(BlockPos pos, RandomSource random) {
-        final double radius = RandomHelper.getMinMax(random, 0D, SPAWN_OFFSET);
-        final double angle = random.nextDouble() * Math.PI * 2D;
-        return new Vec3(pos.getX() + 0.5D + radius * Math.sin(angle), pos.getY(),
-            pos.getZ() + 0.5D + radius * Math.cos(angle));
+    protected Vec3 toSpawnPosition(BlockPos pos) {
+        return new Vec3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
     }
 
     public Vec3 getCenterOffset() {
         return centerOffset;
-    }
-
-    public double getHeightOffset() {
-        return heightOffset;
     }
 
     public Integer getReflectTimes() {

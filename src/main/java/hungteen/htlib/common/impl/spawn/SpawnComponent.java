@@ -8,16 +8,19 @@ import hungteen.htlib.api.interfaces.raid.IRaid;
 import hungteen.htlib.api.interfaces.raid.ISpawnComponent;
 import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.util.helper.MathHelper;
+import hungteen.htlib.util.helper.registry.EffectHelper;
 import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -50,6 +53,10 @@ public abstract class SpawnComponent implements ISpawnComponent {
             } else {
                 if (this.enableDefaultSpawn() && entity instanceof Mob mob) {
                     ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
+                    Integer glowingTick = getSpawnSetting().glowingTick();
+                    if (Objects.nonNull(glowingTick) && glowingTick > 0) {
+                        mob.addEffect(EffectHelper.effect(MobEffects.GLOWING, glowingTick, 1));
+                    }
                 }
 
                 if(getSpawnSetting().persist()&& entity instanceof Mob mob) {
@@ -89,7 +96,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return spawnSetting;
     }
 
-    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<IPositionComponent>> placeComponent){
+    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<IPositionComponent>> placeComponent, Integer glowingTick){
 
         /**
          * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
@@ -103,7 +110,8 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
                 Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
                 Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
-                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent)
+                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent),
+                Codec.INT.optionalFieldOf("glowing_tick", 400).forGetter(SpawnSetting::glowingTick)
                 ).apply(instance, SpawnSetting::new)).codec();
     }
 

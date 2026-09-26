@@ -37,7 +37,7 @@ public interface HTPositionComponents {
                 Vec3.ZERO, 0, 10, true, 0, false
         ));
         context.register(TEST_RAY, new RayTracePosition(
-            Vec3.ZERO, 20, 50, 5, true, 3, 32, 100
+            Vec3.ZERO, 20, 50, true, 3, 32, 100
         ));
     }
 
