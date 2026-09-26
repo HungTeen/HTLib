@@ -44,7 +44,7 @@ class RayTracePositionTest {
         assertTrue(position.isCircle());
         assertEquals(3, position.getReflectTimes());
         assertEquals(16, position.getPositionQueueSize());
-        assertEquals(100, position.getRefreshInterval());
+        assertEquals(200, position.getRefreshInterval());
         // Radius is required.
         assertTrue(RayTracePosition.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString("{}")).result().isEmpty());
     }

@@ -22,6 +22,7 @@ import hungteen.htlib.util.helper.registry.EntityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,6 +39,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -60,6 +62,11 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
     public static final String RAID_TAG = "RaidTag";
     public static final String RAID_KEY = "RaidKey";
+    public static final String RAIDER_IDS = "RaiderIDs";
+    /**
+     * How many ticks a raid can wait for saved raiders to be re-linked before it gives up.
+     */
+    private static final int RAIDER_RESYNC_TIMEOUT = 200;
     public static final MutableComponent RAID_TITLE = Component.translatable("raid.htlib.title");
     public static final MutableComponent RAID_VICTORY_TITLE = Component.translatable("raid.htlib.victory_title");
     public static final MutableComponent RAID_LOSS_TITLE = Component.translatable("raid.htlib.loss_title");
@@ -78,6 +85,14 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      * Candidate positions calculated by placements, will not be saved.
      */
     private final List<BlockPos> candidatePositions = new ArrayList<>();
+    /**
+     * Raiders which were saved in NBT but not linked to this raid yet. <br>
+     * Raiders are only re-linked when their chunks are loaded, which may happen
+     * after this raid has already resumed ticking, so the raid must wait for them
+     * before it can treat the current wave as cleared.
+     */
+    private final Map<UUID, ChunkPos> pendingRaiders = new HashMap<>();
+    private int pendingRaidersTick = 0;
     protected int tick = 0;
     protected int invalidTick = 0;
     protected int currentWave = 0;
@@ -154,6 +169,11 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         if (tag.contains("StopTick")) {
             this.stopTick = tag.getInt("StopTick");
         }
+        this.pendingRaiders.clear();
+        this.pendingRaidersTick = 0;
+        if (tag.contains(RAIDER_IDS)) {
+            this.pendingRaiders.putAll(decodePendingRaiders(tag.getList(RAIDER_IDS, CompoundTag.TAG_COMPOUND)));
+        }
     }
 
     @Override
@@ -174,6 +194,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         tag.putBoolean("FirstTick", this.firstTick);
         tag.putBoolean("Stopped", this.stopped);
         tag.putInt("StopTick", this.stopTick);
+        tag.put(RAIDER_IDS, encodePendingRaiders(this.currentRaiders()));
         return super.save(tag);
     }
 
@@ -233,6 +254,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
             }
         }
 
+        this.resolvePendingRaiders();
         this.tickPositions();
         this.workTick(raid, wave);
     }
@@ -429,10 +451,82 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         }
     }
 
+    /**
+     * Re-link raiders which were saved in NBT, they are added back only when their
+     * chunks are loaded. {@link #validTick(IRaidComponent, IWaveComponent)}
+     */
+    protected void resolvePendingRaiders() {
+        if (this.pendingRaiders.isEmpty()) {
+            this.pendingRaidersTick = 0;
+            return;
+        }
+        if (!(this.getLevel() instanceof ServerLevel)) {
+            this.pendingRaiders.clear();
+            this.pendingRaidersTick = 0;
+            return;
+        }
+        final ServerLevel level = (ServerLevel) this.getLevel();
+        final List<Entity> linked = new ArrayList<>();
+        final List<UUID> removed = new ArrayList<>();
+        for (Map.Entry<UUID, ChunkPos> entry : this.pendingRaiders.entrySet()) {
+            final Entity raider = level.getEntity(entry.getKey());
+            if (raider != null) {
+                linked.add(raider);
+            } else if (level.hasChunk(entry.getValue().x, entry.getValue().z)) {
+                // Chunk is loaded but the raider is gone.
+                removed.add(entry.getKey());
+            }
+        }
+        removed.forEach(this.pendingRaiders::remove);
+        linked.forEach(raider -> this.joinRaid(this.currentWave, raider));
+        if (this.pendingRaiders.isEmpty()) {
+            this.pendingRaidersTick = 0;
+        } else if (++this.pendingRaidersTick >= RAIDER_RESYNC_TIMEOUT) {
+            HTLib.getLogger().warn("Custom Raid Warning : {} raiders were not found after {} ticks, give up waiting.",
+                    this.pendingRaiders.size(), this.pendingRaidersTick);
+            this.pendingRaiders.clear();
+            this.pendingRaidersTick = 0;
+        }
+    }
+
+    /**
+     * Raiders which should be restored after a world reload, linked and pending ones.
+     */
+    private Map<UUID, ChunkPos> currentRaiders() {
+        final Map<UUID, ChunkPos> raiders = new HashMap<>(this.pendingRaiders);
+        this.raiderSet.stream().filter(Entity::isAlive)
+            .forEach(raider -> raiders.put(raider.getUUID(), raider.chunkPosition()));
+        return raiders;
+    }
+
+    static ListTag encodePendingRaiders(Map<UUID, ChunkPos> raiders) {
+        final ListTag list = new ListTag();
+        raiders.forEach((uuid, chunkPos) -> {
+            final CompoundTag tag = new CompoundTag();
+            tag.putUUID("UUID", uuid);
+            tag.putInt("ChunkX", chunkPos.x);
+            tag.putInt("ChunkZ", chunkPos.z);
+            list.add(tag);
+        });
+        return list;
+    }
+
+    static Map<UUID, ChunkPos> decodePendingRaiders(ListTag list) {
+        final Map<UUID, ChunkPos> raiders = new HashMap<>();
+        for (int i = 0; i < list.size(); ++i) {
+            final CompoundTag tag = list.getCompound(i);
+            if (tag.hasUUID("UUID")) {
+                raiders.put(tag.getUUID("UUID"), new ChunkPos(tag.getInt("ChunkX"), tag.getInt("ChunkZ")));
+            }
+        }
+        return raiders;
+    }
+
     @Override
     public boolean addRaider(Entity raider) {
         Entity dupRaider = null;
 
+        this.pendingRaiders.remove(raider.getUUID());
         for (Entity raider1 : this.raiderSet) {
             if (raider1.getUUID().equals(raider.getUUID())) {
                 dupRaider = raider1;
@@ -511,13 +605,17 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     public int getTotalRaidersAlive() {
-        return this.raiderSet.size();
+        return this.raiderSet.size() + this.pendingRaiders.size();
     }
 
     /**
      * {@link #tick()}
      */
     protected void checkNextWave(IWaveComponent wave) {
+        if (!this.pendingRaiders.isEmpty()) {
+            // Saved raiders are not linked yet, never treat the current wave as cleared.
+            return;
+        }
         if (wave.getWaveDuration() == 0 || this.tick >= wave.getWaveDuration()) {
             if (this.canNextWave()) {
                 this.nextWave();
@@ -614,6 +712,8 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         for (Entity raider : raiders) {
             removeFromRaid(raider);
         }
+        this.pendingRaiders.clear();
+        this.pendingRaidersTick = 0;
         this.updateProgress();
         this.setDirty();
     }
