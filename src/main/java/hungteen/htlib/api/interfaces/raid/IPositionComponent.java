@@ -11,13 +11,31 @@ import net.minecraft.world.phys.Vec3;
  */
 public interface IPositionComponent {
 
+    default void tickPosition(IRaid raid) {
+
+    }
+
     /**
      * Calculate the getSpawnEntities point of entity.
      * @param world Current level of its raid.
      * @param origin Current center of its raid.
      * @return Calculate result.
      */
+    @Deprecated
     Vec3 getPlacePosition(ServerLevel world, Vec3 origin);
+
+    /**
+     * Calculate the getSpawnEntities point of entity with its raid.
+     * Components which cache positions on the raid (see {@link IRaid#getCandidatePositions()})
+     * should override this method.
+     * @param raid Current raid.
+     * @param world Current level of its raid.
+     * @param origin Current center of its raid.
+     * @return Calculate result.
+     */
+    default Vec3 getPlacePosition(IRaid raid, ServerLevel world, Vec3 origin) {
+        return this.getPlacePosition(world, origin);
+    }
 
     /**
      * Get the type of placement.

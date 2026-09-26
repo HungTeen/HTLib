@@ -27,6 +27,7 @@ public interface HTPositionComponents {
 
     ResourceKey<IPositionComponent> TEST = create("test");
     ResourceKey<IPositionComponent> COMMON = create("common");
+    ResourceKey<IPositionComponent> TEST_RAY = create("test_ray");
 
     static void register(BootstapContext<IPositionComponent> context) {
         context.register(TEST, new CenterAreaPosition(
@@ -34,6 +35,9 @@ public interface HTPositionComponents {
         ));
         context.register(COMMON, new CenterAreaPosition(
                 Vec3.ZERO, 0, 10, true, 0, false
+        ));
+        context.register(TEST_RAY, new RayTracePosition(
+            Vec3.ZERO, 20, 50, 5, true, 3, 32, 100
         ));
     }
 

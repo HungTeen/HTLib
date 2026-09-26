@@ -1,0 +1,7 @@
+{
+  "type": "htlib:ray_trace",
+  "exclude_radius": 20.0,
+  "height_offset": 5.0,
+  "position_queue_size": 32,
+  "radius": 50.0
+}

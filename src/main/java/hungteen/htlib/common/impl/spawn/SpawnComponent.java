@@ -37,7 +37,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
      * Copy from {@link net.minecraft.server.commands.SummonCommand}
      */
     public Optional<Entity> spawnEntity(ServerLevel level, IRaid raid){
-        final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(level, raid.getPosition());
+        final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(raid, level, raid.getPosition());
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
             compoundtag.putString("id", EntityHelper.get().getKey(this.getEntityType()).toString());

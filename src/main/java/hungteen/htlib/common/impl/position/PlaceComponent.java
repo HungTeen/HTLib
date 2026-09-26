@@ -32,6 +32,19 @@ public abstract class PlaceComponent implements IPositionComponent {
         return this.getRadius() >= this.getExcludeRadius();
     }
 
+    /**
+     * Check if the position is placed in the area, y axis will be ignored.
+     * @param center Center of the area.
+     * @param position Position to check.
+     * @return True if the position is in the area.
+     */
+    public boolean isInArea(Vec3 center, Vec3 position) {
+        final double dx = position.x() - center.x();
+        final double dz = position.z() - center.z();
+        final double distance = this.isCircle() ? Math.sqrt(dx * dx + dz * dz) : Math.max(Math.abs(dx), Math.abs(dz));
+        return distance >= this.getExcludeRadius() && distance <= this.getRadius();
+    }
+
     public double getExcludeRadius() {
         return excludeRadius;
     }

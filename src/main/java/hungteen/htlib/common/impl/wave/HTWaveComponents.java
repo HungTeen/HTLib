@@ -37,6 +37,8 @@ public interface HTWaveComponents {
     ResourceKey<IWaveComponent> COMMON_WAVE_1 = create("common_wave_1");
     ResourceKey<IWaveComponent> COMMON_WAVE_2 = create("common_wave_2");
     ResourceKey<IWaveComponent> COMMON_WAVE_3 = create("common_wave_3");
+    ResourceKey<IWaveComponent> CAVE_WAVE_1 = create("cave_wave_1");
+    ResourceKey<IWaveComponent> CAVE_WAVE_2 = create("cave_wave_2");
 
     static void register(BootstapContext<IWaveComponent> context) {
         final HolderGetter<ISpawnComponent> spawns = HTSpawnComponents.registry().helper().lookup(context);
@@ -84,6 +86,20 @@ public interface HTWaveComponents {
                         Pair.of(ConstantInt.of(200), diamondZombieSpawns),
                         Pair.of(ConstantInt.of(500), creeperSpawns)
                 )
+        ));
+        context.register(CAVE_WAVE_1, new CommonWave(
+            HTWaveComponents.builder().prepare(60).wave(600).skip(true).build(),
+            List.of(
+                Pair.of(ConstantInt.of(10), poweredCreeperSpawns)
+            )
+        ));
+        context.register(CAVE_WAVE_2, new CommonWave(
+            HTWaveComponents.builder().prepare(60).wave(1200).skip(true).build(),
+            List.of(
+                Pair.of(ConstantInt.of(100), skeletonSpawns),
+                Pair.of(ConstantInt.of(300), witherSkeletonSpawns),
+                Pair.of(ConstantInt.of(600), witherSkeletonSpawns)
+            )
         ));
     }
 

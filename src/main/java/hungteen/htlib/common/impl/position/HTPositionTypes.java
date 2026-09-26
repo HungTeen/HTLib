@@ -19,6 +19,7 @@ public class HTPositionTypes {
 
     public static final IPositionType<CenterAreaPosition> CENTER_AREA = register(new PositionType<>("center_area",  CenterAreaPosition.CODEC));
     public static final IPositionType<AbsoluteAreaPosition> ABSOLUTE_AREA = register(new PositionType<>("absolute_area",  AbsoluteAreaPosition.CODEC));
+    public static final IPositionType<RayTracePosition> RAY_TRACE = register(new PositionType<>("ray_trace",  RayTracePosition.CODEC));
 
     public static <T extends IPositionComponent> IPositionType<T> register(IPositionType<T> type){
         return registry().register(type);

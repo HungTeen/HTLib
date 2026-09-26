@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import hungteen.htlib.api.interfaces.IHTCodecRegistry;
 import hungteen.htlib.api.interfaces.raid.*;
 import hungteen.htlib.common.HTSounds;
+import hungteen.htlib.common.impl.position.HTPositionComponents;
 import hungteen.htlib.common.impl.result.HTResultComponents;
 import hungteen.htlib.common.impl.wave.HTWaveComponents;
 import hungteen.htlib.common.registry.HTCodecRegistry;
@@ -35,10 +36,12 @@ public interface HTRaidComponents {
 
     ResourceKey<IRaidComponent> TEST = create("test");
     ResourceKey<IRaidComponent> COMMON = create("common");
+    ResourceKey<IRaidComponent> CAVE_COMMON = create("cave_common");
 
     static void register(BootstapContext<IRaidComponent> context) {
         final HolderGetter<IResultComponent> results = HTResultComponents.registry().helper().lookup(context);
         final HolderGetter<IWaveComponent> waves = HTWaveComponents.registry().helper().lookup(context);
+        final HolderGetter<IPositionComponent> positions = HTPositionComponents.registry().helper().lookup(context);
         context.register(TEST, new CommonRaid(
                 builder()
                         .blockInside(false)
@@ -76,6 +79,26 @@ public interface HTRaidComponents {
                         waves.getOrThrow(HTWaveComponents.COMMON_WAVE_2),
                         waves.getOrThrow(HTWaveComponents.COMMON_WAVE_3)
                 )
+        ));
+        context.register(CAVE_COMMON, new CommonRaid(
+            builder()
+                .blockInside(true)
+                .blockOutside(true)
+                .renderBorder(true)
+                .victoryResult(results.getOrThrow(HTResultComponents.COMMON_FUNCTION))
+                .victoryResult(results.getOrThrow(HTResultComponents.COMMAND_FUNCTION))
+                .lossResult(results.getOrThrow(HTResultComponents.CLEAR_RAIDERS))
+                .color(BossEvent.BossBarColor.RED)
+                .raidSound(HTSounds.PREPARE.getHolder())
+                .waveSound(HTSounds.HUGE_WAVE.getHolder())
+                .victorySound(HTSounds.VICTORY.getHolder())
+                .lossSound(HTSounds.LOSS.getHolder())
+                .place(positions.getOrThrow(HTPositionComponents.TEST_RAY))
+                .build(),
+            Arrays.asList(
+                waves.getOrThrow(HTWaveComponents.CAVE_WAVE_1),
+                waves.getOrThrow(HTWaveComponents.CAVE_WAVE_2)
+            )
         ));
     }
 
