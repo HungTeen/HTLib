@@ -80,7 +80,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected IWaveComponent waveComponent;
     protected List<Pair<Integer, ISpawnComponent>> spawnComponents = List.of();
     protected Status status = Status.PREPARE;
-    protected final Set<Entity> raiderSet = Sets.newHashSet();
+    protected final Map<UUID, Entity> raiderMap = new LinkedHashMap<>();
     /**
      * Candidate positions calculated by placements, will not be saved.
      */
@@ -331,8 +331,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     public void joinRaid(int wave, Entity raider) {
-        boolean success = this.addRaider(raider);
-        if (success) {
+        if (this.addRaider(raider)) {
             RaidCapability.getRaid(raider).ifPresent(raidCapability -> {
                 raidCapability.setRaid(this);
                 raidCapability.setWave(wave);
@@ -428,25 +427,24 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     protected void updateRaiders() {
-        if (this.getLevel() instanceof ServerLevel) {
-            Iterator<Entity> iterator = this.raiderSet.iterator();
-            Set<Entity> set = Sets.newHashSet();
+        if (this.getLevel() instanceof ServerLevel level) {
+            final List<Entity> removed = new ArrayList<>();
 
-            while (iterator.hasNext()) {
-                Entity raider = iterator.next();
-                if (raider.isAlive() && EntityHelper.inDimension(raider, this.getLevel().dimension())) {
-                    if (raider.tickCount > 600) {
-                        if (((ServerLevel)this.getLevel()).getEntity(raider.getUUID()) == null) {
-                            set.add(raider);
-                        }
+            for (Map.Entry<UUID, Entity> entry : this.raiderMap.entrySet()) {
+                final Entity raider = entry.getValue();
+                if (raider.isAlive() && EntityHelper.inDimension(raider, level.dimension())) {
+                    // 已被实体管理器丢弃（区块重载后消失）的幽灵引用。
+                    if (raider.tickCount > 600 && level.getEntity(entry.getKey()) == null) {
+                        removed.add(raider);
                     }
                 } else {
-                    set.add(raider);
+                    removed.add(raider);
                 }
             }
 
-            for (Entity raider1 : set) {
-                this.removeFromRaid(raider1);
+            if (!removed.isEmpty()) {
+                removed.forEach(this::removeFromRaid);
+                this.updateProgress();
             }
         }
     }
@@ -494,7 +492,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      */
     private Map<UUID, ChunkPos> currentRaiders() {
         final Map<UUID, ChunkPos> raiders = new HashMap<>(this.pendingRaiders);
-        this.raiderSet.stream().filter(Entity::isAlive)
+        this.raiderMap.values().stream().filter(Entity::isAlive)
             .forEach(raider -> raiders.put(raider.getUUID(), raider.chunkPosition()));
         return raiders;
     }
@@ -522,36 +520,42 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return raiders;
     }
 
+    /**
+     * 关联袭击者。进度条会在下一个 tick 统一刷新，这里只需标记脏数据。
+     * {@link #tickProgressBar()}
+     */
     @Override
     public boolean addRaider(Entity raider) {
-        Entity dupRaider = null;
-
-        this.pendingRaiders.remove(raider.getUUID());
-        for (Entity raider1 : this.raiderSet) {
-            if (raider1.getUUID().equals(raider.getUUID())) {
-                dupRaider = raider1;
-                break;
-            }
-        }
-        /* Replace Old */
-        if (dupRaider != null) {
-            this.raiderSet.remove(dupRaider);
-            this.raiderSet.add(raider);
-        }
-
-        this.raiderSet.add(raider);
-        if (raider instanceof PathfinderMob mob) {
-            mob.goalSelector.addGoal(0, new WalkToRaidGoal(mob, 1.5F));
-        }
-
-        this.updateProgress();
+        this.linkRaider(raider);
         this.setDirty();
         return true;
     }
 
+    /**
+     * 仅写入 {@link #raiderMap} 并挂载寻路 goal，不标记脏数据也不刷新进度条。
+     * {@link #addRaider(Entity)}
+     */
+    private void linkRaider(Entity raider) {
+        final UUID uuid = raider.getUUID();
+        this.pendingRaiders.remove(uuid);
+        final Entity oldRaider = this.raiderMap.put(uuid, raider);
+        if (oldRaider == raider) {
+            // 已经关联过，避免重复挂载 goal。
+            return;
+        }
+        if (raider instanceof PathfinderMob mob && !hasRaidGoal(mob)) {
+            mob.goalSelector.addGoal(0, new WalkToRaidGoal(mob, 1.5F));
+        }
+    }
+
+    private static boolean hasRaidGoal(PathfinderMob mob) {
+        return mob.goalSelector.getAvailableGoals().stream()
+                .anyMatch(wrappedGoal -> wrappedGoal.getGoal() instanceof WalkToRaidGoal);
+    }
+
     @Override
     public void removeRaider(Entity raider) {
-
+        this.removeFromRaid(raider);
     }
 
     public void updateProgress() {
@@ -562,7 +566,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         float health = 0.0F;
         float maxHealth = 0.0F;
 
-        for (Entity raider : this.raiderSet) {
+        for (Entity raider : this.raiderMap.values()) {
             if (raider instanceof LivingEntity) {
                 health += ((LivingEntity)raider).getHealth();
                 maxHealth += ((LivingEntity)raider).getMaxHealth();
@@ -605,7 +609,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     public int getTotalRaidersAlive() {
-        return this.raiderSet.size() + this.pendingRaiders.size();
+        return this.raiderMap.size() + this.pendingRaiders.size();
     }
 
     /**
@@ -694,23 +698,31 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     public void removeFromRaid(Entity raider) {
-        boolean flag = this.raiderSet.remove(raider);
-        if (flag) {
+        if (this.unlinkRaider(raider)) {
+            this.setDirty();
+        }
+    }
+
+    /**
+     * 仅移出 {@link #raiderMap} 并清空袭击者持有的 capability，不标记脏数据也不刷新进度条。
+     * {@link #removeFromRaid(Entity)}
+     */
+    private boolean unlinkRaider(Entity raider) {
+        if (this.raiderMap.remove(raider.getUUID(), raider)) {
             RaidCapability.getRaid(raider).ifPresent(raidCapability -> {
                 raidCapability.setRaid(null);
             });
-            this.updateProgress();
-            this.setDirty();
+            return true;
         }
+        return false;
     }
 
     /**
      * 移除当前波次的所有袭击者（不清除袭击者本身，仅解除关联）。
      */
     private void clearCurrentRaiders() {
-        List<Entity> raiders = new ArrayList<>(this.raiderSet);
-        for (Entity raider : raiders) {
-            removeFromRaid(raider);
+        for (Entity raider : new ArrayList<>(this.raiderMap.values())) {
+            this.removeFromRaid(raider);
         }
         this.pendingRaiders.clear();
         this.pendingRaidersTick = 0;
@@ -760,6 +772,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      */
     public void remove() {
         super.remove();
+        // 解除所有袭击者的关联，否则幸存袭击者会一直持有本次袭击（连同其 raiderMap），
+        // 且 WalkToRaidGoal 仍会朝已移除的袭击点寻路。
+        this.clearCurrentRaiders();
         this.progressBar.removeAllPlayers();
     }
 
@@ -905,7 +920,7 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     public List<Entity> getRaiders() {
-        return this.raiderSet.stream().toList();
+        return this.raiderMap.values().stream().toList();
     }
 
     public enum Status {

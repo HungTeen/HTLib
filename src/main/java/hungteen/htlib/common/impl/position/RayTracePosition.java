@@ -143,7 +143,7 @@ public class RayTracePosition extends PlaceComponent {
      */
     protected Optional<BlockPos> rayTrace(ServerLevel level, Vec3 center) {
         final RandomSource random = level.getRandom();
-        Vec3 from = center;
+        Vec3 from = getRayCenter(level, center);
         Vec3 direction = this.randomDirection(random);
         int reflect = 0;
         while (true) {
@@ -207,6 +207,13 @@ public class RayTracePosition extends PlaceComponent {
             && ground.isFaceSturdy(level, pos.below(), Direction.UP)
             && body.getCollisionShape(level, pos).isEmpty() && body.getFluidState().isEmpty()
             && head.getCollisionShape(level, pos.above()).isEmpty();
+    }
+
+    /**
+     * 在方块上方做小范围随机偏移。
+     */
+    protected Vec3 getRayCenter(ServerLevel level, Vec3 pos) {
+        return level.canSeeSky(MathHelper.toBlockPos(pos)) ? pos.add(0, 5, 0) : pos;
     }
 
     /**
