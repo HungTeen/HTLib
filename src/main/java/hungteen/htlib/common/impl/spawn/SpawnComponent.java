@@ -51,6 +51,11 @@ public abstract class SpawnComponent implements ISpawnComponent {
             if (entity == null) {
                 HTLib.getLogger().error("Fail to create entity {}", this.getEntityType().toString());
             } else {
+                if (!this.adjustSpawnPosition(level, entity, spawnPosition)) {
+                    HTLib.getLogger().warn("Can not find free space to spawn entity {} at {}",
+                            this.getEntityType().toString(), spawnPosition);
+                    return Optional.empty();
+                }
                 if (this.enableDefaultSpawn() && entity instanceof Mob mob) {
                     ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
                     Integer glowingTick = getSpawnSetting().glowingTick();
@@ -73,6 +78,39 @@ public abstract class SpawnComponent implements ISpawnComponent {
             HTLib.getLogger().warn("Can not getSpawnEntities entity at position {}", spawnPosition);
         }
         return Optional.empty();
+    }
+
+    /**
+     * 避免把实体生成在方块里：原落点与方块碰撞时，按“先原地、再逐级向上、每级再试周围半格”的
+     * 顺序找一个能完整容纳该实体碰撞箱的位置（实体比方块宽、比两格高时同样会被检测到）。
+     * 找不到则把实体放回原点并返回 false，调用方应放弃本次生成。
+     *
+     * @param level 现世界。
+     * @param entity 已经移动到原始落点的实体。
+     * @param origin 放置组件给出的原始落点。
+     * @return true 表示实体可以安全放入世界。
+     */
+    private boolean adjustSpawnPosition(ServerLevel level, Entity entity, Vec3 origin) {
+        if (level.noCollision(entity)) {
+            return true;
+        }
+        final float yRot = entity.getYRot();
+        final float xRot = entity.getXRot();
+        for (int dy = 0; dy <= 2; ++ dy) {
+            for (int dx = -1; dx <= 1; ++ dx) {
+                for (int dz = -1; dz <= 1; ++ dz) {
+                    final Vec3 candidate = origin.add(dx, dy, dz);
+                    if (Level.isInSpawnableBounds(MathHelper.toBlockPos(candidate))) {
+                        entity.moveTo(candidate.x, candidate.y, candidate.z, yRot, xRot);
+                        if (level.noCollision(entity)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        entity.moveTo(origin.x, origin.y, origin.z, yRot, xRot);
+        return false;
     }
 
     @Override

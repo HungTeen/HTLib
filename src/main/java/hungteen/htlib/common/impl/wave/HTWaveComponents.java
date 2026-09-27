@@ -97,8 +97,8 @@ public interface HTWaveComponents {
             HTWaveComponents.builder().prepare(60).wave(1200).skip(true).build(),
             List.of(
                 Pair.of(ConstantInt.of(100), skeletonSpawns),
-                Pair.of(ConstantInt.of(300), witherSkeletonSpawns),
-                Pair.of(ConstantInt.of(600), witherSkeletonSpawns)
+                Pair.of(ConstantInt.of(300), diamondZombieSpawns),
+                Pair.of(ConstantInt.of(600), spiderSpawns)
             )
         ));
     }

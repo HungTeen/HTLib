@@ -3,6 +3,7 @@ package hungteen.htlib.api.interfaces.raid;
 import hungteen.htlib.api.interfaces.IDummyEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
 import java.util.List;
@@ -47,4 +48,20 @@ public interface IRaid extends IDummyEntity {
      * @return Candidate positions of the placement.
      */
     List<BlockPos> getCandidatePositions();
+
+    /**
+     * 玩家中已被袭击进度条跟踪的保卫者。 Defenders tracked by the raid bar.
+     * @return Players following the raid.
+     */
+    default List<ServerPlayer> getPlayers() {
+        return List.of();
+    }
+
+    /**
+     * 当前已关联到本袭击的袭击者。 Raiders linked to this raid.
+     * @return Linked raiders.
+     */
+    default List<Entity> getRaiders() {
+        return List.of();
+    }
 }

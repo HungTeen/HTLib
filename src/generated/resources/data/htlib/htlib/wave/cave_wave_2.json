@@ -10,11 +10,11 @@
       "start_tick": 100
     },
     {
-      "spawn": "htlib:wither_skeleton",
+      "spawn": "htlib:diamond_zombie_3_6",
       "start_tick": 300
     },
     {
-      "spawn": "htlib:wither_skeleton",
+      "spawn": "htlib:spider_5",
       "start_tick": 600
     }
   ]

@@ -43,7 +43,7 @@ public class CenterAreaPosition extends PlaceComponent {
 
     @Override
     public Vec3 getPlacePosition(ServerLevel world, Vec3 origin) {
-        if(this.canSpawn()){
+        if(this.canSpawn()) {
             final Vec3 offset = this.getOffset(world.getRandom());
             final double placeHeight = this.onSurface() ?
                     WorldHelper.getSurfaceHeight(world, origin.x() + offset.x(), origin.z() + offset.z()) :

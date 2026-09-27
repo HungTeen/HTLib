@@ -9,7 +9,9 @@ import hungteen.htlib.util.helper.RandomHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,6 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,16 +43,22 @@ public class RayTracePosition extends PlaceComponent {
      */
     private static final double MIN_PITCH = -45D;
     private static final double MAX_PITCH = 45D;
+    /**
+     * 非洞穴场景射线起点的抬升高度。ray lift when the source can see the sky.
+     */
+    private static final double RAY_LIFT = 5D;
 
     /**
      * center_offset 中心点偏移，射线起点相对袭击中心的水平偏移。
      * exclude_radius 排除半径，此半径之内命中不作为候选位置。
      * radius 放置半径，同时也是射线单段的最大长度。
-     * height_offset 高度偏移，射线起点的高度，建议为正值（从空中向下检测）。
      * is_circle 默认是圆形范围，否则是方形。
      * reflect_times 最大弹射次数。max reflect times before the ray trace gives up.
      * position_queue_size 候选位置数量上限，达到后仅定期刷新。max amount of cached candidates.
      * refresh_interval 候选位置刷新间隔（刻）。interval of refreshing the full candidate queue.
+     * <p>
+     * 射线起点并非固定袭击中心：优先从保卫者（玩家）与袭击者中随机取一个当前位置，
+     * 两者都不存在时才回退到袭击中心；而 radius / exclude_radius 始终以袭击中心判定。
      */
     public static final Codec<RayTracePosition> CODEC = RecordCodecBuilder.<RayTracePosition>mapCodec(instance -> instance.group(
         Vec3.CODEC.optionalFieldOf("center_offset", Vec3.ZERO).forGetter(RayTracePosition::getCenterOffset),
@@ -91,14 +100,14 @@ public class RayTracePosition extends PlaceComponent {
                 return;
             }
             for (int i = 0; i < REFRESH_TRIES; ++i) {
-                this.rayTrace(level, center).ifPresent(newPos -> {
+                this.rayTrace(raid, level, center).ifPresent(newPos -> {
                     int randomReplaceIndex = level.getRandom().nextInt(candidates.size());
                     candidates.set(randomReplaceIndex, newPos);
                 });
             }
         }
         for (int i = 0; i < ATTEMPTS_PER_TICK && candidates.size() < this.getPositionQueueSize(); ++i) {
-            this.rayTrace(level, center).ifPresent(candidates::add);
+            this.rayTrace(raid, level, center).ifPresent(candidates::add);
         }
     }
 
@@ -123,7 +132,7 @@ public class RayTracePosition extends PlaceComponent {
             }
             candidates.remove(pos);
         }
-        return this.rayTrace(world, origin.add(this.getCenterOffset()))
+        return this.rayTrace(raid, world, origin.add(this.getCenterOffset()))
             .map(this::toSpawnPosition)
             .orElse(origin);
     }
@@ -134,16 +143,51 @@ public class RayTracePosition extends PlaceComponent {
     }
 
     /**
+     * 范围以袭击中心判定，射线起点优先取保卫者/袭击者的当前位置。
+     *
+     * @param raid 袭击。
+     * @param level 现世界。
+     * @param center 放置范围中心（袭击中心 + center_offset）。
+     * @return 命中的可站立位置。
+     */
+    protected Optional<BlockPos> rayTrace(IRaid raid, ServerLevel level, Vec3 center) {
+        return this.rayTrace(level, center, this.getRaySource(raid, level, center));
+    }
+
+    /**
+     * 射线源：从保卫者（玩家）与袭击者中随机取一个当前位置，
+     * 两者都没有时回退到放置范围中心。
+     *
+     * @param fallback 没有可用实体时的起点。
+     * @return 射线起点。
+     */
+    protected Vec3 getRaySource(IRaid raid, ServerLevel level, Vec3 fallback) {
+        final List<Vec3> sources = new ArrayList<>(4);
+        for (ServerPlayer defender : raid.getPlayers()) {
+            if (defender.isAlive()) {
+                sources.add(defender.position());
+            }
+        }
+        for (Entity raider : raid.getRaiders()) {
+            if (raider.isAlive()) {
+                sources.add(raider.position());
+            }
+        }
+        return sources.isEmpty() ? fallback : sources.get(level.getRandom().nextInt(sources.size()));
+    }
+
+    /**
      * 从起点向随机方向射线检测，命中方块顶面且在范围内时返回可站立的位置，
      * 否则随机弹射并继续检测，弹射次数超过 {@link #getReflectTimes()} 则失败。
      *
      * @param level 现世界。
-     * @param center 放置区域中心。
+     * @param center 放置范围中心，{@link #isInArea(Vec3, Vec3)} 以它判定。
+     * @param source 射线起点（不含高度抬升）。
      * @return 命中的可站立位置。
      */
-    protected Optional<BlockPos> rayTrace(ServerLevel level, Vec3 center) {
+    protected Optional<BlockPos> rayTrace(ServerLevel level, Vec3 center, Vec3 source) {
         final RandomSource random = level.getRandom();
-        Vec3 from = getRayCenter(level, center);
+        Vec3 from = getRayCenter(level, source);
         Vec3 direction = this.randomDirection(random);
         int reflect = 0;
         while (true) {
@@ -164,6 +208,13 @@ public class RayTracePosition extends PlaceComponent {
             direction = this.bounce(random, direction, result.getDirection());
             from = result.getLocation().add(direction.scale(1.0E-4D));
         }
+    }
+
+    /**
+     * 起点与范围中心相同的重载。 {@link #rayTrace(ServerLevel, Vec3, Vec3)}
+     */
+    protected Optional<BlockPos> rayTrace(ServerLevel level, Vec3 center) {
+        return this.rayTrace(level, center, center);
     }
 
     /**
@@ -210,14 +261,21 @@ public class RayTracePosition extends PlaceComponent {
     }
 
     /**
-     * 在方块上方做小范围随机偏移。
+     * 非洞穴场景（能看到天空）时把射线起点抬高，否则起点贴着地面，
+     * 射线会立刻命中脚下、找不到有效交点；洞穴内不抬升以免撞到顶。
+     * 抬升高度取 5 与放置半径的一半中的较小值：俯角最大 {@link #MAX_PITCH}=45°，
+     * 起点高于半径时任何射线都够不到半径内的地面。
      */
     protected Vec3 getRayCenter(ServerLevel level, Vec3 pos) {
-        return level.canSeeSky(MathHelper.toBlockPos(pos)) ? pos.add(0, 5, 0) : pos;
+        if (!level.canSeeSky(MathHelper.toBlockPos(pos))) {
+            return pos;
+        }
+        final double lift = Math.min(RAY_LIFT, this.getRadius() * 0.5D);
+        return pos.add(0, lift, 0);
     }
 
     /**
-     * 在方块上方做小范围随机偏移。
+     * 取命中方块中心的水平位置。
      */
     protected Vec3 toSpawnPosition(BlockPos pos) {
         return new Vec3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
