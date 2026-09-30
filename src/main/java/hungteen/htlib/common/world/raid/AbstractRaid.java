@@ -842,7 +842,10 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     public void updateWave(boolean overwrite) {
         if (this.getRaidComponent() != null) {
             if (overwrite || this.getCurrentWave().isEmpty()) {
-                this.setCurrentWave(this.getRaidComponent().getCurrentWave(this, this.currentWave));
+                IWaveComponent currentWaveComponent = this.getRaidComponent().getCurrentWave(this, this.currentWave);
+                this.waveComponent = currentWaveComponent;
+                this.spawnComponents = this.getRaidComponent().getCurrentWaveSpawns(this, currentWaveComponent,
+                    this.currentWave, this.getLevel().getRandom());
             }
             this.setDirty();
         }
@@ -865,22 +868,9 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         return Optional.ofNullable(this.waveComponent);
     }
 
-    public void setCurrentWave(IWaveComponent wave) {
-        this.waveComponent = wave;
-        if (wave != null) {
-            this.spawnComponents = wave.getWaveSpawns(this, this.currentWave, this.getLevel().getRandom());
-        } else {
-            this.spawnComponents = null;
-        }
-    }
-
     @NotNull
     public List<Pair<Integer, ISpawnComponent>> getCurrentSpawns() {
         return this.spawnComponents;
-    }
-
-    public void setCurrentSpawns(List<Pair<Integer, ISpawnComponent>> spawns) {
-        this.spawnComponents = spawns;
     }
 
     @Override

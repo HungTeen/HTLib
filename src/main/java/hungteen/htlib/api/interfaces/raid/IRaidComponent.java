@@ -1,7 +1,10 @@
 package hungteen.htlib.api.interfaces.raid;
 
+import com.mojang.datafixers.util.Pair;
+import hungteen.htlib.common.world.raid.AbstractRaid;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
 
 import java.util.List;
@@ -28,6 +31,9 @@ public interface IRaidComponent {
      * @return Wave component.
      */
     IWaveComponent getCurrentWave(IRaid raid, int currentWave);
+
+    List<Pair<Integer, ISpawnComponent>> getCurrentWaveSpawns(AbstractRaid abstractRaid,
+        IWaveComponent currentWaveComponent, int currentWave, RandomSource random);
 
     /**
      * Determines the wave getSpawnEntities placement entityType.
@@ -155,4 +161,5 @@ public interface IRaidComponent {
      * @return Raid entityType.
      */
     IRaidType<?> getType();
+
 }

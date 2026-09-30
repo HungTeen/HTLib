@@ -2,7 +2,12 @@ package hungteen.htlib.common.impl.position;
 
 import hungteen.htlib.api.interfaces.raid.IPositionComponent;
 import hungteen.htlib.util.helper.RandomHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -30,6 +35,23 @@ public abstract class PlaceComponent implements IPositionComponent {
 
     public boolean canSpawn(){
         return this.getRadius() >= this.getExcludeRadius();
+    }
+
+    /**
+     * 判断该位置是否可以生成实体：下方为完整的支撑面，自身与头部无碰撞且无流体。
+     *
+     * @param level 现世界。
+     * @param pos 待检查的位置（实体脚部所在方块）。
+     * @return true 表示可以生成。
+     */
+    public boolean canPlace(ServerLevel level, BlockPos pos) {
+        final BlockState ground = level.getBlockState(pos.below());
+        final BlockState body = level.getBlockState(pos);
+        final BlockState head = level.getBlockState(pos.above());
+        return Level.isInSpawnableBounds(pos)
+            && ground.isFaceSturdy(level, pos.below(), Direction.UP)
+            && body.getCollisionShape(level, pos).isEmpty() && body.getFluidState().isEmpty()
+            && head.getCollisionShape(level, pos.above()).isEmpty();
     }
 
     /**

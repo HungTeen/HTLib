@@ -13,8 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -245,19 +243,6 @@ public class RayTracePosition extends PlaceComponent {
             bounced = bounced.add(normal.scale(0.2D));
         }
         return bounced.normalize();
-    }
-
-    /**
-     * 判断该位置是否可以生成实体：下方为完整的支撑面，自身与头部无碰撞且无流体。
-     */
-    protected boolean canPlace(ServerLevel level, BlockPos pos) {
-        final BlockState ground = level.getBlockState(pos.below());
-        final BlockState body = level.getBlockState(pos);
-        final BlockState head = level.getBlockState(pos.above());
-        return Level.isInSpawnableBounds(pos)
-            && ground.isFaceSturdy(level, pos.below(), Direction.UP)
-            && body.getCollisionShape(level, pos).isEmpty() && body.getFluidState().isEmpty()
-            && head.getCollisionShape(level, pos.above()).isEmpty();
     }
 
     /**
