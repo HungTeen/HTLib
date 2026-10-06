@@ -1,7 +1,8 @@
 {
   "type": "htlib:once",
   "setting": {
-    "entity_type": "minecraft:spider"
+    "entity_type": "minecraft:spider",
+    "glowing_tick": 400
   },
   "spawn_count": 5
 }

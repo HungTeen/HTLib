@@ -1,7 +1,8 @@
 {
   "type": "htlib:once",
   "setting": {
-    "entity_type": "minecraft:creeper"
+    "entity_type": "minecraft:creeper",
+    "glowing_tick": 400
   },
   "spawn_count": {
     "type": "minecraft:uniform",

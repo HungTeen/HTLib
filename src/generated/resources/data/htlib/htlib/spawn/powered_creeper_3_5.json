@@ -2,6 +2,7 @@
   "type": "htlib:once",
   "setting": {
     "entity_type": "minecraft:creeper",
+    "glowing_tick": 400,
     "nbt": {
       "ExplosionRadius": 3,
       "Fuse": 50,

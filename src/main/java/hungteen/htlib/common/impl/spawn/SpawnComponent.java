@@ -149,7 +149,7 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
                 Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
                 Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent),
-                Codec.INT.optionalFieldOf("glowing_tick", 400).forGetter(SpawnSetting::glowingTick)
+                Codec.INT.optionalFieldOf("glowing_tick", 0).forGetter(SpawnSetting::glowingTick)
                 ).apply(instance, SpawnSetting::new)).codec();
     }
 

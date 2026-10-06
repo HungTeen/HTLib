@@ -65,6 +65,8 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     public static final String RAIDER_IDS = "RaiderIDs";
     /**
      * How many ticks a raid can wait for saved raiders to be re-linked before it gives up.
+     * Counted only while every pending raider's chunk is already loaded, see
+     * {@link #resolvePendingRaiders()}.
      */
     private static final int RAIDER_RESYNC_TIMEOUT = 200;
     public static final MutableComponent RAID_TITLE = Component.translatable("raid.htlib.title");
@@ -86,10 +88,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
      */
     private final List<BlockPos> candidatePositions = new ArrayList<>();
     /**
-     * Raiders which were saved in NBT but not linked to this raid yet. <br>
-     * Raiders are only re-linked when their chunks are loaded, which may happen
-     * after this raid has already resumed ticking, so the raid must wait for them
-     * before it can treat the current wave as cleared.
+     * Raiders which are not linked to this raid right now: they were saved in NBT but their
+     * chunks are not loaded yet, or they were parked here after their chunk unloaded
+     * (see {@link #updateRaiders()}). <br>
+     * They are only re-linked when their chunks are loaded, which may happen after this raid
+     * has already resumed ticking, so the raid must wait for them before it can treat the
+     * current wave as cleared.
      */
     private final Map<UUID, ChunkPos> pendingRaiders = new HashMap<>();
     private int pendingRaidersTick = 0;
@@ -429,10 +433,13 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     protected void updateRaiders() {
         if (this.getLevel() instanceof ServerLevel level) {
             final List<Entity> removed = new ArrayList<>();
+            final List<Entity> unloaded = new ArrayList<>();
 
             for (Map.Entry<UUID, Entity> entry : this.raiderMap.entrySet()) {
                 final Entity raider = entry.getValue();
-                if (raider.isAlive() && EntityHelper.inDimension(raider, level.dimension())) {
+                if (isChunkUnloaded(raider.getRemovalReason())) {
+                    unloaded.add(raider);
+                } else if (raider.isAlive() && EntityHelper.inDimension(raider, level.dimension())) {
                     // 已被实体管理器丢弃（区块重载后消失）的幽灵引用。
                     if (raider.tickCount > 600 && level.getEntity(entry.getKey()) == null) {
                         removed.add(raider);
@@ -442,6 +449,12 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 }
             }
 
+            if (!unloaded.isEmpty()) {
+                unloaded.forEach(this::parkRaider);
+                // 重新开始等待，超时不该从旧对象离开世界的那一刻算起。
+                this.pendingRaidersTick = 0;
+                this.setDirty();
+            }
             if (!removed.isEmpty()) {
                 removed.forEach(this::removeFromRaid);
                 this.updateProgress();
@@ -450,8 +463,33 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
     }
 
     /**
-     * Re-link raiders which were saved in NBT, they are added back only when their
-     * chunks are loaded. {@link #validTick(IRaidComponent, IWaveComponent)}
+     * 实体是否只是被区块卸载带走（数据仍存在区块 NBT 中，重新加载后会新建实例）。
+     * 这类袭击者不能当作已经死亡，否则计数归零会被 {@link #checkNextWave(IWaveComponent)}
+     * 误判成"当前波次已清空"，玩家一回来就直接跳到下一波。
+     */
+    static boolean isChunkUnloaded(Entity.RemovalReason reason) {
+        return reason == Entity.RemovalReason.UNLOADED_TO_CHUNK;
+    }
+
+    /**
+     * 把区块卸载的袭击者转入 {@link #pendingRaiders}，计数不清零，
+     * 区块重新加载后由 {@link #resolvePendingRaiders()} 或袭击者自身的能力反序列化接回。
+     * 不触碰其 capability：实体已被移除，能力可能已失效，
+     * 而卸载时写进区块 NBT 的 RaidID 足以让新实例自行重新关联。
+     * {@link #updateRaiders()}
+     */
+    private boolean parkRaider(Entity raider) {
+        if (this.raiderMap.remove(raider.getUUID(), raider)) {
+            this.pendingRaiders.put(raider.getUUID(), raider.chunkPosition());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Re-link raiders which are waiting in {@link #pendingRaiders}, either saved in NBT or
+     * parked after their chunk unloaded. They are added back only when their chunks are loaded.
+     * {@link #validTick(IRaidComponent, IWaveComponent)}
      */
     protected void resolvePendingRaiders() {
         if (this.pendingRaiders.isEmpty()) {
@@ -465,19 +503,20 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
         }
         final ServerLevel level = (ServerLevel) this.getLevel();
         final List<Entity> linked = new ArrayList<>();
-        final List<UUID> removed = new ArrayList<>();
+        boolean waitingChunk = false;
         for (Map.Entry<UUID, ChunkPos> entry : this.pendingRaiders.entrySet()) {
             final Entity raider = level.getEntity(entry.getKey());
             if (raider != null) {
                 linked.add(raider);
-            } else if (level.hasChunk(entry.getValue().x, entry.getValue().z)) {
-                // Chunk is loaded but the raider is gone.
-                removed.add(entry.getKey());
+            } else if (!level.hasChunk(entry.getValue().x, entry.getValue().z)) {
+                // 区块还没加载，实体可能只是还没就位，一直等，不计入超时。
+                waitingChunk = true;
             }
+            // 区块已加载但实体暂时不可见同样保留：区块加载与实体反序列化存在时序竞态，
+            // 立刻清除会让同一 tick 的 checkNextWave 误判当前波次已清空。
         }
-        removed.forEach(this.pendingRaiders::remove);
         linked.forEach(raider -> this.joinRaid(this.currentWave, raider));
-        if (this.pendingRaiders.isEmpty()) {
+        if (waitingChunk || this.pendingRaiders.isEmpty()) {
             this.pendingRaidersTick = 0;
         } else if (++this.pendingRaidersTick >= RAIDER_RESYNC_TIMEOUT) {
             HTLib.getLogger().warn("Custom Raid Warning : {} raiders were not found after {} ticks, give up waiting.",
