@@ -2,7 +2,7 @@
 
 [![](https://cf.way2muchnoise.eu/versions/794622.svg)](https://www.curseforge.com/minecraft/mc-mods/hungteens-lib)
 
-A lib made by HungTeen for more easily developing minecraft mod.
+A lib made by HungTeen for more easily developing minecraft mod, and here is the [Official docs](https://www.pangteen.top/HTLib/docs/getting-started)
 
 ## Features
 
@@ -24,13 +24,10 @@ A lib made by HungTeen for more easily developing minecraft mod.
 
 ## Current Progress
 
-| Version |   Status   | Stable | Latest |
-|:-------:|:----------:|:------:|:------:|
-| 1.19.2  |  Stopped   | 0.9.1  | 0.9.1  |
-| 1.19.3  |  Stopped   | 0.9.2  | 0.9.2  |
-| 1.19.4  |  Stopped   | 0.9.3  | 0.9.3  |
-| 1.20.1  |  Stopped   | 1.0.2  | 1.0.2  |
-| 1.21.1  | Developing | 1.1.0  | 1.1.1  |
+| Version |    Status    | Stable | Latest |
+|:-------:|:------------:|:------:|:------:|
+| 1.20.1  |  Developing  | 1.2.0  | 1.3.0  |
+| 1.21.1  |  Developing  | 1.1.0  | 1.1.1  |
 
 
 ## Getting Started

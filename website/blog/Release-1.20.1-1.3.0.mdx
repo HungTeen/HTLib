@@ -1,0 +1,24 @@
+---
+date: 2026-10-24
+slug: release-1.20.1-1.3.0
+title: HTLib-1.20.1-1.3.0 更新日志
+authors: [PangTeen]
+tags: [release, 1.20.1, forge]
+---
+
+新增数据包编辑器，袭击兼容洞穴场景
+
+{/* truncate */}
+
+## 新内容
+* `/htlib raid nearby xxx ~ ~ ~ skip wave` 可以跳过当前波次
+* `/htlib raid nearby xxx ~ ~ ~ victory` 可以直接获胜
+* `/htlib raid nearby xxx ~ ~ ~ loss` 可以直接失败
+* `/htlib ide editor` 能打开数据包编辑器
+* 新的放置类型 `ray_trace` 能够兼容洞穴场景（注意只能放到袭击组件的顶层才能生效）
+* 生成组件新增 `glowing_tick ` 来是袭击者发光
+## Bug修复
+* 袭击者有时候会被卡在方块里面
+* 重进存档或者玩家死亡（区块卸载）会直接开启下一波
+## 其他改变
+* 修复部分内存泄漏场景

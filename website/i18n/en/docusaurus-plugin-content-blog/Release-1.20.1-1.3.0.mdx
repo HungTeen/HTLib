@@ -1,0 +1,26 @@
+---
+date: 2026-10-24
+slug: release-1.20.1-1.3.0
+title: HTLib-1.20.1-1.3.0 更新日志
+authors: [PangTeen]
+tags: [release, 1.20.1, forge]
+---
+
+Add datapack editor, and raid finally compat cave scene
+
+{/* truncate */}
+
+## New Features
+* `/htlib raid nearby xxx ~ ~ ~ skip wave` to skip current raid wave
+* `/htlib raid nearby xxx ~ ~ ~ victory` to win the raid directly
+* `/htlib raid nearby xxx ~ ~ ~ loss` to lose the raid directly
+* `/htlib ide editor` can open a datapack editor
+* New `ray_trace` position type enable placing raider in cave (must set the type in the raid component level)
+* spawn_component add `glowing_tick ` to allow raiders glowing
+
+## Bug Fixes
+* The raid wave may skip when restart game or player is dead
+* raiders may stuck in blocks sometimes
+
+## **Other Changes**
+* tech improve
