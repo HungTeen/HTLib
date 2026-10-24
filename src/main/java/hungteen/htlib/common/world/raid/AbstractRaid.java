@@ -52,11 +52,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
+ * Look at {@link net.minecraft.world.entity.raid.Raid}.
+ *
  * @program: HTLib
  * @author: HungTeen
  * @create: 2022-11-29 21:57
- *     <p>
- *     Look at {@link net.minecraft.world.entity.raid.Raid}
  **/
 public abstract class AbstractRaid extends DummyEntity implements IRaid {
 
@@ -220,15 +220,17 @@ public abstract class AbstractRaid extends DummyEntity implements IRaid {
                 return;
             }
             // Assert Raid Component.
-            if (this.checkInvalidAndRun(() -> this.getRaidComponent() == null))
+            if (this.checkInvalidAndRun(() -> this.getRaidComponent() == null)) {
                 return;
+            }
             // Init Wave.
             if (this.getCurrentWave().isEmpty() && this.currentWave == 0) {
                 this.updateWave(false);
             }
             // Assert Wave Component.
-            if (this.checkInvalidAndRun(this.getCurrentWave()::isEmpty))
+            if (this.checkInvalidAndRun(this.getCurrentWave()::isEmpty)) {
                 return;
+            }
             this.validTick(Objects.requireNonNull(this.getRaidComponent()), this.getCurrentWave().get());
         }
     }

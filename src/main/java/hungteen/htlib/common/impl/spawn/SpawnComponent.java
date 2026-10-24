@@ -14,7 +14,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -39,8 +42,9 @@ public abstract class SpawnComponent implements ISpawnComponent {
     /**
      * Copy from {@link net.minecraft.server.commands.SummonCommand}
      */
-    public Optional<Entity> spawnEntity(ServerLevel level, IRaid raid){
-        final Vec3 spawnPosition = raid.getPlaceComponent().apply(this).getPlacePosition(raid, level, raid.getPosition());
+    public Optional<Entity> spawnEntity(ServerLevel level, IRaid raid) {
+        final Vec3 spawnPosition =
+            raid.getPlaceComponent().apply(this).getPlacePosition(raid, level, raid.getPosition());
         if (Level.isInSpawnableBounds(MathHelper.toBlockPos(spawnPosition))) {
             CompoundTag compoundtag = this.getEntityNBT().copy();
             compoundtag.putString("id", EntityHelper.get().getKey(this.getEntityType()).toString());
@@ -52,19 +56,21 @@ public abstract class SpawnComponent implements ISpawnComponent {
                 HTLib.getLogger().error("Fail to create entity {}", this.getEntityType().toString());
             } else {
                 if (!this.adjustSpawnPosition(level, entity, spawnPosition)) {
-                    HTLib.getLogger().warn("Can not find free space to spawn entity {} at {}",
-                            this.getEntityType().toString(), spawnPosition);
+                    HTLib.getLogger()
+                        .warn("Can not find free space to spawn entity {} at {}", this.getEntityType().toString(),
+                            spawnPosition);
                     return Optional.empty();
                 }
                 if (this.enableDefaultSpawn() && entity instanceof Mob mob) {
-                    ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.EVENT, null, null);
+                    ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()),
+                        MobSpawnType.EVENT, null, null);
                     Integer glowingTick = getSpawnSetting().glowingTick();
                     if (Objects.nonNull(glowingTick) && glowingTick > 0) {
                         mob.addEffect(EffectHelper.effect(MobEffects.GLOWING, glowingTick, 1));
                     }
                 }
 
-                if(getSpawnSetting().persist()&& entity instanceof Mob mob) {
+                if (getSpawnSetting().persist() && entity instanceof Mob mob) {
                     mob.setPersistenceRequired();
                 }
 
@@ -74,18 +80,17 @@ public abstract class SpawnComponent implements ISpawnComponent {
                     return Optional.of(entity);
                 }
             }
-        } else{
+        } else {
             HTLib.getLogger().warn("Can not getSpawnEntities entity at position {}", spawnPosition);
         }
         return Optional.empty();
     }
 
     /**
-     * 避免把实体生成在方块里：原落点与方块碰撞时，按“先原地、再逐级向上、每级再试周围半格”的
-     * 顺序找一个能完整容纳该实体碰撞箱的位置（实体比方块宽、比两格高时同样会被检测到）。
-     * 找不到则把实体放回原点并返回 false，调用方应放弃本次生成。
+     * 避免把实体生成在方块里：原落点与方块碰撞时，按“先原地、再逐级向上、每级再试周围半格”的 顺序找一个能完整容纳该实体碰撞箱的位置（实体比方块宽、比两格高时同样会被检测到）。 找不到则把实体放回原点并返回
+     * false，调用方应放弃本次生成。
      *
-     * @param level 现世界。
+     * @param level  现世界。
      * @param entity 已经移动到原始落点的实体。
      * @param origin 放置组件给出的原始落点。
      * @return true 表示实体可以安全放入世界。
@@ -96,9 +101,9 @@ public abstract class SpawnComponent implements ISpawnComponent {
         }
         final float yRot = entity.getYRot();
         final float xRot = entity.getXRot();
-        for (int dy = 0; dy <= 2; ++ dy) {
-            for (int dx = -1; dx <= 1; ++ dx) {
-                for (int dz = -1; dz <= 1; ++ dz) {
+        for (int dy = 0; dy <= 2; ++dy) {
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dz = -1; dz <= 1; ++dz) {
                     final Vec3 candidate = origin.add(dx, dy, dz);
                     if (Level.isInSpawnableBounds(MathHelper.toBlockPos(candidate))) {
                         entity.moveTo(candidate.x, candidate.y, candidate.z, yRot, xRot);
@@ -122,11 +127,11 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return getSpawnSetting().entityType();
     }
 
-    public CompoundTag getEntityNBT(){
+    public CompoundTag getEntityNBT() {
         return getSpawnSetting().nbt();
     }
 
-    public boolean enableDefaultSpawn(){
+    public boolean enableDefaultSpawn() {
         return getSpawnSetting().enableDefaultSpawn();
     }
 
@@ -134,23 +139,24 @@ public abstract class SpawnComponent implements ISpawnComponent {
         return spawnSetting;
     }
 
-    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist, Optional<Holder<IPositionComponent>> placeComponent, Integer glowingTick){
+    public record SpawnSetting(EntityType<?> entityType, CompoundTag nbt, boolean enableDefaultSpawn, boolean persist,
+                               Optional<Holder<IPositionComponent>> placeComponent, Integer glowingTick) {
 
         /**
-         * entityType : 生物的类型，The getSpawnEntities entityType of the entity.
-         * nbt : 附加数据，CompoundTag of the entity.
-         * placementType : 放置类型，决定放在什么地方，
-         * spawnTick : 生成的时间，When to getSpawnEntities the entity.
-         * spawnCount : 生成数量，How many entities to getSpawnEntities.
+         * entityType : 生物的类型，The getSpawnEntities entityType of the entity. nbt : 附加数据，CompoundTag of the entity.
+         * placementType : 放置类型，决定放在什么地方， spawnTick : 生成的时间，When to getSpawnEntities the entity. spawnCount : 生成数量，How
+         * many entities to getSpawnEntities.
          */
-        public static final Codec<SpawnSetting> CODEC = RecordCodecBuilder.<SpawnSetting>mapCodec(instance -> instance.group(
-                ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSetting::entityType),
-                CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
-                Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
-                Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
-                Codec.optionalField("spawn_placement", HTPositionComponents.getCodec()).forGetter(SpawnSetting::placeComponent),
-                Codec.INT.optionalFieldOf("glowing_tick", 0).forGetter(SpawnSetting::glowingTick)
-                ).apply(instance, SpawnSetting::new)).codec();
+        public static final Codec<SpawnSetting> CODEC = RecordCodecBuilder.<SpawnSetting>mapCodec(
+            instance -> instance.group(
+                    ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity_type").forGetter(SpawnSetting::entityType),
+                    CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(SpawnSetting::nbt),
+                    Codec.BOOL.optionalFieldOf("enable_default_spawn", true).forGetter(SpawnSetting::enableDefaultSpawn),
+                    Codec.BOOL.optionalFieldOf("persist", true).forGetter(SpawnSetting::persist),
+                    Codec.optionalField("spawn_placement", HTPositionComponents.getCodec())
+                        .forGetter(SpawnSetting::placeComponent),
+                    Codec.INT.optionalFieldOf("glowing_tick", 0).forGetter(SpawnSetting::glowingTick))
+                .apply(instance, SpawnSetting::new)).codec();
     }
 
 }
