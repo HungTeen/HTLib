@@ -80,12 +80,11 @@ public class IDECommand {
             return 0;
         }
         DataSchema schema = CodecSchemaParser.parse(codecOpt.get());
-        String text = SchemaPrinter.print(schema);
-        sendChunks(source, "=== " + registryName + " 格式 ===", text);
-
         if (writeJson) {
             return writeSchemaJson(source, registryName, schema) ? 1 : 0;
         }
+        String text = SchemaPrinter.print(schema);
+        sendChunks(source, "=== " + registryName + " 格式 ===", text);
         return 1;
     }
 
@@ -202,19 +201,25 @@ public class IDECommand {
      * 分页发送长文本到聊天框：按换行切成若干条消息，每页最多 {@link #CHUNK_LINES} 行， 单行超长自动截断，避免"一行太长塞不下"。
      */
     private static final int CHUNK_LINES = 16;
+    private static final int MAX_CHAT_LINES = 128;
     private static final int MAX_LINE_LENGTH = 80;
 
     private static void sendChunks(CommandSourceStack source, String title, String text) {
         source.sendSuccess(() -> Component.literal(title), false);
-        List<String> lines = text.lines().toList();
-        for (int i = 0; i < lines.size(); i += CHUNK_LINES) {
-            int end = Math.min(i + CHUNK_LINES, lines.size());
+        List<String> lines = text.lines().limit(MAX_CHAT_LINES + 1L).toList();
+        int shown = Math.min(MAX_CHAT_LINES, lines.size());
+        for (int i = 0; i < shown; i += CHUNK_LINES) {
+            int end = Math.min(i + CHUNK_LINES, shown);
             StringBuilder page = new StringBuilder();
             for (int j = i; j < end; j++) {
                 String line = lines.get(j);
                 page.append(truncateLine(line)).append('\n');
             }
             source.sendSuccess(() -> Component.literal(page.toString()), false);
+        }
+        if (lines.size() > MAX_CHAT_LINES) {
+            source.sendSuccess(() -> Component.literal(
+                "输出过长，已截断。可用 /htlib ide schema <注册表> json 导出完整结构。"), false);
         }
     }
 

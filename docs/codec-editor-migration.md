@@ -51,6 +51,8 @@
 
 第二条命令应生成 `schema_output/minecraft_worldgen/configured_feature.json`；导出目录的嵌套部分由命令创建。注册表路径中的空段、`.` 和 `..` 不作为文件系统路径解释。文件或中间目录指向输出目录之外时拒绝写入。
 
+JSON 导出仅反馈文件路径，不同时把整份结构发到聊天框；文本查询最多发送 128 行，并提示使用 JSON 导出完整内容，避免大型配置刷屏。
+
 `SchemaRegistryAccessTest` 检查嵌套上下文恢复、异常清理和线程隔离；`SchemaFileExporterTest` 检查嵌套导出、UTF-8、覆盖后的截断、异常路径拒绝及父目录为文件的情况。原有 `CodecSchemaParserTest` 继续验证作者已支持的解析形态。
 
 本次迁移已运行上述测试：原有解析测试 13 项与新增回归测试 12 项全部通过。
