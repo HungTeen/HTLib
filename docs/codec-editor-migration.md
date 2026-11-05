@@ -80,4 +80,8 @@ JSON 导出仅反馈文件路径，不同时把整份结构发到聊天框；文
 
 原生截图保存在本地 `run/screenshots/2026-11-05_15.37.26.png`（JSON 视图）和 `run/screenshots/2026-11-05_15.44.35.png`（实际伤害调用成功）。测试存档与截图均未加入版本控制。
 
+最终代码 `7412b28` 再次启动客户端复测：`configured_feature` 的紧凑 Schema 正常接收并打开，选择 `minecraft:tree` 后显示配置字段，将 `force_dirt` 改为 `true`，切换到 `minecraft:block_pile` 再返回，值仍为 `true`。界面持续响应，没有卡死或断开连接。截图为 `run/screenshots/2026-11-05_16.54.46.png`。
+
+同次最终构建又导入并保存 `message_id=htlib_final`、`exhaustion=0.875` 的伤害类型，确认文件内容更新、原有元数据哈希不变，游戏中再次调用 `migration:sample` 成功造成 1.0 伤害。保存后的表单截图为 `run/screenshots/2026-11-05_16.59.58.png`。测试世界安全保存，客户端正常退出，`runClient` 返回成功。
+
 本次迁移不宣称已完整支持所有 Codec。复杂递归、Either、未知结构和默认值的精确编码仍应分别以真实 Codec 的解析与往返用例验证；服务端校验继续作为保存前的最终依据。
