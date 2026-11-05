@@ -33,6 +33,7 @@ public final class DropdownButton {
     private final Consumer<Integer> onSelect;
     private final int width;
     private final int buttonHeight;
+    private int panelWidth;
     /** 固定按钮文案（为空则显示当前选中项）。 */
     private final String title;
     private Button button;
@@ -67,6 +68,7 @@ public final class DropdownButton {
 
     /** 创建按钮并注册到宿主（幂等）。 */
     public Button addToScreen(Font font) {
+        panelWidth = Math.max(width, options.stream().mapToInt(font::width).max().orElse(0) + 8);
         if (button == null) {
             button = Button.builder(Component.literal(currentText()), b -> open = !open)
                 .bounds(x, y, width, buttonHeight).build();
@@ -121,8 +123,12 @@ public final class DropdownButton {
 
     private boolean insidePanel(double mouseX, double mouseY) {
         int top = y + buttonHeight + PANEL_GAP;
-        return mouseX >= x && mouseX <= x + width
+        return mouseX >= panelLeft() && mouseX <= panelLeft() + panelWidth
             && mouseY >= top && mouseY <= top + options.size() * ROW_H;
+    }
+
+    private int panelLeft() {
+        return Math.max(PANEL_MARGIN, x + width - panelWidth);
     }
 
     /** 绘制选项面板（宿主在全部控件之后调用；面板在按钮下方展开）。 */
@@ -131,18 +137,19 @@ public final class DropdownButton {
             return;
         }
         int top = y + buttonHeight + PANEL_GAP;
+        int left = panelLeft();
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, TypeSelector.PANEL_Z);
         try {
-            DropdownUtil.drawPanel(graphics, new Rect(x - PANEL_MARGIN, top - PANEL_MARGIN,
-                width + PANEL_MARGIN * 2, options.size() * ROW_H + PANEL_MARGIN * 2));
+            DropdownUtil.drawPanel(graphics, new Rect(left - PANEL_MARGIN, top - PANEL_MARGIN,
+                panelWidth + PANEL_MARGIN * 2, options.size() * ROW_H + PANEL_MARGIN * 2));
             for (int i = 0; i < options.size(); i++) {
                 int rowY = top + i * ROW_H;
-                boolean hover = mouseX >= x && mouseX <= x + width && mouseY >= rowY && mouseY < rowY + ROW_H;
+                boolean hover = mouseX >= left && mouseX <= left + panelWidth && mouseY >= rowY && mouseY < rowY + ROW_H;
                 if (hover) {
-                    graphics.fill(x, rowY, x + width, rowY + ROW_H, ViewerStyle.COLOR_SELECT);
+                    graphics.fill(left, rowY, left + panelWidth, rowY + ROW_H, ViewerStyle.COLOR_SELECT);
                 }
-                graphics.drawString(font, options.get(i), x + 2, rowY + (ROW_H - 9) / 2,
+                graphics.drawString(font, options.get(i), left + 2, rowY + (ROW_H - 9) / 2,
                     hover ? 0xFFFFFF : ViewerStyle.COLOR_TYPE);
             }
         } finally {

@@ -4,6 +4,7 @@ import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.Rect;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
+import hungteen.htlib.common.network.EditorPacketLimits;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -233,7 +234,7 @@ public abstract class EditorWidget {
     }
 
     /** 展示用的字段名（内联行用外层标签）。 */
-    protected final String displayLabel() {
+    protected String displayLabel() {
         return inline ? inlineLabel : node.label();
     }
 
@@ -260,6 +261,7 @@ public abstract class EditorWidget {
 
     protected final EditBox createEditBox(String value, Consumer<String> onChanged) {
         EditBox box = new EditBox(host.font(), 0, 0, 1, ROW_HEIGHT - 3, Component.literal(""));
+        box.setMaxLength(EditorPacketLimits.MAX_JSON_LENGTH);
         box.setValue(value);
         box.setResponder(onChanged);
         host.addWidget(box);
@@ -279,6 +281,7 @@ public abstract class EditorWidget {
         Consumer<String> onSelect) {
         TypeSelector selector = new TypeSelector(host.screen(), this::attachWidget, 0, 0, width, ROW_HEIGHT - 3, 0,
             options, onSelect);
+        selector.setValue(current);
         selector.addToScreen(host.font());
         host.registerSelector(selector);
         return selector;

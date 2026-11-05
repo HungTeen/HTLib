@@ -158,6 +158,20 @@ public abstract class EditorFormNode {
     protected void validateValue() {
     }
 
+    /** Validate active drafts before collection can discard invalid map keys or absent values. */
+    public final boolean hasErrors() {
+        validateValue();
+        boolean result = invalid;
+        for (EditorFormNode child : validationChildren()) {
+            result |= child.hasErrors();
+        }
+        return result;
+    }
+
+    protected List<EditorFormNode> validationChildren() {
+        return List.of();
+    }
+
     /** 该节点是否"可选且当前未启用"（RECORD 收集时省略键）。 */
     public boolean isOptionalAndAbsent() {
         return false;
@@ -285,12 +299,7 @@ public abstract class EditorFormNode {
             String text = d.getAsString();
             return switch (typeOf(schema)) {
                 case BOOLEAN -> new com.google.gson.JsonPrimitive(Boolean.parseBoolean(text));
-                case BYTE -> new com.google.gson.JsonPrimitive((byte)parseDouble(text));
-                case SHORT -> new com.google.gson.JsonPrimitive((short)parseDouble(text));
-                case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));
-                case LONG -> new com.google.gson.JsonPrimitive((long)parseDouble(text));
-                case FLOAT -> new com.google.gson.JsonPrimitive((float)parseDouble(text));
-                case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
+                case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> ScalarInput.parse(text, typeOf(schema));
                 case STRING, RESOURCE_LOCATION, COMPONENT, ENUM, HOLDER, HOLDER_SET, REGISTRY, UNKNOWN ->
                     new com.google.gson.JsonPrimitive(text);
                 case RECORD, LIST, SET, MAP, OPTIONAL, UNION, EITHER -> parseJsonOrNull(text);
@@ -308,26 +317,9 @@ public abstract class EditorFormNode {
     }
 
     protected static JsonElement parseInput(String text, SchemaType type) {
-        if (text == null || text.isEmpty()) {
-            // 啥也没有
+        if (text == null || (text.isEmpty() && type != SchemaType.STRING)) {
             return JsonNull.INSTANCE;
         }
-        return switch (type) {
-            case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));
-            case LONG -> new com.google.gson.JsonPrimitive((long)parseDouble(text));
-            case FLOAT -> new com.google.gson.JsonPrimitive((float)parseDouble(text));
-            case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
-            case BYTE -> new com.google.gson.JsonPrimitive((byte)parseDouble(text));
-            case SHORT -> new com.google.gson.JsonPrimitive((short)parseDouble(text));
-            default -> new com.google.gson.JsonPrimitive(text);
-        };
-    }
-
-    protected static double parseDouble(String text) {
-        try {
-            return Double.parseDouble(text.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return ScalarInput.parse(text, type);
     }
 }

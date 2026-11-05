@@ -42,7 +42,7 @@
   "htlib.screen.loaded_schema": "已加载 schema：%s",
   "htlib.screen.schema_error": "Schema 解析出错：%s",
   "htlib.screen.saving": "正在保存…",
-  "htlib.screen.saved": "已保存：%s",
+  "htlib.screen.saved": "已保存：%s。启用数据包后，重新加载或重新进入世界以应用更改。",
   "htlib.screen.save_failed": "保存失败：%s",
   "htlib.screen.ref": "引用",
   "htlib.screen.inline": "展开",
@@ -76,5 +76,12 @@
   "htlib.command.raid.not_found": "附近未找到袭击",
   "htlib.command.raid.skip_wave": "已跳过第 %s 波",
   "htlib.command.raid.force_loss": "已强制失败",
-  "htlib.command.raid.force_victory": "已强制胜利"
+  "htlib.command.raid.force_victory": "已强制胜利",
+  "htlib.error.number": "请输入 %s 类型范围内的合法数值。",
+  "htlib.error.map_keys": "映射中不能使用重复的键。",
+  "htlib.screen.invalid_form": "请先修正标红的无效内容。",
+  "htlib.screen.json_too_large": "JSON 超过 %s 个 UTF-8 字节的网络限制。",
+  "htlib.screen.optional_enable": "启用此可选字段",
+  "htlib.screen.optional_disable": "省略此字段，保留当前草稿",
+  "htlib.screen.optional_absent": "未设置 / 使用默认值"
 }

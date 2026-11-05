@@ -59,6 +59,11 @@ public final class ListSetNode extends EditorFormNode {
         return listItems;
     }
 
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        return listItems;
+    }
+
     public void addItem() {
         listItems.add(EditorFormNode.create(elementSchema(), "", JsonNull.INSTANCE));
         validateValue();

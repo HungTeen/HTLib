@@ -5,6 +5,8 @@ import hungteen.htlib.client.gui.widget.codec.TypeSelector;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -29,6 +31,12 @@ public abstract class CodecScreen extends HTScreen {
 
     protected CodecScreen(List<ResourceLocation> registryNames) {
         this.registryNames = new ArrayList<>(registryNames);
+    }
+
+    public static void onSchemaError(String registryName, String error) {
+        if (Minecraft.getInstance().screen instanceof CodecScreen screen && screen.selected.equals(registryName)) {
+            screen.setStatusPersistent(I18n.get("htlib.screen.schema_error", error));
+        }
     }
 
     /**
@@ -151,13 +159,38 @@ public abstract class CodecScreen extends HTScreen {
 
         renderFormRegion(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (!status.isEmpty()) {
-            graphics.drawString(this.font, status, ViewerStyle.LEFT_PADDING,
-                this.height - ViewerStyle.STATUS_BOTTOM, ViewerStyle.COLOR_STATUS);
-        }
+        renderStatus(graphics);
         renderOverlays(graphics, mouseX, mouseY, partialTick);
         // 补全面板画在最上层（不应被字段/控件遮挡）
         paintSelectors(graphics, mouseX, mouseY);
+    }
+
+    protected int statusBottomOffset() {
+        return ViewerStyle.STATUS_BOTTOM;
+    }
+
+    private void renderStatus(GuiGraphics graphics) {
+        if (status.isEmpty()) {
+            return;
+        }
+        int x = ViewerStyle.LEFT_PADDING;
+        int textWidth = Math.max(1, this.width - x * 2);
+        String ellipsis = "…";
+        var lines = this.font.split(Component.literal(status), Math.max(1, textWidth - this.font.width(ellipsis)));
+        int count = Math.min(3, lines.size());
+        if (count == 0) {
+            return;
+        }
+        int lineHeight = this.font.lineHeight + 1;
+        int lastY = this.height - statusBottomOffset();
+        int top = lastY - (count - 1) * lineHeight;
+        graphics.fill(x - 3, top - 3, this.width - x + 3, lastY + this.font.lineHeight + 3, 0xE0101010);
+        for (int i = 0; i < count; i++) {
+            graphics.drawString(this.font, lines.get(i), x, top + i * lineHeight, ViewerStyle.COLOR_STATUS);
+        }
+        if (lines.size() > count) {
+            graphics.drawString(this.font, ellipsis, x + this.font.width(lines.get(count - 1)), lastY, ViewerStyle.COLOR_STATUS);
+        }
     }
 
     @Override

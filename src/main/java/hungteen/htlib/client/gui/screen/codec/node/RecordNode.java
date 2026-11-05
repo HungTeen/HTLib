@@ -68,6 +68,11 @@ public final class RecordNode extends EditorFormNode {
     }
 
     @Override
+    protected List<EditorFormNode> validationChildren() {
+        return recordChildren;
+    }
+
+    @Override
     public JsonElement collect() {
         JsonObject obj = new JsonObject();
         for (EditorFormNode child : recordChildren) {

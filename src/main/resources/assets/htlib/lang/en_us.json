@@ -42,7 +42,7 @@
   "htlib.screen.loaded_schema": "Loaded schema: %s",
   "htlib.screen.schema_error": "Schema error: %s",
   "htlib.screen.saving": "Saving...",
-  "htlib.screen.saved": "Saved: %s",
+  "htlib.screen.saved": "Saved: %s. Enable the pack, then reload or reopen the world to apply changes.",
   "htlib.screen.save_failed": "Save failed: %s",
   "htlib.screen.ref": "Ref",
   "htlib.screen.inline": "Inline",
@@ -73,10 +73,17 @@
   "htlib.error.constraint": "Constraint violated: %s",
 
   "itemGroup.htlib.raid_items": "Custom Raid",
-  "htlib.screen.missing_path": "数据包名词或注册名缺失",
-  "htlib.screen.invalid_registry_name": "注册名不合法",
+  "htlib.screen.missing_path": "Enter a datapack name and resource ID first",
+  "htlib.screen.invalid_registry_name": "Invalid resource ID",
   "htlib.command.raid.not_found": "No raid found nearby",
   "htlib.command.raid.skip_wave": "Skipped wave %s",
   "htlib.command.raid.force_loss": "Raid forced to loss",
-  "htlib.command.raid.force_victory": "Raid forced to victory"
+  "htlib.command.raid.force_victory": "Raid forced to victory",
+  "htlib.error.number": "Enter a valid %s number within its supported range.",
+  "htlib.error.map_keys": "Map keys must be unique.",
+  "htlib.screen.invalid_form": "Fix the highlighted invalid values before continuing.",
+  "htlib.screen.json_too_large": "JSON exceeds the %s-byte UTF-8 network limit.",
+  "htlib.screen.optional_enable": "Include this optional field",
+  "htlib.screen.optional_disable": "Omit this field; preserve its draft",
+  "htlib.screen.optional_absent": "Not set / use default"
 }

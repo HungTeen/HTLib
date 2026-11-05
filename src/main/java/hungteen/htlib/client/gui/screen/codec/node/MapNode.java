@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.MapWidget;
+import net.minecraft.client.resources.language.I18n;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,28 @@ public final class MapNode extends EditorFormNode {
 
     public List<EditorFormNode> values() {
         return mapValues;
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        List<EditorFormNode> children = new ArrayList<>(mapKeys);
+        children.addAll(mapValues);
+        return children;
+    }
+
+    @Override
+    protected void validateValue() {
+        invalid = false;
+        errorMessage = "";
+        java.util.Set<String> keys = new java.util.HashSet<>();
+        for (EditorFormNode key : mapKeys) {
+            JsonElement current = key.collect();
+            if (!current.isJsonPrimitive() || !keys.add(current.getAsString())) {
+                invalid = true;
+                errorMessage = I18n.get("htlib.error.map_keys");
+                return;
+            }
+        }
     }
 
     public void addEntry() {

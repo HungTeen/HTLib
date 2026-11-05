@@ -23,8 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +69,11 @@ public class IDECommand {
      * {@code writeJson} 为 true 时把完整 JSON 写入服务器目录 {@code schema_output/<registry>.json}。</p>
      */
     public static int printSchema(CommandSourceStack source, ResourceLocation registryName, boolean writeJson) {
+        return SchemaRegistryAccess.withAccess(source.getServer().registryAccess(),
+            () -> printSchemaWithAccess(source, registryName, writeJson));
+    }
+
+    private static int printSchemaWithAccess(CommandSourceStack source, ResourceLocation registryName, boolean writeJson) {
         Optional<? extends Codec<?>> codecOpt = CodecHelper.getCodec(registryName);
         if (codecOpt.isEmpty()) {
             source.sendFailure(Component.literal("未找到数据包注册表 " + registryName + " 对应的 codec"));
@@ -81,7 +84,7 @@ public class IDECommand {
         sendChunks(source, "=== " + registryName + " 格式 ===", text);
 
         if (writeJson) {
-            writeSchemaJson(source, registryName, schema);
+            return writeSchemaJson(source, registryName, schema) ? 1 : 0;
         }
         return 1;
     }
@@ -92,6 +95,11 @@ public class IDECommand {
      * <p>枚举自 keyCodec：枚举常量或注册表条目（见 {@link DispatchCodecInspector#typeToCodec}）。</p>
      */
     public static int listSchemaTypes(CommandSourceStack source, ResourceLocation registryName) {
+        return SchemaRegistryAccess.withAccess(source.getServer().registryAccess(),
+            () -> listSchemaTypesWithAccess(source, registryName));
+    }
+
+    private static int listSchemaTypesWithAccess(CommandSourceStack source, ResourceLocation registryName) {
         Optional<? extends Codec<?>> codecOpt = CodecHelper.getCodec(registryName);
         if (codecOpt.isEmpty()) {
             source.sendFailure(Component.literal("未找到数据包注册表 " + registryName + " 对应的 codec"));
@@ -122,6 +130,11 @@ public class IDECommand {
      * 按 type 反查 dispatch codec 的分支，只输出该分支的格式。
      */
     public static int printSchemaType(CommandSourceStack source, ResourceLocation registryName, String type) {
+        return SchemaRegistryAccess.withAccess(source.getServer().registryAccess(),
+            () -> printSchemaTypeWithAccess(source, registryName, type));
+    }
+
+    private static int printSchemaTypeWithAccess(CommandSourceStack source, ResourceLocation registryName, String type) {
         Optional<? extends Codec<?>> codecOpt = CodecHelper.getCodec(registryName);
         if (codecOpt.isEmpty()) {
             source.sendFailure(Component.literal("未找到数据包注册表 " + registryName + " 对应的 codec"));
@@ -135,7 +148,7 @@ public class IDECommand {
         Optional<Object> branch = DispatchCodecInspector.codecForType(dispatch, type);
         if (branch.isEmpty() || !(branch.get() instanceof Codec<?> codec)) {
             source.sendFailure(Component.literal(
-                "未找到类型 " + type + "（可用 /htlib schema types " + registryName + " 查看全部类型）"));
+                "未找到类型 " + type + "（可用 /htlib ide schema types " + registryName + " 查看全部类型）"));
             return 0;
         }
         DataSchema schema = CodecSchemaParser.parse(codec);
@@ -172,15 +185,16 @@ public class IDECommand {
     }
 
     /** 把完整 schema JSON 写入服务器目录 schema_output/<registry>.json。 */
-    private static void writeSchemaJson(CommandSourceStack source, ResourceLocation registryName, DataSchema schema) {
+    private static boolean writeSchemaJson(CommandSourceStack source, ResourceLocation registryName, DataSchema schema) {
         try {
             Path dir = source.getServer().getServerDirectory().toPath().resolve("schema_output");
-            Files.createDirectories(dir);
-            Path file = dir.resolve(registryName.getNamespace() + "_" + registryName.getPath() + ".json");
-            Files.writeString(file, SchemaPrinter.toJson(schema).toString(), StandardCharsets.UTF_8);
+            Path file = SchemaFileExporter.write(dir, registryName.getNamespace(), registryName.getPath(),
+                SchemaPrinter.toJson(schema).toString());
             source.sendSuccess(() -> Component.literal("完整 JSON 已写入 " + file), true);
-        } catch (IOException e) {
+            return true;
+        } catch (IOException | IllegalArgumentException e) {
             source.sendFailure(Component.literal("写入 schema JSON 失败: " + e.getMessage()));
+            return false;
         }
     }
 

@@ -30,11 +30,11 @@ public class RequestRegistryEntriesPacket {
     }
 
     public RequestRegistryEntriesPacket(FriendlyByteBuf buffer) {
-        this.registryName = buffer.readUtf();
+        this.registryName = buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH);
     }
 
     public void encode(FriendlyByteBuf buffer) {
-        buffer.writeUtf(registryName);
+        buffer.writeUtf(registryName, EditorPacketLimits.MAX_ID_LENGTH);
     }
 
     public static void onMessage(RequestRegistryEntriesPacket message, Supplier<NetworkEvent.Context> ctx) {
@@ -44,7 +44,7 @@ public class RequestRegistryEntriesPacket {
                 return;
             }
             NetworkHandler.sendToClient(sender, new RegistryEntriesResponsePacket(
-                message.registryName, collectEntries(sender.server, message.registryName)));
+                message.registryName, sender.hasPermissions(2) ? collectEntries(sender.server, message.registryName) : List.of()));
         });
         ctx.get().setPacketHandled(true);
     }

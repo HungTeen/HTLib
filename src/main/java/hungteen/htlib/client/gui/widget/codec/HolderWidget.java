@@ -96,8 +96,6 @@ public final class HolderWidget extends EditorWidget {
     protected void doRender(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
         drawLabel(graphics, font, displayLabel(), labelColor());
         if (inlineMode() && inlineNode != null) {
-            // 子表单的值是权威，同步回节点（父级 collect 用）
-            node.setValue(inlineNode.collect());
             inlineNode.widget(host).render(graphics, font, mouseX, mouseY);
         }
     }
@@ -117,7 +115,6 @@ public final class HolderWidget extends EditorWidget {
     public void refreshFromNode() {
         if (inlineMode()) {
             if (inlineNode != null) {
-                inlineNode.load(node.value());
                 inlineNode.widget(host).refreshFromNode();
             }
             return;
@@ -211,8 +208,7 @@ public final class HolderWidget extends EditorWidget {
         }
         try {
             entrySchema = JsonParser.parseString(schemaJson).getAsJsonObject();
-            inlineNode = EditorFormNode.root(entrySchema);
-            inlineNode.load(node.value().isJsonObject() ? node.value() : com.google.gson.JsonNull.INSTANCE);
+            inlineNode = node.bindInlineNode(EditorFormNode.root(entrySchema));
             host.relayout();
         } catch (Exception ignored) {
         }

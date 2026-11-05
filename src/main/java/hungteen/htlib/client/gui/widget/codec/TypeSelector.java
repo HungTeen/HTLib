@@ -3,6 +3,7 @@ package hungteen.htlib.client.gui.widget.codec;
 import hungteen.htlib.client.gui.screen.codec.DropdownUtil;
 import hungteen.htlib.client.gui.screen.codec.Rect;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
+import hungteen.htlib.common.network.EditorPacketLimits;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -76,9 +77,10 @@ public final class TypeSelector {
         if (box == null) {
             box = new ClippedEditBox(font, listLeft, boxY, listRight - listLeft, this.height,
                 Component.translatable("htlib.screen.type"));
-            box.setMaxLength(128);
+            box.setMaxLength(EditorPacketLimits.MAX_ID_LENGTH);
             box.setSuggestion(I18n.get("htlib.screen.type_hint"));
             box.setResponder(this::onTextChanged);
+            setValue(current);
         }
         addWidget.accept(box);
         return box;

@@ -8,6 +8,8 @@ import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.OptionalWidget;
 import hungteen.htlib.common.codec.parse.SchemaType;
 
+import java.util.List;
+
 /**
  * 可选节点：按内层形态紧凑展示。
  * <ul>
@@ -21,9 +23,11 @@ import hungteen.htlib.common.codec.parse.SchemaType;
 public final class OptionalNode extends EditorFormNode {
 
     private EditorFormNode optionalInner;
+    private boolean present;
 
     OptionalNode(JsonObject schema, String label, JsonElement value) {
         super(schema, label, value);
+        this.present = value != null && !value.isJsonNull();
     }
 
     @Override
@@ -54,6 +58,25 @@ public final class OptionalNode extends EditorFormNode {
         return optionalInner;
     }
 
+    public boolean isPresent() {
+        return present;
+    }
+
+    /** Disabling a field preserves its draft; collapse controls only visibility. */
+    public void setPresent(boolean present) {
+        this.present = present;
+    }
+
+    @Override
+    public boolean isOptionalAndAbsent() {
+        return !present;
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        return present && optionalInner != null ? List.of(optionalInner) : List.of();
+    }
+
     /** 内层是否结构型（多行、可折叠）。 */
     public boolean structuralInner() {
         JsonObject inner = elementSchema();
@@ -62,11 +85,12 @@ public final class OptionalNode extends EditorFormNode {
 
     @Override
     public JsonElement collect() {
-        return optionalInner == null ? JsonNull.INSTANCE : optionalInner.collect();
+        return !present || optionalInner == null ? JsonNull.INSTANCE : optionalInner.collect();
     }
 
     @Override
     public void load(JsonElement json) {
+        present = json != null && !json.isJsonNull();
         this.value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
         JsonObject inner = elementSchema();
         optionalInner = inner == null ? null : EditorFormNode.create(inner, "", this.value);

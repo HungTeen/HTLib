@@ -38,7 +38,7 @@ public final class UnionNode extends EditorFormNode {
     private int unionIndex = 0;
 
     UnionNode(JsonObject schema, String label, JsonElement value) {
-        super(schema, DEFAULT_VARIANT_KEY, value);
+        super(schema, label, value);
     }
 
     @Override
@@ -100,17 +100,26 @@ public final class UnionNode extends EditorFormNode {
         return unionIndex >= 0 && unionIndex < unionNames.size() ? unionNames.get(unionIndex) : "";
     }
 
+    public String discriminatorKey() {
+        return schema.has(SchemaKeys.VARIANT_KEY)
+            ? schema.get(SchemaKeys.VARIANT_KEY).getAsString() : DEFAULT_VARIANT_KEY;
+    }
+
     public EditorFormNode selectedVariant() {
         return unionVariants.isEmpty() ? null : unionVariants.get(unionIndex);
     }
 
-    /** 切换到指定变体（重置该变体的值）。 */
+    /** 切换到指定变体，保留之前编辑的分支草稿。 */
     public void selectVariant(int idx) {
         if (idx < 0 || idx >= unionVariants.size()) {
             return;
         }
         unionIndex = idx;
-        unionVariants.get(idx).load(JsonNull.INSTANCE);
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        return selectedVariant() == null ? List.of() : List.of(selectedVariant());
     }
 
     @Override

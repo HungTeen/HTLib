@@ -5,6 +5,10 @@ import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.OptionalNode;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 /**
  * 可选控件：内层为标量时与外层字段名内联到同一行；内层为结构型时提供 [+]/[-] 折叠按钮。
@@ -18,6 +22,8 @@ public final class OptionalWidget extends EditorWidget {
     /** 当前绑定的内层节点（load 可能重建内层节点，身份变化时旧控件必须销毁）。 */
     private EditorFormNode innerNode;
     private EditorWidget innerWidget;
+    private Button presenceToggle;
+    private Button collapseButton;
 
     public OptionalWidget(EditorHost host, OptionalNode node) {
         super(host, node);
@@ -26,8 +32,12 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     protected void create() {
+        presenceToggle = createButton("", TOGGLE_WIDTH, b -> {
+            node.setPresent(!node.isPresent());
+            host.relayout();
+        });
         if (node.structuralInner()) {
-            createCollapseToggle();
+            collapseButton = createCollapseToggle();
         }
     }
 
@@ -38,6 +48,19 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     protected int doLayout() {
+        place(presenceToggle, rightEdge() - TOGGLE_WIDTH, y);
+        presenceToggle.setMessage(Component.literal(node.isPresent() ? "-" : "+"));
+        presenceToggle.setTooltip(Tooltip.create(Component.translatable(
+            node.isPresent() ? "htlib.screen.optional_disable" : "htlib.screen.optional_enable")));
+        if (!node.isPresent()) {
+            if (innerWidget != null) {
+                innerWidget.setHidden(true);
+            }
+            if (collapseButton != null) {
+                collapseButton.visible = false;
+            }
+            return ROW_HEIGHT;
+        }
         if (node.inner() == null) {
             return ROW_HEIGHT;
         }
@@ -56,6 +79,11 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     protected void doRender(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+        if (!node.isPresent()) {
+            drawLabel(graphics, font, node.label(), labelColor());
+            graphics.drawString(font, I18n.get("htlib.screen.optional_absent"), controlX(), y + 1, labelColor());
+            return;
+        }
         if (node.structuralInner()) {
             drawLabel(graphics, font, node.label(), labelColor());
             if (innerWidget != null) {
@@ -68,6 +96,9 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     public boolean renderTooltip(GuiGraphics graphics, Font font, double mouseX, double mouseY) {
+        if (!node.isPresent()) {
+            return renderSelfTooltip(graphics, font, mouseX, mouseY);
+        }
         if (node.structuralInner()) {
             if (renderSelfTooltip(graphics, font, mouseX, mouseY)) {
                 return true;
