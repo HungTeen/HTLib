@@ -30,11 +30,17 @@ public final class CodecEditorManager {
     }
 
     public static Optional<JsonObject> getSchemaJson(String registryName) {
+        return getSchema(registryName).map(SchemaPrinter::toJson);
+    }
+
+    /** Network schemas share definitions instead of expanding the same structure at every use. */
+    public static Optional<JsonObject> getCompactSchemaJson(String registryName) {
+        return getSchema(registryName).map(SchemaPrinter::toCompactJson);
+    }
+
+    private static Optional<DataSchema> getSchema(String registryName) {
         ResourceLocation name = ResourceLocation.tryParse(registryName);
-        return name == null ? Optional.empty() : CodecHelper.getCodec(name).map(codec -> {
-            DataSchema schema = CodecSchemaParser.parse(codec);
-            return SchemaPrinter.toJson(schema);
-        });
+        return name == null ? Optional.empty() : CodecHelper.getCodec(name).map(CodecSchemaParser::parse);
     }
 
     /** Holder references require the full server RegistryAccess, not the client's partial registries. */

@@ -474,11 +474,11 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(root);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = unwrap(stack.removeFirst());
 
             if (current == null || !seen.add(current)) {
                 continue;
@@ -488,6 +488,10 @@ public final class CodecUnwrapper {
                 return current;
             }
 
+            if (isUnsupportedContainer(current) || !isCodecGraphNode(current)) {
+                continue;
+            }
+
             for (Field field : ReflectionUtil.fields(current.getClass())) {
 
                 try {
@@ -495,7 +499,7 @@ public final class CodecUnwrapper {
                     Object value = field.get(current);
 
                     if (value != null && !isTerminal(value)) {
-                        stack.push(value);
+                        stack.addLast(value);
                     }
 
                 } catch (Throwable ignored) {
@@ -504,6 +508,18 @@ public final class CodecUnwrapper {
         }
 
         return null;
+    }
+
+    private static boolean isUnsupportedContainer(Object codec) {
+        return codec instanceof EitherCodec<?, ?> || codec instanceof PairCodec<?, ?>
+            || codec instanceof CompoundListCodec<?, ?>;
+    }
+
+    /** Only adapter state is structural evidence; registry contents and domain values are not. */
+    private static boolean isCodecGraphNode(Object value) {
+        return value instanceof Codec<?> || value instanceof MapCodec<?> || value instanceof Encoder<?>
+            || value instanceof Decoder<?> || value instanceof MapEncoder<?> || value instanceof MapDecoder<?>
+            || value instanceof Codec.ResultFunction<?> || isLambda(value);
     }
 
     /** 是否为可被 handler 链直接解析的基础结构 codec。 */
@@ -523,7 +539,7 @@ public final class CodecUnwrapper {
             return true;
         }
 
-        if (isRecordMapCodec(codec)) {
+        if (isRecordMapCodec(codec) || codec instanceof MapCodec<?> && isFieldCodec(codec)) {
             return true;
         }
 
@@ -886,8 +902,14 @@ public final class CodecUnwrapper {
         return enumClass;
     }
 
-    /** BFS 找枚举类（枚举数组的组件类型或 Class 类型字段）。 */
+    /** Enum type and values must come from the same recognized EnumCodec, not callback captures. */
     public static Class<?> enumClassOf(Object root) {
+        Object array = findEnumArray(root);
+        return array == null ? null : array.getClass().getComponentType();
+    }
+
+    /** Locate the actual enum codec along adapter state before looking at any enum arrays. */
+    private static StringRepresentable.EnumCodec<?> findEnumCodec(Object root) {
 
         if (root == null) {
             return null;
@@ -897,23 +919,27 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(root);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = unwrap(stack.removeFirst());
 
             if (current == null || !seen.add(current)) {
                 continue;
             }
 
-            if (current instanceof Class<?> clazz && clazz.isEnum()) {
-                return clazz;
+            if (current instanceof StringRepresentable.EnumCodec<?> enumCodec) {
+                return enumCodec;
             }
 
-            if (current.getClass().isArray() && current.getClass().getComponentType().isEnum()) {
+            if (isBaseCodec(current) || isUnsupportedContainer(current) || !isCodecGraphNode(current)) {
+                continue;
+            }
 
-                return current.getClass().getComponentType();
+            // User callbacks can capture enum constants/arrays without producing an enum value.
+            if (isLambda(current) && !isDfuObject(current.getClass().getNestHost())) {
+                continue;
             }
 
             for (Field field : ReflectionUtil.fields(current.getClass())) {
@@ -923,7 +949,7 @@ public final class CodecUnwrapper {
                     Object value = field.get(current);
 
                     if (value != null && !isTerminal(value)) {
-                        stack.push(value);
+                        stack.addLast(value);
                     }
 
                 } catch (Throwable ignored) {
@@ -948,19 +974,6 @@ public final class CodecUnwrapper {
                 result.add(enumSchema(value));
             }
 
-            if (!result.isEmpty()) {
-                return result;
-            }
-        }
-
-        Class<?> enumClass = enumClassOf(root);
-
-        if (enumClass != null) {
-
-            for (Object constant : enumClass.getEnumConstants()) {
-
-                result.add(enumSchema(constant));
-            }
         }
 
         return result;
@@ -1028,19 +1041,27 @@ public final class CodecUnwrapper {
     /**
      * 取 codec 声明的注册表键（HOLDER / HOLDER_SET / REGISTRY 指向的那个注册表）。
      *
-     * <p>按层深遍历对象图，优先级从高到低：</p>
+     * <p>只沿 codec 包装与其函数捕获字段按层遍历，优先级从高到低：</p>
      * <ol>
      *   <li><b>注册表引用 codec 本体</b>（{@link RegistryFileCodec} / {@link RegistryFixedCodec} /
      *       {@link HolderSetCodec}）持有的注册表键，见 {@link #holderRegistryKey}；</li>
      *   <li>对象图中捕获的 {@link Registry} 实例（如 dispatch 键 codec 捕获的类型注册表）的 {@code key()}。</li>
      * </ol>
      *
-     * <p>顺序很关键：HTLib 的条目 codec 是 {@code typeRegistry.byNameCodec().dispatch(...)} 套在
-     * 引用 codec 里，图里同时存在"外层数据包注册表"与"内层类型注册表"（如 {@code htlib:wave} 与
-     * {@code htlib:wave_type}）。若让内层先命中，schema 会把 Holder 字段写成类型注册表，
-     * 下拉框随之列出类型而非条目。</p>
+     * <p>引用 codec 先返回自身的键，不进入内联条目 codec；遇到 record/list/map/dispatch 等
+     * 实际结构时停止，内部字段的 Holder 不代表外层也是 Holder。捕获到 Registry 后也立即
+     * 返回，不遍历它的条目、缓存或其它 codec，否则无关的 Holder 会覆盖真正的注册表。</p>
      */
     public static ResourceKey<?> registryKey(Object root) {
+        RegistryReference reference = registryReference(root);
+        return reference == null ? null : reference.key();
+    }
+
+    /** The key and shape must come from the same reference codec, including through wrappers. */
+    public record RegistryReference(ResourceKey<?> key, SchemaType type) {
+    }
+
+    public static RegistryReference registryReference(Object root) {
 
         if (root == null) {
             return null;
@@ -1052,14 +1073,13 @@ public final class CodecUnwrapper {
 
         level.add(root);
 
-        ResourceKey<?> captured = null;
-
         while (!level.isEmpty()) {
 
             List<Object> next = new ArrayList<>();
 
             for (Object current : level) {
 
+                current = unwrap(current);
                 if (current == null || !seen.add(current)) {
                     continue;
                 }
@@ -1067,21 +1087,41 @@ public final class CodecUnwrapper {
                 ResourceKey<?> key = holderRegistryKey(current);
 
                 if (key != null) {
-                    return key;
+                    SchemaType type = current instanceof HolderSetCodec<?> ? SchemaType.HOLDER_SET
+                        : current instanceof RegistryFixedCodec<?> ? SchemaType.REGISTRY : SchemaType.HOLDER;
+                    return new RegistryReference(key, type);
                 }
 
-                if (captured == null && current instanceof Registry<?> registry) {
+                if (current instanceof Registry<?> registry) {
 
                     try {
 
                         ResourceKey<? extends Registry<?>> registryKey = registry.key();
 
                         if (registryKey != null) {
-                            captured = registryKey;
+                            return new RegistryReference(registryKey, SchemaType.HOLDER);
                         }
 
                     } catch (Throwable ignored) {
                     }
+                    continue;
+                }
+
+                // A registry inside one field/element/branch does not describe its container.
+                if (isBaseCodec(current) || current instanceof MapCodec<?> || isUnsupportedContainer(current)) {
+                    continue;
+                }
+
+                // Follow transparent DFU adapters, never arbitrary registry entries or domain objects.
+                if (!isCodecGraphNode(current)) {
+                    continue;
+                }
+
+                // User mapping callbacks may capture arbitrary codecs; only adapter-owned lambdas
+                // describe the wire structure or Registry's built-in name lookup.
+                if (isLambda(current) && !isDfuObject(current.getClass().getNestHost())
+                    && !Registry.class.isAssignableFrom(current.getClass().getNestHost())) {
+                    continue;
                 }
 
                 for (Field field : ReflectionUtil.fields(current.getClass())) {
@@ -1089,6 +1129,13 @@ public final class CodecUnwrapper {
                     try {
 
                         Object value = field.get(current);
+
+                        // Registry.byNameCodec/holderByNameCodec capture their receiver in Registry lambdas.
+                        // A user's unrelated xmap callback capturing a Registry is not a reference codec.
+                        if (value instanceof Registry<?>
+                            && !(isLambda(current) && Registry.class.isAssignableFrom(current.getClass().getNestHost()))) {
+                            continue;
+                        }
 
                         if (value != null && !isTerminal(value)) {
                             next.add(value);
@@ -1102,7 +1149,7 @@ public final class CodecUnwrapper {
             level = next;
         }
 
-        return captured;
+        return null;
     }
 
     /**
@@ -1251,10 +1298,11 @@ public final class CodecUnwrapper {
         return null;
     }
 
-    /** BFS 在对象图中找第一个枚举数组（组件类型为 enum）。 */
+    /** Only inspect enum data owned by the recognized source EnumCodec. */
     private static Object findEnumArray(Object root) {
 
-        if (root == null) {
+        StringRepresentable.EnumCodec<?> source = findEnumCodec(root);
+        if (source == null) {
             return null;
         }
 
@@ -1262,11 +1310,11 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(source);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = stack.removeFirst();
 
             if (current == null || !seen.add(current)) {
                 continue;
@@ -1277,6 +1325,14 @@ public final class CodecUnwrapper {
                 return current;
             }
 
+            if (current instanceof Class<?> clazz && clazz.isEnum()) {
+                return clazz.getEnumConstants();
+            }
+
+            if (isBaseCodec(current) || isUnsupportedContainer(current) || !isCodecGraphNode(current)) {
+                continue;
+            }
+
             for (Field field : ReflectionUtil.fields(current.getClass())) {
 
                 try {
@@ -1284,7 +1340,7 @@ public final class CodecUnwrapper {
                     Object value = field.get(current);
 
                     if (value != null && !isTerminal(value)) {
-                        stack.push(value);
+                        stack.addLast(value);
                     }
 
                 } catch (Throwable ignored) {

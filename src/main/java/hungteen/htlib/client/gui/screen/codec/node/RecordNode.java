@@ -37,7 +37,10 @@ public final class RecordNode extends EditorFormNode {
             boolean needMerge = (!fieldSchema.has(SchemaKeys.DEFAULT) && field.has(SchemaKeys.DEFAULT))
                 || (!fieldSchema.has(SchemaKeys.REQUIRED) && field.has(SchemaKeys.REQUIRED));
             if (needMerge) {
-                fieldSchema = fieldSchema.deepCopy();
+                // Only these field attributes differ; descendants may be a large shared schema DAG.
+                JsonObject merged = new JsonObject();
+                fieldSchema.entrySet().forEach(entry -> merged.add(entry.getKey(), entry.getValue()));
+                fieldSchema = merged;
                 if (!fieldSchema.has(SchemaKeys.REQUIRED) && field.has(SchemaKeys.REQUIRED)) {
                     fieldSchema.addProperty(SchemaKeys.REQUIRED, field.get(SchemaKeys.REQUIRED).getAsBoolean());
                 }

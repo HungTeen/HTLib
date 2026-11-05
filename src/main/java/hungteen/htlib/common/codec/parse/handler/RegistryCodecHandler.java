@@ -24,9 +24,8 @@ import net.minecraft.resources.ResourceKey;
  * </ul>
  *
  * <p>未直接命中的包装链（如 holderByNameCodec / byNameCodec）：Registry 实例被捕获在 lambda
- * 字段里，无法用 instanceof 识别，于是通过对象图扫描 {@link CodecUnwrapper#registryKey} 判定——
- * 扫到 ResourceKey 即视为注册表引用；但基础结构 codec（record/list/map/primitive）先交还责任链
- * 的其他 handler，避免误判（见 {@link #supports} 的顺序逻辑）。</p>
+ * 字段里，无法用 instanceof 识别，于是沿透明包装扫描 {@link CodecUnwrapper#registryKey}。
+ * 遇到基础结构即停止，不能把内部字段的注册表引用当作整个 record/list/map 的形态。</p>
  *
  * <p>注册表键与是否允许标签被封装进 {@link RegistrySchema}，挂在产出 Schema 上。</p>
  *
@@ -53,7 +52,7 @@ public final class RegistryCodecHandler implements CodecSchemaHandler {
 
         /*
          * holderByNameCodec / byNameCodec 等包装链不是 RegistryFileCodec 形态，
-         * Registry 实例被捕获在 lambda 字段里。通过对象图扫描识别；
+         * Registry 实例被捕获在 lambda 字段里。通过受限包装扫描识别；
          * 但基础结构 codec（record/list/map/primitive）交给各自的 handler，避免误判。
          */
         if (CodecUnwrapper.isBaseCodec(codec)) {
@@ -69,11 +68,12 @@ public final class RegistryCodecHandler implements CodecSchemaHandler {
     @Override
     public DataSchema parse(Object codec, ParseContext context) {
 
-        SchemaType type = typeOf(codec);
+        CodecUnwrapper.RegistryReference reference = CodecUnwrapper.registryReference(codec);
+        SchemaType type = reference == null ? SchemaType.HOLDER : reference.type();
 
         DataSchema schema = new DataSchema(type);
 
-        ResourceKey<?> key = CodecUnwrapper.registryKey(codec);
+        ResourceKey<?> key = reference == null ? null : reference.key();
 
         if (key != null) {
 
@@ -83,23 +83,4 @@ public final class RegistryCodecHandler implements CodecSchemaHandler {
         return schema;
     }
 
-    /**
-     * 按 codec 形态映射 SchemaType；非直接命中的兜底为 HOLDER。
-     */
-    private static SchemaType typeOf(Object codec) {
-
-        if (codec instanceof HolderSetCodec<?>) {
-            return SchemaType.HOLDER_SET;
-        }
-
-        if (codec instanceof RegistryFileCodec<?>) {
-            return SchemaType.HOLDER;
-        }
-
-        if (codec instanceof RegistryFixedCodec<?>) {
-            return SchemaType.REGISTRY;
-        }
-
-        return SchemaType.HOLDER;
-    }
 }

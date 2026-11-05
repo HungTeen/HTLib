@@ -2,6 +2,7 @@ package hungteen.htlib.client.gui.screen.codec;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import hungteen.htlib.common.codec.parse.SchemaReferences;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.widget.codec.EditorResultCache;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
@@ -264,7 +265,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     @Override
     protected void applySchema(String schemaJson) {
         try {
-            this.schema = JsonParser.parseString(schemaJson).getAsJsonObject();
+            this.schema = SchemaReferences.expand(JsonParser.parseString(schemaJson).getAsJsonObject());
             this.formRoot = EditorFormNode.root(this.schema);
             this.formScroll = 0;
             this.panX = 0;

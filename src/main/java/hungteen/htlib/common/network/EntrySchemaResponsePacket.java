@@ -27,6 +27,7 @@ public class EntrySchemaResponsePacket {
     }
 
     private EntrySchemaResponsePacket(String registryName, String schemaJson, String error) {
+        requireSchemaBudget(schemaJson);
         this.registryName = registryName;
         this.schemaJson = schemaJson;
         this.error = error;
@@ -37,15 +38,21 @@ public class EntrySchemaResponsePacket {
     }
 
     public EntrySchemaResponsePacket(FriendlyByteBuf buffer) {
-        this.registryName = buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH);
-        this.schemaJson = buffer.readUtf(EditorPacketLimits.MAX_SCHEMA_LENGTH);
-        this.error = buffer.readUtf(EditorPacketLimits.MAX_RESULT_LENGTH);
+        this(buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH), buffer.readUtf(EditorPacketLimits.MAX_SCHEMA_LENGTH),
+            buffer.readUtf(EditorPacketLimits.MAX_RESULT_LENGTH));
     }
 
     public void encode(FriendlyByteBuf buffer) {
+        requireSchemaBudget(schemaJson);
         buffer.writeUtf(registryName, EditorPacketLimits.MAX_ID_LENGTH);
         buffer.writeUtf(schemaJson, EditorPacketLimits.MAX_SCHEMA_LENGTH);
         buffer.writeUtf(error, EditorPacketLimits.MAX_RESULT_LENGTH);
+    }
+
+    private static void requireSchemaBudget(String json) {
+        if (!EditorPacketLimits.fitsSchema(json)) {
+            throw new IllegalArgumentException("Schema exceeds the 900000-byte UTF-8 budget");
+        }
     }
 
     public static void onMessage(EntrySchemaResponsePacket message, Supplier<NetworkEvent.Context> ctx) {

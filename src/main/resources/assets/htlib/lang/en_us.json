@@ -42,7 +42,7 @@
   "htlib.screen.loaded_schema": "Loaded schema: %s",
   "htlib.screen.schema_error": "Schema error: %s",
   "htlib.screen.saving": "Saving...",
-  "htlib.screen.saved": "Saved: %s. Enable the pack, then reload or reopen the world to apply changes.",
+  "htlib.screen.saved": "Saved: %s. Run /datapack list available to discover new packs, then enable the pack and reload or reopen the world.",
   "htlib.screen.save_failed": "Save failed: %s",
   "htlib.screen.ref": "Ref",
   "htlib.screen.inline": "Inline",

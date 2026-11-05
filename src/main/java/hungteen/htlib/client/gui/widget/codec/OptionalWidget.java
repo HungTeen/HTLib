@@ -43,7 +43,7 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     protected boolean collapsible() {
-        return node.structuralInner() && node.inner() != null;
+        return node.structuralInner();
     }
 
     @Override
@@ -111,7 +111,7 @@ public final class OptionalWidget extends EditorWidget {
 
     @Override
     public void refreshFromNode() {
-        if (inner() != null) {
+        if (node.isPresent() && inner() != null) {
             inner().refreshFromNode();
         }
     }

@@ -3,6 +3,7 @@ package hungteen.htlib.client.gui.widget.codec;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import hungteen.htlib.common.codec.parse.SchemaReferences;
 import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
@@ -207,7 +208,7 @@ public final class HolderWidget extends EditorWidget {
             return;
         }
         try {
-            entrySchema = JsonParser.parseString(schemaJson).getAsJsonObject();
+            entrySchema = SchemaReferences.expand(JsonParser.parseString(schemaJson).getAsJsonObject());
             inlineNode = node.bindInlineNode(EditorFormNode.root(entrySchema));
             host.relayout();
         } catch (Exception ignored) {

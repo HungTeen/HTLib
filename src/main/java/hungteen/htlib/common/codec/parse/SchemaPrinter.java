@@ -7,6 +7,12 @@ import hungteen.htlib.common.codec.parse.schema.EnumValueSchema;
 import hungteen.htlib.common.codec.parse.schema.FieldSchema;
 
 import java.util.List;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * 把 {@link DataSchema} 树输出成可读文本 / JSON 格式。
@@ -165,11 +171,53 @@ public final class SchemaPrinter {
     /** 把 schema 树输出成 JSON（根节点）。 */
     public static JsonObject toJson(DataSchema schema) {
         JsonObject root = new JsonObject();
-        appendJsonNode(schema, root);
+        appendJsonNode(schema, root, SchemaPrinter::toJson);
         return root;
     }
 
-    private static void appendJsonNode(DataSchema schema, JsonObject obj) {
+    /** Network representation: shared schema nodes are written once instead of expanding a DAG into a tree. */
+    public static JsonObject toCompactJson(DataSchema schema) {
+        JsonObject definitions = new JsonObject();
+        Map<DataSchema, String> ids = new IdentityHashMap<>();
+        Map<String, String> equivalentDefinitions = new HashMap<>();
+        Set<DataSchema> active = Collections.newSetFromMap(new IdentityHashMap<>());
+        Function<DataSchema, JsonObject> reference = new Function<>() {
+            @Override
+            public JsonObject apply(DataSchema node) {
+                if (active.contains(node)) throw new IllegalArgumentException("Cyclic schema graph");
+                String id = ids.get(node);
+                if (id == null) {
+                    id = "s" + ids.size();
+                    ids.put(node, id);
+                    active.add(node);
+                    JsonObject definition = new JsonObject();
+                    definitions.add(id, definition);
+                    try {
+                        appendJsonNode(node, definition, this);
+                        // Variant copies often have identical structure; their names belong on references.
+                        // Child nodes are already references here, so this key never expands the DAG.
+                        String existing = equivalentDefinitions.putIfAbsent(definition.toString(), id);
+                        if (existing != null) {
+                            definitions.remove(id);
+                            id = existing;
+                            ids.put(node, id);
+                        }
+                    } finally {
+                        active.remove(node);
+                    }
+                }
+                JsonObject ref = new JsonObject();
+                ref.addProperty("$ref", "#/$defs/" + id);
+                return ref;
+            }
+        };
+        JsonObject root = reference.apply(schema);
+        root.add("$defs", definitions);
+        return root;
+    }
+
+    private static void appendJsonNode(DataSchema schema, JsonObject obj,
+                                       Function<DataSchema, JsonObject> childJson) {
 
         if (schema == null) {
             obj.addProperty("type", "null");
@@ -208,8 +256,7 @@ public final class SchemaPrinter {
                     fieldObj.addProperty("required", field.required());
                     fieldObj.addProperty("path", field.path());
                     appendJsonDefault(fieldObj, field.defaultValue());
-                    JsonObject fieldSchema = new JsonObject();
-                    appendJsonNode(field.schema(), fieldSchema);
+                    JsonObject fieldSchema = childJson.apply(field.schema());
                     // 默认值与必填标记同时挂到字段 schema 上，客户端节点才能读到
                     appendJsonDefault(fieldSchema, field.defaultValue());
                     fieldSchema.addProperty("required", field.required());
@@ -219,16 +266,13 @@ public final class SchemaPrinter {
                 obj.add("fields", fields);
             }
             case LIST, SET, OPTIONAL -> {
-                JsonObject element = new JsonObject();
-                appendJsonNode(schema.element(), element);
+                JsonObject element = childJson.apply(schema.element());
                 obj.add("element", element);
             }
             case MAP -> {
-                JsonObject key = new JsonObject();
-                appendJsonNode(schema.key(), key);
+                JsonObject key = childJson.apply(schema.key());
                 obj.add("key", key);
-                JsonObject value = new JsonObject();
-                appendJsonNode(schema.element(), value);
+                JsonObject value = childJson.apply(schema.element());
                 obj.add("value", value);
             }
             case ENUM -> {
@@ -246,17 +290,15 @@ public final class SchemaPrinter {
                     obj.addProperty("variantKey", schema.variantKey());
                 }
                 if (schema.key() != null) {
-                    JsonObject key = new JsonObject();
-                    appendJsonNode(schema.key(), key);
+                    JsonObject key = childJson.apply(schema.key());
                     obj.add("typeKey", key);
                 }
                 JsonArray variants = new JsonArray();
                 for (DataSchema variant : schema.variants()) {
-                    JsonObject variantObj = new JsonObject();
+                    JsonObject variantObj = childJson.apply(variant);
                     if (variant.variantName() != null) {
                         variantObj.addProperty("name", variant.variantName());
                     }
-                    appendJsonNode(variant, variantObj);
                     variants.add(variantObj);
                 }
                 obj.add("variants", variants);

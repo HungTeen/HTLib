@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * 记录（对象）形态的 handler：解析 RecordCodecBuilder 构建出的 MapCodec。
+ * 记录（对象）形态的 handler：解析 RecordCodecBuilder 构建出的 MapCodec 与单字段对象。
  *
  * <p>识别：{@link CodecUnwrapper#isRecordMapCodec}（{@code MapCodec} 且封闭类为
  * {@code RecordCodecBuilder}，即其构建产物的匿名类）。</p>
@@ -32,10 +32,11 @@ import java.util.*;
  **/
 public final class RecordCodecHandler implements CodecSchemaHandler {
 
-    /** 命中条件：RecordCodecBuilder 构建产物（记录 MapCodec）。 */
+    /** 命中条件：RecordCodecBuilder 构建产物或 fieldOf/optionalFieldOf 的单字段对象。 */
     @Override
     public boolean supports(Object codec) {
-        return CodecUnwrapper.isRecordMapCodec(codec);
+        return CodecUnwrapper.isRecordMapCodec(codec)
+            || codec instanceof MapCodec<?> && CodecUnwrapper.isFieldCodec(codec);
     }
 
     /**
@@ -45,6 +46,13 @@ public final class RecordCodecHandler implements CodecSchemaHandler {
     public DataSchema parse(Object codec, ParseContext context) {
 
         DataSchema schema = new DataSchema(SchemaType.RECORD);
+
+        // fieldOf(...).xmap(...) is a one-field object, not the field's inner value schema.
+        if (codec instanceof MapCodec<?> mapCodec && CodecUnwrapper.isFieldCodec(codec)) {
+            FieldSchema field = FieldParser.parse(mapCodec, context);
+            if (field != null) schema.fields().add(field);
+            return schema;
+        }
 
         // 记录构建器持有 encoder / decoder 树，字段 MapCodec 从 encoder 侧收集。
         Object builder = ReflectionUtil.getField(codec, "val$builder");

@@ -32,15 +32,14 @@ public final class OptionalNode extends EditorFormNode {
 
     @Override
     protected void init() {
-        JsonObject inner = elementSchema();
-        if (inner != null) {
-            optionalInner = EditorFormNode.create(inner, "", value);
+        if (present) {
+            inner();
         }
     }
 
     @Override
     public int height() {
-        if (optionalInner == null) {
+        if (!present || optionalInner == null) {
             return EditorWidget.ROW_HEIGHT;
         }
         if (structuralInner()) {
@@ -55,6 +54,9 @@ public final class OptionalNode extends EditorFormNode {
     }
 
     public EditorFormNode inner() {
+        if (optionalInner == null && elementSchema() != null) {
+            optionalInner = EditorFormNode.create(elementSchema(), "", value);
+        }
         return optionalInner;
     }
 
@@ -65,6 +67,9 @@ public final class OptionalNode extends EditorFormNode {
     /** Disabling a field preserves its draft; collapse controls only visibility. */
     public void setPresent(boolean present) {
         this.present = present;
+        if (present) {
+            inner();
+        }
     }
 
     @Override
@@ -92,8 +97,8 @@ public final class OptionalNode extends EditorFormNode {
     public void load(JsonElement json) {
         present = json != null && !json.isJsonNull();
         this.value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
-        JsonObject inner = elementSchema();
-        optionalInner = inner == null ? null : EditorFormNode.create(inner, "", this.value);
+        optionalInner = null;
+        init();
     }
 
     private static boolean isStructuralType(SchemaType type) {

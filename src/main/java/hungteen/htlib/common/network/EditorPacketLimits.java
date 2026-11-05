@@ -8,7 +8,9 @@ public final class EditorPacketLimits {
     public static final int MAX_JSON_LENGTH = 32767;
     // Also leaves room for three IDs, a UUID, string lengths and the packet discriminator.
     public static final int MAX_JSON_BYTES = 30000;
-    public static final int MAX_SCHEMA_LENGTH = 262144;
+    // Clientbound payloads allow 1 MiB; retain room for IDs, feedback and channel framing.
+    public static final int MAX_SCHEMA_LENGTH = 900000;
+    public static final int MAX_SCHEMA_BYTES = 900000;
     public static final int MAX_RESULT_LENGTH = 2048;
 
     private EditorPacketLimits() {
@@ -17,6 +19,11 @@ public final class EditorPacketLimits {
     public static boolean fitsJson(String json) {
         return json != null && json.length() <= MAX_JSON_LENGTH
             && json.getBytes(StandardCharsets.UTF_8).length <= MAX_JSON_BYTES;
+    }
+
+    public static boolean fitsSchema(String json) {
+        return json != null && json.length() <= MAX_SCHEMA_LENGTH
+            && json.getBytes(StandardCharsets.UTF_8).length <= MAX_SCHEMA_BYTES;
     }
 
     public static String resultMessage(String message) {

@@ -42,7 +42,7 @@
   "htlib.screen.loaded_schema": "已加载 schema：%s",
   "htlib.screen.schema_error": "Schema 解析出错：%s",
   "htlib.screen.saving": "正在保存…",
-  "htlib.screen.saved": "已保存：%s。启用数据包后，重新加载或重新进入世界以应用更改。",
+  "htlib.screen.saved": "已保存：%s。新包先用 /datapack list available 刷新列表，再启用数据包；重新加载或进入世界后应用更改。",
   "htlib.screen.save_failed": "保存失败：%s",
   "htlib.screen.ref": "引用",
   "htlib.screen.inline": "展开",

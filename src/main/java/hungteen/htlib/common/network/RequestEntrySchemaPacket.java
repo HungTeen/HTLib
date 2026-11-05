@@ -46,10 +46,10 @@ public class RequestEntrySchemaPacket {
             }
             try {
                 String json = SchemaRegistryAccess.withAccess(sender.server.registryAccess(),
-                    () -> CodecEditorManager.getSchemaJson(message.registryName).map(JsonObject::toString).orElse(""));
+                    () -> CodecEditorManager.getCompactSchemaJson(message.registryName).map(JsonObject::toString).orElse(""));
                 EntrySchemaResponsePacket reply = json.isEmpty()
                     ? EntrySchemaResponsePacket.failure(message.registryName, "未知的数据包注册表")
-                    : json.length() > EditorPacketLimits.MAX_SCHEMA_LENGTH
+                    : !EditorPacketLimits.fitsSchema(json)
                         ? EntrySchemaResponsePacket.failure(message.registryName, "Schema 超出网络大小限制")
                         : new EntrySchemaResponsePacket(message.registryName, json);
                 NetworkHandler.sendToClient(sender, reply);
