@@ -8,8 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-/** Writes editor output beneath the world's datapacks directory, never to a client-supplied path. */
-public final class DatapackFileStorage {
+/** 将编辑结果写入存档的数据包目录，不接受客户端指定的文件路径。 */
+final class DatapackFileStorage {
 
     private static final String PACK_METADATA = """
         {
@@ -23,9 +23,9 @@ public final class DatapackFileStorage {
     private DatapackFileStorage() {
     }
 
-    /** Forge prefixes non-vanilla registry directories with their namespace. */
-    public static Path relativePath(String packName, String registryNamespace, String registryPath,
-                                    String resourceNamespace, String resourcePath) {
+    /** 非原版注册表的目录需要加上注册表命名空间前缀。 */
+    private static Path relativePath(String packName, String registryNamespace, String registryPath,
+                                     String resourceNamespace, String resourcePath) {
         requirePackName(packName);
         requireNamespace(registryNamespace);
         requireNamespace(resourceNamespace);
@@ -38,8 +38,8 @@ public final class DatapackFileStorage {
         return directory.resolve(registryPath).resolve(resourcePath + ".json");
     }
 
-    public static Path save(Path datapacksDirectory, String packName, String registryNamespace, String registryPath,
-                            String resourceNamespace, String resourcePath, String json) throws IOException {
+    static Path save(Path datapacksDirectory, String packName, String registryNamespace, String registryPath,
+                     String resourceNamespace, String resourcePath, String json) throws IOException {
         Path relative = relativePath(packName, registryNamespace, registryPath, resourceNamespace, resourcePath);
         Files.createDirectories(datapacksDirectory);
         Path root = datapacksDirectory.toRealPath();
@@ -68,7 +68,7 @@ public final class DatapackFileStorage {
         return target;
     }
 
-    private static void createDirectories(Path root, Path directory) throws IOException {
+    static void createDirectories(Path root, Path directory) throws IOException {
         Path current = root;
         for (Path part : root.relativize(directory)) {
             current = current.resolve(part);
@@ -77,16 +77,16 @@ public final class DatapackFileStorage {
             }
             checkLocation(root, current);
             if (!Files.isDirectory(current, LinkOption.NOFOLLOW_LINKS)) {
-                throw new IOException("A datapack directory is not a directory: " + part);
+                throw new IOException("The output path is not a directory: " + part);
             }
         }
     }
 
-    private static void checkFile(Path root, Path file) throws IOException {
+    static void checkFile(Path root, Path file) throws IOException {
         if (Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
             checkLocation(root, file);
             if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)) {
-                throw new IOException("The datapack target is not a regular file");
+                throw new IOException("The output target is not a regular file");
             }
         }
     }
@@ -94,7 +94,7 @@ public final class DatapackFileStorage {
     private static void checkLocation(Path root, Path path) throws IOException {
         // Real paths also catch Windows junctions, which are not reported as symbolic links.
         if (Files.isSymbolicLink(path) || !path.toRealPath().startsWith(root)) {
-            throw new IOException("Linked paths outside the datapack directory are not supported");
+            throw new IOException("Linked paths outside the output directory are not supported");
         }
     }
 

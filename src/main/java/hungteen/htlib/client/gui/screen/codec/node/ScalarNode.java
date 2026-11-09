@@ -50,28 +50,25 @@ public final class ScalarNode extends EditorFormNode {
     protected void validateValue() {
         invalid = false;
         errorMessage = "";
-        if (ScalarInput.isNumeric(type()) && !ScalarInput.isValidNumber(value, type())) {
-            invalid = true;
-            errorMessage = I18n.get("htlib.error.number", type().name());
-            return;
-        }
-        if (!schema.has(SchemaKeys.CONSTRAINTS)) {
-            return;
-        }
         SchemaTooltip.Kind kind;
-        String raw = "";
+        String raw = value != null && value.isJsonPrimitive() ? value.getAsString() : "";
         switch (type()) {
             case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> {
                 kind = SchemaTooltip.Kind.NUMBER;
-                raw = value != null && value.isJsonPrimitive() ? value.getAsString() : "";
+                if (raw.isEmpty() || !value.getAsJsonPrimitive().isNumber()
+                    || !parseInput(raw, type()).getAsJsonPrimitive().isNumber()) {
+                    invalid = true;
+                    errorMessage = I18n.get("htlib.error.number", type().name());
+                    return;
+                }
             }
-            case STRING, RESOURCE_LOCATION, COMPONENT -> {
-                kind = SchemaTooltip.Kind.STRING;
-                raw = value != null && value.isJsonPrimitive() ? value.getAsString() : "";
-            }
+            case STRING, RESOURCE_LOCATION, COMPONENT -> kind = SchemaTooltip.Kind.STRING;
             default -> {
                 return;
             }
+        }
+        if (!schema.has(SchemaKeys.CONSTRAINTS)) {
+            return;
         }
         for (JsonElement c : schema.getAsJsonArray(SchemaKeys.CONSTRAINTS)) {
             String err = SchemaTooltip.checkConstraint(c.getAsString(), kind, raw, 0);

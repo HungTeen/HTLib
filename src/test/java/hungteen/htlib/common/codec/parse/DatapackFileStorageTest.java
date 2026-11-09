@@ -55,10 +55,12 @@ class DatapackFileStorageTest {
 
     @Test
     void alsoRejectsTraversalInRegistryAndNamespace() {
+        Path root = temporary.resolve("datapacks");
         assertThrows(IllegalArgumentException.class,
-            () -> DatapackFileStorage.relativePath("demo", "minecraft", "../effects", "demo", "safe"));
+            () -> DatapackFileStorage.save(root, "demo", "minecraft", "../effects", "demo", "safe", "{}"));
         assertThrows(IllegalArgumentException.class,
-            () -> DatapackFileStorage.relativePath("demo", "minecraft", "effects", "..", "safe"));
+            () -> DatapackFileStorage.save(root, "demo", "minecraft", "effects", "..", "safe", "{}"));
+        assertFalse(Files.exists(root));
     }
 
     @Test

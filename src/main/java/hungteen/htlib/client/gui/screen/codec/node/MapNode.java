@@ -10,7 +10,9 @@ import hungteen.htlib.client.gui.widget.codec.MapWidget;
 import net.minecraft.client.resources.language.I18n;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 映射节点：头部增删（删最后一项），键/值各占一行递归编辑。
@@ -75,7 +77,7 @@ public final class MapNode extends EditorFormNode {
     protected void validateValue() {
         invalid = false;
         errorMessage = "";
-        java.util.Set<String> keys = new java.util.HashSet<>();
+        Set<String> keys = new HashSet<>();
         for (EditorFormNode key : mapKeys) {
             JsonElement current = key.collect();
             if (!current.isJsonPrimitive() || !keys.add(current.getAsString())) {

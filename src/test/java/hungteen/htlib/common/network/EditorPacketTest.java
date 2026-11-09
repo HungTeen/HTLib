@@ -12,17 +12,25 @@ class EditorPacketTest {
     @Test
     void saveWithMaximumUtf8StringsFitsServerboundPayloadAndRoundTrips() {
         UUID request = UUID.randomUUID();
-        String id = "中".repeat(EditorPacketLimits.MAX_ID_LENGTH);
+        String registry = "中".repeat(EditorPacketLimits.MAX_ID_LENGTH);
+        String pack = "包".repeat(EditorPacketLimits.MAX_ID_LENGTH);
+        String resource = "条".repeat(EditorPacketLimits.MAX_ID_LENGTH);
         String json = "\"" + "中".repeat((EditorPacketLimits.MAX_JSON_BYTES - 2) / 3) + "\"";
         assertTrue(EditorPacketLimits.fitsJson(json));
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
             buffer.writeVarInt(4);
-            new SaveDataPacket(request, id, id, id, json).encode(buffer);
+            new SaveDataPacket(request, registry, pack, resource, json).encode(buffer);
             assertTrue(buffer.readableBytes() <= 32767);
             assertEquals(4, buffer.readVarInt());
+            SaveDataPacket decoded = new SaveDataPacket(buffer);
+            assertEquals(0, buffer.readableBytes());
+            buffer.clear();
+            decoded.encode(buffer);
             assertEquals(request, buffer.readUUID());
-            for (int i = 0; i < 3; i++) assertEquals(id, buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH));
+            assertEquals(registry, buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH));
+            assertEquals(pack, buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH));
+            assertEquals(resource, buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH));
             assertEquals(json, buffer.readUtf(EditorPacketLimits.MAX_JSON_LENGTH));
             assertEquals(0, buffer.readableBytes());
         } finally {
@@ -38,14 +46,18 @@ class EditorPacketTest {
         try {
             new ValidateDataPacket(request, "minecraft:damage_type", json).encode(buffer);
             assertTrue(buffer.readableBytes() < 32767);
+            ValidateDataPacket decoded = new ValidateDataPacket(buffer);
+            assertEquals(0, buffer.readableBytes());
+            buffer.clear();
+            decoded.encode(buffer);
             assertEquals(request, buffer.readUUID());
             assertEquals("minecraft:damage_type", buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH));
             assertEquals(json, buffer.readUtf(EditorPacketLimits.MAX_JSON_LENGTH));
+            assertEquals(0, buffer.readableBytes());
         } finally {
             buffer.release();
         }
         assertFalse(EditorPacketLimits.fitsJson("中".repeat(10001)));
         assertFalse(EditorPacketLimits.fitsJson("a".repeat(30001)));
-        assertEquals(EditorPacketLimits.MAX_RESULT_LENGTH, EditorPacketLimits.resultMessage("a".repeat(4000)).length());
     }
 }

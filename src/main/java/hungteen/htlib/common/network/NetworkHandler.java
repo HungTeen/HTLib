@@ -4,8 +4,8 @@ import hungteen.htlib.util.helper.HTLibHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
@@ -27,7 +27,8 @@ public class NetworkHandler {
 
         CHANNEL =
             NetworkRegistry.ChannelBuilder.named(HTLibHelper.prefix("networking")).networkProtocolVersion(() -> PROTOCOL_VERSION)
-                .clientAcceptedVersions(PROTOCOL_VERSION::equals).serverAcceptedVersions(PROTOCOL_VERSION::equals).simpleChannel();
+                .clientAcceptedVersions(NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION))
+                .serverAcceptedVersions(NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION)).simpleChannel();
 
         CHANNEL.registerMessage(getId(), PlaySoundPacket.class, PlaySoundPacket::encode, PlaySoundPacket::new,
             PlaySoundPacket.Handler::onMessage);

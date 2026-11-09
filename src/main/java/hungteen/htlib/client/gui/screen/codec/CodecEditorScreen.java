@@ -2,14 +2,14 @@ package hungteen.htlib.client.gui.screen.codec;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import hungteen.htlib.common.codec.parse.SchemaReferences;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.widget.codec.EditorResultCache;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
 import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import hungteen.htlib.client.gui.widget.codec.TypeSelector;
-import hungteen.htlib.common.network.EditorResultPacket;
+import hungteen.htlib.common.codec.parse.SchemaReferences;
 import hungteen.htlib.common.network.EditorPacketLimits;
+import hungteen.htlib.common.network.EditorResultPacket;
 import hungteen.htlib.common.network.NetworkHandler;
 import hungteen.htlib.common.network.SaveDataPacket;
 import hungteen.htlib.common.network.ValidateDataPacket;
@@ -23,7 +23,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -46,6 +45,10 @@ import java.util.UUID;
 public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
     private static final int TOP_OFFSET = 20;
+    /** 顶部类型输入框宽度（编辑器工具条更紧凑）。 */
+    private static final int TYPE_DROPDOWN_WIDTH = 120;
+    private static final int TOOLBAR_GAP = 6;
+    private static final int MODE_BUTTON_WIDTH = 50;
 
     private boolean jsonMode = false;
     private JsonObject schema;
@@ -81,14 +84,15 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     @Override
     protected TypeSelector createTypeSelector() {
         List<String> names = registryNames.stream().map(ResourceLocation::toString).toList();
-        EditorToolbarLayout layout = toolbarLayout();
-        return new TypeSelector(this, this::addRenderableWidget, layout.typeX(), 4, layout.typeWidth(), 13,
+        // 为两个名称输入框预留 110 像素，窄窗口优先缩短类型框。
+        int available = width - 2 * ViewerStyle.LEFT_PADDING - 4 * TOOLBAR_GAP - MODE_BUTTON_WIDTH - actionsWidth();
+        int typeWidth = Math.min(TYPE_DROPDOWN_WIDTH, Math.max(60, available - 110));
+        return new TypeSelector(this, this::addRenderableWidget, ViewerStyle.LEFT_PADDING, 4, typeWidth, 13,
             TOP_OFFSET, names, this::select);
     }
 
-    private EditorToolbarLayout toolbarLayout() {
-        int actionsWidth = Math.max(40, this.font.width(I18n.get("htlib.screen.more")) + 8);
-        return EditorToolbarLayout.forWidth(this.width, actionsWidth);
+    private int actionsWidth() {
+        return Math.max(40, this.font.width(I18n.get("htlib.screen.more")) + 8);
     }
 
     @Override
@@ -114,9 +118,9 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
 
         // 顶部：数据包类型输入框（自动补全）
         typeSelector.setValue(selected);
-        typeSelector.addToScreen(this.font);
+        EditBox typeBox = typeSelector.addToScreen(this.font);
 
-        rebuildBody();
+        rebuildBody(typeBox.getX() + typeBox.getWidth() + TOOLBAR_GAP);
         layoutForm();
         if (restoreImport) {
             startImportJson();
@@ -143,16 +147,20 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
     /**
      * 顶部工具条按钮（模式切换/路径/文件名/动作下拉）。
      */
-    private void rebuildBody() {
-        EditorToolbarLayout layout = toolbarLayout();
+    private void rebuildBody(int currentLeftOffset) {
         Button modeButton =
             Button.builder(Component.translatable(jsonMode ? "htlib.screen.form" : "htlib.screen.json"), b -> {
                 jsonMode = !jsonMode;
                 rebuild();
-            }).bounds(layout.modeX(), 4, layout.modeWidth(), 14).build();
+            }).bounds(currentLeftOffset, 4, MODE_BUTTON_WIDTH, 14).build();
         addRenderableWidget(modeButton);
+        currentLeftOffset += MODE_BUTTON_WIDTH + TOOLBAR_GAP;
 
-        EditBox datapackNameField = new EditBox(this.font, layout.packX(), 4, layout.packWidth(), 13, Component.translatable("htlib.screen.path"));
+        int actionsWidth = actionsWidth();
+        int actionsX = this.width - ViewerStyle.LEFT_PADDING - actionsWidth;
+        int nameFieldsWidth = actionsX - currentLeftOffset - 2 * TOOLBAR_GAP;
+        int packWidth = Math.min(80, Math.max(40, nameFieldsWidth / 2));
+        EditBox datapackNameField = new EditBox(this.font, currentLeftOffset, 4, packWidth, 13, Component.translatable("htlib.screen.path"));
         datapackNameField.setMaxLength(EditorPacketLimits.MAX_ID_LENGTH);
         datapackNameField.setValue(datapackName);
         datapackNameField.setSuggestion(StringUtils.isBlank(datapackName) ? I18n.get("htlib.screen.datapack_hint") : null);
@@ -161,8 +169,9 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             datapackNameField.setSuggestion(StringUtils.isBlank(s) ? I18n.get("htlib.screen.datapack_hint") : null);
         });
         addRenderableWidget(datapackNameField);
+        currentLeftOffset += packWidth + TOOLBAR_GAP;
 
-        EditBox registryNameField = new EditBox(this.font, layout.resourceX(), 4, layout.resourceWidth(), 13, Component.translatable("htlib.screen.path"));
+        EditBox registryNameField = new EditBox(this.font, currentLeftOffset, 4, nameFieldsWidth - packWidth, 13, Component.translatable("htlib.screen.path"));
         registryNameField.setMaxLength(EditorPacketLimits.MAX_ID_LENGTH);
         registryNameField.setValue(saveRegistryName);
         registryNameField.setSuggestion(StringUtils.isBlank(saveRegistryName) ? I18n.get("htlib.screen.path_hint") : null);
@@ -180,7 +189,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         );
         saveDropdown =
             new hungteen.htlib.client.gui.widget.codec.DropdownButton(this::addRenderableWidget, this::removeWidget,
-                I18n.get("htlib.screen.more"), layout.actionsWidth(), 14, actions, 0, index -> {
+                I18n.get("htlib.screen.more"), actionsWidth, 14, actions, 0, index -> {
                 if (index == 0) {
                     save();
                 } else if (index == 1) {
@@ -190,7 +199,7 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
                 }
             });
         saveDropdown.addToScreen(this.font);
-        saveDropdown.setPosition(layout.actionsX(), 4);
+        saveDropdown.setPosition(actionsX, 4);
     }
 
     /**
@@ -200,11 +209,8 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
      * 单纯用 {@code JsonOps} 解析会把它当内联对象，报出误导性的字段错误。</p>
      */
     private void validate() {
-        if (!canSubmitForm()) {
-            return;
-        }
-        String json = collectJsonText();
-        if (!fitsPacket(json)) {
+        String json = jsonForSubmit();
+        if (json == null) {
             return;
         }
         UUID requestId = EditorResultCache.await(EditorResultPacket.ACTION_VALIDATE, this::onValidateResult);
@@ -284,21 +290,13 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
             setStatusFor(I18n.get("htlib.screen.missing_path"), ViewerStyle.INFO_TIMEOUT_MS);
             return;
         }
-        if (!ResourceLocation.isValidResourceLocation(this.saveRegistryName)) {
-            setStatusFor(I18n.get("htlib.screen.invalid_registry_name"), ViewerStyle.INFO_TIMEOUT_MS);
-            return;
-        }
         ResourceLocation registryName = ResourceLocation.tryParse(this.saveRegistryName);
-        ResourceLocation registryType = ResourceLocation.tryParse(this.selected);
-        if (ObjectUtils.anyNull(registryName, registryType)) {
+        if (registryName == null || !ResourceLocation.isValidResourceLocation(this.selected)) {
             setStatusFor(I18n.get("htlib.screen.invalid_registry_name"), ViewerStyle.INFO_TIMEOUT_MS);
             return;
         }
-        if (!canSubmitForm()) {
-            return;
-        }
-        String json = collectJsonText();
-        if (!fitsPacket(json)) {
+        String json = jsonForSubmit();
+        if (json == null) {
             return;
         }
         UUID requestId = EditorResultCache.await(EditorResultPacket.ACTION_SAVE, this::onSaveResult);
@@ -306,20 +304,17 @@ public class CodecEditorScreen extends CodecScreen implements EditorHost {
         NetworkHandler.sendToServer(new SaveDataPacket(requestId, selected, datapackName, registryName.toString(), json));
     }
 
-    private boolean canSubmitForm() {
+    private String jsonForSubmit() {
         if (formRoot == null || formRoot.hasErrors()) {
             setStatusFor(I18n.get("htlib.screen.invalid_form"), ViewerStyle.INFO_TIMEOUT_MS);
-            return false;
+            return null;
         }
-        return true;
-    }
-
-    private boolean fitsPacket(String json) {
+        String json = collectJsonText();
         if (!EditorPacketLimits.fitsJson(json)) {
             setStatusFor(I18n.get("htlib.screen.json_too_large", EditorPacketLimits.MAX_JSON_BYTES), ViewerStyle.INFO_TIMEOUT_MS);
-            return false;
+            return null;
         }
-        return true;
+        return json;
     }
 
     /** 保存结果：成功给出落盘路径，失败给出原因（校验不通过 / 写入失败）。 */

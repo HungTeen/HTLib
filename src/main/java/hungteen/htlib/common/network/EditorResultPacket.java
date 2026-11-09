@@ -9,10 +9,23 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/** A response belongs to one request, even when documents or screens have changed. */
+/**
+ * 服务端 → 客户端：编辑动作的结果（保存 / 校验）。
+ *
+ * <p>{@link #action} 和 {@link #requestId} 把结果还给发起请求的那个动作，避免过期响应影响新请求；
+ * {@link #message} 在成功时是保存路径、失败时是错误原因，由界面按动作决定文案。</p>
+ *
+ * @author PangTeen
+ * @program HTLib
+ * @create 2026/9/12
+ **/
 public class EditorResultPacket {
+
+    /** {@link SaveDataPacket} 的结果。 */
     public static final String ACTION_SAVE = "save";
+    /** {@link ValidateDataPacket} 的结果。 */
     public static final String ACTION_VALIDATE = "validate";
+
     private final String action;
     private final UUID requestId;
     private final boolean success;

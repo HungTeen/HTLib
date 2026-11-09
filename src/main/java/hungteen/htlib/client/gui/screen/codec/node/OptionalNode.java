@@ -64,7 +64,7 @@ public final class OptionalNode extends EditorFormNode {
         return present;
     }
 
-    /** Disabling a field preserves its draft; collapse controls only visibility. */
+    /** 字段停用后保留草稿，再启用时继续编辑。 */
     public void setPresent(boolean present) {
         this.present = present;
         if (present) {

@@ -47,10 +47,12 @@ public final class RecordCodecHandler implements CodecSchemaHandler {
 
         DataSchema schema = new DataSchema(SchemaType.RECORD);
 
-        // fieldOf(...).xmap(...) is a one-field object, not the field's inner value schema.
+        // fieldOf(...).xmap(...) 仍然编码成包含一个字段的对象。
         if (codec instanceof MapCodec<?> mapCodec && CodecUnwrapper.isFieldCodec(codec)) {
             FieldSchema field = FieldParser.parse(mapCodec, context);
-            if (field != null) schema.fields().add(field);
+            if (field != null) {
+                schema.fields().add(field);
+            }
             return schema;
         }
 

@@ -42,7 +42,6 @@ public final class EntrySchemaCache {
         acquire(registryName, onSchema, name -> NetworkHandler.sendToServer(new RequestEntrySchemaPacket(name)));
     }
 
-    /** The cache policy is independent of the network transport. */
     static void acquire(String registryName, Consumer<String> onSchema, Consumer<String> requestSender) {
         String cached = SCHEMAS.get(registryName);
         if (cached != null) {

@@ -1,11 +1,11 @@
 package hungteen.htlib.common.network;
 
-import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import hungteen.htlib.client.gui.screen.codec.CodecScreen;
+import hungteen.htlib.client.gui.widget.codec.EntrySchemaCache;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

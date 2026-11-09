@@ -25,7 +25,6 @@ public final class HolderNode extends EditorFormNode {
 
     /** 可补全的注册表条目名（客户端本地枚举）。 */
     private List<String> entries = List.of();
-    /** The inline draft belongs to the model so validation and saves never depend on a render frame. */
     private EditorFormNode inlineNode;
 
     HolderNode(JsonObject schema, String label, JsonElement value) {
@@ -74,13 +73,13 @@ public final class HolderNode extends EditorFormNode {
             ? schema.getAsJsonObject(SchemaKeys.REGISTRY).get(SchemaKeys.REGISTRY).getAsString() : null;
     }
 
-    /** Recreated widgets reattach to the existing draft, including invalid entries not representable as JSON. */
-    public EditorFormNode bindInlineNode(EditorFormNode inlineNode) {
-        if (this.inlineNode == null) {
-            this.inlineNode = inlineNode;
+    /** 界面重建时复用内联草稿，包括还不能收集成 JSON 的重复键。 */
+    public EditorFormNode inlineNode(JsonObject entrySchema) {
+        if (inlineNode == null) {
+            inlineNode = EditorFormNode.root(entrySchema);
             loadInlineValue();
         }
-        return this.inlineNode;
+        return inlineNode;
     }
 
     private boolean hasActiveInlineNode() {

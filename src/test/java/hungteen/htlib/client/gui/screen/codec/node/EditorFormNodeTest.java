@@ -7,6 +7,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,8 +59,28 @@ class EditorFormNodeTest {
         assertEquals("9223372036854775807", node.collect().toString());
         node.setValueText("9007199254740993");
         assertEquals("9007199254740993", node.collect().toString());
+        node.setValueText("-9223372036854775808");
+        assertEquals("-9223372036854775808", node.collect().toString());
         node.load(null);
         assertEquals("9223372036854775807", node.collect().toString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"INT,abc", "INT,1.5", "INT,-", "BYTE,256", "SHORT,32768", "INT,2147483648",
+        "LONG,9223372036854775808", "DOUBLE,NaN", "FLOAT,Infinity", "DOUBLE,1e400", "FLOAT,1e40"})
+    void invalidNumbersRemainEditableAndBlockSubmission(String type, String input) {
+        JsonObject schema = new JsonObject();
+        schema.addProperty("type", type);
+        EditorFormNode node = EditorFormNode.root(schema);
+        node.setValueText(input);
+        assertTrue(node.hasErrors());
+        assertEquals(input, node.valueText());
+        assertTrue(node.collect().getAsJsonPrimitive().isString());
+        String corrected = type.equals("FLOAT") || type.equals("DOUBLE") ? "1.25" : "1";
+        node.setValueText(corrected);
+        assertFalse(node.hasErrors());
+        assertTrue(node.collect().getAsJsonPrimitive().isNumber());
+        assertEquals(corrected, node.collect().toString());
     }
 
     @Test
@@ -150,10 +172,10 @@ class EditorFormNodeTest {
             """));
         root.load(json("{\"holder\":{}}"));
         HolderNode holder = (HolderNode) root.children().get(0);
-        MapNode inline = (MapNode) EditorFormNode.root(schema("""
+        JsonObject entrySchema = schema("""
             {"type":"MAP","key":{"type":"STRING"},"value":{"type":"STRING"}}
-            """));
-        holder.bindInlineNode(inline);
+            """);
+        MapNode inline = (MapNode) holder.inlineNode(entrySchema);
         inline.addEntry();
         inline.addEntry();
         inline.keys().get(0).setValueText("duplicate");
@@ -161,9 +183,7 @@ class EditorFormNodeTest {
         inline.values().get(0).setValueText("one");
         inline.values().get(1).setValueText("two");
         assertTrue(root.hasErrors(), "Inline map duplicates must be rejected before collection overwrites a key");
-        EditorFormNode reattached = holder.bindInlineNode(EditorFormNode.root(schema("""
-            {"type":"MAP","key":{"type":"STRING"},"value":{"type":"STRING"}}
-            """)));
+        EditorFormNode reattached = holder.inlineNode(entrySchema);
         assertSame(inline, reattached, "Widget recreation must reattach the complete draft, not an old JSON snapshot");
         assertEquals(2, ((MapNode) reattached).keys().size());
         assertEquals("one", ((MapNode) reattached).values().get(0).valueText());

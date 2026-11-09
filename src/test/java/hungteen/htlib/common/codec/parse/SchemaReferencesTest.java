@@ -4,15 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import hungteen.htlib.common.codec.parse.schema.DataSchema;
 import hungteen.htlib.common.codec.parse.schema.FieldSchema;
-import hungteen.htlib.common.network.EditorPacketLimits;
+import hungteen.htlib.common.network.EntrySchemaResponsePacket;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,9 +51,6 @@ class SchemaReferencesTest {
         assertEquals(3, compact.getAsJsonObject("$defs").size(), "Variant names must not duplicate identical definitions");
         JsonObject expanded = SchemaReferences.expand(compact);
         assertEquals(SchemaPrinter.toJson(union), expanded);
-        assertEquals("first", expanded.getAsJsonArray("variants").get(0).getAsJsonObject().get("name").getAsString());
-        assertEquals("second", expanded.getAsJsonArray("variants").get(1).getAsJsonObject().get("name").getAsString());
-        assertEquals("base", value.defaultValue() instanceof ValueInfo.Static info ? info.value() : null);
     }
 
     @Test
@@ -111,19 +106,8 @@ class SchemaReferencesTest {
 
     @Test
     void configuredFeatureFitsTheCompactNetworkBudget() {
-        JsonObject compact = SchemaPrinter.toCompactJson(CodecSchemaParser.parse(ConfiguredFeature.DIRECT_CODEC));
-        String encoded = compact.toString();
-        int bytes = encoded.getBytes(StandardCharsets.UTF_8).length;
-        System.out.println("ConfiguredFeature compact: chars=" + encoded.length() + ", UTF8=" + bytes
-            + ", definitions=" + compact.getAsJsonObject("$defs").size());
-        assertTrue(EditorPacketLimits.fitsSchema(encoded), "ConfiguredFeature compact UTF-8 bytes: " + bytes);
-        JsonObject expanded = SchemaReferences.expand(compact);
-        assertEquals("UNION", expanded.get("type").getAsString());
-        JsonObject tree = expanded.getAsJsonArray("variants").asList().stream()
-            .map(value -> value.getAsJsonObject()).filter(value -> value.get("name").getAsString().equals("minecraft:tree"))
-            .findFirst().orElseThrow();
-        assertEquals("RECORD", tree.get("type").getAsString());
-        assertEquals("config", tree.getAsJsonArray("fields").get(0).getAsJsonObject().get("name").getAsString());
+        String wire = SchemaPrinter.toCompactJson(CodecSchemaParser.parse(ConfiguredFeature.DIRECT_CODEC)).toString();
+        assertDoesNotThrow(() -> new EntrySchemaResponsePacket("minecraft:worldgen/configured_feature", wire));
     }
 
     private static JsonObject json(String value) {

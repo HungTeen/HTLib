@@ -1,7 +1,7 @@
 package hungteen.htlib.common.network;
 
 import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
+import hungteen.htlib.HTLib;
 import hungteen.htlib.common.codec.parse.CodecEditorManager;
 import hungteen.htlib.common.codec.parse.SchemaRegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -47,14 +47,17 @@ public class RequestEntrySchemaPacket {
             try {
                 String json = SchemaRegistryAccess.withAccess(sender.server.registryAccess(),
                     () -> CodecEditorManager.getCompactSchemaJson(message.registryName).map(JsonObject::toString).orElse(""));
-                EntrySchemaResponsePacket reply = json.isEmpty()
-                    ? EntrySchemaResponsePacket.failure(message.registryName, "未知的数据包注册表")
-                    : !EditorPacketLimits.fitsSchema(json)
-                        ? EntrySchemaResponsePacket.failure(message.registryName, "Schema 超出网络大小限制")
-                        : new EntrySchemaResponsePacket(message.registryName, json);
+                EntrySchemaResponsePacket reply;
+                if (json.isEmpty()) {
+                    reply = EntrySchemaResponsePacket.failure(message.registryName, "未知的数据包注册表");
+                } else if (!EditorPacketLimits.fitsSchema(json)) {
+                    reply = EntrySchemaResponsePacket.failure(message.registryName, "Schema 超出网络大小限制");
+                } else {
+                    reply = new EntrySchemaResponsePacket(message.registryName, json);
+                }
                 NetworkHandler.sendToClient(sender, reply);
             } catch (RuntimeException ex) {
-                LogUtils.getLogger().warn("Could not generate editor schema for {}", message.registryName, ex);
+                HTLib.getLogger().warn("Could not generate editor schema for {}", message.registryName, ex);
                 NetworkHandler.sendToClient(sender, EntrySchemaResponsePacket.failure(message.registryName, ex.getMessage()));
             }
         });

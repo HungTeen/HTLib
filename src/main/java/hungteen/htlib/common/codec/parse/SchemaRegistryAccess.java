@@ -15,9 +15,6 @@ public final class SchemaRegistryAccess {
 
     private static final ThreadLocal<RegistryAccess> ACCESS = new ThreadLocal<>();
 
-    private SchemaRegistryAccess() {
-    }
-
     /**
      * 设置当前服务端的 RegistryAccess（每次 schema 请求前刷新）。
      */
@@ -36,7 +33,7 @@ public final class SchemaRegistryAccess {
         return ACCESS.get();
     }
 
-    /** Scope registry lookup to one parse, restoring any outer context even when parsing fails. */
+    /** 本次解析结束后恢复外层上下文，即使解析抛出异常。 */
     public static <T> T withAccess(RegistryAccess registryAccess, Supplier<T> action) {
         RegistryAccess previous = get();
         set(registryAccess);

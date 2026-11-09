@@ -9,8 +9,15 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/** Client requests identify a pack and resource; only the server derives their file path. */
+/**
+ * 客户端 → 服务端：保存编辑结果，路径由服务端根据数据包名和资源 ID 推导。
+ *
+ * @author PangTeen
+ * @program: HTLib
+ * @create 2026/8/10 14:07
+ **/
 public class SaveDataPacket {
+
     private final UUID requestId;
     private final String registryName;
     private final String datapackName;
@@ -42,7 +49,9 @@ public class SaveDataPacket {
         public static void onMessage(SaveDataPacket message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 ServerPlayer sender = ctx.get().getSender();
-                if (sender == null) return;
+                if (sender == null) {
+                    return;
+                }
                 if (!sender.hasPermissions(2)) {
                     reply(sender, message.requestId, false, "需要权限等级 2 才能编辑数据包");
                     return;
@@ -56,6 +65,7 @@ public class SaveDataPacket {
             ctx.get().setPacketHandled(true);
         }
 
+        /** 结果同时写状态栏（响应包）与聊天栏（界面已关闭时仍能看到路径 / 原因）。 */
         private static void reply(ServerPlayer sender, UUID requestId, boolean success, String message) {
             String detail = EditorPacketLimits.resultMessage(message);
             NetworkHandler.sendToClient(sender, new EditorResultPacket(EditorResultPacket.ACTION_SAVE, requestId, success, detail));

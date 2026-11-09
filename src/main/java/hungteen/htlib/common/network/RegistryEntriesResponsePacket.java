@@ -2,9 +2,9 @@ package hungteen.htlib.common.network;
 
 import hungteen.htlib.client.gui.widget.codec.RegistryEntriesCache;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;

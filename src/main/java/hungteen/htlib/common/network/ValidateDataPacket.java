@@ -2,14 +2,25 @@ package hungteen.htlib.common.network;
 
 import hungteen.htlib.common.codec.parse.CodecEditorManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-/** Validate against the server's full registries, without writing a file. */
+/**
+ * 客户端 → 服务端：校验编辑结果是否符合注册表 codec，结果由 {@link EditorResultPacket} 回传。
+ *
+ * <p>Holder 引用需要 {@code RegistryOps} 才能解析，而客户端注册表不全（见
+ * {@link CodecEditorManager#validate}），故校验放在服务端做。</p>
+ *
+ * @author PangTeen
+ * @program HTLib
+ * @create 2026/9/12
+ **/
 public class ValidateDataPacket {
+
     private final UUID requestId;
     private final String registryName;
     private final String json;
@@ -32,8 +43,10 @@ public class ValidateDataPacket {
 
     public static void onMessage(ValidateDataPacket message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            var sender = ctx.get().getSender();
-            if (sender == null) return;
+            ServerPlayer sender = ctx.get().getSender();
+            if (sender == null) {
+                return;
+            }
             Optional<String> error = sender.hasPermissions(2)
                 ? CodecEditorManager.validate(sender.server, message.registryName, message.json)
                 : Optional.of("需要权限等级 2 才能编辑数据包");

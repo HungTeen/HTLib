@@ -3,12 +3,12 @@ package hungteen.htlib.client.gui.widget.codec;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import hungteen.htlib.common.codec.parse.SchemaReferences;
 import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.screen.codec.node.EditorFormNode;
 import hungteen.htlib.client.gui.screen.codec.node.HolderNode;
 import hungteen.htlib.common.codec.parse.CodecEditorManager;
+import hungteen.htlib.common.codec.parse.SchemaReferences;
 import hungteen.htlib.common.codec.parse.SchemaType;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -209,7 +209,7 @@ public final class HolderWidget extends EditorWidget {
         }
         try {
             entrySchema = SchemaReferences.expand(JsonParser.parseString(schemaJson).getAsJsonObject());
-            inlineNode = node.bindInlineNode(EditorFormNode.root(entrySchema));
+            inlineNode = node.inlineNode(entrySchema);
             host.relayout();
         } catch (Exception ignored) {
         }

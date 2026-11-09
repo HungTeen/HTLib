@@ -84,7 +84,7 @@ public class IDECommand {
             return writeSchemaJson(source, registryName, schema) ? 1 : 0;
         }
         String text = SchemaPrinter.print(schema);
-        sendChunks(source, "=== " + registryName + " 格式 ===", text);
+        sendChunks(source, "=== " + registryName + " 格式 ===", text, MAX_CHAT_LINES);
         return 1;
     }
 
@@ -151,7 +151,7 @@ public class IDECommand {
             return 0;
         }
         DataSchema schema = CodecSchemaParser.parse(codec);
-        sendChunks(source, "=== " + registryName + " 类型 " + type + " 格式 ===", SchemaPrinter.print(schema));
+        sendChunks(source, "=== " + registryName + " 类型 " + type + " 格式 ===", SchemaPrinter.print(schema), MAX_CHAT_LINES);
         return 1;
     }
 
@@ -205,9 +205,13 @@ public class IDECommand {
     private static final int MAX_LINE_LENGTH = 80;
 
     private static void sendChunks(CommandSourceStack source, String title, String text) {
+        sendChunks(source, title, text, Integer.MAX_VALUE);
+    }
+
+    private static void sendChunks(CommandSourceStack source, String title, String text, int maxLines) {
         source.sendSuccess(() -> Component.literal(title), false);
-        List<String> lines = text.lines().limit(MAX_CHAT_LINES + 1L).toList();
-        int shown = Math.min(MAX_CHAT_LINES, lines.size());
+        List<String> lines = text.lines().limit(maxLines + 1L).toList();
+        int shown = Math.min(maxLines, lines.size());
         for (int i = 0; i < shown; i += CHUNK_LINES) {
             int end = Math.min(i + CHUNK_LINES, shown);
             StringBuilder page = new StringBuilder();
@@ -217,7 +221,7 @@ public class IDECommand {
             }
             source.sendSuccess(() -> Component.literal(page.toString()), false);
         }
-        if (lines.size() > MAX_CHAT_LINES) {
+        if (lines.size() > maxLines) {
             source.sendSuccess(() -> Component.literal(
                 "输出过长，已截断。可用 /htlib ide schema <注册表> json 导出完整结构。"), false);
         }

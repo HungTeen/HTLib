@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
@@ -30,7 +29,7 @@ public final class UnionNode extends EditorFormNode {
 
     private List<String> unionNames = List.of();
     private JsonArray variantSchemas = new JsonArray();
-    /** Only visited branches own a form; their drafts survive switching away. */
+    /** 只创建切换到的分支，并保留各自的草稿。 */
     private final Map<Integer, EditorFormNode> unionVariants = new HashMap<>();
     private int unionIndex = 0;
 
@@ -44,24 +43,17 @@ public final class UnionNode extends EditorFormNode {
             return;
         }
         variantSchemas = schema.getAsJsonArray(SchemaKeys.VARIANTS);
-        this.unionNames = unionNames(schema);
+        // 只读取当前层的名称。用整个 schema 作缓存键会递归计算共享子结构的哈希。
+        List<String> names = new ArrayList<>();
+        for (JsonElement variant : variantSchemas) {
+            JsonObject entry = variant.getAsJsonObject();
+            names.add(entry.has(SchemaKeys.NAME) ? entry.get(SchemaKeys.NAME).getAsString() : "分支" + names.size());
+        }
+        unionNames = List.copyOf(names);
         if (!variantSchemas.isEmpty()) {
             unionIndex = matchUnionVariant(value);
             selectedVariant().load(value);
         }
-    }
-
-    /** Read only immediate names: JsonObject hash/equals would unfold a shared schema DAG. */
-    private static List<String> unionNames(JsonObject schema) {
-        List<String> built = new ArrayList<>();
-        if (schema.has(SchemaKeys.VARIANTS)) {
-            for (JsonElement v : schema.getAsJsonArray(SchemaKeys.VARIANTS)) {
-                JsonObject vo = v.getAsJsonObject();
-                built.add(vo.has(SchemaKeys.NAME) ? vo.get(SchemaKeys.NAME).getAsString()
-                    : ("分支" + built.size()));
-            }
-        }
-        return List.copyOf(built);
     }
 
     @Override
@@ -110,7 +102,8 @@ public final class UnionNode extends EditorFormNode {
 
     @Override
     protected List<EditorFormNode> validationChildren() {
-        return selectedVariant() == null ? List.of() : List.of(selectedVariant());
+        EditorFormNode selected = selectedVariant();
+        return selected == null ? List.of() : List.of(selected);
     }
 
     @Override
@@ -120,12 +113,9 @@ public final class UnionNode extends EditorFormNode {
             return JsonNull.INSTANCE;
         }
         JsonElement inner = selected.collect();
-        String variantKey = schema.has(SchemaKeys.VARIANT_KEY)
-            ? schema.get(SchemaKeys.VARIANT_KEY).getAsString() : DEFAULT_VARIANT_KEY;
-        String variantName = unionIndex < unionNames.size() ? unionNames.get(unionIndex) : "";
         // 用 {分派键: 变体名, ...变体字段} 组装，符合 dispatch codec 的 JSON 结构。
         JsonObject obj = new JsonObject();
-        obj.add(variantKey, new JsonPrimitive(variantName));
+        obj.addProperty(discriminatorKey(), currentVariantName());
         if (inner.isJsonObject()) {
             for (var e : inner.getAsJsonObject().entrySet()) {
                 if (e.getValue() != null && !e.getValue().isJsonNull()) {
