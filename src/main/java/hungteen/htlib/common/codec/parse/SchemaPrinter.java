@@ -6,15 +6,20 @@ import hungteen.htlib.common.codec.parse.schema.DataSchema;
 import hungteen.htlib.common.codec.parse.schema.EnumValueSchema;
 import hungteen.htlib.common.codec.parse.schema.FieldSchema;
 
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * 把 {@link DataSchema} 树输出成可读文本 / JSON 格式。
  *
- * <p>两种输出：</p>
+ * <p>三种输出：</p>
  * <ul>
  *   <li>{@link #print(DataSchema)}：缩进文本，适合聊天框直接展示（字段、类型、必填、默认值、范围、枚举、注册表引用）；</li>
  *   <li>{@link #toJson(DataSchema)}：JSON 结构，适合写文件供外部工具解析（如文档生成、编辑器 schema）。</li>
+ *   <li>{@link #toCompactJson(DataSchema)}：网络传输用 JSON，重复子结构以引用表示。</li>
  * </ul>
  *
  * @author PangTeen
@@ -22,6 +27,11 @@ import java.util.List;
  * @create 2026/8/10 12:05
  **/
 public final class SchemaPrinter {
+
+    // 网络输出复用同一节点，也合并结构相同、仅分支名不同的浅拷贝。
+    private final JsonObject definitions = new JsonObject();
+    private final Map<DataSchema, String> ids = new IdentityHashMap<>();
+    private final Map<String, String> equivalentDefinitions = new HashMap<>();
 
     private SchemaPrinter() {
     }
@@ -169,7 +179,43 @@ public final class SchemaPrinter {
         return root;
     }
 
+    /** 网络格式中每个共享子结构只输出一次。 */
+    public static JsonObject toCompactJson(DataSchema schema) {
+        SchemaPrinter printer = new SchemaPrinter();
+        JsonObject root = new JsonObject();
+        printer.appendReference(schema, root);
+        root.add("$defs", printer.definitions);
+        return root;
+    }
+
+    private void appendReference(DataSchema node, JsonObject ref) {
+        String id = ids.get(node);
+        if (id == null) {
+            if (ids.containsKey(node)) {
+                throw new IllegalArgumentException("Cyclic schema graph");
+            }
+            id = "s" + ids.size();
+            ids.put(node, null); // 正在生成此定义。
+            JsonObject definition = new JsonObject();
+            appendJsonNode(node, definition, this::appendReference);
+            // 子节点已经是引用，此处只比较当前层的定义。
+            String existing = equivalentDefinitions.putIfAbsent(definition.toString(), id);
+            if (existing == null) {
+                definitions.add(id, definition);
+            } else {
+                id = existing;
+            }
+            ids.put(node, id);
+        }
+        ref.addProperty("$ref", "#/$defs/" + id);
+    }
+
     private static void appendJsonNode(DataSchema schema, JsonObject obj) {
+        appendJsonNode(schema, obj, SchemaPrinter::appendJsonNode);
+    }
+
+    private static void appendJsonNode(DataSchema schema, JsonObject obj,
+                                       BiConsumer<DataSchema, JsonObject> appendChild) {
 
         if (schema == null) {
             obj.addProperty("type", "null");
@@ -209,7 +255,7 @@ public final class SchemaPrinter {
                     fieldObj.addProperty("path", field.path());
                     appendJsonDefault(fieldObj, field.defaultValue());
                     JsonObject fieldSchema = new JsonObject();
-                    appendJsonNode(field.schema(), fieldSchema);
+                    appendChild.accept(field.schema(), fieldSchema);
                     // 默认值与必填标记同时挂到字段 schema 上，客户端节点才能读到
                     appendJsonDefault(fieldSchema, field.defaultValue());
                     fieldSchema.addProperty("required", field.required());
@@ -220,15 +266,15 @@ public final class SchemaPrinter {
             }
             case LIST, SET, OPTIONAL -> {
                 JsonObject element = new JsonObject();
-                appendJsonNode(schema.element(), element);
+                appendChild.accept(schema.element(), element);
                 obj.add("element", element);
             }
             case MAP -> {
                 JsonObject key = new JsonObject();
-                appendJsonNode(schema.key(), key);
+                appendChild.accept(schema.key(), key);
                 obj.add("key", key);
                 JsonObject value = new JsonObject();
-                appendJsonNode(schema.element(), value);
+                appendChild.accept(schema.element(), value);
                 obj.add("value", value);
             }
             case ENUM -> {
@@ -247,7 +293,7 @@ public final class SchemaPrinter {
                 }
                 if (schema.key() != null) {
                     JsonObject key = new JsonObject();
-                    appendJsonNode(schema.key(), key);
+                    appendChild.accept(schema.key(), key);
                     obj.add("typeKey", key);
                 }
                 JsonArray variants = new JsonArray();
@@ -256,7 +302,7 @@ public final class SchemaPrinter {
                     if (variant.variantName() != null) {
                         variantObj.addProperty("name", variant.variantName());
                     }
-                    appendJsonNode(variant, variantObj);
+                    appendChild.accept(variant, variantObj);
                     variants.add(variantObj);
                 }
                 obj.add("variants", variants);

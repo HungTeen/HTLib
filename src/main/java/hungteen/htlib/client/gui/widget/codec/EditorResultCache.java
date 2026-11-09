@@ -1,6 +1,7 @@
 package hungteen.htlib.client.gui.widget.codec;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
@@ -16,14 +17,19 @@ import java.util.function.BiConsumer;
  **/
 public final class EditorResultCache {
 
-    private static final Map<String, BiConsumer<Boolean, String>> LISTENERS = new ConcurrentHashMap<>();
+    private record Pending(UUID requestId, BiConsumer<Boolean, String> callback) {
+    }
+
+    private static final Map<String, Pending> LISTENERS = new ConcurrentHashMap<>();
 
     private EditorResultCache() {
     }
 
     /** 挂上某动作的待响应回调（发请求前调用）。 */
-    public static void await(String action, BiConsumer<Boolean, String> onResult) {
-        LISTENERS.put(action, onResult);
+    public static UUID await(String action, BiConsumer<Boolean, String> onResult) {
+        UUID requestId = UUID.randomUUID();
+        LISTENERS.put(action, new Pending(requestId, onResult));
+        return requestId;
     }
 
     /** 移除某动作的待响应回调（界面关闭时调用）。 */
@@ -32,10 +38,10 @@ public final class EditorResultCache {
     }
 
     /** 响应包回调：通知对应动作的等待者（结果一次性）。 */
-    public static void complete(String action, boolean success, String message) {
-        BiConsumer<Boolean, String> listener = LISTENERS.remove(action);
-        if (listener != null) {
-            listener.accept(success, message);
+    public static void complete(String action, UUID requestId, boolean success, String message) {
+        Pending pending = LISTENERS.get(action);
+        if (pending != null && pending.requestId().equals(requestId) && LISTENERS.remove(action, pending)) {
+            pending.callback().accept(success, message);
         }
     }
 }

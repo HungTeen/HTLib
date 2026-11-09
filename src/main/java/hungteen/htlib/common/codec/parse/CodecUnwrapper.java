@@ -474,11 +474,11 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(root);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = unwrap(stack.removeFirst());
 
             if (current == null || !seen.add(current)) {
                 continue;
@@ -488,22 +488,39 @@ public final class CodecUnwrapper {
                 return current;
             }
 
-            for (Field field : ReflectionUtil.fields(current.getClass())) {
-
-                try {
-
-                    Object value = field.get(current);
-
-                    if (value != null && !isTerminal(value)) {
-                        stack.push(value);
-                    }
-
-                } catch (Throwable ignored) {
-                }
+            if (isCodecAdapter(current)) {
+                addAdapterFields(current, stack);
             }
         }
 
         return null;
+    }
+
+    /** Either、Pair 等容器本身就是结构，不能把其中一个元素当成外层 codec。 */
+    private static boolean isCodecAdapter(Object value) {
+        if (value instanceof EitherCodec<?, ?> || value instanceof PairCodec<?, ?>
+            || value instanceof CompoundListCodec<?, ?>) {
+            return false;
+        }
+        return value instanceof Encoder<?> || value instanceof Decoder<?> || value instanceof MapEncoder<?>
+            || value instanceof MapDecoder<?> || value instanceof Codec.ResultFunction<?> || isLambda(value);
+    }
+
+    private static void addAdapterFields(Object source, Deque<Object> queue) {
+        for (Field field : ReflectionUtil.fields(source.getClass())) {
+            try {
+                Object value = field.get(source);
+                // 只有 Registry 自身名称查找函数捕获的注册表才描述此 codec。
+                if (value instanceof Registry<?>
+                    && !(isLambda(source) && Registry.class.isAssignableFrom(source.getClass().getNestHost()))) {
+                    continue;
+                }
+                if (value != null && !isTerminal(value)) {
+                    queue.addLast(value);
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
     }
 
     /** 是否为可被 handler 链直接解析的基础结构 codec。 */
@@ -523,7 +540,7 @@ public final class CodecUnwrapper {
             return true;
         }
 
-        if (isRecordMapCodec(codec)) {
+        if (isRecordMapCodec(codec) || codec instanceof MapCodec<?> && isFieldCodec(codec)) {
             return true;
         }
 
@@ -886,8 +903,14 @@ public final class CodecUnwrapper {
         return enumClass;
     }
 
-    /** BFS 找枚举类（枚举数组的组件类型或 Class 类型字段）。 */
+    /** 枚举类型与值取自同一来源。 */
     public static Class<?> enumClassOf(Object root) {
+        Object[] array = findEnumArray(root);
+        return array == null ? null : array.getClass().getComponentType();
+    }
+
+    /** 先定位 EnumCodec，普通转换函数也可能捕获与类型无关的枚举数组。 */
+    private static StringRepresentable.EnumCodec<?> findEnumCodec(Object root) {
 
         if (root == null) {
             return null;
@@ -897,38 +920,28 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(root);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = unwrap(stack.removeFirst());
 
             if (current == null || !seen.add(current)) {
                 continue;
             }
 
-            if (current instanceof Class<?> clazz && clazz.isEnum()) {
-                return clazz;
+            if (current instanceof StringRepresentable.EnumCodec<?> enumCodec) {
+                return enumCodec;
             }
 
-            if (current.getClass().isArray() && current.getClass().getComponentType().isEnum()) {
-
-                return current.getClass().getComponentType();
+            if (isBaseCodec(current) || !isCodecAdapter(current)) {
+                continue;
             }
 
-            for (Field field : ReflectionUtil.fields(current.getClass())) {
-
-                try {
-
-                    Object value = field.get(current);
-
-                    if (value != null && !isTerminal(value)) {
-                        stack.push(value);
-                    }
-
-                } catch (Throwable ignored) {
-                }
+            if (isLambda(current) && !isDfuObject(current.getClass().getNestHost())) {
+                continue;
             }
+            addAdapterFields(current, stack);
         }
 
         return null;
@@ -939,27 +952,10 @@ public final class CodecUnwrapper {
 
         List<EnumValueSchema> result = new ArrayList<>();
 
-        Object array = findEnumArray(root);
-
-        if (array instanceof Object[] values) {
-
+        Object[] values = findEnumArray(root);
+        if (values != null) {
             for (Object value : values) {
-
                 result.add(enumSchema(value));
-            }
-
-            if (!result.isEmpty()) {
-                return result;
-            }
-        }
-
-        Class<?> enumClass = enumClassOf(root);
-
-        if (enumClass != null) {
-
-            for (Object constant : enumClass.getEnumConstants()) {
-
-                result.add(enumSchema(constant));
             }
         }
 
@@ -1028,19 +1024,27 @@ public final class CodecUnwrapper {
     /**
      * 取 codec 声明的注册表键（HOLDER / HOLDER_SET / REGISTRY 指向的那个注册表）。
      *
-     * <p>按层深遍历对象图，优先级从高到低：</p>
+     * <p>只沿 codec 包装与其函数捕获字段按层遍历，优先级从高到低：</p>
      * <ol>
      *   <li><b>注册表引用 codec 本体</b>（{@link RegistryFileCodec} / {@link RegistryFixedCodec} /
      *       {@link HolderSetCodec}）持有的注册表键，见 {@link #holderRegistryKey}；</li>
      *   <li>对象图中捕获的 {@link Registry} 实例（如 dispatch 键 codec 捕获的类型注册表）的 {@code key()}。</li>
      * </ol>
      *
-     * <p>顺序很关键：HTLib 的条目 codec 是 {@code typeRegistry.byNameCodec().dispatch(...)} 套在
-     * 引用 codec 里，图里同时存在"外层数据包注册表"与"内层类型注册表"（如 {@code htlib:wave} 与
-     * {@code htlib:wave_type}）。若让内层先命中，schema 会把 Holder 字段写成类型注册表，
-     * 下拉框随之列出类型而非条目。</p>
+     * <p>引用 codec 先返回自身的键，不进入内联条目 codec；遇到 record/list/map/dispatch 等
+     * 实际结构时停止，内部字段的 Holder 不代表外层也是 Holder。捕获到 Registry 后也立即
+     * 返回，不遍历它的条目、缓存或其它 codec，否则无关的 Holder 会覆盖真正的注册表。</p>
      */
     public static ResourceKey<?> registryKey(Object root) {
+        RegistryReference reference = registryReference(root);
+        return reference == null ? null : reference.key();
+    }
+
+    /** 保留实际引用 codec 的键和形态，避免包装后的 HolderSet 丢失标签能力。 */
+    public record RegistryReference(ResourceKey<?> key, SchemaType type) {
+    }
+
+    public static RegistryReference registryReference(Object root) {
 
         if (root == null) {
             return null;
@@ -1048,61 +1052,35 @@ public final class CodecUnwrapper {
 
         Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
 
-        List<Object> level = new ArrayList<>();
-
-        level.add(root);
-
-        ResourceKey<?> captured = null;
-
-        while (!level.isEmpty()) {
-
-            List<Object> next = new ArrayList<>();
-
-            for (Object current : level) {
-
-                if (current == null || !seen.add(current)) {
+        Deque<Object> queue = new ArrayDeque<>();
+        queue.addLast(root);
+        while (!queue.isEmpty()) {
+            Object current = unwrap(queue.removeFirst());
+            if (current == null || !seen.add(current)) {
+                continue;
+            }
+            ResourceKey<?> key = holderRegistryKey(current);
+            if (key != null) {
+                SchemaType type = current instanceof HolderSetCodec<?> ? SchemaType.HOLDER_SET
+                    : current instanceof RegistryFixedCodec<?> ? SchemaType.REGISTRY : SchemaType.HOLDER;
+                return new RegistryReference(key, type);
+            }
+            if (current instanceof Registry<?> registry) {
+                return new RegistryReference(registry.key(), SchemaType.HOLDER);
+            }
+            if (isBaseCodec(current) || current instanceof MapCodec<?> || !isCodecAdapter(current)) {
+                continue;
+            }
+            if (isLambda(current)) {
+                Class<?> owner = current.getClass().getNestHost();
+                if (!isDfuObject(owner) && !Registry.class.isAssignableFrom(owner)) {
                     continue;
                 }
-
-                ResourceKey<?> key = holderRegistryKey(current);
-
-                if (key != null) {
-                    return key;
-                }
-
-                if (captured == null && current instanceof Registry<?> registry) {
-
-                    try {
-
-                        ResourceKey<? extends Registry<?>> registryKey = registry.key();
-
-                        if (registryKey != null) {
-                            captured = registryKey;
-                        }
-
-                    } catch (Throwable ignored) {
-                    }
-                }
-
-                for (Field field : ReflectionUtil.fields(current.getClass())) {
-
-                    try {
-
-                        Object value = field.get(current);
-
-                        if (value != null && !isTerminal(value)) {
-                            next.add(value);
-                        }
-
-                    } catch (Throwable ignored) {
-                    }
-                }
             }
-
-            level = next;
+            addAdapterFields(current, queue);
         }
 
-        return captured;
+        return null;
     }
 
     /**
@@ -1251,10 +1229,11 @@ public final class CodecUnwrapper {
         return null;
     }
 
-    /** BFS 在对象图中找第一个枚举数组（组件类型为 enum）。 */
-    private static Object findEnumArray(Object root) {
+    /** 在已识别的枚举 codec 中找枚举常量。 */
+    private static Object[] findEnumArray(Object root) {
 
-        if (root == null) {
+        StringRepresentable.EnumCodec<?> source = findEnumCodec(root);
+        if (source == null) {
             return null;
         }
 
@@ -1262,33 +1241,26 @@ public final class CodecUnwrapper {
 
         Deque<Object> stack = new ArrayDeque<>();
 
-        stack.push(root);
+        stack.addLast(source);
 
         while (!stack.isEmpty()) {
 
-            Object current = stack.pop();
+            Object current = stack.removeFirst();
 
             if (current == null || !seen.add(current)) {
                 continue;
             }
 
-            if (current.getClass().isArray() && current.getClass().getComponentType().isEnum()) {
-
-                return current;
+            if (current instanceof Object[] values && values.getClass().getComponentType().isEnum()) {
+                return values;
             }
 
-            for (Field field : ReflectionUtil.fields(current.getClass())) {
+            if (current instanceof Class<?> clazz && clazz.isEnum()) {
+                return clazz.getEnumConstants();
+            }
 
-                try {
-
-                    Object value = field.get(current);
-
-                    if (value != null && !isTerminal(value)) {
-                        stack.push(value);
-                    }
-
-                } catch (Throwable ignored) {
-                }
+            if (!isBaseCodec(current) && isCodecAdapter(current)) {
+                addAdapterFields(current, stack);
             }
         }
 

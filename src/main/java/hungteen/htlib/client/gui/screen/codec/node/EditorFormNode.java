@@ -3,6 +3,7 @@ package hungteen.htlib.client.gui.screen.codec.node;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.SchemaTooltip;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
@@ -158,6 +159,20 @@ public abstract class EditorFormNode {
     protected void validateValue() {
     }
 
+    /** 收集 JSON 前校验当前分支的草稿，包括无法保存在 JSON 对象中的重复键。 */
+    public final boolean hasErrors() {
+        validateValue();
+        boolean result = invalid;
+        for (EditorFormNode child : validationChildren()) {
+            result |= child.hasErrors();
+        }
+        return result;
+    }
+
+    protected List<EditorFormNode> validationChildren() {
+        return List.of();
+    }
+
     /** 该节点是否"可选且当前未启用"（RECORD 收集时省略键）。 */
     public boolean isOptionalAndAbsent() {
         return false;
@@ -285,12 +300,7 @@ public abstract class EditorFormNode {
             String text = d.getAsString();
             return switch (typeOf(schema)) {
                 case BOOLEAN -> new com.google.gson.JsonPrimitive(Boolean.parseBoolean(text));
-                case BYTE -> new com.google.gson.JsonPrimitive((byte)parseDouble(text));
-                case SHORT -> new com.google.gson.JsonPrimitive((short)parseDouble(text));
-                case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));
-                case LONG -> new com.google.gson.JsonPrimitive((long)parseDouble(text));
-                case FLOAT -> new com.google.gson.JsonPrimitive((float)parseDouble(text));
-                case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
+                case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> text.isEmpty() ? d : parseInput(text, typeOf(schema));
                 case STRING, RESOURCE_LOCATION, COMPONENT, ENUM, HOLDER, HOLDER_SET, REGISTRY, UNKNOWN ->
                     new com.google.gson.JsonPrimitive(text);
                 case RECORD, LIST, SET, MAP, OPTIONAL, UNION, EITHER -> parseJsonOrNull(text);
@@ -308,26 +318,29 @@ public abstract class EditorFormNode {
     }
 
     protected static JsonElement parseInput(String text, SchemaType type) {
-        if (text == null || text.isEmpty()) {
-            // 啥也没有
+        if (text == null || (text.isEmpty() && type != SchemaType.STRING)) {
             return JsonNull.INSTANCE;
         }
-        return switch (type) {
-            case INT -> new com.google.gson.JsonPrimitive((int)parseDouble(text));
-            case LONG -> new com.google.gson.JsonPrimitive((long)parseDouble(text));
-            case FLOAT -> new com.google.gson.JsonPrimitive((float)parseDouble(text));
-            case DOUBLE -> new com.google.gson.JsonPrimitive(parseDouble(text));
-            case BYTE -> new com.google.gson.JsonPrimitive((byte)parseDouble(text));
-            case SHORT -> new com.google.gson.JsonPrimitive((short)parseDouble(text));
-            default -> new com.google.gson.JsonPrimitive(text);
-        };
-    }
-
-    protected static double parseDouble(String text) {
+        String number = text.trim();
         try {
-            return Double.parseDouble(text.trim());
+            return switch (type) {
+                case BYTE -> new JsonPrimitive(Byte.parseByte(number));
+                case SHORT -> new JsonPrimitive(Short.parseShort(number));
+                case INT -> new JsonPrimitive(Integer.parseInt(number));
+                case LONG -> new JsonPrimitive(Long.parseLong(number));
+                case FLOAT -> {
+                    float value = Float.parseFloat(number);
+                    yield Float.isFinite(value) ? new JsonPrimitive(value) : new JsonPrimitive(text);
+                }
+                case DOUBLE -> {
+                    double value = Double.parseDouble(number);
+                    yield Double.isFinite(value) ? new JsonPrimitive(value) : new JsonPrimitive(text);
+                }
+                default -> new JsonPrimitive(text);
+            };
         } catch (NumberFormatException e) {
-            return 0;
+            // 保留未写完或越界的输入，便于在表单中继续修改。
+            return new JsonPrimitive(text);
         }
     }
 }

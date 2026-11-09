@@ -37,7 +37,10 @@ public final class RecordNode extends EditorFormNode {
             boolean needMerge = (!fieldSchema.has(SchemaKeys.DEFAULT) && field.has(SchemaKeys.DEFAULT))
                 || (!fieldSchema.has(SchemaKeys.REQUIRED) && field.has(SchemaKeys.REQUIRED));
             if (needMerge) {
-                fieldSchema = fieldSchema.deepCopy();
+                // 只复制字段自身的属性，子结构仍由多个字段共享。
+                JsonObject merged = new JsonObject();
+                fieldSchema.entrySet().forEach(entry -> merged.add(entry.getKey(), entry.getValue()));
+                fieldSchema = merged;
                 if (!fieldSchema.has(SchemaKeys.REQUIRED) && field.has(SchemaKeys.REQUIRED)) {
                     fieldSchema.addProperty(SchemaKeys.REQUIRED, field.get(SchemaKeys.REQUIRED).getAsBoolean());
                 }
@@ -64,6 +67,11 @@ public final class RecordNode extends EditorFormNode {
     }
 
     public List<EditorFormNode> children() {
+        return recordChildren;
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
         return recordChildren;
     }
 

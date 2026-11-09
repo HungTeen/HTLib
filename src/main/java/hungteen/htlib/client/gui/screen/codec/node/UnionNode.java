@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import hungteen.htlib.client.gui.screen.codec.ViewerStyle;
 import hungteen.htlib.client.gui.screen.codec.EditorHost;
 import hungteen.htlib.client.gui.widget.codec.EditorWidget;
@@ -14,10 +13,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * 联合（dispatch）节点：类型下拉 + 当前分支的字段。
@@ -29,16 +27,14 @@ public final class UnionNode extends EditorFormNode {
 
     private static final String DEFAULT_VARIANT_KEY = "type";
 
-    /** union 变体名列表按 schema 共享（同一 schema 的所有 union 下拉共用同一个列表对象）。 */
-    private static final Map<JsonObject, List<String>> SHARED_UNION_NAMES =
-        Collections.synchronizedMap(new WeakHashMap<>());
-
     private List<String> unionNames = List.of();
-    private final List<EditorFormNode> unionVariants = new ArrayList<>();
+    private JsonArray variantSchemas = new JsonArray();
+    /** 只创建切换到的分支，并保留各自的草稿。 */
+    private final Map<Integer, EditorFormNode> unionVariants = new HashMap<>();
     private int unionIndex = 0;
 
     UnionNode(JsonObject schema, String label, JsonElement value) {
-        super(schema, DEFAULT_VARIANT_KEY, value);
+        super(schema, label, value);
     }
 
     @Override
@@ -46,41 +42,24 @@ public final class UnionNode extends EditorFormNode {
         if (!schema.has(SchemaKeys.VARIANTS)) {
             return;
         }
-        JsonArray variants = schema.getAsJsonArray(SchemaKeys.VARIANTS);
-        this.unionNames = sharedUnionNames(schema);
-        for (JsonElement v : variants) {
-            JsonObject vo = v.getAsJsonObject();
-            unionVariants.add(EditorFormNode.create(vo, "", JsonNull.INSTANCE));
+        variantSchemas = schema.getAsJsonArray(SchemaKeys.VARIANTS);
+        // 只读取当前层的名称。用整个 schema 作缓存键会递归计算共享子结构的哈希。
+        List<String> names = new ArrayList<>();
+        for (JsonElement variant : variantSchemas) {
+            JsonObject entry = variant.getAsJsonObject();
+            names.add(entry.has(SchemaKeys.NAME) ? entry.get(SchemaKeys.NAME).getAsString() : "分支" + names.size());
         }
-        if (!unionVariants.isEmpty()) {
+        unionNames = List.copyOf(names);
+        if (!variantSchemas.isEmpty()) {
             unionIndex = matchUnionVariant(value);
-            unionVariants.get(unionIndex).load(value);
+            selectedVariant().load(value);
         }
-    }
-
-    /** 构建并共享变体名列表（schema 相等即复用，列表不可变）。 */
-    private static List<String> sharedUnionNames(JsonObject schema) {
-        List<String> cached = SHARED_UNION_NAMES.get(schema);
-        if (cached != null) {
-            return cached;
-        }
-        List<String> built = new ArrayList<>();
-        if (schema.has(SchemaKeys.VARIANTS)) {
-            for (JsonElement v : schema.getAsJsonArray(SchemaKeys.VARIANTS)) {
-                JsonObject vo = v.getAsJsonObject();
-                built.add(vo.has(SchemaKeys.NAME) ? vo.get(SchemaKeys.NAME).getAsString()
-                    : ("分支" + built.size()));
-            }
-        }
-        List<String> unmodifiable = List.copyOf(built);
-        SHARED_UNION_NAMES.put(schema, unmodifiable);
-        return unmodifiable;
     }
 
     @Override
     public int height() {
-        return unionVariants.isEmpty() ? EditorWidget.ROW_HEIGHT
-            : EditorWidget.ROW_HEIGHT + unionVariants.get(unionIndex).height();
+        EditorFormNode selected = selectedVariant();
+        return selected == null ? EditorWidget.ROW_HEIGHT : EditorWidget.ROW_HEIGHT + selected.height();
     }
 
     @Override
@@ -100,31 +79,43 @@ public final class UnionNode extends EditorFormNode {
         return unionIndex >= 0 && unionIndex < unionNames.size() ? unionNames.get(unionIndex) : "";
     }
 
-    public EditorFormNode selectedVariant() {
-        return unionVariants.isEmpty() ? null : unionVariants.get(unionIndex);
+    public String discriminatorKey() {
+        return schema.has(SchemaKeys.VARIANT_KEY)
+            ? schema.get(SchemaKeys.VARIANT_KEY).getAsString() : DEFAULT_VARIANT_KEY;
     }
 
-    /** 切换到指定变体（重置该变体的值）。 */
+    public EditorFormNode selectedVariant() {
+        if (variantSchemas.isEmpty()) {
+            return null;
+        }
+        return unionVariants.computeIfAbsent(unionIndex,
+            index -> EditorFormNode.create(variantSchemas.get(index).getAsJsonObject(), "", JsonNull.INSTANCE));
+    }
+
+    /** 切换到指定变体，保留之前编辑的分支草稿。 */
     public void selectVariant(int idx) {
-        if (idx < 0 || idx >= unionVariants.size()) {
+        if (idx < 0 || idx >= variantSchemas.size()) {
             return;
         }
         unionIndex = idx;
-        unionVariants.get(idx).load(JsonNull.INSTANCE);
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        EditorFormNode selected = selectedVariant();
+        return selected == null ? List.of() : List.of(selected);
     }
 
     @Override
     public JsonElement collect() {
-        if (unionVariants.isEmpty()) {
+        EditorFormNode selected = selectedVariant();
+        if (selected == null) {
             return JsonNull.INSTANCE;
         }
-        JsonElement inner = unionVariants.get(unionIndex).collect();
-        String variantKey = schema.has(SchemaKeys.VARIANT_KEY)
-            ? schema.get(SchemaKeys.VARIANT_KEY).getAsString() : DEFAULT_VARIANT_KEY;
-        String variantName = unionIndex < unionNames.size() ? unionNames.get(unionIndex) : "";
+        JsonElement inner = selected.collect();
         // 用 {分派键: 变体名, ...变体字段} 组装，符合 dispatch codec 的 JSON 结构。
         JsonObject obj = new JsonObject();
-        obj.add(variantKey, new JsonPrimitive(variantName));
+        obj.addProperty(discriminatorKey(), currentVariantName());
         if (inner.isJsonObject()) {
             for (var e : inner.getAsJsonObject().entrySet()) {
                 if (e.getValue() != null && !e.getValue().isJsonNull()) {
@@ -138,9 +129,9 @@ public final class UnionNode extends EditorFormNode {
     @Override
     public void load(JsonElement json) {
         this.value = json == null ? JsonNull.INSTANCE : json;
-        if (!unionVariants.isEmpty()) {
+        if (!variantSchemas.isEmpty()) {
             unionIndex = matchUnionVariant(value);
-            unionVariants.get(unionIndex).load(value);
+            selectedVariant().load(value);
         }
     }
 
@@ -159,12 +150,12 @@ public final class UnionNode extends EditorFormNode {
     /**
      * 探测当前值匹配哪个变体：
      * 1) 若值有分派键且其值与某个变体名相同，匹配该变体；
-     * 2) 否则匹配第一个能解析出对象的变体；
+     * 2) 否则按 schema 选择第一个对象结构，不创建或重置其它分支；
      * 3) 兜底 0。
      */
     private int matchUnionVariant(JsonElement value) {
-        if (value != null && value.isJsonObject() && schema.has(SchemaKeys.VARIANT_KEY)) {
-            JsonElement typeVal = value.getAsJsonObject().get(schema.get(SchemaKeys.VARIANT_KEY).getAsString());
+        if (value != null && value.isJsonObject()) {
+            JsonElement typeVal = value.getAsJsonObject().get(discriminatorKey());
             if (typeVal != null && typeVal.isJsonPrimitive()) {
                 String name = typeVal.getAsString();
                 int idx = unionNames.indexOf(name);
@@ -173,10 +164,10 @@ public final class UnionNode extends EditorFormNode {
                 }
             }
         }
-        for (int i = 0; i < unionVariants.size(); i++) {
-            unionVariants.get(i).load(value);
-            if (unionVariants.get(i).collect().isJsonObject()) {
-                return i;
+        for (int i = 0; i < variantSchemas.size(); i++) {
+            switch (typeOf(variantSchemas.get(i).getAsJsonObject())) {
+                case RECORD, MAP, UNION, EITHER -> { return i; }
+                default -> { }
             }
         }
         return 0;

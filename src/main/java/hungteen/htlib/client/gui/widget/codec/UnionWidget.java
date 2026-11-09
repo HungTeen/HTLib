@@ -52,6 +52,12 @@ public final class UnionWidget extends EditorWidget {
     }
 
     @Override
+    protected String displayLabel() {
+        String label = super.displayLabel();
+        return label.isEmpty() ? node.discriminatorKey() : label;
+    }
+
+    @Override
     protected int doLayout() {
 //        placeCollapseToggle();
         if (selector != null) {

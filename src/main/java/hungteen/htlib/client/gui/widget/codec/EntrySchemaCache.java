@@ -39,6 +39,10 @@ public final class EntrySchemaCache {
 
     /** 获取条目结构 schema：有缓存立即回调；否则请求服务端并挂监听（结果到达后回调）。 */
     public static void acquire(String registryName, Consumer<String> onSchema) {
+        acquire(registryName, onSchema, name -> NetworkHandler.sendToServer(new RequestEntrySchemaPacket(name)));
+    }
+
+    static void acquire(String registryName, Consumer<String> onSchema, Consumer<String> requestSender) {
         String cached = SCHEMAS.get(registryName);
         if (cached != null) {
             onSchema.accept(cached);
@@ -46,7 +50,7 @@ public final class EntrySchemaCache {
         }
         LISTENERS.computeIfAbsent(registryName, k -> new ArrayList<>()).add(onSchema);
         if (REQUESTED.add(registryName)) {
-            NetworkHandler.sendToServer(new RequestEntrySchemaPacket(registryName));
+            requestSender.accept(registryName);
         }
     }
 
@@ -60,7 +64,13 @@ public final class EntrySchemaCache {
 
     /** 响应包回调：写缓存并通知全部监听者。 */
     public static void update(String registryName, String schemaJson) {
-        SCHEMAS.put(registryName, schemaJson);
+        REQUESTED.remove(registryName);
+        if (schemaJson == null || schemaJson.isEmpty()) {
+            SCHEMAS.remove(registryName);
+            schemaJson = "";
+        } else {
+            SCHEMAS.put(registryName, schemaJson);
+        }
         List<Consumer<String>> listeners = LISTENERS.remove(registryName);
         if (listeners != null) {
             for (Consumer<String> listener : listeners) {

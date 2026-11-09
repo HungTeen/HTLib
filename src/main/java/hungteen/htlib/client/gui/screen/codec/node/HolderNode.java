@@ -25,6 +25,7 @@ public final class HolderNode extends EditorFormNode {
 
     /** 可补全的注册表条目名（客户端本地枚举）。 */
     private List<String> entries = List.of();
+    private EditorFormNode inlineNode;
 
     HolderNode(JsonObject schema, String label, JsonElement value) {
         super(schema, label, value);
@@ -72,14 +73,48 @@ public final class HolderNode extends EditorFormNode {
             ? schema.getAsJsonObject(SchemaKeys.REGISTRY).get(SchemaKeys.REGISTRY).getAsString() : null;
     }
 
+    /** 界面重建时复用内联草稿，包括还不能收集成 JSON 的重复键。 */
+    public EditorFormNode inlineNode(JsonObject entrySchema) {
+        if (inlineNode == null) {
+            inlineNode = EditorFormNode.root(entrySchema);
+            loadInlineValue();
+        }
+        return inlineNode;
+    }
+
+    private boolean hasActiveInlineNode() {
+        return inlineNode != null && value != null && value.isJsonObject();
+    }
+
+    @Override
+    protected List<EditorFormNode> validationChildren() {
+        return hasActiveInlineNode() ? List.of(inlineNode) : List.of();
+    }
+
     @Override
     public JsonElement collect() {
+        if (hasActiveInlineNode()) {
+            return inlineNode.collect();
+        }
         return value == null ? JsonNull.INSTANCE : value;
+    }
+
+    @Override
+    public void setValue(JsonElement value) {
+        super.setValue(value);
+        loadInlineValue();
     }
 
     @Override
     public void load(JsonElement json) {
         value = json == null || json.isJsonNull() ? defaultFor(schema) : json;
+        loadInlineValue();
+    }
+
+    private void loadInlineValue() {
+        if (hasActiveInlineNode()) {
+            inlineNode.load(value);
+        }
     }
 
     /**

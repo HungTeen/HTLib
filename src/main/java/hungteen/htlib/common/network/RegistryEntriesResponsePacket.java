@@ -2,6 +2,8 @@ package hungteen.htlib.common.network;
 
 import hungteen.htlib.client.gui.widget.codec.RegistryEntriesCache;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class RegistryEntriesResponsePacket {
     }
 
     public RegistryEntriesResponsePacket(FriendlyByteBuf buffer) {
-        this.registryName = buffer.readUtf();
+        this.registryName = buffer.readUtf(EditorPacketLimits.MAX_ID_LENGTH);
         int size = buffer.readVarInt();
         this.entries = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -35,7 +37,7 @@ public class RegistryEntriesResponsePacket {
     }
 
     public void encode(FriendlyByteBuf buffer) {
-        buffer.writeUtf(registryName);
+        buffer.writeUtf(registryName, EditorPacketLimits.MAX_ID_LENGTH);
         buffer.writeVarInt(entries.size());
         for (String entry : entries) {
             buffer.writeUtf(entry);
@@ -43,7 +45,8 @@ public class RegistryEntriesResponsePacket {
     }
 
     public static void onMessage(RegistryEntriesResponsePacket message, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> RegistryEntriesCache.update(message.registryName, message.entries));
+        ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+            () -> () -> RegistryEntriesCache.update(message.registryName, message.entries)));
         ctx.get().setPacketHandled(true);
     }
 }
