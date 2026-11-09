@@ -22,20 +22,3 @@ A lib made by HungTeen for more easily developing minecraft forge mod.
 | 1.20.1  | Developing | 1.2.0  | 1.2.0  |
 
 ---
-
-### Build and test (1.20.1)
-
-Use JDK 17 and set `JAVA_HOME` to that installation. The Gradle wrapper downloads
-Gradle and the public Forge, KubeJS, Rhino, and Architectury dependencies; no local
-HTLib JAR is required to build this repository.
-
-```powershell
-# Windows
-.\gradlew.bat test build
-.\gradlew.bat runClient
-```
-
-On Linux or macOS, use `./gradlew test build` and `./gradlew runClient`.
-The built mod is written to `build/libs/`, and the test report is at
-`build/reports/tests/test/index.html`. The first build and client launch download
-Minecraft dependencies and assets and can take longer than subsequent runs.
